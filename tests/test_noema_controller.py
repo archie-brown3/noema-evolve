@@ -1,0 +1,287 @@
+"""
+End-to-end tests for the noema controller with a stubbed chat-completions client.
+
+The mutation LLM is a real BudgetedLLM wired to a fake API client, so these
+tests exercise ledger metering, prompt assembly, parsing, evaluation via
+openevolve's Evaluator, database insertion, coordination hooks, and
+checkpoint/resume — everything except the network.
+"""
+
+import asyncio
+import json
+import os
+import tempfile
+import unittest
+from types import SimpleNamespace
+
+from noema.budget.ledger import TokenLedger
+from noema.budget.llm import BudgetedLLM
+from noema.config import BudgetConfig, NoemaConfig
+from noema.controller import NoemaController
+from noema.coordination import Advice, NullCoordination
+from noema.substrate.prompts import COORDINATION_HEADER
+
+from openevolve.config import DatabaseConfig, EvaluatorConfig
+
+INITIAL_PROGRAM = "def f():\n    return 1\n"
+
+# The eval script scores programs by the number they return (regex, no exec)
+EVAL_SCRIPT = """\
+import re
+
+def evaluate(program_path):
+    with open(program_path) as f:
+        code = f.read()
+    m = re.search(r"return (\\d+(?:\\.\\d+)?)", code)
+    value = float(m.group(1)) if m else 0.0
+    return {"combined_score": min(1.0, value / 10.0)}
+"""
+
+
+class CyclingFakeClient:
+    """Fake AsyncOpenAI yielding full-rewrite responses with increasing scores"""
+
+    def __init__(self, prompt_tokens=100, completion_tokens=40):
+        self.calls = []
+        self._counter = 0
+
+        async def create(**params):
+            self.calls.append(params)
+            self._counter += 1
+            content = f"```python\ndef f():\n    return {self._counter + 1}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+def make_config(**overrides) -> NoemaConfig:
+    defaults = dict(
+        max_iterations=6,
+        checkpoint_interval=100,
+        diff_based_evolution=False,  # fake client emits full rewrites
+        database=DatabaseConfig(
+            in_memory=True,
+            num_islands=2,
+            population_size=50,
+            random_seed=42,
+            migration_interval=1000,  # keep migration out of these tests
+        ),
+        evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30, max_retries=0),
+        budget=BudgetConfig(total_tokens=1_000_000),
+    )
+    defaults.update(overrides)
+    return NoemaConfig(**defaults)
+
+
+def make_controller(tmp, config=None, budget_tokens=1_000_000, client=None):
+    eval_path = os.path.join(tmp, "evaluator.py")
+    if not os.path.exists(eval_path):
+        with open(eval_path, "w") as f:
+            f.write(EVAL_SCRIPT)
+
+    config = config or make_config()
+    ledger = TokenLedger(total_budget_tokens=budget_tokens)
+    client = client or CyclingFakeClient()
+    mutation_llm = BudgetedLLM(
+        model="fake-model",
+        ledger=ledger,
+        account="mutation",
+        tag="mutate",
+        client=client,
+        retries=0,
+        retry_delay=0.0,
+    )
+    controller = NoemaController(
+        config=config,
+        evaluation_file=eval_path,
+        initial_program_code=INITIAL_PROGRAM,
+        output_dir=os.path.join(tmp, "output"),
+        mutation_llm=mutation_llm,
+        coordination=NullCoordination(),
+        ledger=ledger,
+    )
+    return controller, ledger, client
+
+
+class TestControllerEndToEnd(unittest.TestCase):
+    def test_off_arm_runs_end_to_end(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = make_controller(tmp)
+            best = asyncio.run(controller.run())
+
+            # Evolution happened: initial + children, improving scores
+            self.assertGreater(controller.db.num_programs, 1)
+            self.assertIsNotNone(best)
+            self.assertGreater(best.metrics["combined_score"], 0.1)
+
+            # Every mutation call was metered
+            self.assertEqual(len(client.calls), 6)
+            self.assertEqual(ledger.spent("mutation"), 6 * 140)
+            self.assertEqual(ledger.spent("coordination"), 0)
+            iterations = [r.iteration for r in ledger.records]
+            self.assertEqual(iterations, list(range(6)))
+
+            # Generation ticks: 6 iterations / 2 islands = 3
+            self.assertEqual(controller.generation, 3)
+            self.assertEqual(len(controller.best_fitness_history), 3)
+            self.assertEqual(len(controller.generation_log), 3)
+
+            # Final checkpoint written with noema state
+            checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_5")
+            self.assertTrue(os.path.exists(os.path.join(checkpoint, "noema_state.json")))
+
+    def test_off_arm_prompts_have_no_coordination_block(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, client = make_controller(tmp)
+            asyncio.run(controller.run(iterations=2))
+
+            for call in client.calls:
+                user_message = call["messages"][-1]["content"]
+                self.assertNotIn(COORDINATION_HEADER.strip(), user_message)
+
+            # Prompts are also logged on the stored programs for arm-diffing
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertTrue(children)
+            for child in children:
+                self.assertIn("full_rewrite_user", child.prompts)
+
+    def test_advice_reaches_prompt_and_attribution_reaches_metadata(self):
+        class StaticAdviceModule(NullCoordination):
+            def advise(self, ctx):
+                return Advice(
+                    prompt_block="- Prefer closed-form solutions",
+                    attribution={"insights": ["tip-1"]},
+                )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, client = make_controller(tmp)
+            controller.coordination = StaticAdviceModule()
+            asyncio.run(controller.run(iterations=2))
+
+            for call in client.calls:
+                user_message = call["messages"][-1]["content"]
+                self.assertIn(COORDINATION_HEADER, user_message)
+                self.assertIn("- Prefer closed-form solutions", user_message)
+
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertTrue(children)
+            for child in children:
+                self.assertEqual(child.metadata["coordination"], {"insights": ["tip-1"]})
+
+    def test_budget_exhaustion_stops_cleanly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # Each call costs 140 tokens; budget allows exactly two calls
+            controller, ledger, client = make_controller(tmp, budget_tokens=280)
+            best = asyncio.run(controller.run())
+
+            self.assertEqual(len(client.calls), 2)
+            self.assertLessEqual(ledger.remaining(), 0)
+            self.assertIsNotNone(best)  # run ended cleanly with a result
+            self.assertEqual(controller.start_iteration, 2)
+
+    def test_checkpoint_resume_continues(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = make_controller(tmp)
+            asyncio.run(controller.run(iterations=4))
+            checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_3")
+            self.assertTrue(os.path.exists(checkpoint))
+            programs_before = controller.db.num_programs
+            spent_before = ledger.spent()
+
+            # Fresh controller, fresh ledger; restore everything from disk
+            controller2, ledger2, client2 = make_controller(tmp)
+            controller2.load_checkpoint(checkpoint)
+            self.assertEqual(controller2.start_iteration, 4)
+            self.assertEqual(controller2.db.num_programs, programs_before)
+            self.assertEqual(ledger2.spent(), spent_before)
+            self.assertEqual(controller2.generation, 2)
+
+            asyncio.run(controller2.run(iterations=2))
+            self.assertEqual(controller2.start_iteration, 6)
+            # Resumed ledger accumulates on top of restored spend
+            self.assertEqual(ledger2.spent(), spent_before + 2 * 140)
+
+    def test_unparseable_response_reports_failure(self):
+        # Note: only diff-based mode can fail to parse — openevolve's
+        # parse_full_rewrite falls back to treating the whole response as code
+        class GarbageClient:
+            def __init__(self):
+                self.calls = []
+
+                async def create(**params):
+                    self.calls.append(params)
+                    return SimpleNamespace(
+                        choices=[SimpleNamespace(message=SimpleNamespace(content="no diffs here"))],
+                        usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+                    )
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        class RecordingModule(NullCoordination):
+            def __init__(self):
+                super().__init__()
+                self.reports = []
+
+            def report_result(self, ctx, child, attribution, eval_failed):
+                self.reports.append((child, eval_failed))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(diff_based_evolution=True)
+            controller, ledger, _ = make_controller(tmp, config=config, client=GarbageClient())
+            module = RecordingModule()
+            controller.coordination = module
+            asyncio.run(controller.run(iterations=2))
+
+            # Failed parses are still metered and still reported to coordination
+            self.assertEqual(ledger.spent(), 2 * 15)
+            self.assertEqual(len(module.reports), 2)
+            for child, eval_failed in module.reports:
+                self.assertIsNone(child)
+                self.assertTrue(eval_failed)
+            # No children were added
+            self.assertEqual(controller.db.num_programs, 1)
+
+
+class TestNoemaConfig(unittest.TestCase):
+    def test_from_yaml_round_trip(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "config.yaml")
+            with open(path, "w") as f:
+                f.write(
+                    "max_iterations: 7\n"
+                    "database:\n"
+                    "  num_islands: 3\n"
+                    "budget:\n"
+                    "  total_tokens: 5000\n"
+                    "coordination:\n"
+                    "  module: null_arm_typo_guard\n"
+                )
+            config = NoemaConfig.from_yaml(path)
+            self.assertEqual(config.max_iterations, 7)
+            self.assertEqual(config.database.num_islands, 3)
+            self.assertEqual(config.budget.total_tokens, 5000)
+            self.assertEqual(config.coordination.module, "null_arm_typo_guard")
+            # Defaults enforced for ablation validity
+            self.assertFalse(config.prompt.use_template_stochasticity)
+            self.assertFalse(config.evaluator.cascade_evaluation)
+
+    def test_stochasticity_rejected_at_config_level(self):
+        from openevolve.config import PromptConfig
+
+        with self.assertRaises(ValueError):
+            NoemaConfig(prompt=PromptConfig(use_template_stochasticity=True))
+
+    def test_unknown_coordination_module_rejected_at_build(self):
+        from noema.coordination import build_coordination_module
+
+        with self.assertRaises(ValueError):
+            build_coordination_module("does-not-exist")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -78,6 +78,10 @@ class SubstrateDatabase:
             if pid in self._db.programs
         ]
 
+    def all_fitnesses(self) -> List[float]:
+        """Fitness values of every program in the database (for host histories)"""
+        return [self.fitness(p) for p in self._db.programs.values()]
+
     def view(self, program: Program) -> ProgramView:
         return ProgramView.from_program(program, self.feature_dimensions)
 

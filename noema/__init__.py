@@ -11,9 +11,27 @@ See PLAN.md at the repository root for the design document.
 """
 
 from noema.budget.ledger import BudgetExhausted, CallRecord, TokenLedger
+from noema.budget.llm import BudgetedLLM
+from noema.config import NoemaConfig
+from noema.controller import NoemaController
+from noema.coordination import (
+    Advice,
+    CoordinationModule,
+    GenerationContext,
+    NullCoordination,
+    build_coordination_module,
+)
 
 __all__ = [
+    "Advice",
     "BudgetExhausted",
+    "BudgetedLLM",
     "CallRecord",
+    "CoordinationModule",
+    "GenerationContext",
+    "NoemaConfig",
+    "NoemaController",
+    "NullCoordination",
     "TokenLedger",
+    "build_coordination_module",
 ]
