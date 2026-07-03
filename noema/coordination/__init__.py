@@ -10,9 +10,12 @@ from noema.coordination.base import (
     NullCoordination,
 )
 
-# Registry of coordination arms; mechanisms register themselves on import
+from noema.coordination.hifo.module import HiFoPromptModule
+
+# Registry of coordination arms, selected by NoemaConfig.coordination.module
 MODULE_REGISTRY: Dict[str, type] = {
     "null": NullCoordination,
+    "hifo": HiFoPromptModule,
 }
 
 

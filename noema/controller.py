@@ -13,7 +13,6 @@ import logging
 import os
 import random
 import time
-import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
 from openevolve.database import Program
@@ -170,14 +169,15 @@ class NoemaController:
         for iteration in range(self.start_iteration, end_iteration):
             try:
                 await self._run_iteration(iteration)
+                next_iteration = iteration + 1
+
+                # Coordination LLM calls in the generation tick may also
+                # exhaust the (shared) budget — stop cleanly either way
+                if next_iteration % self.db.num_islands == 0:
+                    await self._generation_tick(iteration)
             except BudgetExhausted as e:
-                # The interrupted iteration did not complete; resume re-runs it
                 logger.info(f"Stopping at iteration {iteration}: {e}")
                 break
-            next_iteration = iteration + 1
-
-            if next_iteration % self.db.num_islands == 0:
-                await self._generation_tick(iteration)
 
             if next_iteration % self.config.checkpoint_interval == 0:
                 self.save_checkpoint(iteration)
@@ -192,7 +192,7 @@ class NoemaController:
         if self.db.num_programs > 0:
             return
         logger.info("Evaluating and adding initial program")
-        program_id = str(uuid.uuid4())
+        program_id = "initial"
         metrics = await self.evaluator.evaluate_program(self.initial_program_code, program_id)
         program = Program(
             id=program_id,
@@ -263,7 +263,10 @@ class NoemaController:
             )
             return
 
-        child_id = str(uuid.uuid4())
+        # Deterministic IDs (one child per iteration): identical across arms, so
+        # openevolve's set-based island iteration order — which depends on the
+        # id strings — cannot make otherwise-identical runs diverge
+        child_id = f"it{iteration:06d}"
         metrics = await self.evaluator.evaluate_program(child_code, child_id)
         artifacts = self.evaluator.get_pending_artifacts(child_id)
 
@@ -326,8 +329,14 @@ class NoemaController:
         self.generation += 1
         self._update_histories()
 
+        # The tick is a global event: the module sees the global top programs
+        # and population, not one (possibly still empty) island
         ctx = self._make_context(
-            iteration, island=iteration % self.db.num_islands, parent=None, inspirations=[]
+            iteration,
+            island=iteration % self.db.num_islands,
+            parent=None,
+            inspirations=[],
+            global_scope=True,
         )
         await self.coordination.on_generation_end(ctx)  # coordination hook 3
         self.db.end_generation()
@@ -367,7 +376,10 @@ class NoemaController:
         island: int,
         parent: Optional[Program],
         inspirations: List[Program],
+        global_scope: bool = False,
     ) -> GenerationContext:
+        top_island = None if global_scope else island
+        fitnesses = self.db.all_fitnesses() if global_scope else self.db.island_fitnesses(island)
         return GenerationContext(
             iteration=iteration,
             generation=self.generation,
@@ -375,9 +387,9 @@ class NoemaController:
             parent=self.db.view(parent) if parent else None,
             inspirations=self.db.views(inspirations),
             top_programs=self.db.views(
-                self.db.top_programs(self.config.num_top_programs, island=island)
+                self.db.top_programs(self.config.num_top_programs, island=top_island)
             ),
-            island_fitnesses=self.db.island_fitnesses(island),
+            island_fitnesses=fitnesses,
             best_fitness_history=list(self.best_fitness_history),
             avg_fitness_history=list(self.avg_fitness_history),
             diversity_history=list(self.diversity_history),
