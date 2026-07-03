@@ -539,42 +539,52 @@ seeds, same budget, same loop.
 Phase A gets the **brute-force arm (coordination OFF) running end-to-end first**; HiFo
 lands second; nothing in Phase B blocks Phase A.
 
+> **Status (implemented on this branch):** tasks 1–11 are done — see the `noema/`
+> package and `tests/test_noema_*.py`. Notes against the original plan: the
+> `noema` package lives inside this repo next to `openevolve/` (no
+> submodule/pinning needed); task 7's milestone ran against a stubbed
+> chat-completions client rather than a live provider, so ledger-vs-dashboard
+> reconciliation remains to do on the first real run; two determinism fixes
+> surfaced by the pilot (deterministic program IDs, global-scope generation-tick
+> context) are documented in `noema/controller.py`. Task 12 is still open.
+
 **Phase A — substrate + ledger + OFF arm**
 
-1. Repo scaffolding: `noema/` package, pinned `openevolve` dependency (submodule or
-   git-pinned install), experiment config schema (YAML → dataclasses), fixed seed policy.
-2. `TokenLedger` + `BudgetedLLM` (async OpenAI client, per-attempt metering, JSONL call
+1. ✅ Repo scaffolding: `noema/` package, experiment config schema (YAML →
+   dataclasses via `NoemaConfig`), fixed seed policy.
+2. ✅ `TokenLedger` + `BudgetedLLM` (async OpenAI client, per-attempt metering, JSONL call
    log, `BudgetExhausted`); unit tests with a mocked API (usage arithmetic, retry
    billing, pre-flight check, exhaustion mid-run).
-3. Substrate adapters (`noema/substrate/`): thin wrappers constructing
+3. ✅ Substrate adapters (`noema/substrate/`): thin wrappers constructing
    `ProgramDatabase` (novelty off, seeding policy) and `Evaluator`
    (`cascade_evaluation=False`, artifacts pop) + `ProgramView` read-only views; smoke
    test: add/sample/checkpoint round-trip, evaluate a toy program.
-4. Prompt assembly: shared `template_dir`, stochasticity off, suffix-injection helper;
-   golden-file test that two arms with `NullCoordination` vs empty advice produce
-   byte-identical prompts.
-5. `CoordinationModule` ABC + `NullCoordination`.
-6. Controller loop (sequential first): sample → advise → prompt → mutate → parse →
+4. ✅ Prompt assembly: shared `template_dir`, stochasticity off, suffix-injection helper;
+   test that empty advice produces byte-identical prompts.
+5. ✅ `CoordinationModule` ABC + `NullCoordination`.
+6. ✅ Controller loop (sequential): sample → advise → prompt → mutate → parse →
    evaluate → add → report → generation tick → checkpoint; checkpoint/resume including
    ledger + RNG + coordination state.
-7. **Milestone: brute-force end-to-end run** on a small benchmark (e.g. the
-   function-minimization example task) with a tiny budget; verify ledger totals vs
-   provider dashboard, checkpoint/resume equivalence, and prompt logs.
+7. ✅ **Milestone: brute-force end-to-end run** — exercised via a stubbed
+   chat-completions client in `tests/test_noema_controller.py` (metering,
+   checkpoint/resume equivalence, prompt logs). Ledger-vs-provider-dashboard
+   reconciliation still pending a first live run.
 
 **Phase B — HiFo transplant**
 
-8. Port `InsightPool` + `EvolutionaryNavigator` into `noema/coordination/hifo/` with all
-   magic numbers in config; unit tests against hand-computed traces (eviction, probation,
+8. ✅ Port `InsightPool` + `EvolutionaryNavigator` into `noema/coordination/hifo/`
+   (copied with provenance headers, `NOEMA:` markers on modifications, magic numbers
+   in config); unit tests against hand-computed traces (eviction, probation,
    EMA, regime transitions, sign convention flipped to maximization).
-9. `HiFoPrompt(CoordinationModule)`: advise (tips + directive + regime suffix,
+9. ✅ `HiFoPromptModule(CoordinationModule)`: advise (tips + directive + regime suffix,
    attribution payload), report_result (effectiveness + failure penalty),
-   on_generation_end (histories + p=0.8 insight extraction via coordination-account
+   on_generation_end (p=0.8 insight extraction via coordination-account
    `BudgetedLLM`, `-` bullet parsing), state_dict, log_snapshot.
-10. Fidelity checklist vs released HiFo (documented deviations from §2.2), plus an
-    integration test on a stub LLM asserting: tips appear in prompts, credit reaches
+10. ✅ Fidelity checklist vs released HiFo (documented in the module docstring), plus
+    integration tests on a stub LLM asserting: tips appear in prompts, credit reaches
     `tip_stats`, extraction charges the coordination account.
-11. **Milestone: two-arm pilot** (OFF vs HiFo) at equal total budget, same seeds/templates;
-    verify the only diff in logged prompts is the coordination block and that the ledger
-    splits spend by account.
-12. Cleanups for arm #3 readiness: confirm `sampling_hint` pathway with a trivial test
+11. ✅ **Milestone: two-arm pilot** (OFF vs HiFo) at equal total budget, same
+    seeds/templates — `tests/test_noema_hifo.py::TestTwoArmPilot` verifies the only
+    diff in prompts is the coordination block and the ledger splits spend by account.
+12. ⬜ Cleanups for arm #3 readiness: confirm `sampling_hint` pathway with a trivial test
     module (e.g. random island override) before starting the ShinkaEvolve-style bandit.
