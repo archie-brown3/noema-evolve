@@ -1,0 +1,43 @@
+2026-07-08 15:18:49,984 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_151849.log
+2026-07-08 15:18:49,988 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-07-08 15:18:50,012 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:18:50,012 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 15:18:50,024 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 15:18:50,025 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:18:50,025 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-07-08 15:18:50,025 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-07-08 15:18:50,025 - openevolve.database - INFO - Distributed 3 programs across 4 islands
+2026-07-08 15:18:50,025 - openevolve.database - INFO - Loaded database with 3 programs from examples/circle_packing/openevolve_output/db
+2026-07-08 15:18:50,025 - openevolve.database - INFO - Island Status:
+2026-07-08 15:18:50,025 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,025 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,025 - openevolve.database - INFO -    Island 2: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,025 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:18:50,025 - openevolve.database - INFO - Initialized program database with 3 programs
+2026-07-08 15:18:50,025 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:18:50,025 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:18:50,026 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 15:18:50,026 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 0 with 3 existing programs)
+2026-07-08 15:18:50,027 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 15:18:50,027 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 15:18:50,028 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 15:18:50,028 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 15:18:50,028 - openevolve.database - INFO - Island Status:
+2026-07-08 15:18:50,028 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,028 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,028 - openevolve.database - INFO -    Island 2: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0
+2026-07-08 15:18:50,028 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:18:50,028 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 0 for 1 iterations (total: 1)
+2026-07-08 15:18:50,031 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 15:18:50,062 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:18:50,063 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:18:50,063 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:18:50,064 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,739 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-07-08 15:21:44,739 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-07-08 15:21:44,740 - openevolve.database - INFO - Updated best program tracking from None to 7dfd0ab1-5c5c-482b-9bcf-799ae8f6a64d
+2026-07-08 15:21:44,740 - openevolve.controller - INFO - Evolution stopped due to shutdown request

@@ -135,6 +135,26 @@ class TestControllerEndToEnd(unittest.TestCase):
             checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_5")
             self.assertTrue(os.path.exists(os.path.join(checkpoint, "noema_state.json")))
 
+    def test_children_are_distributed_across_islands_not_all_island_zero(self):
+        # Regression test: db.add() was never told which island a child
+        # belongs to, so every child fell back to island 0 regardless of
+        # num_islands, silently collapsing every noema run into a single
+        # lineage tree. With num_islands=2 and 6 iterations (island =
+        # iteration % 2), both islands must end up with real children.
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            asyncio.run(controller.run())
+
+            children = [
+                p for p in controller.db._db.programs.values() if p.parent_id is not None
+            ]
+            self.assertTrue(children)
+            islands_used = {child.metadata["island"] for child in children}
+            self.assertEqual(islands_used, {0, 1})
+            # And the database's own island bookkeeping agrees, not just metadata
+            self.assertTrue(controller.db.island_fitnesses(0))
+            self.assertTrue(controller.db.island_fitnesses(1))
+
     def test_off_arm_prompts_have_no_coordination_block(self):
         with tempfile.TemporaryDirectory() as tmp:
             controller, _, client = make_controller(tmp)
@@ -152,7 +172,7 @@ class TestControllerEndToEnd(unittest.TestCase):
 
     def test_advice_reaches_prompt_and_attribution_reaches_metadata(self):
         class StaticAdviceModule(NullCoordination):
-            def advise(self, ctx):
+            async def advise(self, ctx):
                 return Advice(
                     prompt_block="- Prefer closed-form solutions",
                     attribution={"insights": ["tip-1"]},

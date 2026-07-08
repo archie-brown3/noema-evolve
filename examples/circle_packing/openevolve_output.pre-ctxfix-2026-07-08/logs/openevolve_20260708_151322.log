@@ -1,0 +1,99 @@
+2026-07-08 15:13:22,924 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_151322.log
+2026-07-08 15:13:22,928 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-07-08 15:13:22,952 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:13:22,952 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 15:13:22,965 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 15:13:22,966 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:13:22,966 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-07-08 15:13:22,966 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:13:22,966 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:13:22,966 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 15:13:22,966 - openevolve.controller - INFO - Adding initial program to database
+2026-07-08 15:13:23,041 - openevolve.evaluator - INFO - Evaluated program d3c5334a-c9a6-41d8-b174-83dba4e6c050 in 0.07s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:13:23,041 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-08 15:13:23,042 - openevolve.process_parallel - INFO - Initialized process parallel controller with 4 workers
+2026-07-08 15:13:23,042 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 15:13:23,042 - openevolve.process_parallel - INFO - Started process pool with 4 processes
+2026-07-08 15:13:23,043 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 15:13:23,043 - openevolve.database - INFO - Island Status:
+2026-07-08 15:13:23,043 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0 (best: d3c5334a-c9a6-41d8-b174-83dba4e6c050)
+2026-07-08 15:13:23,043 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:13:23,043 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:13:23,043 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:13:23,043 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 10 iterations (total: 11)
+2026-07-08 15:13:23,050 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 15:13:23,076 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:13:23,077 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,077 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,077 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:13:23,077 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:13:23,078 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,078 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,078 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,078 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,078 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:13:23,079 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:13:23,079 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:13:23,079 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:13:23,079 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,079 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:13:23,080 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:16:19,777 - openai._base_client - INFO - Retrying request to /chat/completions in 0.496643 seconds
+2026-07-08 15:16:19,777 - openai._base_client - INFO - Retrying request to /chat/completions in 0.473435 seconds
+2026-07-08 15:16:19,777 - openai._base_client - INFO - Retrying request to /chat/completions in 0.497082 seconds
+2026-07-08 15:16:19,778 - openai._base_client - INFO - Retrying request to /chat/completions in 0.429285 seconds
+2026-07-08 15:16:20,239 - openai._base_client - INFO - Retrying request to /chat/completions in 0.976853 seconds
+2026-07-08 15:16:20,278 - openai._base_client - INFO - Retrying request to /chat/completions in 0.982570 seconds
+2026-07-08 15:16:20,302 - openai._base_client - INFO - Retrying request to /chat/completions in 0.930787 seconds
+2026-07-08 15:16:20,302 - openai._base_client - INFO - Retrying request to /chat/completions in 0.820043 seconds
+2026-07-08 15:16:21,150 - openai._base_client - INFO - Retrying request to /chat/completions in 1.675931 seconds
+2026-07-08 15:16:21,244 - openai._base_client - INFO - Retrying request to /chat/completions in 1.709639 seconds
+2026-07-08 15:16:21,260 - openai._base_client - INFO - Retrying request to /chat/completions in 1.521120 seconds
+2026-07-08 15:16:21,287 - openai._base_client - INFO - Retrying request to /chat/completions in 1.859451 seconds
+2026-07-08 15:16:22,805 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 15:16:22,851 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 15:16:22,980 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 15:16:23,246 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 15:16:27,847 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:27,848 - openai._base_client - INFO - Retrying request to /chat/completions in 0.497199 seconds
+2026-07-08 15:16:27,917 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:27,917 - openai._base_client - INFO - Retrying request to /chat/completions in 0.378770 seconds
+2026-07-08 15:16:28,025 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:28,025 - openai._base_client - INFO - Retrying request to /chat/completions in 0.412646 seconds
+2026-07-08 15:16:28,287 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:28,287 - openai._base_client - INFO - Retrying request to /chat/completions in 0.442554 seconds
+2026-07-08 15:16:28,366 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:28,367 - openai._base_client - INFO - Retrying request to /chat/completions in 0.902790 seconds
+2026-07-08 15:16:28,475 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:28,475 - openai._base_client - INFO - Retrying request to /chat/completions in 0.937901 seconds
+2026-07-08 15:16:28,491 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 503 Service Unavailable"
+2026-07-08 15:16:28,491 - openai._base_client - INFO - Retrying request to /chat/completions in 0.946108 seconds
+2026-07-08 15:17:34,639 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:17:34,753 - openevolve.evaluator - INFO - Evaluated program ec9dda99-cf28-4060-a177-7303281ebe69 in 0.11s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:17:34,754 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:17:34,754 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 5}
+2026-07-08 15:17:34,755 - openevolve.process_parallel - INFO - Iteration 3: Program ec9dda99-cf28-4060-a177-7303281ebe69 (parent: d3c5334a-c9a6-41d8-b174-83dba4e6c050) completed in 251.68s
+2026-07-08 15:17:34,755 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:18:42,574 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:18:42,656 - openevolve.evaluator - INFO - Evaluated program 7dfd0ab1-5c5c-482b-9bcf-799ae8f6a64d in 0.08s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:18:42,657 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:18:42,663 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 0}
+2026-07-08 15:18:42,663 - openevolve.process_parallel - INFO - Iteration 4: Program 7dfd0ab1-5c5c-482b-9bcf-799ae8f6a64d (parent: d3c5334a-c9a6-41d8-b174-83dba4e6c050) completed in 319.58s
+2026-07-08 15:18:42,663 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:21:27,910 - openevolve.llm.openai - WARNING - Timeout on attempt 2/4. Retrying...
+2026-07-08 15:21:28,085 - openevolve.llm.openai - WARNING - Timeout on attempt 2/4. Retrying...
+2026-07-08 15:21:29,523 - openai._base_client - INFO - Retrying request to /chat/completions in 1.545525 seconds
+2026-07-08 15:21:29,547 - openai._base_client - INFO - Retrying request to /chat/completions in 1.781387 seconds
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,736 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:21:44,741 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-07-08 15:21:44,741 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-07-08 15:21:44,742 - openevolve.controller - INFO - Evolution stopped due to shutdown request

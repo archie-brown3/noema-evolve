@@ -218,7 +218,7 @@ class TestHiFoPromptModule(unittest.TestCase):
 
     def test_advise_injects_tips_directive_and_regime(self):
         module, _, _ = self.make_module()
-        advice = module.advise(make_ctx(best_fitness_history=[0.1, 0.2]))
+        advice = asyncio.run(module.advise(make_ctx(best_fitness_history=[0.1, 0.2])))
 
         self.assertIn(INSIGHTS_PREFIX, advice.prompt_block)
         self.assertIn("please pay special attention to:", advice.prompt_block)
@@ -231,7 +231,7 @@ class TestHiFoPromptModule(unittest.TestCase):
     def test_report_result_updates_used_tips_only(self):
         module, _, _ = self.make_module()
         ctx = make_ctx(island_fitnesses=[0.2, 0.5, 0.8])
-        advice = module.advise(ctx)
+        advice = asyncio.run(module.advise(ctx))
         used = advice.attribution["insights"]
         unused = [tip for tip in module.insight_pool.tips if tip not in used]
 
@@ -246,7 +246,7 @@ class TestHiFoPromptModule(unittest.TestCase):
     def test_failed_child_penalizes_tips(self):
         module, _, _ = self.make_module()
         ctx = make_ctx(island_fitnesses=[0.2, 0.8])
-        advice = module.advise(ctx)
+        advice = asyncio.run(module.advise(ctx))
         module.report_result(ctx, None, advice.attribution, eval_failed=True)
         for tip in advice.attribution["insights"]:
             self.assertAlmostEqual(module.insight_pool.tip_stats[tip]["effectiveness"], 0.3 * -0.5)
@@ -293,7 +293,7 @@ class TestHiFoPromptModule(unittest.TestCase):
     def test_state_dict_round_trip(self):
         module, _, _ = self.make_module()
         ctx = make_ctx(island_fitnesses=[0.2, 0.8], best_fitness_history=[0.1, 0.2])
-        advice = module.advise(ctx)
+        advice = asyncio.run(module.advise(ctx))
         module.report_result(ctx, make_view(fitness=0.9), advice.attribution, False)
         state = json.loads(json.dumps(module.state_dict()))
 
@@ -304,7 +304,7 @@ class TestHiFoPromptModule(unittest.TestCase):
 
     def test_log_snapshot_json_serializable(self):
         module, _, _ = self.make_module()
-        module.advise(make_ctx(best_fitness_history=[0.1, 0.2]))
+        asyncio.run(module.advise(make_ctx(best_fitness_history=[0.1, 0.2])))
         json.dumps(module.log_snapshot())
 
     def test_registered_in_module_registry(self):

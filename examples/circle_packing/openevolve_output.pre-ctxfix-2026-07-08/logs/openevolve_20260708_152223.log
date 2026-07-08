@@ -1,0 +1,51 @@
+2026-07-08 15:22:23,178 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_152223.log
+2026-07-08 15:22:23,182 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-07-08 15:22:23,206 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:22:23,206 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 15:22:23,218 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 15:22:23,219 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:22:23,219 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-07-08 15:22:23,219 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:22:23,219 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:22:23,219 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 15:22:23,219 - openevolve.controller - INFO - Adding initial program to database
+2026-07-08 15:22:23,324 - openevolve.evaluator - INFO - Evaluated program b9ef62c3-a1f2-4967-800e-809d646e4ae0 in 0.10s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:22:23,324 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-08 15:22:23,325 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 15:22:23,325 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 15:22:23,326 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 15:22:23,326 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 15:22:23,326 - openevolve.database - INFO - Island Status:
+2026-07-08 15:22:23,326 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0 (best: b9ef62c3-a1f2-4967-800e-809d646e4ae0)
+2026-07-08 15:22:23,326 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:22:23,326 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:22:23,326 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:22:23,326 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 5 iterations (total: 6)
+2026-07-08 15:22:23,330 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 15:22:23,358 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:22:23,358 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:22:23,358 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:22:23,359 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:23:05,905 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:23:05,997 - openevolve.evaluator - INFO - Evaluated program 4b0d59e2-880a-40aa-8b92-f871b79ebdbd in 0.09s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:23:05,998 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:23:06,002 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 5}
+2026-07-08 15:23:06,003 - openevolve.process_parallel - INFO - Iteration 1: Program 4b0d59e2-880a-40aa-8b92-f871b79ebdbd (parent: b9ef62c3-a1f2-4967-800e-809d646e4ae0) completed in 42.64s
+2026-07-08 15:23:06,003 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:23:47,035 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:23:47,035 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:23:47,035 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:23:47,035 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:23:47,043 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-07-08 15:23:47,043 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-07-08 15:23:47,043 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-07-08 15:24:31,104 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:24:31,184 - openevolve.evaluator - INFO - Evaluated program d543b887-85fa-4c6a-a0be-f9c3f329942b in 0.08s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:24:31,185 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:26:09,007 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:26:09,007 - openevolve.controller - INFO - Received signal 15, initiating graceful shutdown...
+2026-07-08 15:26:09,007 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:26:09,007 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-07-08 15:27:20,384 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:27:20,555 - openevolve.evaluator - INFO - Evaluated program 725b9298-33b6-4fa3-a5af-e07538bf5546 in 0.08s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:27:20,556 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf

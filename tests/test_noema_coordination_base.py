@@ -33,7 +33,7 @@ class TestAdvice(unittest.TestCase):
 class TestNullCoordination(unittest.TestCase):
     def test_advise_returns_noop_advice(self):
         module = NullCoordination()
-        advice = module.advise(make_ctx())
+        advice = asyncio.run(module.advise(make_ctx()))
         self.assertEqual(advice.prompt_block, "")
         self.assertEqual(advice.attribution, {})
 

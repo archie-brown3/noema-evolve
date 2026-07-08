@@ -48,8 +48,10 @@ class SubstrateDatabase:
     def num_programs(self) -> int:
         return len(self._db.programs)
 
-    def add(self, program: Program, iteration: Optional[int] = None) -> str:
-        return self._db.add(program, iteration=iteration)
+    def add(
+        self, program: Program, iteration: Optional[int] = None, target_island: Optional[int] = None
+    ) -> str:
+        return self._db.add(program, iteration=iteration, target_island=target_island)
 
     def get(self, program_id: str) -> Optional[Program]:
         return self._db.get(program_id)

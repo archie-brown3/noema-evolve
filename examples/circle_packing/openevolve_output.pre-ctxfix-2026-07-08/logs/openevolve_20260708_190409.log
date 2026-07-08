@@ -1,0 +1,234 @@
+2026-07-08 19:04:09,838 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_190409.log
+2026-07-08 19:04:09,871 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:04:09,871 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 19:04:09,885 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 19:04:09,885 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 19:04:09,886 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-07-08 19:04:09,886 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-07-08 19:04:09,886 - openevolve.database - INFO - Distributed 20 programs across 4 islands
+2026-07-08 19:04:09,887 - openevolve.database - INFO - Loaded database with 20 programs from examples/circle_packing/openevolve_output/db
+2026-07-08 19:04:09,888 - openevolve.database - INFO - Island Status:
+2026-07-08 19:04:09,888 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.0000, avg=0.0000, diversity=98.92, gen=0
+2026-07-08 19:04:09,888 - openevolve.database - INFO -    Island 1: 5 programs, best=0.4521, avg=0.0904, diversity=83.43, gen=0
+2026-07-08 19:04:09,888 - openevolve.database - INFO -    Island 2: 5 programs, best=0.4664, avg=0.0933, diversity=37.77, gen=0
+2026-07-08 19:04:09,888 - openevolve.database - INFO -    Island 3: 5 programs, best=0.3642, avg=0.0728, diversity=91.27, gen=0
+2026-07-08 19:04:09,888 - openevolve.database - INFO - Initialized program database with 20 programs
+2026-07-08 19:04:09,889 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 19:04:09,889 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 19:04:09,889 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 19:04:09,889 - openevolve.database - INFO - Loaded database metadata with last_iteration=50
+2026-07-08 19:04:09,889 - openevolve.database - INFO - Loaded feature_stats for 2 dimensions
+2026-07-08 19:04:09,892 - openevolve.database - INFO - Reconstructed islands: restored 19 programs to islands
+2026-07-08 19:04:09,892 - openevolve.database - INFO - Loaded database with 20 programs from examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:04:09,893 - openevolve.database - INFO - Island Status:
+2026-07-08 19:04:09,893 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.4664, avg=0.1283, diversity=48.80, gen=10 (best: 78b6f879-09a7-482f-b13b-c03dec147af5)
+2026-07-08 19:04:09,893 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 19:04:09,893 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 19:04:09,893 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 19:04:09,893 - openevolve.controller - INFO - Loading checkpoint from examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:04:09,893 - openevolve.database - INFO - Loaded database metadata with last_iteration=50
+2026-07-08 19:04:09,893 - openevolve.database - INFO - Loaded feature_stats for 2 dimensions
+2026-07-08 19:04:09,895 - openevolve.database - INFO - Reconstructed islands: restored 19 programs to islands
+2026-07-08 19:04:09,895 - openevolve.database - INFO - Loaded database with 20 programs from examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:04:09,896 - openevolve.database - INFO - Island Status:
+2026-07-08 19:04:09,896 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.4664, avg=0.1283, diversity=48.80, gen=10 (best: 78b6f879-09a7-482f-b13b-c03dec147af5)
+2026-07-08 19:04:09,896 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 19:04:09,896 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 19:04:09,896 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 19:04:09,896 - openevolve.controller - INFO - Checkpoint loaded successfully (iteration 50)
+2026-07-08 19:04:09,896 - openevolve.controller - INFO - Resuming from checkpoint at iteration 51
+2026-07-08 19:04:09,896 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 51 with 20 existing programs)
+2026-07-08 19:04:09,897 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 19:04:09,897 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 19:04:09,898 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 19:04:09,898 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 19:04:09,899 - openevolve.database - INFO - Island Status:
+2026-07-08 19:04:09,899 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.4664, avg=0.1283, diversity=48.80, gen=10 (best: 78b6f879-09a7-482f-b13b-c03dec147af5)
+2026-07-08 19:04:09,899 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 19:04:09,899 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 19:04:09,899 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 19:04:09,899 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 51 for 50 iterations (total: 101)
+2026-07-08 19:04:09,905 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 19:04:09,940 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 19:04:09,940 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 19:04:09,940 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 19:04:09,941 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:04:10,278 - openai._base_client - INFO - Retrying request to /chat/completions in 0.489058 seconds
+2026-07-08 19:04:10,783 - openai._base_client - INFO - Retrying request to /chat/completions in 0.780323 seconds
+2026-07-08 19:04:11,574 - openai._base_client - INFO - Retrying request to /chat/completions in 1.730043 seconds
+2026-07-08 19:04:13,313 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:04:18,328 - openai._base_client - INFO - Retrying request to /chat/completions in 0.377500 seconds
+2026-07-08 19:04:18,715 - openai._base_client - INFO - Retrying request to /chat/completions in 0.889472 seconds
+2026-07-08 19:04:19,614 - openai._base_client - INFO - Retrying request to /chat/completions in 1.859871 seconds
+2026-07-08 19:04:21,489 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:04:26,506 - openai._base_client - INFO - Retrying request to /chat/completions in 0.414026 seconds
+2026-07-08 19:04:26,934 - openai._base_client - INFO - Retrying request to /chat/completions in 0.765599 seconds
+2026-07-08 19:04:27,710 - openai._base_client - INFO - Retrying request to /chat/completions in 1.721919 seconds
+2026-07-08 19:04:29,441 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:04:34,455 - openai._base_client - INFO - Retrying request to /chat/completions in 0.459682 seconds
+2026-07-08 19:04:34,925 - openai._base_client - INFO - Retrying request to /chat/completions in 0.969585 seconds
+2026-07-08 19:04:35,904 - openai._base_client - INFO - Retrying request to /chat/completions in 1.909768 seconds
+2026-07-08 19:04:37,825 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:04:37,831 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:04:37,832 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:04:37,838 - openevolve.process_parallel - WARNING - Iteration 51 error: LLM generation failed: Connection error.
+2026-07-08 19:04:37,843 - openai._base_client - INFO - Retrying request to /chat/completions in 0.490603 seconds
+2026-07-08 19:04:38,343 - openai._base_client - INFO - Retrying request to /chat/completions in 0.890742 seconds
+2026-07-08 19:04:39,244 - openai._base_client - INFO - Retrying request to /chat/completions in 1.932874 seconds
+2026-07-08 19:04:41,189 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:04:46,203 - openai._base_client - INFO - Retrying request to /chat/completions in 0.444290 seconds
+2026-07-08 19:04:46,657 - openai._base_client - INFO - Retrying request to /chat/completions in 0.761388 seconds
+2026-07-08 19:04:47,429 - openai._base_client - INFO - Retrying request to /chat/completions in 1.789544 seconds
+2026-07-08 19:04:49,228 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:04:54,243 - openai._base_client - INFO - Retrying request to /chat/completions in 0.389041 seconds
+2026-07-08 19:04:54,642 - openai._base_client - INFO - Retrying request to /chat/completions in 0.835022 seconds
+2026-07-08 19:04:55,487 - openai._base_client - INFO - Retrying request to /chat/completions in 1.839159 seconds
+2026-07-08 19:04:57,337 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:05:02,352 - openai._base_client - INFO - Retrying request to /chat/completions in 0.454689 seconds
+2026-07-08 19:05:02,817 - openai._base_client - INFO - Retrying request to /chat/completions in 0.759283 seconds
+2026-07-08 19:05:03,586 - openai._base_client - INFO - Retrying request to /chat/completions in 1.610884 seconds
+2026-07-08 19:05:05,207 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:05:05,207 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:05:05,209 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:05:05,212 - openevolve.process_parallel - WARNING - Iteration 52 error: LLM generation failed: Connection error.
+2026-07-08 19:05:05,217 - openai._base_client - INFO - Retrying request to /chat/completions in 0.491469 seconds
+2026-07-08 19:05:05,717 - openai._base_client - INFO - Retrying request to /chat/completions in 0.821139 seconds
+2026-07-08 19:05:06,548 - openai._base_client - INFO - Retrying request to /chat/completions in 1.822016 seconds
+2026-07-08 19:05:08,387 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:05:13,403 - openai._base_client - INFO - Retrying request to /chat/completions in 0.405629 seconds
+2026-07-08 19:05:13,818 - openai._base_client - INFO - Retrying request to /chat/completions in 0.797989 seconds
+2026-07-08 19:05:14,625 - openai._base_client - INFO - Retrying request to /chat/completions in 1.622035 seconds
+2026-07-08 19:05:16,258 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:05:21,272 - openai._base_client - INFO - Retrying request to /chat/completions in 0.395394 seconds
+2026-07-08 19:05:21,676 - openai._base_client - INFO - Retrying request to /chat/completions in 0.784464 seconds
+2026-07-08 19:05:22,471 - openai._base_client - INFO - Retrying request to /chat/completions in 1.677611 seconds
+2026-07-08 19:05:24,159 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:05:29,174 - openai._base_client - INFO - Retrying request to /chat/completions in 0.406192 seconds
+2026-07-08 19:05:29,590 - openai._base_client - INFO - Retrying request to /chat/completions in 0.890032 seconds
+2026-07-08 19:05:30,490 - openai._base_client - INFO - Retrying request to /chat/completions in 1.578368 seconds
+2026-07-08 19:05:32,077 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:05:32,078 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:05:32,079 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:05:32,080 - openevolve.process_parallel - WARNING - Iteration 53 error: LLM generation failed: Connection error.
+2026-07-08 19:05:32,088 - openai._base_client - INFO - Retrying request to /chat/completions in 0.417998 seconds
+2026-07-08 19:05:32,516 - openai._base_client - INFO - Retrying request to /chat/completions in 0.860850 seconds
+2026-07-08 19:05:33,386 - openai._base_client - INFO - Retrying request to /chat/completions in 1.648884 seconds
+2026-07-08 19:05:35,045 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:05:40,059 - openai._base_client - INFO - Retrying request to /chat/completions in 0.497785 seconds
+2026-07-08 19:05:40,567 - openai._base_client - INFO - Retrying request to /chat/completions in 0.820915 seconds
+2026-07-08 19:05:41,397 - openai._base_client - INFO - Retrying request to /chat/completions in 1.557830 seconds
+2026-07-08 19:05:42,965 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:05:47,982 - openai._base_client - INFO - Retrying request to /chat/completions in 0.476755 seconds
+2026-07-08 19:05:48,470 - openai._base_client - INFO - Retrying request to /chat/completions in 0.862963 seconds
+2026-07-08 19:05:49,342 - openai._base_client - INFO - Retrying request to /chat/completions in 1.911840 seconds
+2026-07-08 19:05:51,262 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:05:56,277 - openai._base_client - INFO - Retrying request to /chat/completions in 0.407315 seconds
+2026-07-08 19:05:56,695 - openai._base_client - INFO - Retrying request to /chat/completions in 0.903296 seconds
+2026-07-08 19:05:57,609 - openai._base_client - INFO - Retrying request to /chat/completions in 1.898234 seconds
+2026-07-08 19:05:59,517 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:05:59,518 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:05:59,520 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:05:59,521 - openevolve.process_parallel - WARNING - Iteration 54 error: LLM generation failed: Connection error.
+2026-07-08 19:05:59,529 - openai._base_client - INFO - Retrying request to /chat/completions in 0.484048 seconds
+2026-07-08 19:06:00,023 - openai._base_client - INFO - Retrying request to /chat/completions in 0.912430 seconds
+2026-07-08 19:06:00,945 - openai._base_client - INFO - Retrying request to /chat/completions in 1.848254 seconds
+2026-07-08 19:06:02,803 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:06:07,819 - openai._base_client - INFO - Retrying request to /chat/completions in 0.404760 seconds
+2026-07-08 19:06:08,234 - openai._base_client - INFO - Retrying request to /chat/completions in 0.917013 seconds
+2026-07-08 19:06:09,161 - openai._base_client - INFO - Retrying request to /chat/completions in 1.763331 seconds
+2026-07-08 19:06:10,935 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:06:15,952 - openai._base_client - INFO - Retrying request to /chat/completions in 0.453069 seconds
+2026-07-08 19:06:16,414 - openai._base_client - INFO - Retrying request to /chat/completions in 0.887832 seconds
+2026-07-08 19:06:17,311 - openai._base_client - INFO - Retrying request to /chat/completions in 1.820228 seconds
+2026-07-08 19:06:19,141 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:06:24,156 - openai._base_client - INFO - Retrying request to /chat/completions in 0.426190 seconds
+2026-07-08 19:06:24,592 - openai._base_client - INFO - Retrying request to /chat/completions in 0.786807 seconds
+2026-07-08 19:06:25,387 - openai._base_client - INFO - Retrying request to /chat/completions in 1.813815 seconds
+2026-07-08 19:06:27,213 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:06:27,213 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:06:27,214 - openevolve.process_parallel - WARNING - Iteration 55 error: LLM generation failed: Connection error.
+2026-07-08 19:06:27,215 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:06:27,224 - openai._base_client - INFO - Retrying request to /chat/completions in 0.463863 seconds
+2026-07-08 19:06:27,698 - openai._base_client - INFO - Retrying request to /chat/completions in 0.955619 seconds
+2026-07-08 19:06:28,664 - openai._base_client - INFO - Retrying request to /chat/completions in 1.701585 seconds
+2026-07-08 19:06:30,376 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:06:35,391 - openai._base_client - INFO - Retrying request to /chat/completions in 0.423745 seconds
+2026-07-08 19:06:35,824 - openai._base_client - INFO - Retrying request to /chat/completions in 0.918039 seconds
+2026-07-08 19:06:36,841 - openai._base_client - INFO - Retrying request to /chat/completions in 1.514701 seconds
+2026-07-08 19:06:38,366 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:06:43,380 - openai._base_client - INFO - Retrying request to /chat/completions in 0.476968 seconds
+2026-07-08 19:06:43,868 - openai._base_client - INFO - Retrying request to /chat/completions in 0.809555 seconds
+2026-07-08 19:06:44,688 - openai._base_client - INFO - Retrying request to /chat/completions in 1.899980 seconds
+2026-07-08 19:06:46,597 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:06:51,612 - openai._base_client - INFO - Retrying request to /chat/completions in 0.482897 seconds
+2026-07-08 19:06:52,104 - openai._base_client - INFO - Retrying request to /chat/completions in 0.942084 seconds
+2026-07-08 19:06:53,057 - openai._base_client - INFO - Retrying request to /chat/completions in 1.851451 seconds
+2026-07-08 19:06:54,917 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:06:54,917 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:06:54,918 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:06:54,921 - openevolve.process_parallel - WARNING - Iteration 56 error: LLM generation failed: Connection error.
+2026-07-08 19:06:54,927 - openai._base_client - INFO - Retrying request to /chat/completions in 0.453244 seconds
+2026-07-08 19:06:55,390 - openai._base_client - INFO - Retrying request to /chat/completions in 0.991856 seconds
+2026-07-08 19:06:56,392 - openai._base_client - INFO - Retrying request to /chat/completions in 1.584662 seconds
+2026-07-08 19:06:57,986 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:07:03,002 - openai._base_client - INFO - Retrying request to /chat/completions in 0.464967 seconds
+2026-07-08 19:07:03,478 - openai._base_client - INFO - Retrying request to /chat/completions in 0.873131 seconds
+2026-07-08 19:07:04,361 - openai._base_client - INFO - Retrying request to /chat/completions in 1.769830 seconds
+2026-07-08 19:07:06,140 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:07:11,155 - openai._base_client - INFO - Retrying request to /chat/completions in 0.388487 seconds
+2026-07-08 19:07:11,553 - openai._base_client - INFO - Retrying request to /chat/completions in 0.836927 seconds
+2026-07-08 19:07:12,399 - openai._base_client - INFO - Retrying request to /chat/completions in 1.978616 seconds
+2026-07-08 19:07:14,387 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:07:19,399 - openai._base_client - INFO - Retrying request to /chat/completions in 0.431536 seconds
+2026-07-08 19:07:19,840 - openai._base_client - INFO - Retrying request to /chat/completions in 0.884589 seconds
+2026-07-08 19:07:20,734 - openai._base_client - INFO - Retrying request to /chat/completions in 1.710483 seconds
+2026-07-08 19:07:22,454 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:07:22,454 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:07:22,456 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:07:22,464 - openevolve.process_parallel - WARNING - Iteration 57 error: LLM generation failed: Connection error.
+2026-07-08 19:07:22,465 - openai._base_client - INFO - Retrying request to /chat/completions in 0.394262 seconds
+2026-07-08 19:07:22,868 - openai._base_client - INFO - Retrying request to /chat/completions in 0.939012 seconds
+2026-07-08 19:07:23,818 - openai._base_client - INFO - Retrying request to /chat/completions in 1.983724 seconds
+2026-07-08 19:07:25,811 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:07:30,910 - openai._base_client - INFO - Retrying request to /chat/completions in 0.402776 seconds
+2026-07-08 19:07:31,322 - openai._base_client - INFO - Retrying request to /chat/completions in 0.858335 seconds
+2026-07-08 19:07:32,188 - openai._base_client - INFO - Retrying request to /chat/completions in 1.700215 seconds
+2026-07-08 19:07:33,898 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:07:38,913 - openai._base_client - INFO - Retrying request to /chat/completions in 0.464690 seconds
+2026-07-08 19:07:39,387 - openai._base_client - INFO - Retrying request to /chat/completions in 0.876042 seconds
+2026-07-08 19:07:40,272 - openai._base_client - INFO - Retrying request to /chat/completions in 1.816828 seconds
+2026-07-08 19:07:42,175 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:07:47,189 - openai._base_client - INFO - Retrying request to /chat/completions in 0.415368 seconds
+2026-07-08 19:07:47,614 - openai._base_client - INFO - Retrying request to /chat/completions in 0.820471 seconds
+2026-07-08 19:07:48,442 - openai._base_client - INFO - Retrying request to /chat/completions in 1.545172 seconds
+2026-07-08 19:07:50,478 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Connection error.
+2026-07-08 19:07:50,479 - openevolve.process_parallel - ERROR - LLM generation failed: Connection error.
+2026-07-08 19:07:50,480 - openevolve.process_parallel - WARNING - Iteration 58 error: LLM generation failed: Connection error.
+2026-07-08 19:07:50,480 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:07:50,489 - openai._base_client - INFO - Retrying request to /chat/completions in 0.484088 seconds
+2026-07-08 19:07:51,235 - openai._base_client - INFO - Retrying request to /chat/completions in 0.999235 seconds
+2026-07-08 19:07:52,732 - openai._base_client - INFO - Retrying request to /chat/completions in 1.855598 seconds
+2026-07-08 19:07:54,967 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Connection error.. Retrying...
+2026-07-08 19:07:59,982 - openai._base_client - INFO - Retrying request to /chat/completions in 0.412883 seconds
+2026-07-08 19:08:00,410 - openai._base_client - INFO - Retrying request to /chat/completions in 0.948957 seconds
+2026-07-08 19:08:01,369 - openai._base_client - INFO - Retrying request to /chat/completions in 1.622995 seconds
+2026-07-08 19:08:03,002 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Connection error.. Retrying...
+2026-07-08 19:08:08,017 - openai._base_client - INFO - Retrying request to /chat/completions in 0.461982 seconds
+2026-07-08 19:08:08,489 - openai._base_client - INFO - Retrying request to /chat/completions in 0.874408 seconds
+2026-07-08 19:08:09,374 - openai._base_client - INFO - Retrying request to /chat/completions in 1.856083 seconds
+2026-07-08 19:08:11,242 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Connection error.. Retrying...
+2026-07-08 19:09:30,659 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:09:30,768 - openevolve.evaluator - INFO - Evaluated program c8cf4141-a1ff-4a7c-9806-121f13e60e6a in 0.10s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpac8a9ij7.py, line 55)
+2026-07-08 19:09:30,770 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:09:30,872 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 1}
+2026-07-08 19:09:30,873 - openevolve.process_parallel - INFO - Iteration 59: Program c8cf4141-a1ff-4a7c-9806-121f13e60e6a (parent: 00ac4dd4-aae9-4744-abe2-22f384ba4195) completed in 100.29s
+2026-07-08 19:09:30,873 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpac8a9ij7.py, line 55)
+2026-07-08 19:09:30,873 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 59
+2026-07-08 19:09:30,874 - openevolve.database - INFO - Island Status:
+2026-07-08 19:09:30,874 - openevolve.database - INFO -  * Island 0: 11 programs, best=0.4664, avg=0.1166, diversity=48.80, gen=11 (best: 78b6f879-09a7-482f-b13b-c03dec147af5)
+2026-07-08 19:09:30,874 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 19:09:30,874 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 19:09:30,874 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 19:09:30,878 - openevolve.database - INFO - Saved database with 21 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_59
+2026-07-08 19:09:30,878 - openevolve.controller - INFO - Saved best program at checkpoint 59 with metrics: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 19:09:30,878 - openevolve.controller - INFO - Saved checkpoint at iteration 59 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_59

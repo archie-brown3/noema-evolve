@@ -57,6 +57,9 @@ def make_ctx(**overrides) -> GenerationContext:
     return GenerationContext(**defaults)
 
 
+REFLECTION_TEXT = "The ring loop overran the array bound; cap the index at n-1 next time."
+
+
 def make_plan_client(response_text=PLAN_TEXT, fail_with=None):
     """Fake AsyncOpenAI returning a fixed plan (or raising)"""
     calls = []
@@ -76,10 +79,41 @@ def make_plan_client(response_text=PLAN_TEXT, fail_with=None):
     return client
 
 
+def _is_reflection_call(params) -> bool:
+    return any(
+        "# Outcome to Explain" in m.get("content", "") for m in params.get("messages", [])
+    )
+
+
+def make_dual_client(plan_text=PLAN_TEXT, reflection_text=REFLECTION_TEXT, fail_reflection=None):
+    """Fake client returning a distinct response for reflection vs planning calls."""
+    calls = []
+
+    async def create(**params):
+        calls.append(params)
+        if _is_reflection_call(params):
+            if fail_reflection is not None:
+                raise fail_reflection
+            content = reflection_text
+        else:
+            content = plan_text
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+            usage=SimpleNamespace(prompt_tokens=300, completion_tokens=80),
+        )
+
+    client = SimpleNamespace(
+        chat=SimpleNamespace(completions=SimpleNamespace(create=create)), calls=calls
+    )
+    return client
+
+
 class TestPESPlannerModule(unittest.TestCase):
-    def make_module(self, response=PLAN_TEXT, fail_with=None, budget=100_000, **params):
+    def make_module(
+        self, response=PLAN_TEXT, fail_with=None, budget=100_000, client=None, **params
+    ):
         ledger = TokenLedger(total_budget_tokens=budget)
-        client = make_plan_client(response, fail_with=fail_with)
+        client = client or make_plan_client(response, fail_with=fail_with)
         llm = BudgetedLLM(
             model="fake-model",
             ledger=ledger,
@@ -108,6 +142,24 @@ class TestPESPlannerModule(unittest.TestCase):
         self.assertIn("def f():", prompt_text)
         self.assertIn("0.5000", prompt_text)
         self.assertIn("first plan for this lineage", prompt_text)
+
+    def test_domain_context_reaches_planner_system_message_not_user_prompt(self):
+        module, ledger, client = self.make_module(
+            domain_context="Use an explicit constructor, not iterative search."
+        )
+        asyncio.run(module.advise(make_ctx()))
+
+        system_text = client.calls[0]["messages"][0]["content"]
+        user_text = client.calls[0]["messages"][-1]["content"]
+        self.assertIn("Use an explicit constructor, not iterative search.", system_text)
+        self.assertIn("# Problem Domain", system_text)
+        self.assertNotIn("Use an explicit constructor", user_text)
+
+    def test_no_domain_context_leaves_planner_system_message_unchanged(self):
+        module, ledger, client = self.make_module()
+        asyncio.run(module.advise(make_ctx()))
+        system_text = client.calls[0]["messages"][0]["content"]
+        self.assertNotIn("# Problem Domain", system_text)
 
     def test_no_parent_or_no_llm_is_noop(self):
         module, ledger, client = self.make_module()
@@ -201,6 +253,138 @@ class TestPESPlannerModule(unittest.TestCase):
         module = build_coordination_module("pes", params={"max_code_chars": 123})
         self.assertIsInstance(module, PESPlannerModule)
         self.assertEqual(module.max_code_chars, 123)
+
+    # ------------------------------------------------ reflection (Phase 2)
+
+    def test_report_result_makes_no_llm_call(self):
+        # The reflection call happens at on_generation_end, never in
+        # report_result — report_result stays sync/no-LLM by contract.
+        module, _, client = self.make_module(client=make_dual_client())
+        ctx = make_ctx()
+        asyncio.run(module.advise(ctx))  # 1 planning call
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), {"plan": PLAN_TEXT}, False)
+        self.assertEqual(len(client.calls), 1)  # no new call from report_result
+        self.assertEqual(len(module._pending_reflections), 1)  # but it enqueued
+
+    def test_reflection_runs_at_generation_end_on_coordination_account(self):
+        module, ledger, client = self.make_module(client=make_dual_client())
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), advice.attribution, False)
+        spent_before = ledger.spent("coordination")
+        asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+        # A second call happened, it was the reflection, charged to coordination
+        self.assertEqual(len(client.calls), 2)
+        self.assertTrue(_is_reflection_call(client.calls[1]))
+        self.assertGreater(ledger.spent("coordination"), spent_before)
+        self.assertEqual(len(module._pending_reflections), 0)  # queue drained
+
+    def test_reflection_reaches_next_planning_prompt(self):
+        module, _, client = self.make_module(client=make_dual_client())
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        child = make_view(pid="c", fitness=0.7)
+        module.report_result(ctx, child, advice.attribution, False)
+        asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+
+        asyncio.run(module.advise(make_ctx(parent=child)))
+        prompt_text = client.calls[-1]["messages"][-1]["content"]
+        self.assertIn("## Reflection on that outcome", prompt_text)
+        self.assertIn(REFLECTION_TEXT, prompt_text)
+
+    def test_reflection_budget_exhaustion_propagates(self):
+        module, _, _ = self.make_module(budget=1, client=make_dual_client())
+        ctx = make_ctx()
+        asyncio.run(module.advise(ctx))  # first call served, crosses the 1-token cap
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), {"plan": PLAN_TEXT}, False)
+        with self.assertRaises(BudgetExhausted):
+            asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+
+    def test_reflection_llm_failure_degrades_but_keeps_outcome(self):
+        client = make_dual_client(fail_reflection=RuntimeError("boom"))
+        module, _, _ = self.make_module(client=client)
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), advice.attribution, False)
+        asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+        self.assertEqual(module._plans["c"]["reflection"], "")
+        self.assertEqual(module._plans["c"]["outcome"], IMPROVED)  # plan/outcome intact
+
+    def test_reflection_disabled_makes_no_call_and_drops_queue(self):
+        module, _, client = self.make_module(client=make_dual_client(), reflection_enabled=False)
+        ctx = make_ctx()
+        asyncio.run(module.advise(ctx))
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), {"plan": PLAN_TEXT}, False)
+        self.assertEqual(len(module._pending_reflections), 0)  # never enqueued
+        asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+        self.assertEqual(len(client.calls), 1)  # planning call only
+
+    def test_stderr_reaches_reflection_prompt_on_failed(self):
+        module, _, client = self.make_module(client=make_dual_client())
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        failed_child = ProgramView(
+            id="c", code="def f(): pass", fitness=0.0,
+            metrics={"score": 0.0}, metadata={"stderr": "IndexError: boom-42"},
+        )
+        module.report_result(ctx, failed_child, advice.attribution, eval_failed=True)
+        asyncio.run(module.on_generation_end(make_ctx(parent=None)))
+        reflection_prompt = client.calls[1]["messages"][-1]["content"]
+        self.assertIn("IndexError: boom-42", reflection_prompt)
+
+    def test_pending_reflections_survive_state_round_trip(self):
+        module, _, _ = self.make_module(client=make_dual_client())
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        module.report_result(ctx, make_view(pid="c", fitness=0.9), advice.attribution, False)
+        self.assertEqual(len(module._pending_reflections), 1)
+
+        state = json.loads(json.dumps(module.state_dict()))  # must be JSON-serializable
+        module2, _, _ = self.make_module(client=make_dual_client())
+        module2.load_state_dict(state)
+        self.assertEqual(module2._pending_reflections, module._pending_reflections)
+
+    # -------------------------------------------- cross-lineage diversity
+
+    def test_recent_strategies_reach_a_fresh_lineage_prompt(self):
+        module, _, client = self.make_module()
+        # Seed plans from OTHER lineages (a fresh parent shares no ancestry).
+        module._plans["other-1"] = {
+            "plan": "# Plan\n## Strategy\n- Tile the plane with hexagons\n## Action Steps\n1. go",
+            "outcome": FAILED,
+            "parent_fitness": 0.3,
+            "child_fitness": 0.0,
+        }
+        module._plans["other-2"] = {
+            "plan": "# Plan\n## Strategy\n- Stack circles in rows of decreasing size\n## Action\n1. go",
+            "outcome": IMPROVED,
+            "parent_fitness": 0.3,
+            "child_fitness": 0.5,
+        }
+        asyncio.run(module.advise(make_ctx(parent=make_view(pid="fresh"))))
+        prompt_text = client.calls[0]["messages"][-1]["content"]
+        self.assertIn("# Recently Attempted Elsewhere", prompt_text)
+        self.assertIn("Tile the plane with hexagons", prompt_text)
+        self.assertIn("Stack circles in rows of decreasing size", prompt_text)
+        self.assertIn(f"[{FAILED}]", prompt_text)
+
+    def test_recent_strategies_excludes_the_lineages_own_entry(self):
+        # The parent's own last plan lives in prior_block, not "Recently Attempted".
+        module, _, client = self.make_module()
+        module._plans["p"] = {
+            "plan": "# Plan\n## Strategy\n- Only this lineages idea\n## Action\n1. go",
+            "outcome": STALE,
+            "parent_fitness": 0.5,
+            "child_fitness": 0.5,
+        }
+        asyncio.run(module.advise(make_ctx(parent=make_view(pid="p"))))
+        prompt_text = client.calls[0]["messages"][-1]["content"]
+        self.assertNotIn("# Recently Attempted Elsewhere", prompt_text)
+
+    def test_no_recent_block_when_no_plans_yet(self):
+        module, _, client = self.make_module()
+        asyncio.run(module.advise(make_ctx()))
+        self.assertNotIn("# Recently Attempted Elsewhere", client.calls[0]["messages"][-1]["content"])
 
 
 if __name__ == "__main__":

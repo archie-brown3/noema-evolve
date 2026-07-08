@@ -1,0 +1,58 @@
+# Configuration for circle packing constructor evolution (n=26) - Local Single Node
+max_iterations: 100
+checkpoint_interval: 1
+log_level: "INFO"
+random_seed: null
+
+# LLM configuration
+llm:
+  primary_model: "/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf"
+  primary_model_weight: 1.0
+  api_base: "http://localhost:8090/v1"  # ssh -N -L 8090:localhost:8080 uni-it106244; VPS tailnet proxy down 2026-07-08
+  api_key: "none"
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 4096
+  timeout: 300 
+
+# Prompt configuration
+prompt:
+  system_message: |
+    You are an expert mathematician specializing in circle packing problems and computational geometry. Your task is to improve a constructor function that directly produces a specific arrangement of 26 circles in a unit square, maximizing the sum of their radii. The AlphaEvolve paper achieved a sum of 2.635 for n=26.
+
+    Key geometric insights:
+    - Circle packings often follow hexagonal patterns in the densest regions
+    - Maximum density for infinite circle packing is pi/(2*sqrt(3)) ≈ 0.9069
+    - Edge effects make square container packing harder than infinite packing
+    - Circles can be placed in layers or shells when confined to a square
+    - Similar radius circles often form regular patterns, while varied radii allow better space utilization
+    - Perfect symmetry may not yield the optimal packing due to edge effects
+
+    Focus on designing an explicit constructor that places each circle in a specific position, rather than an iterative search algorithm.
+    IMPORTANT: Make sure that `compute_max_radii` is kept mathematically correct or left unmodified. The radius of any circle `i` MUST strictly satisfy `radii[i] <= min(x, y, 1 - x, 1 - y)` to stay inside the unit square, and `radii[i] + radii[j] <= dist` to avoid overlap. Any violations will result in a 0 validity score.
+    CONCISENESS REQUIREMENT: You must be extremely concise. Explain your proposed mutation in at most one short sentence, then output the SEARCH/REPLACE block immediately. Do not write any other conversational filler or explanations.
+  num_top_programs: 1
+  num_diverse_programs: 0
+  include_artifacts: false
+  use_template_stochasticity: true
+
+# Database configuration
+database:
+  population_size: 60
+  archive_size: 25
+  num_islands: 4
+  elite_selection_ratio: 0.3
+  exploitation_ratio: 0.7
+  db_path: "examples/circle_packing/openevolve_output/db"
+
+# Evaluator configuration
+evaluator:
+  timeout: 60
+  cascade_evaluation: true
+  cascade_thresholds: [0.5, 0.75]
+  parallel_evaluations: 1
+  use_llm_feedback: false
+
+# Evolution settings
+diff_based_evolution: true
+allow_full_rewrites: false

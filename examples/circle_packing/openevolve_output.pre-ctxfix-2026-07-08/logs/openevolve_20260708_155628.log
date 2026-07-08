@@ -1,0 +1,363 @@
+2026-07-08 15:56:28,819 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_155628.log
+2026-07-08 15:56:28,842 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:56:28,842 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 15:56:28,856 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 15:56:28,856 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:56:28,857 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-07-08 15:56:28,857 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-07-08 15:56:28,857 - openevolve.database - INFO - Distributed 9 programs across 4 islands
+2026-07-08 15:56:28,857 - openevolve.database - INFO - Loaded database with 9 programs from examples/circle_packing/openevolve_output/db
+2026-07-08 15:56:28,857 - openevolve.database - INFO - Island Status:
+2026-07-08 15:56:28,857 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.3642, avg=0.1214, diversity=172.47, gen=0
+2026-07-08 15:56:28,857 - openevolve.database - INFO -    Island 1: 2 programs, best=0.0000, avg=0.0000, diversity=42.90, gen=0
+2026-07-08 15:56:28,858 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=362.50, gen=0
+2026-07-08 15:56:28,858 - openevolve.database - INFO -    Island 3: 2 programs, best=0.4521, avg=0.2261, diversity=6.80, gen=0
+2026-07-08 15:56:28,858 - openevolve.database - INFO - Initialized program database with 9 programs
+2026-07-08 15:56:28,858 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:56:28,858 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:56:28,858 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 15:56:28,858 - openevolve.database - INFO - Loaded database metadata with last_iteration=20
+2026-07-08 15:56:28,858 - openevolve.database - INFO - Loaded feature_stats for 2 dimensions
+2026-07-08 15:56:28,859 - openevolve.database - INFO - Reconstructed islands: restored 9 programs to islands
+2026-07-08 15:56:28,859 - openevolve.database - INFO - Loaded database with 9 programs from examples/circle_packing/openevolve_output/checkpoints/checkpoint_20
+2026-07-08 15:56:28,860 - openevolve.database - INFO - Island Status:
+2026-07-08 15:56:28,860 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.4521, avg=0.2721, diversity=41.60, gen=2 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:56:28,860 - openevolve.database - INFO -    Island 1: 2 programs, best=0.0000, avg=0.0000, diversity=123.20, gen=2 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:56:28,860 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=111.90, gen=2 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:56:28,860 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:56:28,860 - openevolve.controller - INFO - Loading checkpoint from examples/circle_packing/openevolve_output/checkpoints/checkpoint_20
+2026-07-08 15:56:28,860 - openevolve.database - INFO - Loaded database metadata with last_iteration=20
+2026-07-08 15:56:28,860 - openevolve.database - INFO - Loaded feature_stats for 2 dimensions
+2026-07-08 15:56:28,861 - openevolve.database - INFO - Reconstructed islands: restored 9 programs to islands
+2026-07-08 15:56:28,861 - openevolve.database - INFO - Loaded database with 9 programs from examples/circle_packing/openevolve_output/checkpoints/checkpoint_20
+2026-07-08 15:56:28,861 - openevolve.database - INFO - Island Status:
+2026-07-08 15:56:28,861 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.4521, avg=0.2721, diversity=41.60, gen=2 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:56:28,861 - openevolve.database - INFO -    Island 1: 2 programs, best=0.0000, avg=0.0000, diversity=123.20, gen=2 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:56:28,861 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=111.90, gen=2 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:56:28,861 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:56:28,861 - openevolve.controller - INFO - Checkpoint loaded successfully (iteration 20)
+2026-07-08 15:56:28,861 - openevolve.controller - INFO - Resuming from checkpoint at iteration 21
+2026-07-08 15:56:28,861 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 21 with 9 existing programs)
+2026-07-08 15:56:28,862 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 15:56:28,862 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 15:56:28,863 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 15:56:28,863 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 15:56:28,863 - openevolve.database - INFO - Island Status:
+2026-07-08 15:56:28,863 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.4521, avg=0.2721, diversity=41.60, gen=2 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:56:28,863 - openevolve.database - INFO -    Island 1: 2 programs, best=0.0000, avg=0.0000, diversity=123.20, gen=2 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:56:28,863 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=111.90, gen=2 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:56:28,863 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:56:28,863 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 21 for 30 iterations (total: 51)
+2026-07-08 15:56:28,867 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 15:56:28,898 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:56:28,898 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:56:28,898 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:56:28,899 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:57:16,059 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:57:16,148 - openevolve.evaluator - INFO - Evaluated program 764aea3c-c6da-48c9-9550-1d2a79493ad0 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmptx71ar0n.py, line 52)
+2026-07-08 15:57:16,149 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:57:16,153 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 4, 'diversity': 2}
+2026-07-08 15:57:16,154 - openevolve.process_parallel - INFO - Iteration 21: Program 764aea3c-c6da-48c9-9550-1d2a79493ad0 (parent: c260358c-a83b-40eb-8e1c-8bd365ff6af0) completed in 47.25s
+2026-07-08 15:57:16,154 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmptx71ar0n.py, line 52)
+2026-07-08 15:57:16,154 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 21
+2026-07-08 15:57:16,155 - openevolve.database - INFO - Island Status:
+2026-07-08 15:57:16,155 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.4521, avg=0.2041, diversity=68.13, gen=3 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:57:16,155 - openevolve.database - INFO -    Island 1: 2 programs, best=0.0000, avg=0.0000, diversity=123.20, gen=2 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:57:16,155 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=111.90, gen=2 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:57:16,155 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:57:16,157 - openevolve.database - INFO - Saved database with 10 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_21
+2026-07-08 15:57:16,158 - openevolve.controller - INFO - Saved best program at checkpoint 21 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 15:57:16,158 - openevolve.controller - INFO - Saved checkpoint at iteration 21 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_21
+2026-07-08 15:58:28,967 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:58:29,089 - openevolve.evaluator - INFO - Evaluated program 05cc7797-ea7f-492d-aad0-7c3fd15b637a in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: compute_max_radii() got an unexpected keyword argument 'max_iter'
+2026-07-08 15:58:29,091 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:58:29,092 - openai._base_client - INFO - Retrying request to /chat/completions in 0.412685 seconds
+2026-07-08 15:58:29,094 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 3}
+2026-07-08 15:58:29,094 - openevolve.process_parallel - INFO - Iteration 22: Program 05cc7797-ea7f-492d-aad0-7c3fd15b637a (parent: 52c785d9-03b3-4b00-841f-19b7d361c7ff) completed in 72.94s
+2026-07-08 15:58:29,094 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: compute_max_radii() got an unexpected keyword argument 'max_iter'
+2026-07-08 15:58:29,094 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 22
+2026-07-08 15:58:29,095 - openevolve.database - INFO - Island Status:
+2026-07-08 15:58:29,095 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.4521, avg=0.2041, diversity=68.13, gen=3 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:58:29,095 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:58:29,095 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=111.90, gen=2 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:58:29,095 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:58:29,098 - openevolve.database - INFO - Saved database with 11 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_22
+2026-07-08 15:58:29,098 - openevolve.controller - INFO - Saved best program at checkpoint 22 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 15:58:29,098 - openevolve.controller - INFO - Saved checkpoint at iteration 22 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_22
+2026-07-08 15:59:33,176 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 15:59:33,323 - openevolve.evaluator - INFO - Evaluated program e8ba0d11-74df-4f7c-80e5-be4b038b0376 in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 15:59:33,325 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:59:33,325 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 3}
+2026-07-08 15:59:33,326 - openevolve.process_parallel - INFO - Iteration 23: Program e8ba0d11-74df-4f7c-80e5-be4b038b0376 (parent: 4d0f58e7-b010-4752-8593-f7a8d4a62c89) completed in 64.23s
+2026-07-08 15:59:33,326 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 15:59:33,326 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 23
+2026-07-08 15:59:33,327 - openevolve.database - INFO - Island Status:
+2026-07-08 15:59:33,327 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.4521, avg=0.2041, diversity=68.13, gen=3 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 15:59:33,327 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 15:59:33,327 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 15:59:33,327 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=339.70, gen=2 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 15:59:33,330 - openevolve.database - INFO - Saved database with 12 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_23
+2026-07-08 15:59:33,331 - openevolve.controller - INFO - Saved best program at checkpoint 23 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 15:59:33,331 - openevolve.controller - INFO - Saved checkpoint at iteration 23 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_23
+2026-07-08 16:00:21,615 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:00:21,732 - openevolve.evaluator - INFO - Evaluated program 2670cff2-2e6e-4643-9896-f6f5607ad051 in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 16:00:21,734 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:00:21,744 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 2}
+2026-07-08 16:00:21,744 - openevolve.process_parallel - INFO - Iteration 24: Program 2670cff2-2e6e-4643-9896-f6f5607ad051 (parent: 13522977-f592-46c2-928f-e03780e9e866) completed in 48.41s
+2026-07-08 16:00:21,744 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 16:00:21,744 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 24
+2026-07-08 16:00:21,746 - openevolve.database - INFO - Island Status:
+2026-07-08 16:00:21,746 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.4521, avg=0.2041, diversity=68.13, gen=3 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:00:21,746 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:00:21,746 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:00:21,746 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:00:21,748 - openevolve.database - INFO - Saved database with 13 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_24
+2026-07-08 16:00:21,749 - openevolve.controller - INFO - Saved best program at checkpoint 24 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:00:21,749 - openevolve.controller - INFO - Saved checkpoint at iteration 24 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_24
+2026-07-08 16:01:18,642 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:01:18,760 - openevolve.evaluator - INFO - Evaluated program 2cdf3484-51ca-48ff-869d-18fce2642625 in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpiqze3aac.py, line 52)
+2026-07-08 16:01:18,761 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:01:18,770 - openevolve.process_parallel - INFO - Iteration 25: Program 2cdf3484-51ca-48ff-869d-18fce2642625 (parent: 764aea3c-c6da-48c9-9550-1d2a79493ad0) completed in 57.03s
+2026-07-08 16:01:18,770 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpiqze3aac.py, line 52)
+2026-07-08 16:01:18,770 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 25
+2026-07-08 16:01:18,771 - openevolve.database - INFO - Island Status:
+2026-07-08 16:01:18,771 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.4521, avg=0.1633, diversity=69.95, gen=4 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:01:18,771 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:01:18,771 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:01:18,771 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:01:18,775 - openevolve.database - INFO - Saved database with 14 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_25
+2026-07-08 16:01:18,775 - openevolve.controller - INFO - Saved best program at checkpoint 25 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:01:18,775 - openevolve.controller - INFO - Saved checkpoint at iteration 25 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_25
+2026-07-08 16:01:19,361 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:01:19,361 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:01:24,860 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:01:24,861 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:01:29,919 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:01:29,920 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:01:34,976 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:01:34,976 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:01:34,977 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:01:34,978 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:01:34,983 - openevolve.process_parallel - WARNING - Iteration 26 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:01:54,480 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:01:54,482 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:01:54,490 - openevolve.process_parallel - WARNING - Iteration 27 error: No valid diffs found in response
+2026-07-08 16:02:22,435 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:02:22,437 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:02:22,437 - openevolve.process_parallel - WARNING - Iteration 28 error: No valid diffs found in response
+2026-07-08 16:03:07,184 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:03:07,276 - openevolve.evaluator - INFO - Evaluated program dee10438-42f5-48a9-b07e-44cc6c316dac in 0.09s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 16:03:07,277 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:03:07,282 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 4, 'diversity': 1}
+2026-07-08 16:03:07,282 - openevolve.process_parallel - INFO - Iteration 29: Program dee10438-42f5-48a9-b07e-44cc6c316dac (parent: 3c63510e-5468-4558-8974-e829abd9f45e) completed in 44.84s
+2026-07-08 16:03:07,282 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 16:03:07,283 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 29
+2026-07-08 16:03:07,284 - openevolve.database - INFO - Island Status:
+2026-07-08 16:03:07,284 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.4521, avg=0.1361, diversity=69.95, gen=5 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:03:07,284 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:03:07,284 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:03:07,284 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:03:07,288 - openevolve.database - INFO - Saved database with 15 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_29
+2026-07-08 16:03:07,288 - openevolve.controller - INFO - Saved best program at checkpoint 29 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:03:07,288 - openevolve.controller - INFO - Saved checkpoint at iteration 29 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_29
+2026-07-08 16:03:07,901 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:07,901 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:13,473 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:13,474 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:18,550 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:18,551 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:23,608 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:23,608 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:03:23,609 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:03:23,610 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:03:23,618 - openevolve.process_parallel - WARNING - Iteration 30 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:03:34,422 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:03:34,424 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:03:34,428 - openevolve.process_parallel - WARNING - Iteration 31 error: No valid diffs found in response
+2026-07-08 16:03:35,059 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:35,060 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:40,620 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:40,620 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:45,690 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:45,691 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:03:50,747 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:03:50,747 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:03:50,748 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:03:50,748 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:03:50,749 - openevolve.process_parallel - WARNING - Iteration 32 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:04:42,620 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:04:42,739 - openevolve.evaluator - INFO - Evaluated program b4f59582-063c-4c15-9fd0-d4760a32ada7 in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpxy_d7k6e.py, line 52)
+2026-07-08 16:04:42,740 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:04:42,742 - openevolve.process_parallel - INFO - Iteration 33: Program b4f59582-063c-4c15-9fd0-d4760a32ada7 (parent: 2cdf3484-51ca-48ff-869d-18fce2642625) completed in 51.99s
+2026-07-08 16:04:42,742 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpxy_d7k6e.py, line 52)
+2026-07-08 16:04:42,742 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 33
+2026-07-08 16:04:42,743 - openevolve.database - INFO - Island Status:
+2026-07-08 16:04:42,743 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.4521, avg=0.1166, diversity=58.23, gen=6 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:04:42,743 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:04:42,743 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:04:42,743 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:04:42,746 - openevolve.database - INFO - Saved database with 16 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_33
+2026-07-08 16:04:42,747 - openevolve.controller - INFO - Saved best program at checkpoint 33 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:04:42,747 - openevolve.controller - INFO - Saved checkpoint at iteration 33 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_33
+2026-07-08 16:04:43,347 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:04:43,348 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:04:48,405 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:04:48,406 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:04:53,461 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:04:53,462 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:04:58,517 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:04:58,518 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:04:58,518 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:04:58,519 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:04:58,520 - openevolve.process_parallel - WARNING - Iteration 34 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:05:14,774 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:05:14,776 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:05:14,779 - openevolve.process_parallel - WARNING - Iteration 35 error: No valid diffs found in response
+2026-07-08 16:05:15,398 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:05:15,399 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:05:20,462 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:05:20,463 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:05:25,520 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:05:25,521 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:05:30,574 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:05:30,574 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}
+2026-07-08 16:05:30,574 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}
+2026-07-08 16:05:30,575 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:05:30,584 - openevolve.process_parallel - WARNING - Iteration 36 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8337 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8337, 'n_ctx': 8192}}
+2026-07-08 16:06:14,063 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:06:14,169 - openevolve.evaluator - INFO - Evaluated program 2c0d3fed-df64-459b-a752-8e39cbc959d2 in 0.10s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpj3nu2pmq.py, line 52)
+2026-07-08 16:06:14,171 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:06:14,173 - openevolve.process_parallel - INFO - Iteration 37: Program 2c0d3fed-df64-459b-a752-8e39cbc959d2 (parent: c260358c-a83b-40eb-8e1c-8bd365ff6af0) completed in 43.59s
+2026-07-08 16:06:14,173 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpj3nu2pmq.py, line 52)
+2026-07-08 16:06:14,173 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 37
+2026-07-08 16:06:14,174 - openevolve.database - INFO - Island Status:
+2026-07-08 16:06:14,174 - openevolve.database - INFO -  * Island 0: 8 programs, best=0.4521, avg=0.1020, diversity=71.23, gen=7 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:06:14,174 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:06:14,174 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:06:14,174 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:06:14,178 - openevolve.database - INFO - Saved database with 17 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_37
+2026-07-08 16:06:14,178 - openevolve.controller - INFO - Saved best program at checkpoint 37 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:06:14,178 - openevolve.controller - INFO - Saved checkpoint at iteration 37 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_37
+2026-07-08 16:06:14,780 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:06:14,780 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:06:20,411 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:06:20,412 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:06:25,532 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:06:25,532 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:06:30,596 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:06:30,596 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:06:30,597 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:06:30,597 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:06:30,599 - openevolve.process_parallel - WARNING - Iteration 38 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:06:41,609 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:06:41,610 - openevolve.process_parallel - WARNING - Iteration 39 error: No valid diffs found in response
+2026-07-08 16:06:41,610 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:07:03,811 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:07:03,813 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:07:03,814 - openevolve.process_parallel - WARNING - Iteration 40 error: No valid diffs found in response
+2026-07-08 16:07:54,312 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:07:54,414 - openevolve.evaluator - INFO - Evaluated program 00ac4dd4-aae9-4744-abe2-22f384ba4195 in 0.10s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp1yw1wt4a.py, line 52)
+2026-07-08 16:07:54,415 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:07:54,421 - openevolve.process_parallel - INFO - Iteration 41: Program 00ac4dd4-aae9-4744-abe2-22f384ba4195 (parent: c260358c-a83b-40eb-8e1c-8bd365ff6af0) completed in 50.60s
+2026-07-08 16:07:54,421 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp1yw1wt4a.py, line 52)
+2026-07-08 16:07:54,421 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 41
+2026-07-08 16:07:54,422 - openevolve.database - INFO - Island Status:
+2026-07-08 16:07:54,422 - openevolve.database - INFO -  * Island 0: 9 programs, best=0.4521, avg=0.0907, diversity=48.80, gen=8 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:07:54,422 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:07:54,422 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:07:54,422 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:07:54,426 - openevolve.database - INFO - Saved database with 18 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_41
+2026-07-08 16:07:54,426 - openevolve.controller - INFO - Saved best program at checkpoint 41 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:07:54,426 - openevolve.controller - INFO - Saved checkpoint at iteration 41 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_41
+2026-07-08 16:07:55,012 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:07:55,012 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:08:00,084 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:08:00,085 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:08:05,138 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:08:05,139 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:08:10,287 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:08:10,288 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:08:10,288 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:08:10,289 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:08:10,294 - openevolve.process_parallel - WARNING - Iteration 42 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8498 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8498, 'n_ctx': 8192}}
+2026-07-08 16:08:26,773 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:08:26,775 - openevolve.process_parallel - WARNING - Iteration 43 error: No valid diffs found in response
+2026-07-08 16:08:26,776 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:08:55,000 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:08:55,002 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:08:55,008 - openevolve.process_parallel - WARNING - Iteration 44 error: No valid diffs found in response
+2026-07-08 16:09:38,761 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:09:38,873 - openevolve.evaluator - INFO - Evaluated program f4eec508-a179-4de7-88e1-7ad1c4e805b1 in 0.11s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpm717pxo2.py, line 58)
+2026-07-08 16:09:38,874 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:09:38,881 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 2}
+2026-07-08 16:09:38,881 - openevolve.process_parallel - INFO - Iteration 45: Program f4eec508-a179-4de7-88e1-7ad1c4e805b1 (parent: 00ac4dd4-aae9-4744-abe2-22f384ba4195) completed in 43.87s
+2026-07-08 16:09:38,881 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpm717pxo2.py, line 58)
+2026-07-08 16:09:38,881 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 45
+2026-07-08 16:09:38,883 - openevolve.database - INFO - Island Status:
+2026-07-08 16:09:38,883 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.4521, avg=0.0816, diversity=48.80, gen=9 (best: 3c63510e-5468-4558-8974-e829abd9f45e)
+2026-07-08 16:09:38,883 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:09:38,883 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:09:38,883 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:09:38,887 - openevolve.database - INFO - Saved database with 19 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_45
+2026-07-08 16:09:38,887 - openevolve.controller - INFO - Saved best program at checkpoint 45 with metrics: validity=1.0000, sum_radii=1.1913, target_ratio=0.4521, combined_score=0.4521
+2026-07-08 16:09:38,887 - openevolve.controller - INFO - Saved checkpoint at iteration 45 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_45
+2026-07-08 16:09:39,580 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:09:39,580 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:09:45,017 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:09:45,017 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:09:50,072 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:09:50,073 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:09:55,129 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:09:55,130 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:09:55,130 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:09:55,131 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:09:55,136 - openevolve.process_parallel - WARNING - Iteration 46 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8380 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8380, 'n_ctx': 8192}}
+2026-07-08 16:10:10,710 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:10:10,711 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:10:10,715 - openevolve.process_parallel - WARNING - Iteration 47 error: No valid diffs found in response
+2026-07-08 16:10:11,426 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:10:11,427 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:10:16,956 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:10:16,956 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:10:22,076 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:10:22,076 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:10:27,136 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:10:27,137 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:10:27,137 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:10:27,138 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:10:27,142 - openevolve.process_parallel - WARNING - Iteration 48 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8340 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8340, 'n_ctx': 8192}}
+2026-07-08 16:11:27,612 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 16:11:27,733 - openevolve.evaluator - INFO - Evaluated program 78b6f879-09a7-482f-b13b-c03dec147af5 in 0.12s: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 16:11:27,734 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 16:11:27,738 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 4, 'diversity': 1} (fitness: 0.000 -> 0.466)
+2026-07-08 16:11:27,738 - openevolve.database - INFO - New best program 78b6f879-09a7-482f-b13b-c03dec147af5 replaces 3c63510e-5468-4558-8974-e829abd9f45e (combined_score: 0.4521 → 0.4664, +0.0143)
+2026-07-08 16:11:27,738 - openevolve.process_parallel - INFO - Iteration 49: Program 78b6f879-09a7-482f-b13b-c03dec147af5 (parent: dee10438-42f5-48a9-b07e-44cc6c316dac) completed in 60.60s
+2026-07-08 16:11:27,738 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 16:11:27,738 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 49: 78b6f879-09a7-482f-b13b-c03dec147af5
+2026-07-08 16:11:27,738 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 49
+2026-07-08 16:11:27,740 - openevolve.database - INFO - Island Status:
+2026-07-08 16:11:27,740 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.4664, avg=0.1283, diversity=48.80, gen=10 (best: 78b6f879-09a7-482f-b13b-c03dec147af5)
+2026-07-08 16:11:27,740 - openevolve.database - INFO -    Island 1: 3 programs, best=0.0000, avg=0.0000, diversity=108.60, gen=3 (best: dd343bd2-6371-484b-9ed3-a72f7e5f0366)
+2026-07-08 16:11:27,740 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=76.00, gen=3 (best: 4f801bbc-f023-42d6-9ca3-e67777159219)
+2026-07-08 16:11:27,740 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=226.47, gen=3 (best: 13522977-f592-46c2-928f-e03780e9e866)
+2026-07-08 16:11:27,744 - openevolve.database - INFO - Saved database with 20 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_49
+2026-07-08 16:11:27,744 - openevolve.controller - INFO - Saved best program at checkpoint 49 with metrics: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 16:11:27,744 - openevolve.controller - INFO - Saved checkpoint at iteration 49 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_49
+2026-07-08 16:11:28,372 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:11:28,373 - openevolve.llm.openai - WARNING - Error on attempt 1/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:11:33,858 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:11:33,859 - openevolve.llm.openai - WARNING - Error on attempt 2/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:11:38,914 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:11:38,915 - openevolve.llm.openai - WARNING - Error on attempt 3/4: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}. Retrying...
+2026-07-08 16:11:43,972 - httpx - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-07-08 16:11:43,972 - openevolve.llm.openai - ERROR - All 4 attempts failed with error: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:11:43,973 - openevolve.process_parallel - ERROR - LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:11:43,976 - openevolve.process_parallel - WARNING - Iteration 50 error: LLM generation failed: Error code: 400 - {'error': {'code': 400, 'message': 'request (8348 tokens) exceeds the available context size (8192 tokens), try increasing it', 'type': 'exceed_context_size_error', 'n_prompt_tokens': 8348, 'n_ctx': 8192}}
+2026-07-08 16:11:43,976 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-07-08 16:11:43,980 - openevolve.database - INFO - Saved database with 20 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 16:11:43,980 - openevolve.controller - INFO - Saved best program at checkpoint 50 with metrics: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 16:11:43,980 - openevolve.controller - INFO - Saved checkpoint at iteration 50 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 16:11:43,987 - openevolve.process_parallel - INFO - Stopped process pool
+2026-07-08 16:11:43,987 - openevolve.controller - INFO - Using tracked best program: 78b6f879-09a7-482f-b13b-c03dec147af5
+2026-07-08 16:11:43,987 - openevolve.controller - INFO - Evolution complete. Best program has metrics: validity=1.0000, sum_radii=1.2291, target_ratio=0.4664, combined_score=0.4664
+2026-07-08 16:11:43,987 - openevolve.controller - INFO - Saved best program to examples/circle_packing/openevolve_output/best/best_program.py with program info to examples/circle_packing/openevolve_output/best/best_program_info.json

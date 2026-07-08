@@ -1,0 +1,28 @@
+2026-07-08 15:26:20,245 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_152620.log
+2026-07-08 15:26:20,249 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-07-08 15:26:20,272 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 15:26:20,272 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 15:26:20,284 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 15:26:20,285 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:26:20,285 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-07-08 15:26:20,285 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:26:20,285 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:26:20,285 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 15:26:20,285 - openevolve.controller - INFO - Adding initial program to database
+2026-07-08 15:26:20,361 - openevolve.evaluator - INFO - Evaluated program 0aca4c99-0119-4f4c-b9b4-97ac2a95a4a2 in 0.08s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 15:26:20,361 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-08 15:26:20,362 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 15:26:20,362 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 15:26:20,363 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 15:26:20,363 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 15:26:20,363 - openevolve.database - INFO - Island Status:
+2026-07-08 15:26:20,363 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0 (best: 0aca4c99-0119-4f4c-b9b4-97ac2a95a4a2)
+2026-07-08 15:26:20,363 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:26:20,363 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:26:20,363 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 15:26:20,363 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 20 iterations (total: 21)
+2026-07-08 15:26:20,366 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 15:26:20,394 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 15:26:20,395 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 15:26:20,395 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 15:26:20,396 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf

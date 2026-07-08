@@ -70,7 +70,7 @@ class CoordinationModule(ABC):
         self.rng = rng or random.Random()
 
     @abstractmethod
-    def advise(self, ctx: GenerationContext) -> Advice:
+    async def advise(self, ctx: GenerationContext) -> Advice:
         """Called once per mutation, before the mutation LLM call"""
 
     @abstractmethod
@@ -111,7 +111,7 @@ class CoordinationModule(ABC):
 class NullCoordination(CoordinationModule):
     """The coordination-OFF arm: injects nothing, learns nothing"""
 
-    def advise(self, ctx: GenerationContext) -> Advice:
+    async def advise(self, ctx: GenerationContext) -> Advice:
         return Advice()
 
     def report_result(self, ctx, child, attribution, eval_failed) -> None:

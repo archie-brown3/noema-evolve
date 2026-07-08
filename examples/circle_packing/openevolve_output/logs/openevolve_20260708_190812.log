@@ -1,0 +1,771 @@
+2026-07-08 19:08:12,247 - openevolve.controller - INFO - Logging to examples/circle_packing/openevolve_output/logs/openevolve_20260708_190812.log
+2026-07-08 19:08:12,279 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:08:12,279 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf (weight: 1.00)
+2026-07-08 19:08:12,292 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-07-08 19:08:12,292 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 19:08:12,292 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-07-08 19:08:12,293 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 19:08:12,293 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 19:08:12,293 - openevolve.controller - INFO - Initialized OpenEvolve with examples/circle_packing/initial_program.py
+2026-07-08 19:08:12,293 - openevolve.controller - INFO - Adding initial program to database
+2026-07-08 19:08:12,409 - openevolve.evaluator - INFO - Evaluated program 70f5acb8-634f-4fda-80f7-379d66d25c86 in 0.12s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 19:08:12,409 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-08 19:08:12,410 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-07-08 19:08:12,411 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-07-08 19:08:12,411 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-07-08 19:08:12,411 - openevolve.controller - INFO - Using island-based evolution with 4 islands
+2026-07-08 19:08:12,411 - openevolve.database - INFO - Island Status:
+2026-07-08 19:08:12,411 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.3642, avg=0.3642, diversity=0.00, gen=0 (best: 70f5acb8-634f-4fda-80f7-379d66d25c86)
+2026-07-08 19:08:12,411 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:12,411 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:12,411 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:12,411 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 50 iterations (total: 51)
+2026-07-08 19:08:12,415 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-07-08 19:08:12,444 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-07-08 19:08:12,445 - openevolve.evaluator - INFO - Successfully loaded evaluation function from examples/circle_packing/evaluator.py
+2026-07-08 19:08:12,445 - openevolve.evaluator - INFO - Initialized evaluator with examples/circle_packing/evaluator.py
+2026-07-08 19:08:12,446 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:08:44,487 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:08:44,612 - openevolve.evaluator - INFO - Evaluated program 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc in 0.11s: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:08:44,613 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:08:44,621 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 5}
+2026-07-08 19:08:44,621 - openevolve.database - INFO - New best program 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc replaces 70f5acb8-634f-4fda-80f7-379d66d25c86 (combined_score: 0.3642 → 0.4733, +0.1090)
+2026-07-08 19:08:44,623 - openevolve.process_parallel - INFO - Iteration 1: Program 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 32.17s
+2026-07-08 19:08:44,623 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:08:44,623 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 1: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc
+2026-07-08 19:08:44,623 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 1
+2026-07-08 19:08:44,623 - openevolve.database - INFO - Island Status:
+2026-07-08 19:08:44,623 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.4733, avg=0.4187, diversity=71.80, gen=1 (best: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc)
+2026-07-08 19:08:44,623 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:44,623 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:44,623 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:08:44,624 - openevolve.database - INFO - Saved database with 2 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_1
+2026-07-08 19:08:44,624 - openevolve.controller - INFO - Saved best program at checkpoint 1 with metrics: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:08:44,624 - openevolve.controller - INFO - Saved checkpoint at iteration 1 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_1
+2026-07-08 19:10:01,213 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:10:01,308 - openevolve.evaluator - INFO - Evaluated program 86f33a48-e380-4df1-8da7-d888a9f3c049 in 0.09s: validity=1.0000, sum_radii=0.8446, target_ratio=0.3205, combined_score=0.3205
+2026-07-08 19:10:01,309 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:10:01,313 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 9}
+2026-07-08 19:10:01,314 - openevolve.process_parallel - INFO - Iteration 2: Program 86f33a48-e380-4df1-8da7-d888a9f3c049 (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 76.70s
+2026-07-08 19:10:01,314 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8446, target_ratio=0.3205, combined_score=0.3205
+2026-07-08 19:10:01,314 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 2
+2026-07-08 19:10:01,314 - openevolve.database - INFO - Island Status:
+2026-07-08 19:10:01,314 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.4733, avg=0.4187, diversity=71.80, gen=1 (best: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc)
+2026-07-08 19:10:01,314 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3205, avg=0.3205, diversity=0.00, gen=1 (best: 86f33a48-e380-4df1-8da7-d888a9f3c049)
+2026-07-08 19:10:01,314 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:10:01,314 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:10:01,315 - openevolve.database - INFO - Saved database with 3 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_2
+2026-07-08 19:10:01,315 - openevolve.controller - INFO - Saved best program at checkpoint 2 with metrics: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:10:01,315 - openevolve.controller - INFO - Saved checkpoint at iteration 2 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_2
+2026-07-08 19:10:31,421 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:10:31,497 - openevolve.evaluator - INFO - Evaluated program 54d50743-dca4-423b-9a00-c73352e77207 in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:10:31,498 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:10:31,499 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 8, 'diversity': 3}
+2026-07-08 19:10:31,499 - openevolve.process_parallel - INFO - Iteration 3: Program 54d50743-dca4-423b-9a00-c73352e77207 (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 30.19s
+2026-07-08 19:10:31,499 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:10:31,499 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 3
+2026-07-08 19:10:31,499 - openevolve.database - INFO - Island Status:
+2026-07-08 19:10:31,499 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.4733, avg=0.4187, diversity=71.80, gen=1 (best: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc)
+2026-07-08 19:10:31,499 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3205, avg=0.3205, diversity=0.00, gen=1 (best: 86f33a48-e380-4df1-8da7-d888a9f3c049)
+2026-07-08 19:10:31,499 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:10:31,499 - openevolve.database - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-08 19:10:31,500 - openevolve.database - INFO - Saved database with 4 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_3
+2026-07-08 19:10:31,500 - openevolve.controller - INFO - Saved best program at checkpoint 3 with metrics: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:10:31,500 - openevolve.controller - INFO - Saved checkpoint at iteration 3 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_3
+2026-07-08 19:11:01,531 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:11:01,604 - openevolve.evaluator - INFO - Evaluated program e372812d-ea41-4589-bc6b-8d66957e8115 in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpi0xb2dbd.py, line 25)
+2026-07-08 19:11:01,605 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:11:01,611 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 3, 'diversity': 0}
+2026-07-08 19:11:01,611 - openevolve.process_parallel - INFO - Iteration 4: Program e372812d-ea41-4589-bc6b-8d66957e8115 (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 30.11s
+2026-07-08 19:11:01,611 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpi0xb2dbd.py, line 25)
+2026-07-08 19:11:01,611 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 4
+2026-07-08 19:11:01,611 - openevolve.database - INFO - Island Status:
+2026-07-08 19:11:01,611 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.4733, avg=0.4187, diversity=71.80, gen=1 (best: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc)
+2026-07-08 19:11:01,611 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3205, avg=0.3205, diversity=0.00, gen=1 (best: 86f33a48-e380-4df1-8da7-d888a9f3c049)
+2026-07-08 19:11:01,611 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:11:01,611 - openevolve.database - INFO -    Island 3: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:11:01,612 - openevolve.database - INFO - Saved database with 5 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_4
+2026-07-08 19:11:01,612 - openevolve.controller - INFO - Saved best program at checkpoint 4 with metrics: validity=1.0000, sum_radii=1.2470, target_ratio=0.4733, combined_score=0.4733
+2026-07-08 19:11:01,613 - openevolve.controller - INFO - Saved checkpoint at iteration 4 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_4
+2026-07-08 19:11:39,750 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:11:39,903 - openevolve.evaluator - INFO - Evaluated program 91b36bde-b400-4c4c-85ca-67bb36dbd54c in 0.15s: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:11:39,903 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:11:39,908 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 1}
+2026-07-08 19:11:39,908 - openevolve.database - INFO - New best program 91b36bde-b400-4c4c-85ca-67bb36dbd54c replaces 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc (combined_score: 0.4733 → 0.5246, +0.0514)
+2026-07-08 19:11:39,909 - openevolve.process_parallel - INFO - Iteration 5: Program 91b36bde-b400-4c4c-85ca-67bb36dbd54c (parent: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc) completed in 38.30s
+2026-07-08 19:11:39,909 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:11:39,909 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 5: 91b36bde-b400-4c4c-85ca-67bb36dbd54c
+2026-07-08 19:11:39,909 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 5
+2026-07-08 19:11:39,909 - openevolve.database - INFO - Island Status:
+2026-07-08 19:11:39,909 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.5246, avg=0.4540, diversity=48.27, gen=2 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:11:39,909 - openevolve.database - INFO -    Island 1: 1 programs, best=0.3205, avg=0.3205, diversity=0.00, gen=1 (best: 86f33a48-e380-4df1-8da7-d888a9f3c049)
+2026-07-08 19:11:39,909 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:11:39,909 - openevolve.database - INFO -    Island 3: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:11:39,910 - openevolve.database - INFO - Saved database with 6 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_5
+2026-07-08 19:11:39,910 - openevolve.controller - INFO - Saved best program at checkpoint 5 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:11:39,910 - openevolve.controller - INFO - Saved checkpoint at iteration 5 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_5
+2026-07-08 19:12:07,628 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:12:07,730 - openevolve.evaluator - INFO - Evaluated program d013bfd3-01fc-4c3d-a68f-9ca411743465 in 0.10s: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:12:07,730 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:12:07,732 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 8}
+2026-07-08 19:12:07,732 - openevolve.process_parallel - INFO - Iteration 6: Program d013bfd3-01fc-4c3d-a68f-9ca411743465 (parent: 86f33a48-e380-4df1-8da7-d888a9f3c049) completed in 27.83s
+2026-07-08 19:12:07,732 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:12:07,732 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 6
+2026-07-08 19:12:07,732 - openevolve.database - INFO - Island Status:
+2026-07-08 19:12:07,732 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.5246, avg=0.4540, diversity=48.27, gen=2 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:12:07,732 - openevolve.database - INFO -    Island 1: 2 programs, best=0.3243, avg=0.3224, diversity=17.90, gen=2 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:12:07,732 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:12:07,732 - openevolve.database - INFO -    Island 3: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:12:07,734 - openevolve.database - INFO - Saved database with 7 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_6
+2026-07-08 19:12:07,734 - openevolve.controller - INFO - Saved best program at checkpoint 6 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:12:07,734 - openevolve.controller - INFO - Saved checkpoint at iteration 6 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_6
+2026-07-08 19:12:51,708 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:12:51,783 - openevolve.evaluator - INFO - Evaluated program 3a5a5a2d-96bf-47c1-9d2c-8f38a2b6d577 in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:12:51,783 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:12:51,788 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 7, 'diversity': 2}
+2026-07-08 19:12:51,788 - openevolve.process_parallel - INFO - Iteration 7: Program 3a5a5a2d-96bf-47c1-9d2c-8f38a2b6d577 (parent: 54d50743-dca4-423b-9a00-c73352e77207) completed in 44.05s
+2026-07-08 19:12:51,788 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:12:51,788 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 7
+2026-07-08 19:12:51,789 - openevolve.database - INFO - Island Status:
+2026-07-08 19:12:51,789 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.5246, avg=0.4540, diversity=48.27, gen=2 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:12:51,789 - openevolve.database - INFO -    Island 1: 2 programs, best=0.3243, avg=0.3224, diversity=17.90, gen=2 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:12:51,789 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=4.90, gen=2 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:12:51,789 - openevolve.database - INFO -    Island 3: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=1 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:12:51,790 - openevolve.database - INFO - Saved database with 8 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_7
+2026-07-08 19:12:51,790 - openevolve.controller - INFO - Saved best program at checkpoint 7 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:12:51,791 - openevolve.controller - INFO - Saved checkpoint at iteration 7 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_7
+2026-07-08 19:13:24,815 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:13:24,892 - openevolve.evaluator - INFO - Evaluated program f4766d82-9475-4355-bb4b-e5694cf81403 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpp53efgsx.py, line 25)
+2026-07-08 19:13:24,893 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:13:24,897 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 6, 'diversity': 0}
+2026-07-08 19:13:24,897 - openevolve.process_parallel - INFO - Iteration 8: Program f4766d82-9475-4355-bb4b-e5694cf81403 (parent: e372812d-ea41-4589-bc6b-8d66957e8115) completed in 33.11s
+2026-07-08 19:13:24,897 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpp53efgsx.py, line 25)
+2026-07-08 19:13:24,897 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 8
+2026-07-08 19:13:24,898 - openevolve.database - INFO - Island Status:
+2026-07-08 19:13:24,898 - openevolve.database - INFO -  * Island 0: 3 programs, best=0.5246, avg=0.4540, diversity=48.27, gen=2 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:13:24,898 - openevolve.database - INFO -    Island 1: 2 programs, best=0.3243, avg=0.3224, diversity=17.90, gen=2 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:13:24,898 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=4.90, gen=2 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:13:24,898 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=47.00, gen=2 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:13:24,899 - openevolve.database - INFO - Saved database with 9 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_8
+2026-07-08 19:13:24,900 - openevolve.controller - INFO - Saved best program at checkpoint 8 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:13:24,900 - openevolve.controller - INFO - Saved checkpoint at iteration 8 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_8
+2026-07-08 19:13:49,187 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:13:49,267 - openevolve.evaluator - INFO - Evaluated program fb57f4e4-f283-422e-b260-4a00a7be33ec in 0.08s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 19:13:49,268 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:13:49,272 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 3, 'diversity': 0}
+2026-07-08 19:13:49,272 - openevolve.process_parallel - INFO - Iteration 9: Program fb57f4e4-f283-422e-b260-4a00a7be33ec (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 24.38s
+2026-07-08 19:13:49,272 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 19:13:49,272 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 9
+2026-07-08 19:13:49,273 - openevolve.database - INFO - Island Status:
+2026-07-08 19:13:49,273 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.5246, avg=0.4316, diversity=48.08, gen=3 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:13:49,273 - openevolve.database - INFO -    Island 1: 2 programs, best=0.3243, avg=0.3224, diversity=17.90, gen=2 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:13:49,273 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=4.90, gen=2 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:13:49,273 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=47.00, gen=2 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:13:49,275 - openevolve.database - INFO - Saved database with 10 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_9
+2026-07-08 19:13:49,275 - openevolve.controller - INFO - Saved best program at checkpoint 9 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:13:49,275 - openevolve.controller - INFO - Saved checkpoint at iteration 9 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_9
+2026-07-08 19:15:14,899 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:15:14,974 - openevolve.evaluator - INFO - Evaluated program 14929421-271f-46fb-afb8-dc82e03e7c78 in 0.07s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:15:14,975 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:15:14,981 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 3}
+2026-07-08 19:15:14,981 - openevolve.process_parallel - INFO - Iteration 10: Program 14929421-271f-46fb-afb8-dc82e03e7c78 (parent: 86f33a48-e380-4df1-8da7-d888a9f3c049) completed in 85.71s
+2026-07-08 19:15:14,981 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:15:14,981 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 10
+2026-07-08 19:15:14,982 - openevolve.database - INFO - Island Status:
+2026-07-08 19:15:14,982 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.5246, avg=0.4316, diversity=48.08, gen=3 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:15:14,982 - openevolve.database - INFO -    Island 1: 3 programs, best=0.3243, avg=0.2149, diversity=15.27, gen=3 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:15:14,982 - openevolve.database - INFO -    Island 2: 2 programs, best=0.0000, avg=0.0000, diversity=4.90, gen=2 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:15:14,982 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=47.00, gen=2 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:15:14,984 - openevolve.database - INFO - Saved database with 11 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_10
+2026-07-08 19:15:14,984 - openevolve.controller - INFO - Saved best program at checkpoint 10 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:15:14,985 - openevolve.controller - INFO - Saved checkpoint at iteration 10 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_10
+2026-07-08 19:16:06,923 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:16:07,025 - openevolve.evaluator - INFO - Evaluated program e1d3cec3-9d74-42eb-9276-e36cc13c813f in 0.10s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:16:07,026 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:16:07,030 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 9}
+2026-07-08 19:16:07,030 - openevolve.process_parallel - INFO - Iteration 11: Program e1d3cec3-9d74-42eb-9276-e36cc13c813f (parent: 3a5a5a2d-96bf-47c1-9d2c-8f38a2b6d577) completed in 52.05s
+2026-07-08 19:16:07,030 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:16:07,030 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 11
+2026-07-08 19:16:07,031 - openevolve.database - INFO - Island Status:
+2026-07-08 19:16:07,031 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.5246, avg=0.4316, diversity=48.08, gen=3 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:16:07,031 - openevolve.database - INFO -    Island 1: 3 programs, best=0.3243, avg=0.2149, diversity=15.27, gen=3 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:16:07,031 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=51.27, gen=3 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:16:07,031 - openevolve.database - INFO -    Island 3: 2 programs, best=0.0000, avg=0.0000, diversity=47.00, gen=2 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:16:07,033 - openevolve.database - INFO - Saved database with 12 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_11
+2026-07-08 19:16:07,034 - openevolve.controller - INFO - Saved best program at checkpoint 11 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:16:07,034 - openevolve.controller - INFO - Saved checkpoint at iteration 11 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_11
+2026-07-08 19:16:40,958 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:16:41,033 - openevolve.evaluator - INFO - Evaluated program 4dcc72c1-b9a9-4cad-9d21-3adb77331c2f in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp2bfrrk0s.py, line 25)
+2026-07-08 19:16:41,034 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:16:41,038 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 5, 'diversity': 0}
+2026-07-08 19:16:41,038 - openevolve.process_parallel - INFO - Iteration 12: Program 4dcc72c1-b9a9-4cad-9d21-3adb77331c2f (parent: e372812d-ea41-4589-bc6b-8d66957e8115) completed in 34.01s
+2026-07-08 19:16:41,038 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp2bfrrk0s.py, line 25)
+2026-07-08 19:16:41,039 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 12
+2026-07-08 19:16:41,039 - openevolve.database - INFO - Island Status:
+2026-07-08 19:16:41,039 - openevolve.database - INFO -  * Island 0: 4 programs, best=0.5246, avg=0.4316, diversity=48.08, gen=3 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:16:41,039 - openevolve.database - INFO -    Island 1: 3 programs, best=0.3243, avg=0.2149, diversity=15.27, gen=3 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:16:41,039 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=51.27, gen=3 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:16:41,039 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=33.13, gen=3 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:16:41,041 - openevolve.database - INFO - Saved database with 13 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_12
+2026-07-08 19:16:41,042 - openevolve.controller - INFO - Saved best program at checkpoint 12 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:16:41,042 - openevolve.controller - INFO - Saved checkpoint at iteration 12 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_12
+2026-07-08 19:17:16,656 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:17:16,733 - openevolve.evaluator - INFO - Evaluated program 816df602-e002-4811-b6ba-7e6856015c82 in 0.08s: validity=1.0000, sum_radii=1.1972, target_ratio=0.4543, combined_score=0.4543
+2026-07-08 19:17:16,734 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:17:16,740 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 0}
+2026-07-08 19:17:16,740 - openevolve.process_parallel - INFO - Iteration 13: Program 816df602-e002-4811-b6ba-7e6856015c82 (parent: 5dbebc0c-f5eb-48ac-8131-bc8fc8ec33cc) completed in 35.70s
+2026-07-08 19:17:16,740 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.1972, target_ratio=0.4543, combined_score=0.4543
+2026-07-08 19:17:16,740 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 13
+2026-07-08 19:17:16,741 - openevolve.database - INFO - Island Status:
+2026-07-08 19:17:16,741 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5246, avg=0.4361, diversity=48.07, gen=4 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:17:16,741 - openevolve.database - INFO -    Island 1: 3 programs, best=0.3243, avg=0.2149, diversity=15.27, gen=3 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:17:16,741 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=51.27, gen=3 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:17:16,741 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=33.13, gen=3 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:17:16,744 - openevolve.database - INFO - Saved database with 14 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_13
+2026-07-08 19:17:16,744 - openevolve.controller - INFO - Saved best program at checkpoint 13 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:17:16,744 - openevolve.controller - INFO - Saved checkpoint at iteration 13 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_13
+2026-07-08 19:17:45,327 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:17:45,401 - openevolve.evaluator - INFO - Evaluated program 09e79578-38d7-426d-953c-76446919eb15 in 0.07s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:17:45,402 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:17:45,408 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 2}
+2026-07-08 19:17:45,409 - openevolve.process_parallel - INFO - Iteration 14: Program 09e79578-38d7-426d-953c-76446919eb15 (parent: 14929421-271f-46fb-afb8-dc82e03e7c78) completed in 28.67s
+2026-07-08 19:17:45,409 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:17:45,409 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 14
+2026-07-08 19:17:45,410 - openevolve.database - INFO - Island Status:
+2026-07-08 19:17:45,410 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5246, avg=0.4361, diversity=48.07, gen=4 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:17:45,410 - openevolve.database - INFO -    Island 1: 4 programs, best=0.3243, avg=0.1612, diversity=17.65, gen=4 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:17:45,410 - openevolve.database - INFO -    Island 2: 3 programs, best=0.0000, avg=0.0000, diversity=51.27, gen=3 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:17:45,410 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=33.13, gen=3 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:17:45,412 - openevolve.database - INFO - Saved database with 15 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_14
+2026-07-08 19:17:45,413 - openevolve.controller - INFO - Saved best program at checkpoint 14 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:17:45,413 - openevolve.controller - INFO - Saved checkpoint at iteration 14 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_14
+2026-07-08 19:18:48,818 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:18:48,891 - openevolve.evaluator - INFO - Evaluated program 31a05395-22ff-46b8-9892-1aaa0e53c766 in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:18:48,891 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:18:48,895 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 6}
+2026-07-08 19:18:48,896 - openevolve.process_parallel - INFO - Iteration 15: Program 31a05395-22ff-46b8-9892-1aaa0e53c766 (parent: 3a5a5a2d-96bf-47c1-9d2c-8f38a2b6d577) completed in 63.49s
+2026-07-08 19:18:48,896 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:18:48,896 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 15
+2026-07-08 19:18:48,897 - openevolve.database - INFO - Island Status:
+2026-07-08 19:18:48,897 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5246, avg=0.4361, diversity=48.07, gen=4 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:18:48,897 - openevolve.database - INFO -    Island 1: 4 programs, best=0.3243, avg=0.1612, diversity=17.65, gen=4 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:18:48,897 - openevolve.database - INFO -    Island 2: 4 programs, best=0.0000, avg=0.0000, diversity=47.08, gen=4 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:18:48,897 - openevolve.database - INFO -    Island 3: 3 programs, best=0.0000, avg=0.0000, diversity=33.13, gen=3 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:18:48,900 - openevolve.database - INFO - Saved database with 16 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_15
+2026-07-08 19:18:48,900 - openevolve.controller - INFO - Saved best program at checkpoint 15 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:18:48,900 - openevolve.controller - INFO - Saved checkpoint at iteration 15 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_15
+2026-07-08 19:19:20,463 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:19:20,538 - openevolve.evaluator - INFO - Evaluated program faa2e082-b534-4965-909e-9beab735003e in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp5c16hryg.py, line 25)
+2026-07-08 19:19:20,539 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:19:20,544 - openevolve.process_parallel - INFO - Iteration 16: Program faa2e082-b534-4965-909e-9beab735003e (parent: f4766d82-9475-4355-bb4b-e5694cf81403) completed in 31.65s
+2026-07-08 19:19:20,544 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp5c16hryg.py, line 25)
+2026-07-08 19:19:20,544 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 16
+2026-07-08 19:19:20,545 - openevolve.database - INFO - Island Status:
+2026-07-08 19:19:20,545 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5246, avg=0.4361, diversity=48.07, gen=4 (best: 91b36bde-b400-4c4c-85ca-67bb36dbd54c)
+2026-07-08 19:19:20,545 - openevolve.database - INFO -    Island 1: 4 programs, best=0.3243, avg=0.1612, diversity=17.65, gen=4 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:19:20,545 - openevolve.database - INFO -    Island 2: 4 programs, best=0.0000, avg=0.0000, diversity=47.08, gen=4 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:19:20,545 - openevolve.database - INFO -    Island 3: 4 programs, best=0.0000, avg=0.0000, diversity=24.85, gen=4 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:19:20,548 - openevolve.database - INFO - Saved database with 17 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_16
+2026-07-08 19:19:20,549 - openevolve.controller - INFO - Saved best program at checkpoint 16 with metrics: validity=1.0000, sum_radii=1.3824, target_ratio=0.5246, combined_score=0.5246, eval_time=0.0732
+2026-07-08 19:19:20,549 - openevolve.controller - INFO - Saved checkpoint at iteration 16 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_16
+2026-07-08 19:20:02,745 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:20:02,892 - openevolve.evaluator - INFO - Evaluated program 5b7efed9-91e6-4e5e-a67c-3d08f10ce107 in 0.15s: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:20:02,893 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:20:02,897 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 5, 'diversity': 0} (fitness: 0.364 -> 0.592)
+2026-07-08 19:20:02,897 - openevolve.database - INFO - New best program 5b7efed9-91e6-4e5e-a67c-3d08f10ce107 replaces 91b36bde-b400-4c4c-85ca-67bb36dbd54c (combined_score: 0.5246 → 0.5919, +0.0673)
+2026-07-08 19:20:02,897 - openevolve.process_parallel - INFO - Iteration 17: Program 5b7efed9-91e6-4e5e-a67c-3d08f10ce107 (parent: 70f5acb8-634f-4fda-80f7-379d66d25c86) completed in 42.35s
+2026-07-08 19:20:02,898 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:20:02,898 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 17: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107
+2026-07-08 19:20:02,898 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 17
+2026-07-08 19:20:02,899 - openevolve.database - INFO - Island Status:
+2026-07-08 19:20:02,899 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.4817, diversity=58.37, gen=5 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:20:02,899 - openevolve.database - INFO -    Island 1: 4 programs, best=0.3243, avg=0.1612, diversity=17.65, gen=4 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:20:02,899 - openevolve.database - INFO -    Island 2: 4 programs, best=0.0000, avg=0.0000, diversity=47.08, gen=4 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:20:02,899 - openevolve.database - INFO -    Island 3: 4 programs, best=0.0000, avg=0.0000, diversity=24.85, gen=4 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:20:02,902 - openevolve.database - INFO - Saved database with 18 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_17
+2026-07-08 19:20:02,902 - openevolve.controller - INFO - Saved best program at checkpoint 17 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:20:02,902 - openevolve.controller - INFO - Saved checkpoint at iteration 17 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_17
+2026-07-08 19:20:33,044 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:20:33,149 - openevolve.evaluator - INFO - Evaluated program f728bf3d-1c33-4cec-8db5-7874db288a29 in 0.10s: validity=1.0000, sum_radii=0.8446, target_ratio=0.3205, combined_score=0.3205
+2026-07-08 19:20:33,150 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:20:33,152 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 4}
+2026-07-08 19:20:33,152 - openevolve.process_parallel - INFO - Iteration 18: Program f728bf3d-1c33-4cec-8db5-7874db288a29 (parent: 86f33a48-e380-4df1-8da7-d888a9f3c049) completed in 30.26s
+2026-07-08 19:20:33,152 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8446, target_ratio=0.3205, combined_score=0.3205
+2026-07-08 19:20:33,152 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 18
+2026-07-08 19:20:33,154 - openevolve.database - INFO - Island Status:
+2026-07-08 19:20:33,154 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.4817, diversity=58.37, gen=5 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:20:33,154 - openevolve.database - INFO -    Island 1: 5 programs, best=0.3243, avg=0.1931, diversity=19.72, gen=5 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:20:33,154 - openevolve.database - INFO -    Island 2: 4 programs, best=0.0000, avg=0.0000, diversity=47.08, gen=4 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:20:33,154 - openevolve.database - INFO -    Island 3: 4 programs, best=0.0000, avg=0.0000, diversity=24.85, gen=4 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:20:33,157 - openevolve.database - INFO - Saved database with 19 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_18
+2026-07-08 19:20:33,157 - openevolve.controller - INFO - Saved best program at checkpoint 18 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:20:33,157 - openevolve.controller - INFO - Saved checkpoint at iteration 18 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_18
+2026-07-08 19:21:28,667 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:21:28,776 - openevolve.evaluator - INFO - Evaluated program 78528be4-aaaa-4a49-8309-91fe3dace3c2 in 0.11s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:21:28,777 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:21:28,787 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 0}
+2026-07-08 19:21:28,787 - openevolve.process_parallel - INFO - Iteration 19: Program 78528be4-aaaa-4a49-8309-91fe3dace3c2 (parent: e1d3cec3-9d74-42eb-9276-e36cc13c813f) completed in 55.63s
+2026-07-08 19:21:28,787 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:21:28,787 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 19
+2026-07-08 19:21:28,789 - openevolve.database - INFO - Island Status:
+2026-07-08 19:21:28,789 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.4817, diversity=58.37, gen=5 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:21:28,789 - openevolve.database - INFO -    Island 1: 5 programs, best=0.3243, avg=0.1931, diversity=19.72, gen=5 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:21:28,789 - openevolve.database - INFO -    Island 2: 5 programs, best=0.0000, avg=0.0000, diversity=30.90, gen=5 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:21:28,789 - openevolve.database - INFO -    Island 3: 4 programs, best=0.0000, avg=0.0000, diversity=24.85, gen=4 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:21:28,793 - openevolve.database - INFO - Saved database with 20 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_19
+2026-07-08 19:21:28,793 - openevolve.controller - INFO - Saved best program at checkpoint 19 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:21:28,793 - openevolve.controller - INFO - Saved checkpoint at iteration 19 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_19
+2026-07-08 19:22:33,503 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:22:33,575 - openevolve.evaluator - INFO - Evaluated program 66958be7-391c-4a6a-8486-5dd3507299aa in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpl8hudy6r.py, line 25)
+2026-07-08 19:22:33,576 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:22:33,580 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 2}
+2026-07-08 19:22:33,580 - openevolve.process_parallel - INFO - Iteration 20: Program 66958be7-391c-4a6a-8486-5dd3507299aa (parent: e372812d-ea41-4589-bc6b-8d66957e8115) completed in 64.80s
+2026-07-08 19:22:33,580 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpl8hudy6r.py, line 25)
+2026-07-08 19:22:33,580 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 20
+2026-07-08 19:22:33,582 - openevolve.database - INFO - Island Status:
+2026-07-08 19:22:33,582 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.4817, diversity=58.37, gen=5 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:22:33,582 - openevolve.database - INFO -    Island 1: 5 programs, best=0.3243, avg=0.1931, diversity=19.72, gen=5 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:22:33,582 - openevolve.database - INFO -    Island 2: 5 programs, best=0.0000, avg=0.0000, diversity=30.90, gen=5 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:22:33,582 - openevolve.database - INFO -    Island 3: 5 programs, best=0.0000, avg=0.0000, diversity=25.30, gen=5 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:22:33,585 - openevolve.database - INFO - Saved database with 21 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_20
+2026-07-08 19:22:33,586 - openevolve.controller - INFO - Saved best program at checkpoint 20 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:22:33,586 - openevolve.controller - INFO - Saved checkpoint at iteration 20 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_20
+2026-07-08 19:23:08,796 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:23:08,946 - openevolve.evaluator - INFO - Evaluated program 0b4ea90f-d38c-42ab-a266-cd8f128027a3 in 0.15s: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0712
+2026-07-08 19:23:08,947 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:23:08,953 - openevolve.database - INFO - Island 0 MAP-Elites cell improved: {'complexity': 2, 'diversity': 0} (fitness: 0.454 -> 0.564)
+2026-07-08 19:23:08,953 - openevolve.process_parallel - INFO - Iteration 21: Program 0b4ea90f-d38c-42ab-a266-cd8f128027a3 (parent: 91b36bde-b400-4c4c-85ca-67bb36dbd54c) completed in 35.37s
+2026-07-08 19:23:08,953 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0712
+2026-07-08 19:23:08,953 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 21
+2026-07-08 19:23:08,955 - openevolve.database - INFO - Island Status:
+2026-07-08 19:23:08,955 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.5036, diversity=67.93, gen=6 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:23:08,955 - openevolve.database - INFO -    Island 1: 5 programs, best=0.3243, avg=0.1931, diversity=19.72, gen=5 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:23:08,955 - openevolve.database - INFO -    Island 2: 5 programs, best=0.0000, avg=0.0000, diversity=30.90, gen=5 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:23:08,955 - openevolve.database - INFO -    Island 3: 5 programs, best=0.0000, avg=0.0000, diversity=25.30, gen=5 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:23:08,959 - openevolve.database - INFO - Saved database with 22 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_21
+2026-07-08 19:23:08,959 - openevolve.controller - INFO - Saved best program at checkpoint 21 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:23:08,959 - openevolve.controller - INFO - Saved checkpoint at iteration 21 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_21
+2026-07-08 19:23:35,614 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:23:35,690 - openevolve.evaluator - INFO - Evaluated program 15bdcfb3-884a-4b5f-928d-4d14cf29d186 in 0.07s: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:23:35,691 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:23:35,695 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 0}
+2026-07-08 19:23:35,695 - openevolve.process_parallel - INFO - Iteration 22: Program 15bdcfb3-884a-4b5f-928d-4d14cf29d186 (parent: f728bf3d-1c33-4cec-8db5-7874db288a29) completed in 26.74s
+2026-07-08 19:23:35,695 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:23:35,695 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 22
+2026-07-08 19:23:35,696 - openevolve.database - INFO - Island Status:
+2026-07-08 19:23:35,696 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.5036, diversity=67.93, gen=6 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:23:35,697 - openevolve.database - INFO -    Island 1: 6 programs, best=0.3243, avg=0.2149, diversity=19.23, gen=6 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:23:35,697 - openevolve.database - INFO -    Island 2: 5 programs, best=0.0000, avg=0.0000, diversity=30.90, gen=5 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:23:35,697 - openevolve.database - INFO -    Island 3: 5 programs, best=0.0000, avg=0.0000, diversity=25.30, gen=5 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:23:35,700 - openevolve.database - INFO - Saved database with 23 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_22
+2026-07-08 19:23:35,700 - openevolve.controller - INFO - Saved best program at checkpoint 22 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:23:35,700 - openevolve.controller - INFO - Saved checkpoint at iteration 22 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_22
+2026-07-08 19:24:32,172 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:24:32,294 - openevolve.evaluator - INFO - Evaluated program 38507b00-86e4-4777-961a-8b4fb8191101 in 0.12s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:24:32,295 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:24:32,305 - openevolve.process_parallel - INFO - Iteration 23: Program 38507b00-86e4-4777-961a-8b4fb8191101 (parent: 31a05395-22ff-46b8-9892-1aaa0e53c766) completed in 56.60s
+2026-07-08 19:24:32,305 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:24:32,305 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 23
+2026-07-08 19:24:32,307 - openevolve.database - INFO - Island Status:
+2026-07-08 19:24:32,307 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.5036, diversity=67.93, gen=6 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:24:32,307 - openevolve.database - INFO -    Island 1: 6 programs, best=0.3243, avg=0.2149, diversity=19.23, gen=6 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:24:32,307 - openevolve.database - INFO -    Island 2: 6 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=6 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:24:32,307 - openevolve.database - INFO -    Island 3: 5 programs, best=0.0000, avg=0.0000, diversity=25.30, gen=5 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:24:32,311 - openevolve.database - INFO - Saved database with 24 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_23
+2026-07-08 19:24:32,311 - openevolve.controller - INFO - Saved best program at checkpoint 23 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:24:32,312 - openevolve.controller - INFO - Saved checkpoint at iteration 23 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_23
+2026-07-08 19:25:08,477 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:25:08,560 - openevolve.evaluator - INFO - Evaluated program b8ea42d7-b0a2-43e0-87fb-ab35783f0948 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp_up90tim.py, line 25)
+2026-07-08 19:25:08,561 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:25:08,562 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 4, 'diversity': 2}
+2026-07-08 19:25:08,563 - openevolve.process_parallel - INFO - Iteration 24: Program b8ea42d7-b0a2-43e0-87fb-ab35783f0948 (parent: 66958be7-391c-4a6a-8486-5dd3507299aa) completed in 36.27s
+2026-07-08 19:25:08,563 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmp_up90tim.py, line 25)
+2026-07-08 19:25:08,563 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 24
+2026-07-08 19:25:08,564 - openevolve.database - INFO - Island Status:
+2026-07-08 19:25:08,564 - openevolve.database - INFO -  * Island 0: 5 programs, best=0.5919, avg=0.5036, diversity=67.93, gen=6 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:25:08,564 - openevolve.database - INFO -    Island 1: 6 programs, best=0.3243, avg=0.2149, diversity=19.23, gen=6 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:25:08,564 - openevolve.database - INFO -    Island 2: 6 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=6 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:25:08,564 - openevolve.database - INFO -    Island 3: 6 programs, best=0.0000, avg=0.0000, diversity=27.40, gen=6 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:25:08,568 - openevolve.database - INFO - Saved database with 25 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_24
+2026-07-08 19:25:08,568 - openevolve.controller - INFO - Saved best program at checkpoint 24 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:25:08,568 - openevolve.controller - INFO - Saved checkpoint at iteration 24 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_24
+2026-07-08 19:25:28,730 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:25:28,842 - openevolve.evaluator - INFO - Evaluated program efd91501-354c-4265-99d3-c0852d4ee1ea in 0.11s: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 19:25:28,843 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:25:28,851 - openevolve.process_parallel - INFO - Iteration 25: Program efd91501-354c-4265-99d3-c0852d4ee1ea (parent: fb57f4e4-f283-422e-b260-4a00a7be33ec) completed in 20.28s
+2026-07-08 19:25:28,851 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.9598, target_ratio=0.3642, combined_score=0.3642
+2026-07-08 19:25:28,851 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 25
+2026-07-08 19:25:28,853 - openevolve.database - INFO - Island Status:
+2026-07-08 19:25:28,853 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.5919, avg=0.4804, diversity=67.93, gen=7 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:25:28,853 - openevolve.database - INFO -    Island 1: 6 programs, best=0.3243, avg=0.2149, diversity=19.23, gen=6 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:25:28,853 - openevolve.database - INFO -    Island 2: 6 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=6 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:25:28,853 - openevolve.database - INFO -    Island 3: 6 programs, best=0.0000, avg=0.0000, diversity=27.40, gen=6 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:25:28,857 - openevolve.database - INFO - Saved database with 26 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_25
+2026-07-08 19:25:28,858 - openevolve.controller - INFO - Saved best program at checkpoint 25 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:25:28,858 - openevolve.controller - INFO - Saved checkpoint at iteration 25 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_25
+2026-07-08 19:26:20,003 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:26:20,083 - openevolve.evaluator - INFO - Evaluated program 22d182e4-aee6-42a4-a2a4-4b5db4af56ec in 0.08s: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:26:20,084 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:26:20,090 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 8, 'diversity': 6}
+2026-07-08 19:26:20,090 - openevolve.process_parallel - INFO - Iteration 26: Program 22d182e4-aee6-42a4-a2a4-4b5db4af56ec (parent: d013bfd3-01fc-4c3d-a68f-9ca411743465) completed in 51.24s
+2026-07-08 19:26:20,090 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:26:20,090 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 26
+2026-07-08 19:26:20,092 - openevolve.database - INFO - Island Status:
+2026-07-08 19:26:20,092 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.5919, avg=0.4804, diversity=67.93, gen=7 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:26:20,092 - openevolve.database - INFO -    Island 1: 7 programs, best=0.3243, avg=0.2306, diversity=39.68, gen=7 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:26:20,092 - openevolve.database - INFO -    Island 2: 6 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=6 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:26:20,092 - openevolve.database - INFO -    Island 3: 6 programs, best=0.0000, avg=0.0000, diversity=27.40, gen=6 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:26:20,096 - openevolve.database - INFO - Saved database with 27 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_26
+2026-07-08 19:26:20,096 - openevolve.controller - INFO - Saved best program at checkpoint 26 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:26:20,096 - openevolve.controller - INFO - Saved checkpoint at iteration 26 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_26
+2026-07-08 19:26:59,325 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:26:59,405 - openevolve.evaluator - INFO - Evaluated program 8a170ceb-7f73-41f3-b841-23eb30e7abee in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:26:59,406 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:26:59,410 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 6}
+2026-07-08 19:26:59,411 - openevolve.process_parallel - INFO - Iteration 27: Program 8a170ceb-7f73-41f3-b841-23eb30e7abee (parent: e1d3cec3-9d74-42eb-9276-e36cc13c813f) completed in 39.32s
+2026-07-08 19:26:59,411 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:26:59,411 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 27
+2026-07-08 19:26:59,412 - openevolve.database - INFO - Island Status:
+2026-07-08 19:26:59,412 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.5919, avg=0.4804, diversity=67.93, gen=7 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:26:59,412 - openevolve.database - INFO -    Island 1: 7 programs, best=0.3243, avg=0.2306, diversity=39.68, gen=7 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:26:59,412 - openevolve.database - INFO -    Island 2: 7 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=7 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:26:59,412 - openevolve.database - INFO -    Island 3: 6 programs, best=0.0000, avg=0.0000, diversity=27.40, gen=6 (best: e372812d-ea41-4589-bc6b-8d66957e8115)
+2026-07-08 19:26:59,417 - openevolve.database - INFO - Saved database with 28 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_27
+2026-07-08 19:26:59,417 - openevolve.controller - INFO - Saved best program at checkpoint 27 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:26:59,417 - openevolve.controller - INFO - Saved checkpoint at iteration 27 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_27
+2026-07-08 19:27:35,575 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:27:35,685 - openevolve.evaluator - INFO - Evaluated program 7813a208-3449-4ea0-b2e7-6de7482ecc7d in 0.11s: validity=1.0000, sum_radii=0.4989, target_ratio=0.1893, combined_score=0.1893
+2026-07-08 19:27:35,686 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:27:35,687 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 3}
+2026-07-08 19:27:35,687 - openevolve.process_parallel - INFO - Iteration 28: Program 7813a208-3449-4ea0-b2e7-6de7482ecc7d (parent: 66958be7-391c-4a6a-8486-5dd3507299aa) completed in 36.28s
+2026-07-08 19:27:35,687 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.4989, target_ratio=0.1893, combined_score=0.1893
+2026-07-08 19:27:35,687 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 28
+2026-07-08 19:27:35,689 - openevolve.database - INFO - Island Status:
+2026-07-08 19:27:35,689 - openevolve.database - INFO -  * Island 0: 6 programs, best=0.5919, avg=0.4804, diversity=67.93, gen=7 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:27:35,689 - openevolve.database - INFO -    Island 1: 7 programs, best=0.3243, avg=0.2306, diversity=39.68, gen=7 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:27:35,689 - openevolve.database - INFO -    Island 2: 7 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=7 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:27:35,689 - openevolve.database - INFO -    Island 3: 7 programs, best=0.1893, avg=0.0270, diversity=39.60, gen=7 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:27:35,694 - openevolve.database - INFO - Saved database with 29 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_28
+2026-07-08 19:27:35,694 - openevolve.controller - INFO - Saved best program at checkpoint 28 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:27:35,694 - openevolve.controller - INFO - Saved checkpoint at iteration 28 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_28
+2026-07-08 19:28:17,340 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:28:17,495 - openevolve.evaluator - INFO - Evaluated program 15f7eca2-7981-4646-888b-442a88e34247 in 0.15s: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0756
+2026-07-08 19:28:17,496 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:28:17,503 - openevolve.process_parallel - INFO - Iteration 29: Program 15f7eca2-7981-4646-888b-442a88e34247 (parent: 0b4ea90f-d38c-42ab-a266-cd8f128027a3) completed in 41.81s
+2026-07-08 19:28:17,503 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0756
+2026-07-08 19:28:17,503 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 29
+2026-07-08 19:28:17,505 - openevolve.database - INFO - Island Status:
+2026-07-08 19:28:17,505 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.5919, avg=0.4923, diversity=51.25, gen=8 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:28:17,505 - openevolve.database - INFO -    Island 1: 7 programs, best=0.3243, avg=0.2306, diversity=39.68, gen=7 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:28:17,505 - openevolve.database - INFO -    Island 2: 7 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=7 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:28:17,505 - openevolve.database - INFO -    Island 3: 7 programs, best=0.1893, avg=0.0270, diversity=39.60, gen=7 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:28:17,510 - openevolve.database - INFO - Saved database with 30 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_29
+2026-07-08 19:28:17,510 - openevolve.controller - INFO - Saved best program at checkpoint 29 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:28:17,510 - openevolve.controller - INFO - Saved checkpoint at iteration 29 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_29
+2026-07-08 19:28:43,726 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:28:43,805 - openevolve.evaluator - INFO - Evaluated program 4b445466-6a6a-46a1-9953-e6c70c18c9a6 in 0.08s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:28:43,806 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:28:43,813 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 1}
+2026-07-08 19:28:43,814 - openevolve.process_parallel - INFO - Iteration 30: Program 4b445466-6a6a-46a1-9953-e6c70c18c9a6 (parent: 14929421-271f-46fb-afb8-dc82e03e7c78) completed in 26.31s
+2026-07-08 19:28:43,814 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:28:43,814 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 30
+2026-07-08 19:28:43,815 - openevolve.database - INFO - Island Status:
+2026-07-08 19:28:43,816 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.5919, avg=0.4923, diversity=51.25, gen=8 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:28:43,816 - openevolve.database - INFO -    Island 1: 8 programs, best=0.3243, avg=0.2017, diversity=37.53, gen=8 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:28:43,816 - openevolve.database - INFO -    Island 2: 7 programs, best=0.0000, avg=0.0000, diversity=81.40, gen=7 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:28:43,816 - openevolve.database - INFO -    Island 3: 7 programs, best=0.1893, avg=0.0270, diversity=39.60, gen=7 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:28:43,821 - openevolve.database - INFO - Saved database with 31 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_30
+2026-07-08 19:28:43,821 - openevolve.controller - INFO - Saved best program at checkpoint 30 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:28:43,821 - openevolve.controller - INFO - Saved checkpoint at iteration 30 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_30
+2026-07-08 19:29:26,885 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:29:26,961 - openevolve.evaluator - INFO - Evaluated program 22036869-a2cf-448b-ac7f-61d5f003fa16 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:29:26,962 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:29:26,968 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 1}
+2026-07-08 19:29:26,968 - openevolve.process_parallel - INFO - Iteration 31: Program 22036869-a2cf-448b-ac7f-61d5f003fa16 (parent: e1d3cec3-9d74-42eb-9276-e36cc13c813f) completed in 43.16s
+2026-07-08 19:29:26,968 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:29:26,968 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 31
+2026-07-08 19:29:26,970 - openevolve.database - INFO - Island Status:
+2026-07-08 19:29:26,970 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.5919, avg=0.4923, diversity=51.25, gen=8 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:29:26,970 - openevolve.database - INFO -    Island 1: 8 programs, best=0.3243, avg=0.2017, diversity=37.53, gen=8 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:29:26,970 - openevolve.database - INFO -    Island 2: 8 programs, best=0.0000, avg=0.0000, diversity=52.75, gen=8 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:29:26,970 - openevolve.database - INFO -    Island 3: 7 programs, best=0.1893, avg=0.0270, diversity=39.60, gen=7 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:29:26,975 - openevolve.database - INFO - Saved database with 32 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_31
+2026-07-08 19:29:26,975 - openevolve.controller - INFO - Saved best program at checkpoint 31 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:29:26,975 - openevolve.controller - INFO - Saved checkpoint at iteration 31 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_31
+2026-07-08 19:30:07,434 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:30:07,508 - openevolve.evaluator - INFO - Evaluated program 8b523315-2058-4252-a27f-6cf19285095e in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpm0g1x86p.py, line 22)
+2026-07-08 19:30:07,509 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:30:07,519 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 3, 'diversity': 1}
+2026-07-08 19:30:07,519 - openevolve.process_parallel - INFO - Iteration 32: Program 8b523315-2058-4252-a27f-6cf19285095e (parent: 7813a208-3449-4ea0-b2e7-6de7482ecc7d) completed in 40.55s
+2026-07-08 19:30:07,519 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpm0g1x86p.py, line 22)
+2026-07-08 19:30:07,519 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 32
+2026-07-08 19:30:07,521 - openevolve.database - INFO - Island Status:
+2026-07-08 19:30:07,521 - openevolve.database - INFO -  * Island 0: 7 programs, best=0.5919, avg=0.4923, diversity=51.25, gen=8 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:30:07,521 - openevolve.database - INFO -    Island 1: 8 programs, best=0.3243, avg=0.2017, diversity=37.53, gen=8 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:30:07,521 - openevolve.database - INFO -    Island 2: 8 programs, best=0.0000, avg=0.0000, diversity=52.75, gen=8 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:30:07,521 - openevolve.database - INFO -    Island 3: 8 programs, best=0.1893, avg=0.0237, diversity=35.68, gen=8 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:30:07,526 - openevolve.database - INFO - Saved database with 33 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_32
+2026-07-08 19:30:07,527 - openevolve.controller - INFO - Saved best program at checkpoint 32 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:30:07,527 - openevolve.controller - INFO - Saved checkpoint at iteration 32 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_32
+2026-07-08 19:30:38,991 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:30:39,070 - openevolve.evaluator - INFO - Evaluated program 884e7bf5-39b6-4078-9747-64fdbc3c4704 in 0.08s: validity=1.0000, sum_radii=1.2492, target_ratio=0.4741, combined_score=0.4741
+2026-07-08 19:30:39,071 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:30:39,078 - openevolve.process_parallel - INFO - Iteration 33: Program 884e7bf5-39b6-4078-9747-64fdbc3c4704 (parent: 15f7eca2-7981-4646-888b-442a88e34247) completed in 31.56s
+2026-07-08 19:30:39,078 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.2492, target_ratio=0.4741, combined_score=0.4741
+2026-07-08 19:30:39,078 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 33
+2026-07-08 19:30:39,080 - openevolve.database - INFO - Island Status:
+2026-07-08 19:30:39,080 - openevolve.database - INFO -  * Island 0: 8 programs, best=0.5919, avg=0.4901, diversity=42.48, gen=9 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:30:39,080 - openevolve.database - INFO -    Island 1: 8 programs, best=0.3243, avg=0.2017, diversity=37.53, gen=8 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:30:39,080 - openevolve.database - INFO -    Island 2: 8 programs, best=0.0000, avg=0.0000, diversity=52.75, gen=8 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:30:39,080 - openevolve.database - INFO -    Island 3: 8 programs, best=0.1893, avg=0.0237, diversity=35.68, gen=8 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:30:39,086 - openevolve.database - INFO - Saved database with 34 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_33
+2026-07-08 19:30:39,086 - openevolve.controller - INFO - Saved best program at checkpoint 33 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:30:39,086 - openevolve.controller - INFO - Saved checkpoint at iteration 33 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_33
+2026-07-08 19:30:54,026 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:30:54,111 - openevolve.evaluator - INFO - Evaluated program ec8c72f2-4b95-43db-9284-89911c1a913b in 0.08s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:30:54,112 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:30:54,115 - openevolve.process_parallel - INFO - Iteration 34: Program ec8c72f2-4b95-43db-9284-89911c1a913b (parent: 14929421-271f-46fb-afb8-dc82e03e7c78) completed in 15.04s
+2026-07-08 19:30:54,115 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:30:54,115 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 34
+2026-07-08 19:30:54,116 - openevolve.database - INFO - Island Status:
+2026-07-08 19:30:54,116 - openevolve.database - INFO -  * Island 0: 8 programs, best=0.5919, avg=0.4901, diversity=42.48, gen=9 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:30:54,116 - openevolve.database - INFO -    Island 1: 9 programs, best=0.3243, avg=0.1793, diversity=37.53, gen=9 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:30:54,116 - openevolve.database - INFO -    Island 2: 8 programs, best=0.0000, avg=0.0000, diversity=52.75, gen=8 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:30:54,116 - openevolve.database - INFO -    Island 3: 8 programs, best=0.1893, avg=0.0237, diversity=35.68, gen=8 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:30:54,122 - openevolve.database - INFO - Saved database with 35 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_34
+2026-07-08 19:30:54,122 - openevolve.controller - INFO - Saved best program at checkpoint 34 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:30:54,122 - openevolve.controller - INFO - Saved checkpoint at iteration 34 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_34
+2026-07-08 19:31:55,858 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:31:55,969 - openevolve.evaluator - INFO - Evaluated program 22e99ea1-1bc3-4b73-8936-f2b6b6f5d223 in 0.11s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:31:55,970 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:31:55,975 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 7, 'diversity': 7}
+2026-07-08 19:31:55,975 - openevolve.process_parallel - INFO - Iteration 35: Program 22e99ea1-1bc3-4b73-8936-f2b6b6f5d223 (parent: e1d3cec3-9d74-42eb-9276-e36cc13c813f) completed in 61.86s
+2026-07-08 19:31:55,975 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:31:55,975 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 35
+2026-07-08 19:31:55,977 - openevolve.database - INFO - Island Status:
+2026-07-08 19:31:55,977 - openevolve.database - INFO -  * Island 0: 8 programs, best=0.5919, avg=0.4901, diversity=42.48, gen=9 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:31:55,977 - openevolve.database - INFO -    Island 1: 9 programs, best=0.3243, avg=0.1793, diversity=37.53, gen=9 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:31:55,977 - openevolve.database - INFO -    Island 2: 9 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=9 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:31:55,977 - openevolve.database - INFO -    Island 3: 8 programs, best=0.1893, avg=0.0237, diversity=35.68, gen=8 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:31:55,983 - openevolve.database - INFO - Saved database with 36 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_35
+2026-07-08 19:31:55,983 - openevolve.controller - INFO - Saved best program at checkpoint 35 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:31:55,983 - openevolve.controller - INFO - Saved checkpoint at iteration 35 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_35
+2026-07-08 19:33:05,761 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:33:05,857 - openevolve.evaluator - INFO - Evaluated program 5d43789e-b0f7-40cd-9806-2e045581de43 in 0.09s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpeqax9udn.py, line 26)
+2026-07-08 19:33:05,858 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:33:05,865 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 6, 'diversity': 4}
+2026-07-08 19:33:05,865 - openevolve.process_parallel - INFO - Iteration 36: Program 5d43789e-b0f7-40cd-9806-2e045581de43 (parent: 66958be7-391c-4a6a-8486-5dd3507299aa) completed in 69.89s
+2026-07-08 19:33:05,865 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpeqax9udn.py, line 26)
+2026-07-08 19:33:05,865 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 36
+2026-07-08 19:33:05,866 - openevolve.database - INFO - Island Status:
+2026-07-08 19:33:05,866 - openevolve.database - INFO -  * Island 0: 8 programs, best=0.5919, avg=0.4901, diversity=42.48, gen=9 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:33:05,866 - openevolve.database - INFO -    Island 1: 9 programs, best=0.3243, avg=0.1793, diversity=37.53, gen=9 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:33:05,866 - openevolve.database - INFO -    Island 2: 9 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=9 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:33:05,866 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:33:05,879 - openevolve.database - INFO - Saved database with 37 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_36
+2026-07-08 19:33:05,879 - openevolve.controller - INFO - Saved best program at checkpoint 36 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:33:05,879 - openevolve.controller - INFO - Saved checkpoint at iteration 36 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_36
+2026-07-08 19:33:39,476 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:33:39,668 - openevolve.evaluator - INFO - Evaluated program 8cf243cd-a63a-4bf2-8301-37fc95b7d391 in 0.19s: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.1083
+2026-07-08 19:33:39,669 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:33:39,679 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 0}
+2026-07-08 19:33:39,679 - openevolve.process_parallel - INFO - Iteration 37: Program 8cf243cd-a63a-4bf2-8301-37fc95b7d391 (parent: 91b36bde-b400-4c4c-85ca-67bb36dbd54c) completed in 33.81s
+2026-07-08 19:33:39,679 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.1083
+2026-07-08 19:33:39,679 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 37
+2026-07-08 19:33:39,681 - openevolve.database - INFO - Island Status:
+2026-07-08 19:33:39,681 - openevolve.database - INFO -  * Island 0: 9 programs, best=0.5919, avg=0.4983, diversity=42.48, gen=10 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:33:39,681 - openevolve.database - INFO -    Island 1: 9 programs, best=0.3243, avg=0.1793, diversity=37.53, gen=9 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:33:39,681 - openevolve.database - INFO -    Island 2: 9 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=9 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:33:39,681 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:33:39,687 - openevolve.database - INFO - Saved database with 38 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_37
+2026-07-08 19:33:39,687 - openevolve.controller - INFO - Saved best program at checkpoint 37 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:33:39,687 - openevolve.controller - INFO - Saved checkpoint at iteration 37 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_37
+2026-07-08 19:34:08,907 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:34:09,011 - openevolve.evaluator - INFO - Evaluated program 2c00c865-7524-4542-9bed-51675fbc3d2e in 0.10s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:34:09,012 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:34:09,016 - openevolve.process_parallel - INFO - Iteration 38: Program 2c00c865-7524-4542-9bed-51675fbc3d2e (parent: 09e79578-38d7-426d-953c-76446919eb15) completed in 29.34s
+2026-07-08 19:34:09,016 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:34:09,016 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 38
+2026-07-08 19:34:09,017 - openevolve.database - INFO - Island Status:
+2026-07-08 19:34:09,017 - openevolve.database - INFO -  * Island 0: 9 programs, best=0.5919, avg=0.4983, diversity=42.48, gen=10 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:34:09,017 - openevolve.database - INFO -    Island 1: 10 programs, best=0.3243, avg=0.1614, diversity=37.53, gen=10 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:34:09,017 - openevolve.database - INFO -    Island 2: 9 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=9 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:34:09,018 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:34:09,025 - openevolve.database - INFO - Saved database with 39 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_38
+2026-07-08 19:34:09,025 - openevolve.controller - INFO - Saved best program at checkpoint 38 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:34:09,025 - openevolve.controller - INFO - Saved checkpoint at iteration 38 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_38
+2026-07-08 19:34:55,631 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:34:55,709 - openevolve.evaluator - INFO - Evaluated program e9e2eb17-7982-440d-b629-859e428d1850 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:34:55,711 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:34:55,714 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 7}
+2026-07-08 19:34:55,714 - openevolve.process_parallel - INFO - Iteration 39: Program e9e2eb17-7982-440d-b629-859e428d1850 (parent: 54d50743-dca4-423b-9a00-c73352e77207) completed in 46.70s
+2026-07-08 19:34:55,714 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:34:55,714 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 39
+2026-07-08 19:34:55,716 - openevolve.database - INFO - Island Status:
+2026-07-08 19:34:55,716 - openevolve.database - INFO -  * Island 0: 9 programs, best=0.5919, avg=0.4983, diversity=42.48, gen=10 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:34:55,716 - openevolve.database - INFO -    Island 1: 10 programs, best=0.3243, avg=0.1614, diversity=37.53, gen=10 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:34:55,716 - openevolve.database - INFO -    Island 2: 10 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=10 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:34:55,716 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:34:55,722 - openevolve.database - INFO - Saved database with 40 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_39
+2026-07-08 19:34:55,722 - openevolve.controller - INFO - Saved best program at checkpoint 39 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:34:55,722 - openevolve.controller - INFO - Saved checkpoint at iteration 39 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_39
+2026-07-08 19:35:38,932 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:35:38,934 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:35:38,942 - openevolve.process_parallel - WARNING - Iteration 40 error: No valid diffs found in response
+2026-07-08 19:36:13,716 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:36:13,793 - openevolve.evaluator - INFO - Evaluated program 2178d8b3-8399-4ec6-8336-dd945aa72f62 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:36:13,794 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:36:13,799 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 7, 'diversity': 6}
+2026-07-08 19:36:13,800 - openevolve.process_parallel - INFO - Iteration 41: Program 2178d8b3-8399-4ec6-8336-dd945aa72f62 (parent: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107) completed in 34.86s
+2026-07-08 19:36:13,800 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:36:13,800 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 41
+2026-07-08 19:36:13,801 - openevolve.database - INFO - Island Status:
+2026-07-08 19:36:13,801 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.5919, avg=0.4484, diversity=69.97, gen=11 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:36:13,802 - openevolve.database - INFO -    Island 1: 10 programs, best=0.3243, avg=0.1614, diversity=37.53, gen=10 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:36:13,802 - openevolve.database - INFO -    Island 2: 10 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=10 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:36:13,802 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:36:13,809 - openevolve.database - INFO - Saved database with 41 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_41
+2026-07-08 19:36:13,809 - openevolve.controller - INFO - Saved best program at checkpoint 41 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:36:13,809 - openevolve.controller - INFO - Saved checkpoint at iteration 41 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_41
+2026-07-08 19:36:45,324 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:36:45,403 - openevolve.evaluator - INFO - Evaluated program d91ee683-5edf-4481-a24f-c6c6ab659dc4 in 0.08s: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:36:45,405 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:36:45,407 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 5, 'diversity': 0}
+2026-07-08 19:36:45,407 - openevolve.process_parallel - INFO - Iteration 42: Program d91ee683-5edf-4481-a24f-c6c6ab659dc4 (parent: 86f33a48-e380-4df1-8da7-d888a9f3c049) completed in 31.61s
+2026-07-08 19:36:45,407 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:36:45,407 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 42
+2026-07-08 19:36:45,408 - openevolve.database - INFO - Island Status:
+2026-07-08 19:36:45,408 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.5919, avg=0.4484, diversity=69.97, gen=11 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:36:45,408 - openevolve.database - INFO -    Island 1: 11 programs, best=0.3243, avg=0.1762, diversity=37.53, gen=11 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:36:45,408 - openevolve.database - INFO -    Island 2: 10 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=10 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:36:45,408 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:36:45,415 - openevolve.database - INFO - Saved database with 42 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_42
+2026-07-08 19:36:45,415 - openevolve.controller - INFO - Saved best program at checkpoint 42 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:36:45,415 - openevolve.controller - INFO - Saved checkpoint at iteration 42 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_42
+2026-07-08 19:37:34,745 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:37:34,822 - openevolve.evaluator - INFO - Evaluated program 68759403-76a4-4aa9-b3a3-1e5863544b51 in 0.08s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:37:34,823 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:37:34,834 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 7, 'diversity': 8}
+2026-07-08 19:37:34,834 - openevolve.database - INFO - Island 2 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-08 19:37:34,834 - openevolve.process_parallel - INFO - Iteration 43: Program 68759403-76a4-4aa9-b3a3-1e5863544b51 (parent: 78528be4-aaaa-4a49-8309-91fe3dace3c2) completed in 49.42s
+2026-07-08 19:37:34,834 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:37:34,834 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 43
+2026-07-08 19:37:34,835 - openevolve.database - INFO - Island Status:
+2026-07-08 19:37:34,835 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.5919, avg=0.4484, diversity=69.97, gen=11 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:37:34,835 - openevolve.database - INFO -    Island 1: 11 programs, best=0.3243, avg=0.1762, diversity=37.53, gen=11 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:37:34,835 - openevolve.database - INFO -    Island 2: 11 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=11 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:37:34,835 - openevolve.database - INFO -    Island 3: 9 programs, best=0.1893, avg=0.0210, diversity=105.35, gen=9 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:37:34,842 - openevolve.database - INFO - Saved database with 43 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_43
+2026-07-08 19:37:34,842 - openevolve.controller - INFO - Saved best program at checkpoint 43 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:37:34,842 - openevolve.controller - INFO - Saved checkpoint at iteration 43 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_43
+2026-07-08 19:38:55,083 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:38:55,158 - openevolve.evaluator - INFO - Evaluated program 1f603cfd-38ac-49a1-94df-60228cbc5868 in 0.07s: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpvilaagd2.py, line 22)
+2026-07-08 19:38:55,159 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:38:55,165 - openevolve.database - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 8}
+2026-07-08 19:38:55,165 - openevolve.process_parallel - INFO - Iteration 44: Program 1f603cfd-38ac-49a1-94df-60228cbc5868 (parent: b8ea42d7-b0a2-43e0-87fb-ab35783f0948) completed in 80.34s
+2026-07-08 19:38:55,165 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: unexpected indent (tmpvilaagd2.py, line 22)
+2026-07-08 19:38:55,165 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 44
+2026-07-08 19:38:55,167 - openevolve.database - INFO - Island Status:
+2026-07-08 19:38:55,167 - openevolve.database - INFO -  * Island 0: 10 programs, best=0.5919, avg=0.4484, diversity=69.97, gen=11 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:38:55,167 - openevolve.database - INFO -    Island 1: 11 programs, best=0.3243, avg=0.1762, diversity=37.53, gen=11 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:38:55,167 - openevolve.database - INFO -    Island 2: 11 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=11 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:38:55,167 - openevolve.database - INFO -    Island 3: 10 programs, best=0.1893, avg=0.0189, diversity=113.98, gen=10 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:38:55,175 - openevolve.database - INFO - Saved database with 44 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_44
+2026-07-08 19:38:55,175 - openevolve.controller - INFO - Saved best program at checkpoint 44 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:38:55,175 - openevolve.controller - INFO - Saved checkpoint at iteration 44 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_44
+2026-07-08 19:39:35,057 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:39:35,213 - openevolve.evaluator - INFO - Evaluated program c68b497b-98e8-40ac-8a90-5c207ec22170 in 0.15s: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0777
+2026-07-08 19:39:35,214 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:39:35,221 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 6}
+2026-07-08 19:39:35,222 - openevolve.process_parallel - INFO - Iteration 45: Program c68b497b-98e8-40ac-8a90-5c207ec22170 (parent: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107) completed in 40.05s
+2026-07-08 19:39:35,222 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.0777
+2026-07-08 19:39:35,222 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 45
+2026-07-08 19:39:35,223 - openevolve.database - INFO - Island Status:
+2026-07-08 19:39:35,223 - openevolve.database - INFO -  * Island 0: 11 programs, best=0.5919, avg=0.4589, diversity=69.97, gen=12 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:39:35,223 - openevolve.database - INFO -    Island 1: 11 programs, best=0.3243, avg=0.1762, diversity=37.53, gen=11 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:39:35,223 - openevolve.database - INFO -    Island 2: 11 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=11 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:39:35,223 - openevolve.database - INFO -    Island 3: 10 programs, best=0.1893, avg=0.0189, diversity=113.98, gen=10 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:39:35,231 - openevolve.database - INFO - Saved database with 45 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_45
+2026-07-08 19:39:35,231 - openevolve.controller - INFO - Saved best program at checkpoint 45 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:39:35,231 - openevolve.controller - INFO - Saved checkpoint at iteration 45 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_45
+2026-07-08 19:40:08,991 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:40:09,072 - openevolve.evaluator - INFO - Evaluated program a46117ee-5f60-4a75-a89b-d2bdd614fc10 in 0.08s: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:40:09,073 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:40:09,079 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 0}
+2026-07-08 19:40:09,079 - openevolve.database - INFO - Island 1 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-08 19:40:09,079 - openevolve.process_parallel - INFO - Iteration 46: Program a46117ee-5f60-4a75-a89b-d2bdd614fc10 (parent: d91ee683-5edf-4481-a24f-c6c6ab659dc4) completed in 33.86s
+2026-07-08 19:40:09,079 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.8546, target_ratio=0.3243, combined_score=0.3243
+2026-07-08 19:40:09,079 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 46
+2026-07-08 19:40:09,080 - openevolve.database - INFO - Island Status:
+2026-07-08 19:40:09,081 - openevolve.database - INFO -  * Island 0: 11 programs, best=0.5919, avg=0.4589, diversity=69.97, gen=12 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:40:09,081 - openevolve.database - INFO -    Island 1: 12 programs, best=0.3243, avg=0.1885, diversity=37.53, gen=12 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:40:09,081 - openevolve.database - INFO -    Island 2: 11 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=11 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:40:09,081 - openevolve.database - INFO -    Island 3: 10 programs, best=0.1893, avg=0.0189, diversity=113.98, gen=10 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:40:09,088 - openevolve.database - INFO - Saved database with 46 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_46
+2026-07-08 19:40:09,088 - openevolve.controller - INFO - Saved best program at checkpoint 46 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:40:09,088 - openevolve.controller - INFO - Saved checkpoint at iteration 46 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_46
+2026-07-08 19:40:57,644 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:40:57,743 - openevolve.evaluator - INFO - Evaluated program d051c1e6-d93b-43da-8f4b-a2f83de4f972 in 0.10s: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:40:57,744 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:40:57,748 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 7, 'diversity': 9}
+2026-07-08 19:40:57,748 - openevolve.process_parallel - INFO - Iteration 47: Program d051c1e6-d93b-43da-8f4b-a2f83de4f972 (parent: 78528be4-aaaa-4a49-8309-91fe3dace3c2) completed in 48.67s
+2026-07-08 19:40:57,748 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, combined_score=0.0000, error=Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-08 19:40:57,748 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 47
+2026-07-08 19:40:57,749 - openevolve.database - INFO - Island Status:
+2026-07-08 19:40:57,750 - openevolve.database - INFO -  * Island 0: 11 programs, best=0.5919, avg=0.4589, diversity=69.97, gen=12 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:40:57,750 - openevolve.database - INFO -    Island 1: 12 programs, best=0.3243, avg=0.1885, diversity=37.53, gen=12 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:40:57,750 - openevolve.database - INFO -    Island 2: 12 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=12 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:40:57,750 - openevolve.database - INFO -    Island 3: 10 programs, best=0.1893, avg=0.0189, diversity=113.98, gen=10 (best: 7813a208-3449-4ea0-b2e7-6de7482ecc7d)
+2026-07-08 19:40:57,757 - openevolve.database - INFO - Saved database with 47 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_47
+2026-07-08 19:40:57,758 - openevolve.controller - INFO - Saved best program at checkpoint 47 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:40:57,758 - openevolve.controller - INFO - Saved checkpoint at iteration 47 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_47
+2026-07-08 19:41:38,735 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:41:38,814 - openevolve.evaluator - INFO - Evaluated program c5e260eb-dca7-46db-a3ba-08cf7bbd3aab in 0.08s: validity=1.0000, sum_radii=0.6008, target_ratio=0.2280, combined_score=0.2280
+2026-07-08 19:41:38,815 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:41:38,816 - openevolve.database - INFO - Island 3 MAP-Elites cell improved: {'complexity': 1, 'diversity': 3} (fitness: 0.189 -> 0.228)
+2026-07-08 19:41:38,817 - openevolve.process_parallel - INFO - Iteration 48: Program c5e260eb-dca7-46db-a3ba-08cf7bbd3aab (parent: 7813a208-3449-4ea0-b2e7-6de7482ecc7d) completed in 41.07s
+2026-07-08 19:41:38,817 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=0.6008, target_ratio=0.2280, combined_score=0.2280
+2026-07-08 19:41:38,817 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 48
+2026-07-08 19:41:38,818 - openevolve.database - INFO - Island Status:
+2026-07-08 19:41:38,818 - openevolve.database - INFO -  * Island 0: 11 programs, best=0.5919, avg=0.4589, diversity=69.97, gen=12 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:41:38,818 - openevolve.database - INFO -    Island 1: 12 programs, best=0.3243, avg=0.1885, diversity=37.53, gen=12 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:41:38,818 - openevolve.database - INFO -    Island 2: 12 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=12 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:41:38,818 - openevolve.database - INFO -    Island 3: 10 programs, best=0.2280, avg=0.0228, diversity=119.72, gen=11 (best: c5e260eb-dca7-46db-a3ba-08cf7bbd3aab)
+2026-07-08 19:41:38,826 - openevolve.database - INFO - Saved database with 48 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_48
+2026-07-08 19:41:38,826 - openevolve.controller - INFO - Saved best program at checkpoint 48 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:41:38,826 - openevolve.controller - INFO - Saved checkpoint at iteration 48 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_48
+2026-07-08 19:42:05,757 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:42:05,942 - openevolve.evaluator - INFO - Evaluated program f209de9f-7365-4743-9fa0-4c9f7a606d4e in 0.18s: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.1062
+2026-07-08 19:42:05,943 - openevolve.llm.ensemble - INFO - Sampled model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+2026-07-08 19:42:05,950 - openevolve.process_parallel - INFO - Iteration 49: Program f209de9f-7365-4743-9fa0-4c9f7a606d4e (parent: 15f7eca2-7981-4646-888b-442a88e34247) completed in 27.13s
+2026-07-08 19:42:05,950 - openevolve.process_parallel - INFO - Metrics: validity=1.0000, sum_radii=1.4862, target_ratio=0.5640, combined_score=0.5640, eval_time=0.1062
+2026-07-08 19:42:05,950 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 49
+2026-07-08 19:42:05,951 - openevolve.database - INFO - Island Status:
+2026-07-08 19:42:05,951 - openevolve.database - INFO -  * Island 0: 12 programs, best=0.5919, avg=0.4677, diversity=69.97, gen=13 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:42:05,951 - openevolve.database - INFO -    Island 1: 12 programs, best=0.3243, avg=0.1885, diversity=37.53, gen=12 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:42:05,951 - openevolve.database - INFO -    Island 2: 12 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=12 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:42:05,951 - openevolve.database - INFO -    Island 3: 10 programs, best=0.2280, avg=0.0228, diversity=119.72, gen=11 (best: c5e260eb-dca7-46db-a3ba-08cf7bbd3aab)
+2026-07-08 19:42:05,960 - openevolve.database - INFO - Saved database with 49 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_49
+2026-07-08 19:42:05,960 - openevolve.controller - INFO - Saved best program at checkpoint 49 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:42:05,960 - openevolve.controller - INFO - Saved checkpoint at iteration 49 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_49
+2026-07-08 19:42:36,592 - httpx - INFO - HTTP Request: POST http://localhost:8090/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-08 19:42:36,671 - openevolve.evaluator - INFO - Evaluated program 81ce2a21-1bb2-450b-bcce-d3f5faedb64e in 0.08s: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:42:36,677 - openevolve.process_parallel - INFO - Iteration 50: Program 81ce2a21-1bb2-450b-bcce-d3f5faedb64e (parent: ec8c72f2-4b95-43db-9284-89911c1a913b) completed in 30.73s
+2026-07-08 19:42:36,677 - openevolve.process_parallel - INFO - Metrics: validity=0.0000, sum_radii=0.0000, target_ratio=0.0000, combined_score=0.0000
+2026-07-08 19:42:36,677 - openevolve.process_parallel - INFO - Checkpoint interval reached at iteration 50
+2026-07-08 19:42:36,679 - openevolve.database - INFO - Island Status:
+2026-07-08 19:42:36,679 - openevolve.database - INFO -  * Island 0: 12 programs, best=0.5919, avg=0.4677, diversity=69.97, gen=13 (best: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107)
+2026-07-08 19:42:36,679 - openevolve.database - INFO -    Island 1: 13 programs, best=0.3243, avg=0.1740, diversity=37.53, gen=13 (best: d013bfd3-01fc-4c3d-a68f-9ca411743465)
+2026-07-08 19:42:36,679 - openevolve.database - INFO -    Island 2: 12 programs, best=0.0000, avg=0.0000, diversity=58.30, gen=12 (best: 54d50743-dca4-423b-9a00-c73352e77207)
+2026-07-08 19:42:36,679 - openevolve.database - INFO -    Island 3: 10 programs, best=0.2280, avg=0.0228, diversity=119.72, gen=11 (best: c5e260eb-dca7-46db-a3ba-08cf7bbd3aab)
+2026-07-08 19:42:36,687 - openevolve.database - INFO - Saved database with 50 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:42:36,687 - openevolve.controller - INFO - Saved best program at checkpoint 50 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:42:36,687 - openevolve.controller - INFO - Saved checkpoint at iteration 50 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:42:36,687 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-07-08 19:42:36,696 - openevolve.database - INFO - Saved database with 50 programs to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:42:36,697 - openevolve.controller - INFO - Saved best program at checkpoint 50 with metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:42:36,697 - openevolve.controller - INFO - Saved checkpoint at iteration 50 to examples/circle_packing/openevolve_output/checkpoints/checkpoint_50
+2026-07-08 19:42:36,702 - openevolve.process_parallel - INFO - Stopped process pool
+2026-07-08 19:42:36,702 - openevolve.controller - INFO - Using tracked best program: 5b7efed9-91e6-4e5e-a67c-3d08f10ce107
+2026-07-08 19:42:36,702 - openevolve.controller - INFO - Evolution complete. Best program has metrics: validity=1.0000, sum_radii=1.5598, target_ratio=0.5919, combined_score=0.5919, eval_time=0.0696
+2026-07-08 19:42:36,702 - openevolve.controller - INFO - Saved best program to examples/circle_packing/openevolve_output/best/best_program.py with program info to examples/circle_packing/openevolve_output/best/best_program_info.json

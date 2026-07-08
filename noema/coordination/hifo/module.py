@@ -113,7 +113,7 @@ class HiFoPromptModule(CoordinationModule):
 
     # ------------------------------------------------------------- advise
 
-    def advise(self, ctx: GenerationContext) -> Advice:
+    async def advise(self, ctx: GenerationContext) -> Advice:
         # Same cadence as the original: guidance recomputed per offspring
         # (InterfaceEC._get_alg), tips drawn per offspring
         self.insight_pool.update_generation(ctx.generation)

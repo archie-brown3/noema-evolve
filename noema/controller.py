@@ -134,9 +134,15 @@ class NoemaController:
                 retries=config.llm.retries,
                 retry_delay=config.llm.retry_delay,
             )
+            # Domain constraints (e.g. "explicit constructor, not iterative
+            # search") are problem context, not search mechanics — safe for a
+            # coordination module to see. Modules that don't look for this key
+            # ignore it, same convention as Advice.sampling_hint.
+            coordination_params = dict(config.coordination.params)
+            coordination_params.setdefault("domain_context", config.prompt.system_message)
             self.coordination = build_coordination_module(
                 config.coordination.module,
-                config.coordination.params,
+                coordination_params,
                 llm=coordination_llm,
                 rng=self.coordination_rng,
             )
@@ -219,7 +225,7 @@ class NoemaController:
         )
 
         ctx = self._make_context(iteration, parent_island, parent, inspirations)
-        advice = self.coordination.advise(ctx)  # coordination hook 1
+        advice = await self.coordination.advise(ctx)  # coordination hook 1
 
         base_prompt = build_mutation_prompt(
             self.sampler,
@@ -283,6 +289,17 @@ class NoemaController:
                 "changes": changes_summary,
                 "parent_metrics": parent.metrics,
                 "coordination": advice.attribution,
+                # The island this child is placed in (the rotation target for
+                # this iteration), not parent_island (which may differ from
+                # `island` when sample_from_island fell back cross-island for
+                # an empty island — matches openevolve's own process_parallel
+                # fix for this exact bug class, upstream issue #391).
+                "island": island,
+                # The evaluator's error text (empty on success). Rides on
+                # metadata so coordination modules see WHY a child failed — the
+                # ProgramView they get copies metadata verbatim. Independent of
+                # prompt.include_artifacts, which governs the mutation prompt.
+                "stderr": (artifacts or {}).get("stderr", ""),
             },
             prompts=(
                 {
@@ -296,7 +313,7 @@ class NoemaController:
                 else None
             ),
         )
-        self.db.add(child, iteration=iteration)
+        self.db.add(child, iteration=iteration, target_island=island)
         if artifacts:
             self.db.store_artifacts(child_id, artifacts)
 
