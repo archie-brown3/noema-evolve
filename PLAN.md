@@ -539,14 +539,19 @@ seeds, same budget, same loop.
 Phase A gets the **brute-force arm (coordination OFF) running end-to-end first**; HiFo
 lands second; nothing in Phase B blocks Phase A.
 
-> **Status (implemented on this branch):** tasks 1–11 are done — see the `noema/`
-> package and `tests/test_noema_*.py`. Notes against the original plan: the
-> `noema` package lives inside this repo next to `openevolve/` (no
-> submodule/pinning needed); task 7's milestone ran against a stubbed
-> chat-completions client rather than a live provider, so ledger-vs-dashboard
-> reconciliation remains to do on the first real run; two determinism fixes
-> surfaced by the pilot (deterministic program IDs, global-scope generation-tick
-> context) are documented in `noema/controller.py`. Task 12 is still open.
+> **Status (implemented on this branch / noema-evolve repo):** tasks 1–11 and 13–16
+> are done — see `noema/` and `tests/test_noema_*.py`. The `noema` package now lives
+> in its own repo (`/home/archie/noema-evolve`) with openevolve pinned to `80945ed`
+> / v0.2.27 as an installed dependency (90 tests pass in venv). Notes:
+> task 7's milestone ran against a stubbed client — ledger-vs-dashboard reconciliation
+> pending first live run; two determinism fixes (deterministic program IDs,
+> global-scope generation-tick context) documented in `noema/controller.py`.
+> **Open latent bug (task 12 scope):** `PESPlannerModule.advise` is `async def` but
+> the `CoordinationModule` ABC declares `advise` as a sync method and the controller
+> (`controller.py:222`) calls `self.coordination.advise(ctx)` without `await`. Tests
+> pass because they call `asyncio.run(module.advise(...))` directly. Fix: make
+> `advise` async in the ABC, `NullCoordination`, `HiFoPromptModule`, and add `await`
+> in the controller — required before any live PES run.
 
 **Phase A — substrate + ledger + OFF arm**
 
@@ -586,5 +591,45 @@ lands second; nothing in Phase B blocks Phase A.
 11. ✅ **Milestone: two-arm pilot** (OFF vs HiFo) at equal total budget, same
     seeds/templates — `tests/test_noema_hifo.py::TestTwoArmPilot` verifies the only
     diff in prompts is the coordination block and the ledger splits spend by account.
-12. ⬜ Cleanups for arm #3 readiness: confirm `sampling_hint` pathway with a trivial test
-    module (e.g. random island override) before starting the ShinkaEvolve-style bandit.
+12. ⬜ **ABC async fix + sampling_hint test** (prerequisite for live PES run):
+    make `advise()` async in the ABC, `NullCoordination`, `HiFoPromptModule`, and
+    add `await` in the controller (`controller.py:222`); confirm the `sampling_hint`
+    pathway with a trivial test module (e.g. random island override).
+
+**Phase C — PES planner arm (LoongFlow transplant, Phase 1)**
+
+13. ✅ `PESPlannerModule(CoordinationModule)` in `noema/coordination/pes/`
+    (registry key `pes`): LoongFlow-derived plan-before-mutate, assess-after.
+    `advise()` makes one metered planning call per mutation (coordination account)
+    and returns the plan as the prompt suffix. `report_result()` classifies the
+    outcome (IMPROVED / REGRESSED / STALE / FAILED) from fitness comparison and
+    stores `{plan, outcome, parent_fitness, child_fitness}` keyed by child program
+    id — the lineage memory. `on_generation_end()` is a no-op (Phase 2 hook).
+    `state_dict()` / `load_state_dict()` serialise the plan store (JSON-safe).
+    `log_snapshot()` returns outcome counts.
+14. ✅ Prompt templates (`PLANNER_SYSTEM`, `PLANNER_USER_TEMPLATE`) adapted from
+    LoongFlow's `general_prompt.py` (Apache-2.0; provenance header + `NOEMA:`
+    markers on all local changes). Structural skeleton (Situation Analysis / Strategy
+    / Action Steps / Success Criteria) kept verbatim; solution-pack/workspace
+    sections dropped; brevity constraint added (plan is a suffix, not a file).
+15. ✅ Fidelity deviations documented in the module docstring (5 items); mirrors the
+    §2.2 discipline applied to HiFo.
+16. ✅ Integration tests (`tests/test_noema_pes.py`, 13 tests covering: plan text
+    reaches prompt_block, ledger charges coordination account only, LLM failure
+    degrades to no-op, BudgetExhausted propagates, prior plan + outcome visible in
+    the next planning prompt, all four outcome classifications, state round-trip,
+    code truncation, registry lookup). All 90 tests pass in venv.
+
+**Fidelity notes for PES (parallel to §2.2 for HiFo):**
+
+1. One single-shot planning call, not a multi-turn Claude Code agent session.
+   LoongFlow's `math_agent` runs PES on plain LLM calls — upstream precedent.
+2. The plan is a prompt *suffix* after OpenEvolve's mutation instructions, not the
+   executor's primary directive. Biggest fidelity gap; flagged in the LoongFlow Fit
+   Assessment; accepted for Phase 1.
+3. Parent sampled by the host (not by the planner); lineage memory is module-internal
+   (LoongFlow's planner queries the database with tools).
+4. Phase 1 makes no summary LLM call — outcome is computed from fitness only.
+   The reflective summarizer is Phase 2 (`on_generation_end` is a placeholder).
+5. "Expected Deliverables" section dropped from the plan skeleton: the deliverable
+   is fixed by the substrate (a diff or rewrite).

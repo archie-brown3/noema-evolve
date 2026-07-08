@@ -1,0 +1,1639 @@
+❯ llama-server -m Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf --port 8080
+0.00.283.316 I log_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.283.318 I device_info:
+0.00.406.553 I   - CUDA0   : NVIDIA GeForce RTX 3070 (7833 MiB, 6553 MiB free)
+0.00.406.565 I   - CPU     : AMD Ryzen 5 5600XT 6-Core Processor (15916 MiB, 15916 MiB free)
+0.00.406.901 I system_info: n_threads = 6 (n_threads_batch = 6) / 12 | CUDA : ARCHS = 860 | USE_GRAPHS = 1 | PEER_MAX_BATCH_SIZE = 128 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.00.406.909 I srv  llama_server: n_parallel is set to auto, using n_parallel = 4 and kv_unified = true
+0.00.408.517 I srv          init: running without SSL
+0.00.409.546 I srv          init: using 11 threads for HTTP server
+0.00.411.358 I srv         start: binding port with default address family
+0.00.412.954 I srv  llama_server: loading model
+0.00.413.964 I srv    load_model: loading model 'Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf'
+0.00.413.986 I common_init_result: fitting params to device memory ...
+0.00.413.988 I common_init_result: (for bugs during this step try to reproduce them with -fit off, or provide --verbose logs if the bug only occurs with -fit on)
+0.11.959.781 W llama_context: n_ctx_seq (4096) < n_ctx_train (131072) -- the full capacity of the model will not be utilized
+0.12.008.441 I common_init_from_params: warming up the model with an empty run - please wait ... (--no-warmup to disable)
+0.12.487.552 I srv    load_model: initializing slots, n_slots = 4
+0.12.528.784 W common_speculative_init: no implementations specified for speculative decoding
+0.12.528.788 I slot   load_model: id  0 | task -1 | new slot, n_ctx = 4096
+0.12.528.800 I slot   load_model: id  1 | task -1 | new slot, n_ctx = 4096
+0.12.528.801 I slot   load_model: id  2 | task -1 | new slot, n_ctx = 4096
+0.12.528.801 I slot   load_model: id  3 | task -1 | new slot, n_ctx = 4096
+0.12.528.891 I srv    load_model: prompt cache is enabled, size limit: 8192 MiB
+0.12.528.893 I srv    load_model: use `--cache-ram 0` to disable the prompt cache
+0.12.528.894 I srv    load_model: for more info see https://github.com/ggml-org/llama.cpp/pull/16391
+0.12.528.968 I srv    load_model: context checkpoints enabled, max = 32, min spacing = 8192
+0.12.529.587 I srv          init: idle slots will be saved to prompt cache and cleared upon starting a new task
+0.12.544.104 I init: chat template, example_format: '<|start_header_id|>system<|end_header_id|>
+
+Cutting Knowledge Date: December 2023
+Today Date: 28 Jun 2026
+
+You are a helpful assistant<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Hello<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+Hi there<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+How are you?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+'
+0.12.546.511 I srv          init: init: chat template, thinking = 0
+0.12.546.619 I srv  llama_server: model loaded
+0.12.546.628 I srv  llama_server: server is listening on http://127.0.0.1:8080
+0.12.546.641 I srv  update_slots: all slots are idle
+0.58.351.072 I srv    operator(): Chat format: peg-native
+0.58.351.224 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.58.351.226 I srv  get_availabl: updating prompt cache
+0.58.351.232 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+0.58.351.237 I srv        update:  - cache state: 0 prompts, 0.000 MiB (limits: 8192.000 MiB, 4096 tokens, 8589934592 est)
+0.58.351.238 I srv  get_availabl: prompt cache update took 0.01 ms
+0.58.351.465 I srv    operator(): Chat format: peg-native
+0.58.351.540 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.58.351.672 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+0.58.351.676 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+0.58.351.684 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+0.58.351.684 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+0.58.351.688 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+0.58.351.689 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+0.58.351.695 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = -1
+0.58.351.696 I srv  get_availabl: updating prompt cache
+0.58.351.698 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+0.58.351.700 I srv        update:  - cache state: 0 prompts, 0.000 MiB (limits: 8192.000 MiB, 4096 tokens, 8589934592 est)
+0.58.351.701 I srv  get_availabl: prompt cache update took 0.01 ms
+0.58.351.730 I slot launch_slot_: id  2 | task 1 | processing task, is_child = 0
+0.58.351.730 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+0.58.351.731 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+0.58.351.735 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+0.58.351.781 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+1.02.832.527 I slot print_timing: id  2 | task 1 | n_decoded =    100, tg =  32.44 t/s, tg_3s =  32.44 t/s
+1.02.832.917 I slot print_timing: id  3 | task 0 | n_decoded =    100, tg =  32.45 t/s, tg_3s =  32.45 t/s
+1.04.086.276 I slot print_timing: id  3 | task 0 | prompt eval time =    1399.07 ms /  1025 tokens (    1.36 ms per token,   732.63 tokens per second)
+1.04.086.280 I slot print_timing: id  3 | task 0 |        eval time =    4335.38 ms /   143 tokens (   30.32 ms per token,    32.98 tokens per second)
+1.04.086.281 I slot print_timing: id  3 | task 0 |       total time =    5734.44 ms /  1168 tokens
+1.04.086.286 I slot print_timing: id  3 | task 0 |    graphs reused =        141
+1.04.153.806 I slot      release: id  3 | task 0 | stop processing: n_tokens = 1167, truncated = 0
+1.04.154.768 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.05.843.067 I slot print_timing: id  2 | task 1 | n_decoded =    203, tg =  33.32 t/s, tg_3s =  34.21 t/s
+1.06.787.615 I slot print_timing: id  2 | task 1 | prompt eval time =    1397.93 ms /  1025 tokens (    1.36 ms per token,   733.23 tokens per second)
+1.06.787.618 I slot print_timing: id  2 | task 1 |        eval time =    7037.87 ms /   237 tokens (   29.70 ms per token,    33.67 tokens per second)
+1.06.787.618 I slot print_timing: id  2 | task 1 |       total time =    8435.80 ms /  1262 tokens
+1.06.787.619 I slot print_timing: id  2 | task 1 |    graphs reused =        234
+1.06.787.689 I slot      release: id  2 | task 1 | stop processing: n_tokens = 1261, truncated = 0
+1.06.787.697 I srv  update_slots: all slots are idle
+1.06.787.820 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.12.817.300 I srv    operator(): Chat format: peg-native
+1.12.817.387 I slot get_availabl: id  2 | task -1 | selected slot by LCP similarity, sim_best = 1.000 (> 0.100 thold), f_keep = 0.813
+1.12.818.408 I slot launch_slot_: id  2 | task 240 | processing task, is_child = 0
+1.12.818.411 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+1.12.818.413 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+1.12.818.423 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+1.12.818.423 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+1.12.818.430 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.12.818.833 W srv   prompt_save:  - saving prompt with length 1167, total state size = 145.889 MiB (draft: 0.000 MiB)
+1.12.969.207 I srv        update:  - cache state: 1 prompts, 145.889 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.12.969.211 I srv        update:    - prompt 0x60cd7d703bb0:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.12.969.212 I slot prompt_clear: id  3 | task -1 | clearing prompt with 1167 tokens
+1.12.969.359 W slot   operator(): id  2 | task 240 | need to evaluate at least 1 token for each active slot (n_past = 1025, task.n_tokens() = 1025)
+1.12.969.360 W slot   operator(): id  2 | task 240 | n_past was set to 1024
+1.14.701.275 I srv    operator(): Chat format: peg-native
+1.14.709.420 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = -1
+1.14.709.421 I srv  get_availabl: updating prompt cache
+1.14.709.424 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+1.14.709.426 I srv          load:  - found better prompt with f_keep = 0.878, sim = 1.000
+1.15.090.849 I srv        update:  - cache state: 0 prompts, 0.000 MiB (limits: 8192.000 MiB, 4096 tokens, 8589934592 est)
+1.15.090.854 I srv  get_availabl: prompt cache update took 381.43 ms
+1.15.090.907 I slot launch_slot_: id  1 | task 305 | processing task, is_child = 0
+1.15.090.909 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+1.15.090.910 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+1.15.090.917 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.15.090.918 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+1.15.090.933 W slot   operator(): id  1 | task 305 | need to evaluate at least 1 token for each active slot (n_past = 1025, task.n_tokens() = 1025)
+1.15.090.933 W slot   operator(): id  1 | task 305 | n_past was set to 1024
+1.16.167.289 I slot print_timing: id  2 | task 240 | n_decoded =    100, tg =  31.56 t/s, tg_3s =  31.56 t/s
+1.18.151.145 I slot print_timing: id  1 | task 305 | n_decoded =    103, tg =  34.03 t/s, tg_3s =  34.03 t/s
+1.19.172.738 I slot print_timing: id  2 | task 240 | n_decoded =    201, tg =  32.56 t/s, tg_3s =  33.61 t/s
+1.19.352.571 I slot print_timing: id  1 | task 305 | prompt eval time =      33.42 ms /     1 tokens (   33.42 ms per token,    29.92 tokens per second)
+1.19.352.575 I slot print_timing: id  1 | task 305 |        eval time =    4228.20 ms /   143 tokens (   29.57 ms per token,    33.82 tokens per second)
+1.19.352.575 I slot print_timing: id  1 | task 305 |       total time =    4261.63 ms /   144 tokens
+1.19.352.576 I slot print_timing: id  1 | task 305 |    graphs reused =        438
+1.19.352.655 I slot      release: id  1 | task 305 | stop processing: n_tokens = 1167, truncated = 0
+1.19.352.777 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.20.626.262 I slot print_timing: id  2 | task 240 | prompt eval time =      29.75 ms /     1 tokens (   29.75 ms per token,    33.62 tokens per second)
+1.20.626.267 I slot print_timing: id  2 | task 240 |        eval time =    7627.15 ms /   237 tokens (   32.18 ms per token,    31.07 tokens per second)
+1.20.626.267 I slot print_timing: id  2 | task 240 |       total time =    7656.89 ms /   238 tokens
+1.20.626.269 I slot print_timing: id  2 | task 240 |    graphs reused =        467
+1.20.626.353 I slot      release: id  2 | task 240 | stop processing: n_tokens = 1261, truncated = 0
+1.20.626.365 I srv  update_slots: all slots are idle
+1.20.626.441 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.27.130.954 I srv    operator(): Chat format: peg-native
+1.27.131.065 I slot get_availabl: id  1 | task -1 | selected slot by LCP similarity, sim_best = 0.216 (> 0.100 thold), f_keep = 0.272
+1.27.131.067 I srv  get_availabl: updating prompt cache
+1.27.131.129 W srv   prompt_save:  - saving prompt with length 1167, total state size = 145.889 MiB (draft: 0.000 MiB)
+1.27.281.001 I srv          load:  - looking for better prompt, base f_keep = 0.272, sim = 0.216
+1.27.281.008 I srv        update:  - cache state: 1 prompts, 145.889 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.27.281.008 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.27.281.009 I srv  get_availabl: prompt cache update took 149.94 ms
+1.27.281.067 I slot launch_slot_: id  1 | task 479 | processing task, is_child = 0
+1.27.281.069 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+1.27.281.070 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+1.27.281.078 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.27.281.120 W srv   prompt_save:  - saving prompt with length 1261, total state size = 157.640 MiB (draft: 0.000 MiB)
+1.27.435.443 I srv        update:  - cache state: 2 prompts, 303.529 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.27.435.447 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.27.435.453 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.27.435.455 I slot prompt_clear: id  2 | task -1 | clearing prompt with 1261 tokens
+1.27.435.582 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.27.435.583 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+1.28.621.733 I srv    operator(): Chat format: peg-native
+1.28.753.801 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+1.28.753.804 I srv  get_availabl: updating prompt cache
+1.28.753.806 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+1.28.753.811 I srv        update:  - cache state: 2 prompts, 303.529 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.28.753.811 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.28.753.812 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.28.756.619 I srv  get_availabl: prompt cache update took 0.01 ms
+1.28.756.669 I slot launch_slot_: id  0 | task 481 | processing task, is_child = 0
+1.28.756.669 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.28.756.670 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+1.28.756.682 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.28.756.682 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+1.32.815.476 I slot print_timing: id  1 | task 479 | n_decoded =    100, tg =  24.62 t/s, tg_3s =  24.62 t/s
+1.32.875.907 I slot print_timing: id  0 | task 481 | n_decoded =    100, tg =  33.15 t/s, tg_3s =  33.15 t/s
+1.34.324.894 I slot print_timing: id  1 | task 479 | prompt eval time =    1318.16 ms /  1153 tokens (    1.14 ms per token,   874.70 tokens per second)
+1.34.324.897 I slot print_timing: id  1 | task 479 |        eval time =    5571.10 ms /   148 tokens (   37.64 ms per token,    26.57 tokens per second)
+1.34.324.897 I slot print_timing: id  1 | task 479 |       total time =    6889.26 ms /  1301 tokens
+1.34.324.898 I slot print_timing: id  1 | task 479 |    graphs reused =        611
+1.34.604.216 I slot      release: id  1 | task 479 | stop processing: n_tokens = 1617, truncated = 0
+1.34.604.307 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.35.907.680 I slot print_timing: id  0 | task 481 | n_decoded =    190, tg =  31.41 t/s, tg_3s =  29.69 t/s
+1.35.991.164 I srv    operator(): Chat format: peg-native
+1.36.001.556 I slot get_availabl: id  1 | task -1 | selected slot by LCP similarity, sim_best = 0.257 (> 0.100 thold), f_keep = 0.176
+1.36.001.560 I srv  get_availabl: updating prompt cache
+1.36.001.627 W srv   prompt_save:  - saving prompt with length 1617, total state size = 202.144 MiB (draft: 0.000 MiB)
+1.36.190.059 I srv          load:  - looking for better prompt, base f_keep = 0.176, sim = 0.257
+1.36.190.066 I srv        update:  - cache state: 3 prompts, 505.674 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.36.190.067 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.36.190.068 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.36.190.068 I srv        update:    - prompt 0x60cd7e419ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+1.36.190.069 I srv  get_availabl: prompt cache update took 188.51 ms
+1.36.190.140 I slot launch_slot_: id  1 | task 676 | processing task, is_child = 0
+1.36.190.142 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.36.190.143 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+1.36.190.154 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.36.190.154 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+1.37.813.649 I slot print_timing: id  1 | task 676 | prompt eval time =     412.00 ms /   825 tokens (    0.50 ms per token,  2002.42 tokens per second)
+1.37.813.652 I slot print_timing: id  1 | task 676 |        eval time =    1211.47 ms /    40 tokens (   30.29 ms per token,    33.02 tokens per second)
+1.37.813.653 I slot print_timing: id  1 | task 676 |       total time =    1623.47 ms /   865 tokens
+1.37.813.653 I slot print_timing: id  1 | task 676 |    graphs reused =        694
+1.37.826.707 I slot      release: id  1 | task 676 | stop processing: n_tokens = 1149, truncated = 0
+1.37.826.814 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.38.357.730 I slot print_timing: id  0 | task 481 | prompt eval time =    1102.39 ms /  1300 tokens (    0.85 ms per token,  1179.26 tokens per second)
+1.38.357.734 I slot print_timing: id  0 | task 481 |        eval time =    8498.63 ms /   251 tokens (   33.86 ms per token,    29.53 tokens per second)
+1.38.357.735 I slot print_timing: id  0 | task 481 |       total time =    9601.02 ms /  1551 tokens
+1.38.357.735 I slot print_timing: id  0 | task 481 |    graphs reused =        711
+1.39.698.902 I slot      release: id  0 | task 481 | stop processing: n_tokens = 1550, truncated = 0
+1.39.698.923 I srv  update_slots: all slots are idle
+1.39.699.021 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.45.328.202 I srv    operator(): Chat format: peg-native
+1.45.328.283 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, sim_best = 1.000 (> 0.100 thold), f_keep = 0.839
+1.45.328.325 I slot launch_slot_: id  0 | task 735 | processing task, is_child = 0
+1.45.328.327 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+1.45.328.385 W srv   prompt_save:  - saving prompt with length 1149, total state size = 143.639 MiB (draft: 0.000 MiB)
+1.45.435.580 I srv        update:  - cache state: 4 prompts, 649.312 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.45.435.590 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.45.435.590 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.45.435.591 I srv        update:    - prompt 0x60cd7e419ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+1.45.435.592 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+1.45.435.596 I slot prompt_clear: id  1 | task -1 | clearing prompt with 1149 tokens
+1.45.435.722 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.45.435.724 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+1.45.435.726 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+1.45.435.727 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+1.45.435.778 W slot   operator(): id  0 | task 735 | need to evaluate at least 1 token for each active slot (n_past = 1300, task.n_tokens() = 1300)
+1.45.435.779 W slot   operator(): id  0 | task 735 | n_past was set to 1299
+1.46.572.549 I srv    operator(): Chat format: peg-native
+1.46.581.685 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7205885477
+1.46.581.688 I srv  get_availabl: updating prompt cache
+1.46.581.692 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+1.46.581.835 I srv          load:  - found better prompt with f_keep = 0.909, sim = 1.000
+1.47.133.315 I srv        update:  - cache state: 3 prompts, 447.168 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.47.133.318 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.47.133.319 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.47.133.319 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+1.47.133.321 I srv  get_availabl: prompt cache update took 551.63 ms
+1.47.133.390 I slot launch_slot_: id  3 | task 775 | processing task, is_child = 0
+1.47.133.392 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+1.47.133.393 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+1.47.133.402 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.47.133.403 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+1.47.133.419 W slot   operator(): id  3 | task 775 | need to evaluate at least 1 token for each active slot (n_past = 1470, task.n_tokens() = 1470)
+1.47.133.419 W slot   operator(): id  3 | task 775 | n_past was set to 1469
+1.49.151.606 I slot print_timing: id  0 | task 735 | n_decoded =    100, tg =  27.16 t/s, tg_3s =  27.16 t/s
+1.50.319.498 I slot print_timing: id  3 | task 775 | n_decoded =    100, tg =  31.72 t/s, tg_3s =  31.72 t/s
+1.51.782.440 I slot print_timing: id  3 | task 775 | prompt eval time =      33.25 ms /     1 tokens (   33.25 ms per token,    30.07 tokens per second)
+1.51.782.444 I slot print_timing: id  3 | task 775 |        eval time =    4615.76 ms /   148 tokens (   31.19 ms per token,    32.06 tokens per second)
+1.51.782.445 I slot print_timing: id  3 | task 775 |       total time =    4649.01 ms /   149 tokens
+1.51.782.446 I slot print_timing: id  3 | task 775 |    graphs reused =        894
+1.51.782.552 I slot      release: id  3 | task 775 | stop processing: n_tokens = 1617, truncated = 0
+1.51.782.648 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.51.945.391 I srv    operator(): Chat format: peg-native
+1.51.952.017 I slot get_availabl: id  3 | task -1 | selected slot by LCP similarity, sim_best = 0.213 (> 0.100 thold), f_keep = 0.176
+1.51.952.019 I srv  get_availabl: updating prompt cache
+1.51.952.078 W srv   prompt_save:  - saving prompt with length 1617, total state size = 202.144 MiB (draft: 0.000 MiB)
+1.52.144.268 I srv          load:  - looking for better prompt, base f_keep = 0.176, sim = 0.213
+1.52.144.276 I srv        update:  - cache state: 4 prompts, 649.312 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+1.52.144.277 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+1.52.144.277 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+1.52.144.277 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+1.52.144.286 I srv        update:    - prompt 0x60cd7ea1d3c0:    1617 tokens, checkpoints:  0,   202.144 MiB
+1.52.144.288 I srv  get_availabl: prompt cache update took 192.27 ms
+1.52.144.354 I slot launch_slot_: id  3 | task 929 | processing task, is_child = 0
+1.52.144.355 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+1.52.144.356 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+1.52.144.365 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+1.52.144.365 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+1.52.753.624 I slot print_timing: id  0 | task 735 | n_decoded =    193, tg =  26.50 t/s, tg_3s =  25.82 t/s
+1.53.924.427 I slot print_timing: id  3 | task 929 | prompt eval time =     609.44 ms /  1054 tokens (    0.58 ms per token,  1729.45 tokens per second)
+1.53.924.431 I slot print_timing: id  3 | task 929 |        eval time =    1170.60 ms /    39 tokens (   30.02 ms per token,    33.32 tokens per second)
+1.53.924.431 I slot print_timing: id  3 | task 929 |       total time =    1780.04 ms /  1093 tokens
+1.53.924.432 I slot print_timing: id  3 | task 929 |    graphs reused =        935
+1.53.933.239 I slot      release: id  3 | task 929 | stop processing: n_tokens = 1377, truncated = 0
+1.53.933.359 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+1.54.515.702 I slot print_timing: id  0 | task 735 | prompt eval time =      33.70 ms /     1 tokens (   33.70 ms per token,    29.67 tokens per second)
+1.54.515.713 I slot print_timing: id  0 | task 735 |        eval time =    9046.21 ms /   251 tokens (   36.04 ms per token,    27.75 tokens per second)
+1.54.515.713 I slot print_timing: id  0 | task 735 |       total time =    9079.91 ms /   252 tokens
+1.54.515.715 I slot print_timing: id  0 | task 735 |    graphs reused =        954
+1.54.515.801 I slot      release: id  0 | task 735 | stop processing: n_tokens = 1550, truncated = 0
+1.54.515.814 I srv  update_slots: all slots are idle
+1.54.515.891 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+2.01.991.022 I srv    operator(): Chat format: peg-native
+2.01.991.103 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, sim_best = 0.195 (> 0.100 thold), f_keep = 0.185
+2.01.991.106 I srv  get_availabl: updating prompt cache
+2.01.991.188 W srv   prompt_save:  - saving prompt with length 1550, total state size = 193.768 MiB (draft: 0.000 MiB)
+2.01.992.730 I srv    operator(): Chat format: peg-native
+2.02.563.223 I srv          load:  - looking for better prompt, base f_keep = 0.185, sim = 0.195
+2.02.563.230 I srv          load:  - found better prompt with f_keep = 0.909, sim = 1.000
+2.03.084.194 I srv        update:  - cache state: 4 prompts, 640.937 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.03.084.197 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.03.807.076 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.03.807.093 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.03.807.094 I srv        update:    - prompt 0x60cd7c8eac20:    1550 tokens, checkpoints:  0,   193.768 MiB
+2.03.807.095 I srv  get_availabl: prompt cache update took 1815.99 ms
+2.03.807.166 I slot launch_slot_: id  0 | task 989 | processing task, is_child = 0
+2.03.807.168 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.03.807.169 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.03.807.178 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.03.807.178 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.03.807.183 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.03.807.233 W srv   prompt_save:  - saving prompt with length 1377, total state size = 172.142 MiB (draft: 0.000 MiB)
+2.04.699.598 I srv        update:  - cache state: 5 prompts, 813.078 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.04.699.601 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.04.699.602 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.04.699.602 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.04.699.610 I srv        update:    - prompt 0x60cd7c8eac20:    1550 tokens, checkpoints:  0,   193.768 MiB
+2.04.699.611 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.04.699.612 I slot prompt_clear: id  3 | task -1 | clearing prompt with 1377 tokens
+2.04.699.773 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7222358022
+2.04.699.775 I srv  get_availabl: updating prompt cache
+2.04.699.776 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.04.699.779 I srv          load:  - found better prompt with f_keep = 0.405, sim = 0.321
+2.05.222.049 I srv        update:  - cache state: 4 prompts, 619.310 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.05.222.054 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.05.222.055 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.05.222.055 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.05.222.056 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.05.222.057 I srv  get_availabl: prompt cache update took 522.28 ms
+2.05.222.146 I slot launch_slot_: id  2 | task 990 | processing task, is_child = 0
+2.05.222.148 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.05.987.519 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.05.987.540 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.05.987.542 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.05.987.564 W slot   operator(): id  0 | task 989 | need to evaluate at least 1 token for each active slot (n_past = 1470, task.n_tokens() = 1470)
+2.05.987.564 W slot   operator(): id  0 | task 989 | n_past was set to 1469
+2.09.642.939 I slot print_timing: id  0 | task 989 | n_decoded =    100, tg =  33.03 t/s, tg_3s =  33.03 t/s
+2.09.643.123 I slot print_timing: id  2 | task 990 | n_decoded =    100, tg =  33.03 t/s, tg_3s =  33.03 t/s
+2.11.124.349 I slot print_timing: id  0 | task 989 | prompt eval time =     627.51 ms /     1 tokens (  627.51 ms per token,     1.59 tokens per second)
+2.11.124.353 I slot print_timing: id  0 | task 989 |        eval time =    4509.25 ms /   148 tokens (   30.47 ms per token,    32.82 tokens per second)
+2.11.124.354 I slot print_timing: id  0 | task 989 |       total time =    5136.76 ms /   149 tokens
+2.11.124.354 I slot print_timing: id  0 | task 989 |    graphs reused =       1099
+2.11.124.450 I slot      release: id  0 | task 989 | stop processing: n_tokens = 1617, truncated = 0
+2.11.124.561 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+2.11.271.025 I srv    operator(): Chat format: peg-native
+2.11.283.508 I slot get_availabl: id  0 | task -1 | selected slot by LCP similarity, sim_best = 0.147 (> 0.100 thold), f_keep = 0.177
+2.11.283.511 I srv  get_availabl: updating prompt cache
+2.11.283.593 W srv   prompt_save:  - saving prompt with length 1617, total state size = 202.144 MiB (draft: 0.000 MiB)
+2.11.481.597 I srv          load:  - looking for better prompt, base f_keep = 0.177, sim = 0.147
+2.11.481.605 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.11.481.606 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.11.481.606 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.11.481.607 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.11.481.607 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.11.481.607 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.11.481.609 I srv  get_availabl: prompt cache update took 198.10 ms
+2.11.481.670 I slot launch_slot_: id  0 | task 1144 | processing task, is_child = 0
+2.11.481.672 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.11.481.673 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.11.481.683 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.11.481.683 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.12.659.609 I slot print_timing: id  2 | task 990 | n_decoded =    166, tg =  27.46 t/s, tg_3s =  21.88 t/s
+2.12.752.871 W decode: failed to find a memory slot for batch of size 2
+2.12.752.876 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.12.753.007 W decode: failed to find a memory slot for batch of size 2
+2.12.753.009 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.12.753.155 W decode: failed to find a memory slot for batch of size 2
+2.12.753.157 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.12.753.284 W decode: failed to find a memory slot for batch of size 2
+2.12.753.286 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.12.753.410 W decode: failed to find a memory slot for batch of size 2
+2.12.753.412 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.12.753.527 W decode: failed to find a memory slot for batch of size 2
+2.12.753.528 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.12.753.642 W decode: failed to find a memory slot for batch of size 2
+2.12.753.644 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.12.753.754 W decode: failed to find a memory slot for batch of size 2
+2.12.753.761 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.12.753.861 W decode: failed to find a memory slot for batch of size 2
+2.12.753.862 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.12.753.962 W decode: failed to find a memory slot for batch of size 2
+2.12.753.963 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.12.754.062 W decode: failed to find a memory slot for batch of size 2
+2.12.754.064 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.12.784.920 W decode: failed to find a memory slot for batch of size 1
+2.12.784.925 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.12.785.012 W decode: failed to find a memory slot for batch of size 1
+2.12.785.013 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.12.785.099 W decode: failed to find a memory slot for batch of size 1
+2.12.785.101 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.12.785.186 W decode: failed to find a memory slot for batch of size 1
+2.13.141.177 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.13.141.339 W decode: failed to find a memory slot for batch of size 1
+2.13.141.342 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.13.141.457 W decode: failed to find a memory slot for batch of size 1
+2.13.141.459 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.13.141.584 W decode: failed to find a memory slot for batch of size 1
+2.13.141.585 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.13.141.708 W decode: failed to find a memory slot for batch of size 1
+2.13.141.710 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.13.141.832 W decode: failed to find a memory slot for batch of size 1
+2.13.141.834 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.13.141.956 W decode: failed to find a memory slot for batch of size 1
+2.13.141.958 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.13.142.080 W decode: failed to find a memory slot for batch of size 1
+2.13.142.082 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.13.142.205 W decode: failed to find a memory slot for batch of size 1
+2.13.142.207 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.13.142.211 E srv    send_error: task id = 1144, error: Context size has been exceeded.
+2.13.142.216 I slot      release: id  0 | task 1144 | stop processing: n_tokens = 1972, truncated = 0
+2.13.142.226 I slot prompt_clear: id  0 | task -1 | clearing prompt with 1972 tokens
+2.13.142.233 W srv          stop: cancel task, id_task = 1144
+2.13.142.482 E srv    send_error: task id = 990, error: Context size has been exceeded.
+2.13.142.485 I slot      release: id  2 | task 990 | stop processing: n_tokens = 2125, truncated = 0
+2.13.142.489 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2125 tokens
+2.13.142.494 W srv          stop: cancel task, id_task = 990
+2.13.743.257 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.13.743.283 I srv  update_slots: all slots are idle
+2.14.052.326 I srv    operator(): Chat format: peg-native
+2.14.052.425 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7239558378
+2.14.052.427 I srv  get_availabl: updating prompt cache
+2.14.052.431 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.14.052.437 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.14.052.439 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.14.052.440 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.14.052.441 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.14.052.441 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.14.052.442 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.14.052.443 I srv  get_availabl: prompt cache update took 0.01 ms
+2.14.052.706 I slot launch_slot_: id  1 | task 1163 | processing task, is_child = 0
+2.14.052.708 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.14.052.709 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.14.052.714 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.14.052.714 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.14.052.716 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.14.052.717 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.14.088.606 I srv    operator(): Chat format: peg-native
+2.14.099.732 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7255664910
+2.14.099.735 I srv  get_availabl: updating prompt cache
+2.14.099.740 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.14.099.746 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.14.099.749 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.14.099.750 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.14.099.751 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.14.099.751 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.14.099.752 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.14.099.752 I srv  get_availabl: prompt cache update took 0.02 ms
+2.14.099.816 I slot launch_slot_: id  3 | task 1165 | processing task, is_child = 0
+2.14.099.817 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.14.099.818 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.14.099.823 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.14.099.823 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.19.097.598 W decode: failed to find a memory slot for batch of size 2
+2.19.097.602 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.19.097.691 W decode: failed to find a memory slot for batch of size 2
+2.19.097.692 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.19.097.780 W decode: failed to find a memory slot for batch of size 2
+2.19.097.781 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.19.097.869 W decode: failed to find a memory slot for batch of size 2
+2.19.097.870 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.19.097.957 W decode: failed to find a memory slot for batch of size 2
+2.19.097.958 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.19.098.046 W decode: failed to find a memory slot for batch of size 2
+2.19.098.047 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.19.098.134 W decode: failed to find a memory slot for batch of size 2
+2.19.098.136 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.19.098.223 W decode: failed to find a memory slot for batch of size 2
+2.19.098.224 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.19.098.312 W decode: failed to find a memory slot for batch of size 2
+2.19.098.313 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.19.098.409 W decode: failed to find a memory slot for batch of size 2
+2.19.098.411 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.19.098.498 W decode: failed to find a memory slot for batch of size 2
+2.19.098.499 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.19.132.582 W decode: failed to find a memory slot for batch of size 1
+2.19.132.586 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.19.132.674 W decode: failed to find a memory slot for batch of size 1
+2.19.132.675 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.19.132.762 W decode: failed to find a memory slot for batch of size 1
+2.19.132.764 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.19.132.850 W decode: failed to find a memory slot for batch of size 1
+2.19.132.851 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.19.132.938 W decode: failed to find a memory slot for batch of size 1
+2.19.132.939 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.19.133.026 W decode: failed to find a memory slot for batch of size 1
+2.19.133.027 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.19.133.113 W decode: failed to find a memory slot for batch of size 1
+2.19.133.115 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.19.133.201 W decode: failed to find a memory slot for batch of size 1
+2.19.133.202 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.19.133.289 W decode: failed to find a memory slot for batch of size 1
+2.19.133.290 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.19.133.382 W decode: failed to find a memory slot for batch of size 1
+2.19.133.383 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.19.133.469 W decode: failed to find a memory slot for batch of size 1
+2.19.133.471 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.19.133.557 W decode: failed to find a memory slot for batch of size 1
+2.19.133.559 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.19.133.560 E srv    send_error: task id = 1163, error: Context size has been exceeded.
+2.19.133.565 I slot      release: id  1 | task 1163 | stop processing: n_tokens = 2049, truncated = 0
+2.19.133.571 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2049 tokens
+2.19.133.588 W srv          stop: cancel task, id_task = 1163
+2.19.133.743 E srv    send_error: task id = 1165, error: Context size has been exceeded.
+2.19.133.746 I slot      release: id  3 | task 1165 | stop processing: n_tokens = 2048, truncated = 0
+2.19.133.749 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+2.19.133.755 W srv          stop: cancel task, id_task = 1165
+2.19.133.906 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.19.133.912 I srv  update_slots: all slots are idle
+2.19.996.747 I srv    operator(): Chat format: peg-native
+2.19.996.813 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7274873886
+2.19.996.816 I srv  get_availabl: updating prompt cache
+2.19.996.819 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.19.998.066 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.19.998.069 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.19.998.070 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.19.998.071 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.19.998.072 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.19.998.072 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.19.998.073 I srv  get_availabl: prompt cache update took 1.26 ms
+2.19.998.342 I slot launch_slot_: id  0 | task 1261 | processing task, is_child = 0
+2.19.998.345 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.19.998.346 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.19.998.350 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.19.998.351 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.19.998.355 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.19.998.355 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.20.010.929 I srv    operator(): Chat format: peg-native
+2.20.065.419 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7274874153
+2.20.065.422 I srv  get_availabl: updating prompt cache
+2.20.065.426 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.20.065.431 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.20.065.432 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.20.065.433 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.20.065.434 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.20.065.435 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.20.065.435 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.20.065.435 I srv  get_availabl: prompt cache update took 0.01 ms
+2.20.065.502 I slot launch_slot_: id  2 | task 1263 | processing task, is_child = 0
+2.20.065.504 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.20.065.504 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.20.065.509 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.20.065.509 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.24.652.565 W decode: failed to find a memory slot for batch of size 2
+2.24.652.568 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.24.652.694 W decode: failed to find a memory slot for batch of size 2
+2.24.652.696 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.24.652.822 W decode: failed to find a memory slot for batch of size 2
+2.24.652.824 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.24.652.949 W decode: failed to find a memory slot for batch of size 2
+2.24.652.951 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.24.653.076 W decode: failed to find a memory slot for batch of size 2
+2.24.653.077 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.24.653.200 W decode: failed to find a memory slot for batch of size 2
+2.24.653.202 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.24.653.326 W decode: failed to find a memory slot for batch of size 2
+2.24.653.328 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.24.653.460 W decode: failed to find a memory slot for batch of size 2
+2.24.653.462 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.24.653.584 W decode: failed to find a memory slot for batch of size 2
+2.24.653.585 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.24.653.707 W decode: failed to find a memory slot for batch of size 2
+2.24.653.708 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.24.653.829 W decode: failed to find a memory slot for batch of size 2
+2.24.653.831 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.24.684.052 W decode: failed to find a memory slot for batch of size 1
+2.24.684.057 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.24.684.185 W decode: failed to find a memory slot for batch of size 1
+2.24.684.187 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.24.684.311 W decode: failed to find a memory slot for batch of size 1
+2.24.684.313 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.24.684.443 W decode: failed to find a memory slot for batch of size 1
+2.24.684.445 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.24.684.568 W decode: failed to find a memory slot for batch of size 1
+2.24.684.569 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.24.684.691 W decode: failed to find a memory slot for batch of size 1
+2.24.684.693 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.24.684.815 W decode: failed to find a memory slot for batch of size 1
+2.24.684.817 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.24.684.941 W decode: failed to find a memory slot for batch of size 1
+2.24.684.943 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.24.685.065 W decode: failed to find a memory slot for batch of size 1
+2.24.685.067 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.24.685.185 W decode: failed to find a memory slot for batch of size 1
+2.24.685.187 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.24.685.308 W decode: failed to find a memory slot for batch of size 1
+2.24.685.310 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.24.685.463 W decode: failed to find a memory slot for batch of size 1
+2.24.685.466 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.24.685.466 E srv    send_error: task id = 1261, error: Context size has been exceeded.
+2.24.685.472 I slot      release: id  0 | task 1261 | stop processing: n_tokens = 2049, truncated = 0
+2.24.685.481 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2049 tokens
+2.24.685.498 W srv          stop: cancel task, id_task = 1261
+2.24.685.693 E srv    send_error: task id = 1263, error: Context size has been exceeded.
+2.24.685.696 I slot      release: id  2 | task 1263 | stop processing: n_tokens = 2048, truncated = 0
+2.24.685.700 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+2.24.685.708 W srv          stop: cancel task, id_task = 1263
+2.24.685.922 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.24.685.929 I srv  update_slots: all slots are idle
+2.26.396.225 I srv    operator(): Chat format: peg-native
+2.26.396.305 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7280865233
+2.26.396.307 I srv  get_availabl: updating prompt cache
+2.26.396.310 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.26.396.317 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.26.396.319 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.26.396.320 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.26.396.321 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.26.396.322 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.26.396.323 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.26.396.324 I srv  get_availabl: prompt cache update took 0.02 ms
+2.26.396.581 I slot launch_slot_: id  1 | task 1359 | processing task, is_child = 0
+2.26.396.584 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.26.396.585 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.26.396.590 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.26.396.590 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.26.396.593 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.26.396.593 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.26.646.726 I srv    operator(): Chat format: peg-native
+2.27.277.425 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7280865414
+2.27.277.431 I srv  get_availabl: updating prompt cache
+2.27.277.436 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.27.277.443 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.27.277.444 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.27.277.445 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.27.277.445 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.27.277.446 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.27.277.447 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.27.277.447 I srv  get_availabl: prompt cache update took 0.02 ms
+2.27.277.513 I slot launch_slot_: id  3 | task 1362 | processing task, is_child = 0
+2.27.277.516 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.27.277.517 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.27.277.526 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.27.277.526 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.31.073.324 W decode: failed to find a memory slot for batch of size 2
+2.31.073.328 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.31.073.472 W decode: failed to find a memory slot for batch of size 2
+2.31.073.475 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.31.073.648 W decode: failed to find a memory slot for batch of size 2
+2.31.073.650 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.31.073.820 W decode: failed to find a memory slot for batch of size 2
+2.31.073.824 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.31.073.995 W decode: failed to find a memory slot for batch of size 2
+2.31.073.998 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.31.074.168 W decode: failed to find a memory slot for batch of size 2
+2.31.074.170 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.31.074.342 W decode: failed to find a memory slot for batch of size 2
+2.31.074.344 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.31.074.433 W decode: failed to find a memory slot for batch of size 2
+2.31.074.434 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.31.074.590 W decode: failed to find a memory slot for batch of size 2
+2.31.074.593 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.31.074.702 W decode: failed to find a memory slot for batch of size 2
+2.31.074.704 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.31.074.811 W decode: failed to find a memory slot for batch of size 2
+2.31.074.813 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.31.074.930 W decode: failed to find a memory slot for batch of size 1
+2.31.074.932 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+2.31.074.933 E srv    send_error: task id = 1359, error: Context size has been exceeded.
+2.31.074.939 I slot      release: id  1 | task 1359 | stop processing: n_tokens = 2050, truncated = 0
+2.31.074.946 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2050 tokens
+2.31.074.957 W srv          stop: cancel task, id_task = 1359
+2.31.075.127 E srv    send_error: task id = 1362, error: Context size has been exceeded.
+2.31.075.130 I slot      release: id  3 | task 1362 | stop processing: n_tokens = 2048, truncated = 0
+2.31.075.134 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+2.31.075.140 W srv          stop: cancel task, id_task = 1362
+2.31.075.301 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.31.075.307 I srv  update_slots: all slots are idle
+2.36.090.144 I srv    operator(): Chat format: peg-native
+2.36.090.220 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7286417140
+2.36.090.223 I srv  get_availabl: updating prompt cache
+2.36.090.226 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.36.090.233 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.36.090.234 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.36.090.234 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.36.090.235 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.36.090.235 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.36.090.236 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.36.090.236 I srv  get_availabl: prompt cache update took 0.01 ms
+2.36.090.494 I slot launch_slot_: id  0 | task 1458 | processing task, is_child = 0
+2.36.090.496 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.36.090.497 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.36.090.502 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.36.090.502 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.36.090.505 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.36.090.505 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.36.090.931 I srv    operator(): Chat format: peg-native
+2.36.136.697 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7286417364
+2.36.136.701 I srv  get_availabl: updating prompt cache
+2.36.136.704 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.36.136.710 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.36.136.710 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.36.136.711 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.36.136.712 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.36.136.712 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.36.136.718 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.36.136.718 I srv  get_availabl: prompt cache update took 0.02 ms
+2.36.136.776 I slot launch_slot_: id  2 | task 1460 | processing task, is_child = 0
+2.36.136.777 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.36.136.778 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.36.136.783 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.36.136.783 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.43.980.641 W decode: failed to find a memory slot for batch of size 2
+2.43.980.644 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.43.980.732 W decode: failed to find a memory slot for batch of size 2
+2.43.980.734 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.43.980.821 W decode: failed to find a memory slot for batch of size 2
+2.43.980.822 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.43.980.909 W decode: failed to find a memory slot for batch of size 2
+2.43.980.910 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.43.980.997 W decode: failed to find a memory slot for batch of size 2
+2.43.980.998 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.43.981.084 W decode: failed to find a memory slot for batch of size 2
+2.43.981.086 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.43.981.172 W decode: failed to find a memory slot for batch of size 2
+2.43.981.173 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.43.981.260 W decode: failed to find a memory slot for batch of size 2
+2.43.981.261 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.43.981.353 W decode: failed to find a memory slot for batch of size 2
+2.43.981.354 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.43.981.441 W decode: failed to find a memory slot for batch of size 2
+2.43.981.442 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.43.981.529 W decode: failed to find a memory slot for batch of size 2
+2.43.981.532 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.44.015.508 W decode: failed to find a memory slot for batch of size 1
+2.44.015.512 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.44.015.599 W decode: failed to find a memory slot for batch of size 1
+2.44.015.601 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.44.015.687 W decode: failed to find a memory slot for batch of size 1
+2.44.015.688 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.44.015.774 W decode: failed to find a memory slot for batch of size 1
+2.44.015.775 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.44.015.860 W decode: failed to find a memory slot for batch of size 1
+2.44.015.862 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.44.015.947 W decode: failed to find a memory slot for batch of size 1
+2.44.015.949 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.44.016.034 W decode: failed to find a memory slot for batch of size 1
+2.44.016.035 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.44.016.121 W decode: failed to find a memory slot for batch of size 1
+2.44.016.122 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.44.016.208 W decode: failed to find a memory slot for batch of size 1
+2.44.016.209 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.44.016.295 W decode: failed to find a memory slot for batch of size 1
+2.44.016.296 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.44.016.386 W decode: failed to find a memory slot for batch of size 1
+2.44.016.387 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.44.016.473 W decode: failed to find a memory slot for batch of size 1
+2.44.016.475 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.44.016.476 E srv    send_error: task id = 1458, error: Context size has been exceeded.
+2.44.016.481 I slot      release: id  0 | task 1458 | stop processing: n_tokens = 2049, truncated = 0
+2.44.016.488 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2049 tokens
+2.44.016.496 W srv          stop: cancel task, id_task = 1458
+2.44.016.663 E srv    send_error: task id = 1460, error: Context size has been exceeded.
+2.44.016.666 I slot      release: id  2 | task 1460 | stop processing: n_tokens = 2048, truncated = 0
+2.44.016.669 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+2.44.016.674 W srv          stop: cancel task, id_task = 1460
+2.44.016.870 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.44.016.879 I srv  update_slots: all slots are idle
+2.44.463.299 I srv    operator(): Chat format: peg-native
+2.44.463.382 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7292806608
+2.44.463.384 I srv  get_availabl: updating prompt cache
+2.44.463.388 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.44.463.398 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.44.463.400 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.44.463.401 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.44.463.401 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.44.463.402 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.44.463.403 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.44.463.404 I srv  get_availabl: prompt cache update took 0.02 ms
+2.44.463.705 I srv    operator(): Chat format: peg-native
+2.44.463.724 I slot launch_slot_: id  1 | task 1556 | processing task, is_child = 0
+2.44.463.726 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.44.463.727 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.44.463.731 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.44.463.732 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.44.463.734 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.44.463.735 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.44.509.613 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7292806799
+2.44.509.617 I srv  get_availabl: updating prompt cache
+2.44.509.620 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.44.509.626 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.44.509.627 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.44.509.627 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.44.509.628 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.44.509.628 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.44.509.629 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.44.509.629 I srv  get_availabl: prompt cache update took 0.01 ms
+2.44.509.730 I slot launch_slot_: id  3 | task 1557 | processing task, is_child = 0
+2.44.509.734 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.44.509.735 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.44.509.740 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.44.509.740 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.49.683.626 W decode: failed to find a memory slot for batch of size 2
+2.49.683.629 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.49.683.726 W decode: failed to find a memory slot for batch of size 2
+2.49.683.728 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.49.683.824 W decode: failed to find a memory slot for batch of size 2
+2.49.683.825 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.49.683.923 W decode: failed to find a memory slot for batch of size 2
+2.49.683.924 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.49.684.024 W decode: failed to find a memory slot for batch of size 2
+2.49.684.026 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.49.684.123 W decode: failed to find a memory slot for batch of size 2
+2.49.684.124 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.49.684.221 W decode: failed to find a memory slot for batch of size 2
+2.49.684.222 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.49.684.316 W decode: failed to find a memory slot for batch of size 2
+2.49.684.318 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.49.684.418 W decode: failed to find a memory slot for batch of size 2
+2.49.684.420 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.49.684.516 W decode: failed to find a memory slot for batch of size 2
+2.49.684.517 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.49.684.614 W decode: failed to find a memory slot for batch of size 2
+2.49.684.615 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.49.719.534 W decode: failed to find a memory slot for batch of size 1
+2.49.719.538 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.49.719.633 W decode: failed to find a memory slot for batch of size 1
+2.49.719.635 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.49.719.732 W decode: failed to find a memory slot for batch of size 1
+2.49.719.733 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.49.719.828 W decode: failed to find a memory slot for batch of size 1
+2.49.719.829 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.49.719.924 W decode: failed to find a memory slot for batch of size 1
+2.49.719.925 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.49.720.020 W decode: failed to find a memory slot for batch of size 1
+2.49.720.021 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.49.720.116 W decode: failed to find a memory slot for batch of size 1
+2.49.720.117 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.49.720.213 W decode: failed to find a memory slot for batch of size 1
+2.49.720.215 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.49.720.309 W decode: failed to find a memory slot for batch of size 1
+2.49.720.310 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.49.720.405 W decode: failed to find a memory slot for batch of size 1
+2.49.720.406 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.49.720.500 W decode: failed to find a memory slot for batch of size 1
+2.49.720.501 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.49.720.594 W decode: failed to find a memory slot for batch of size 1
+2.49.720.595 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.49.720.596 E srv    send_error: task id = 1556, error: Context size has been exceeded.
+2.49.720.600 I slot      release: id  1 | task 1556 | stop processing: n_tokens = 2049, truncated = 0
+2.49.720.607 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2049 tokens
+2.49.720.616 W srv          stop: cancel task, id_task = 1556
+2.49.720.829 E srv    send_error: task id = 1557, error: Context size has been exceeded.
+2.49.720.833 I slot      release: id  3 | task 1557 | stop processing: n_tokens = 2048, truncated = 0
+2.49.720.838 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+2.49.720.840 W srv          stop: cancel task, id_task = 1557
+2.49.721.067 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.49.721.075 I srv  update_slots: all slots are idle
+2.50.589.942 I srv    operator(): Chat format: peg-native
+2.50.590.008 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7305748149
+2.50.590.010 I srv  get_availabl: updating prompt cache
+2.50.590.013 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.50.590.019 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.50.590.020 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.50.590.020 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.50.590.021 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.50.590.021 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.50.590.022 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.50.590.023 I srv  get_availabl: prompt cache update took 0.01 ms
+2.50.590.260 I slot launch_slot_: id  0 | task 1654 | processing task, is_child = 0
+2.50.590.263 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.50.590.264 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.50.590.268 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.50.590.269 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.50.590.271 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.50.590.272 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.50.626.468 I srv    operator(): Chat format: peg-native
+2.50.650.344 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7305748334
+2.50.650.347 I srv  get_availabl: updating prompt cache
+2.50.650.350 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.50.650.356 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.50.650.357 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.50.650.357 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.50.650.358 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.50.650.358 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.50.650.358 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.50.650.359 I srv  get_availabl: prompt cache update took 0.01 ms
+2.50.650.417 I slot launch_slot_: id  2 | task 1656 | processing task, is_child = 0
+2.50.650.418 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+2.50.650.419 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+2.50.650.424 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.50.650.424 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.55.221.156 W decode: failed to find a memory slot for batch of size 2
+2.55.221.160 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+2.55.221.344 W decode: failed to find a memory slot for batch of size 2
+2.55.221.348 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+2.55.221.569 W decode: failed to find a memory slot for batch of size 2
+2.55.221.572 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+2.55.221.771 W decode: failed to find a memory slot for batch of size 2
+2.55.221.774 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+2.55.221.981 W decode: failed to find a memory slot for batch of size 2
+2.55.221.985 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+2.55.222.175 W decode: failed to find a memory slot for batch of size 2
+2.55.222.178 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+2.55.222.398 W decode: failed to find a memory slot for batch of size 2
+2.55.222.401 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+2.55.222.612 W decode: failed to find a memory slot for batch of size 2
+2.55.222.614 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+2.55.222.827 W decode: failed to find a memory slot for batch of size 2
+2.55.222.829 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+2.55.223.044 W decode: failed to find a memory slot for batch of size 2
+2.55.223.046 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+2.55.223.257 W decode: failed to find a memory slot for batch of size 2
+2.55.223.259 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+2.55.254.634 W decode: failed to find a memory slot for batch of size 1
+2.55.254.637 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+2.55.254.724 W decode: failed to find a memory slot for batch of size 1
+2.55.254.725 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+2.55.254.811 W decode: failed to find a memory slot for batch of size 1
+2.55.254.813 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+2.55.254.898 W decode: failed to find a memory slot for batch of size 1
+2.55.254.899 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+2.55.254.985 W decode: failed to find a memory slot for batch of size 1
+2.55.254.986 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+2.55.255.072 W decode: failed to find a memory slot for batch of size 1
+2.55.255.073 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+2.55.255.159 W decode: failed to find a memory slot for batch of size 1
+2.55.255.160 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+2.55.255.245 W decode: failed to find a memory slot for batch of size 1
+2.55.255.247 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+2.55.255.336 W decode: failed to find a memory slot for batch of size 1
+2.55.255.338 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+2.55.255.423 W decode: failed to find a memory slot for batch of size 1
+2.55.255.425 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+2.55.255.510 W decode: failed to find a memory slot for batch of size 1
+2.55.255.512 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+2.55.255.597 W decode: failed to find a memory slot for batch of size 1
+2.55.255.599 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+2.55.255.600 E srv    send_error: task id = 1654, error: Context size has been exceeded.
+2.55.255.605 I slot      release: id  0 | task 1654 | stop processing: n_tokens = 2049, truncated = 0
+2.55.255.611 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2049 tokens
+2.55.255.618 W srv          stop: cancel task, id_task = 1654
+2.55.255.792 E srv    send_error: task id = 1656, error: Context size has been exceeded.
+2.55.255.794 I slot      release: id  2 | task 1656 | stop processing: n_tokens = 2048, truncated = 0
+2.55.255.798 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+2.55.255.804 W srv          stop: cancel task, id_task = 1656
+2.55.256.004 E srv  update_slots: decode() failed: Context size has been exceeded.
+2.55.256.013 I srv  update_slots: all slots are idle
+2.56.922.240 I srv    operator(): Chat format: peg-native
+2.56.922.347 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7311452269
+2.56.922.350 I srv  get_availabl: updating prompt cache
+2.56.922.354 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.56.922.360 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.56.922.361 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.56.922.362 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.56.922.362 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.56.922.363 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.56.922.363 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.56.922.364 I srv  get_availabl: prompt cache update took 0.01 ms
+2.56.922.640 I slot launch_slot_: id  1 | task 1752 | processing task, is_child = 0
+2.56.922.643 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.56.922.644 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.56.922.650 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.56.922.651 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+2.56.922.656 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+2.56.922.656 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+2.57.230.123 I srv    operator(): Chat format: peg-native
+2.57.806.519 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7311452501
+2.57.806.522 I srv  get_availabl: updating prompt cache
+2.57.806.524 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+2.57.806.529 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+2.57.806.530 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+2.57.806.530 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+2.57.806.531 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+2.57.806.531 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+2.57.806.532 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+2.57.806.532 I srv  get_availabl: prompt cache update took 0.01 ms
+2.57.806.579 I slot launch_slot_: id  3 | task 1755 | processing task, is_child = 0
+2.57.806.580 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+2.57.806.581 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+2.57.806.587 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+2.57.806.587 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.01.507.180 W decode: failed to find a memory slot for batch of size 2
+3.01.507.184 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.01.507.272 W decode: failed to find a memory slot for batch of size 2
+3.01.507.273 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.01.507.366 W decode: failed to find a memory slot for batch of size 2
+3.01.507.367 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.01.507.454 W decode: failed to find a memory slot for batch of size 2
+3.01.507.455 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.01.507.542 W decode: failed to find a memory slot for batch of size 2
+3.01.507.543 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.01.507.637 W decode: failed to find a memory slot for batch of size 2
+3.01.507.639 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.01.507.733 W decode: failed to find a memory slot for batch of size 2
+3.01.507.734 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.01.507.821 W decode: failed to find a memory slot for batch of size 2
+3.01.507.823 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.01.507.914 W decode: failed to find a memory slot for batch of size 2
+3.01.507.915 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.01.508.002 W decode: failed to find a memory slot for batch of size 2
+3.01.508.003 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.01.508.090 W decode: failed to find a memory slot for batch of size 2
+3.01.508.091 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.01.508.184 W decode: failed to find a memory slot for batch of size 1
+3.01.508.187 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.01.508.187 E srv    send_error: task id = 1752, error: Context size has been exceeded.
+3.01.508.192 I slot      release: id  1 | task 1752 | stop processing: n_tokens = 2050, truncated = 0
+3.01.508.200 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2050 tokens
+3.01.508.216 W srv          stop: cancel task, id_task = 1752
+3.01.508.394 E srv    send_error: task id = 1755, error: Context size has been exceeded.
+3.01.508.396 I slot      release: id  3 | task 1755 | stop processing: n_tokens = 2048, truncated = 0
+3.01.508.400 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+3.01.508.406 W srv          stop: cancel task, id_task = 1755
+3.01.508.577 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.01.508.582 I srv  update_slots: all slots are idle
+3.06.519.042 I srv    operator(): Chat format: peg-native
+3.06.519.106 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7316987273
+3.06.519.108 I srv  get_availabl: updating prompt cache
+3.06.519.111 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.06.519.116 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.06.519.117 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.06.519.118 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.06.519.118 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.06.519.119 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.06.519.119 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.06.519.120 I srv  get_availabl: prompt cache update took 0.01 ms
+3.06.519.392 I slot launch_slot_: id  0 | task 1851 | processing task, is_child = 0
+3.06.519.394 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.06.519.394 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.06.519.399 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.06.519.400 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.06.519.403 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.06.519.403 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.06.520.175 I srv    operator(): Chat format: peg-native
+3.06.564.967 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7316987463
+3.06.564.969 I srv  get_availabl: updating prompt cache
+3.06.564.972 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.06.564.977 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.06.564.979 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.06.564.980 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.06.564.980 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.06.564.981 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.06.564.981 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.06.564.981 I srv  get_availabl: prompt cache update took 0.01 ms
+3.06.565.030 I slot launch_slot_: id  2 | task 1853 | processing task, is_child = 0
+3.06.565.030 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.06.565.031 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.06.565.036 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.06.565.037 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.11.029.544 W decode: failed to find a memory slot for batch of size 2
+3.11.029.548 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.11.029.663 W decode: failed to find a memory slot for batch of size 2
+3.11.029.665 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.11.029.773 W decode: failed to find a memory slot for batch of size 2
+3.11.029.775 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.11.029.882 W decode: failed to find a memory slot for batch of size 2
+3.11.029.884 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.11.029.990 W decode: failed to find a memory slot for batch of size 2
+3.11.029.992 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.11.030.098 W decode: failed to find a memory slot for batch of size 2
+3.11.030.100 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.11.030.211 W decode: failed to find a memory slot for batch of size 2
+3.11.030.212 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.11.030.323 W decode: failed to find a memory slot for batch of size 2
+3.11.030.324 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.11.030.440 W decode: failed to find a memory slot for batch of size 2
+3.11.030.442 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.11.030.552 W decode: failed to find a memory slot for batch of size 2
+3.11.030.554 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.11.030.664 W decode: failed to find a memory slot for batch of size 2
+3.11.030.665 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.11.060.927 W decode: failed to find a memory slot for batch of size 1
+3.11.060.931 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+3.11.061.022 W decode: failed to find a memory slot for batch of size 1
+3.11.061.023 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+3.11.061.113 W decode: failed to find a memory slot for batch of size 1
+3.11.061.114 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+3.11.061.203 W decode: failed to find a memory slot for batch of size 1
+3.11.061.205 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+3.11.061.294 W decode: failed to find a memory slot for batch of size 1
+3.11.061.295 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+3.11.061.392 W decode: failed to find a memory slot for batch of size 1
+3.11.061.393 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+3.11.061.481 W decode: failed to find a memory slot for batch of size 1
+3.11.061.482 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+3.11.061.570 W decode: failed to find a memory slot for batch of size 1
+3.11.061.572 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+3.11.061.660 W decode: failed to find a memory slot for batch of size 1
+3.11.061.661 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+3.11.061.749 W decode: failed to find a memory slot for batch of size 1
+3.11.061.750 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+3.11.061.838 W decode: failed to find a memory slot for batch of size 1
+3.11.061.839 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+3.11.061.927 W decode: failed to find a memory slot for batch of size 1
+3.11.061.929 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+3.11.061.930 E srv    send_error: task id = 1851, error: Context size has been exceeded.
+3.11.061.935 I slot      release: id  0 | task 1851 | stop processing: n_tokens = 2049, truncated = 0
+3.11.061.943 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2049 tokens
+3.11.061.947 W srv          stop: cancel task, id_task = 1851
+3.11.062.136 E srv    send_error: task id = 1853, error: Context size has been exceeded.
+3.11.062.139 I slot      release: id  2 | task 1853 | stop processing: n_tokens = 2048, truncated = 0
+3.11.062.142 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+3.11.062.147 W srv          stop: cancel task, id_task = 1853
+3.11.062.316 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.11.062.322 I srv  update_slots: all slots are idle
+3.11.473.257 I srv    operator(): Chat format: peg-native
+3.11.473.331 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7323239861
+3.11.473.338 I srv  get_availabl: updating prompt cache
+3.11.473.341 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.11.473.346 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.11.473.347 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.11.473.348 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.11.473.348 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.11.473.349 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.11.473.349 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.11.473.350 I srv  get_availabl: prompt cache update took 0.01 ms
+3.11.473.587 I slot launch_slot_: id  1 | task 1949 | processing task, is_child = 0
+3.11.473.589 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.11.473.589 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.11.473.594 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.11.473.594 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.11.473.597 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.11.473.597 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.12.033.137 I srv    operator(): Chat format: peg-native
+3.12.570.492 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7323240065
+3.12.570.495 I srv  get_availabl: updating prompt cache
+3.12.570.498 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.12.570.503 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.12.570.506 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.12.570.506 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.12.570.507 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.12.570.507 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.12.570.508 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.12.570.508 I srv  get_availabl: prompt cache update took 0.01 ms
+3.12.570.557 I slot launch_slot_: id  3 | task 1952 | processing task, is_child = 0
+3.12.570.558 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.12.570.559 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.12.570.566 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.12.570.566 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.16.296.201 W decode: failed to find a memory slot for batch of size 2
+3.16.296.204 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.16.296.304 W decode: failed to find a memory slot for batch of size 2
+3.16.296.305 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.16.296.410 W decode: failed to find a memory slot for batch of size 2
+3.16.296.411 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.16.296.507 W decode: failed to find a memory slot for batch of size 2
+3.16.296.509 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.16.296.595 W decode: failed to find a memory slot for batch of size 2
+3.16.296.597 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.16.296.686 W decode: failed to find a memory slot for batch of size 2
+3.16.296.688 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.16.296.783 W decode: failed to find a memory slot for batch of size 2
+3.16.296.784 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.16.296.874 W decode: failed to find a memory slot for batch of size 2
+3.16.296.875 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.16.296.965 W decode: failed to find a memory slot for batch of size 2
+3.16.296.967 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.16.297.054 W decode: failed to find a memory slot for batch of size 2
+3.16.297.055 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.16.297.149 W decode: failed to find a memory slot for batch of size 2
+3.16.297.151 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.16.297.246 W decode: failed to find a memory slot for batch of size 1
+3.16.297.248 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.16.297.249 E srv    send_error: task id = 1949, error: Context size has been exceeded.
+3.16.297.255 I slot      release: id  1 | task 1949 | stop processing: n_tokens = 2050, truncated = 0
+3.16.297.263 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2050 tokens
+3.16.297.266 W srv          stop: cancel task, id_task = 1949
+3.16.297.502 E srv    send_error: task id = 1952, error: Context size has been exceeded.
+3.16.297.505 I slot      release: id  3 | task 1952 | stop processing: n_tokens = 2048, truncated = 0
+3.16.297.509 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+3.16.297.518 W srv          stop: cancel task, id_task = 1952
+3.16.297.733 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.16.297.740 I srv  update_slots: all slots are idle
+3.17.923.566 I srv    operator(): Chat format: peg-native
+3.17.923.638 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7332793604
+3.17.923.639 I srv  get_availabl: updating prompt cache
+3.17.923.643 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.17.923.650 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.17.923.651 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.17.923.652 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.17.923.653 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.17.923.654 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.17.923.655 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.17.923.655 I srv  get_availabl: prompt cache update took 0.01 ms
+3.17.923.919 I slot launch_slot_: id  0 | task 2048 | processing task, is_child = 0
+3.17.923.921 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.17.923.922 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.17.923.927 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.17.923.927 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.17.923.931 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.17.923.931 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.18.104.548 I srv    operator(): Chat format: peg-native
+3.18.815.653 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7332793807
+3.18.815.656 I srv  get_availabl: updating prompt cache
+3.18.815.659 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.18.815.664 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.18.815.666 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.18.815.667 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.18.815.667 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.18.815.668 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.18.815.668 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.18.815.669 I srv  get_availabl: prompt cache update took 0.01 ms
+3.18.815.726 I slot launch_slot_: id  2 | task 2051 | processing task, is_child = 0
+3.18.815.727 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.18.815.728 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.18.815.737 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.18.815.737 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.22.570.827 W decode: failed to find a memory slot for batch of size 2
+3.22.570.832 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.22.570.949 W decode: failed to find a memory slot for batch of size 2
+3.22.570.951 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.22.571.067 W decode: failed to find a memory slot for batch of size 2
+3.22.571.068 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.22.571.184 W decode: failed to find a memory slot for batch of size 2
+3.22.571.185 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.22.571.301 W decode: failed to find a memory slot for batch of size 2
+3.22.571.302 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.22.571.422 W decode: failed to find a memory slot for batch of size 2
+3.22.571.424 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.22.571.538 W decode: failed to find a memory slot for batch of size 2
+3.22.571.540 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.22.571.654 W decode: failed to find a memory slot for batch of size 2
+3.22.571.656 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.22.571.770 W decode: failed to find a memory slot for batch of size 2
+3.22.571.772 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.22.571.886 W decode: failed to find a memory slot for batch of size 2
+3.22.571.887 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.22.572.001 W decode: failed to find a memory slot for batch of size 2
+3.22.572.003 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.22.572.117 W decode: failed to find a memory slot for batch of size 1
+3.22.572.119 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.22.572.120 E srv    send_error: task id = 2048, error: Context size has been exceeded.
+3.22.572.124 I slot      release: id  0 | task 2048 | stop processing: n_tokens = 2050, truncated = 0
+3.22.572.130 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2050 tokens
+3.22.572.148 W srv          stop: cancel task, id_task = 2048
+3.22.572.352 E srv    send_error: task id = 2051, error: Context size has been exceeded.
+3.22.572.355 I slot      release: id  2 | task 2051 | stop processing: n_tokens = 2048, truncated = 0
+3.22.572.360 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+3.22.572.367 W srv          stop: cancel task, id_task = 2051
+3.22.572.568 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.22.572.573 I srv  update_slots: all slots are idle
+3.24.430.567 I srv    operator(): Chat format: peg-native
+3.24.430.633 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7338028923
+3.24.430.635 I srv  get_availabl: updating prompt cache
+3.24.430.638 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.24.430.643 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.24.430.644 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.24.430.645 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.24.430.645 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.24.430.646 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.24.430.646 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.24.430.647 I srv  get_availabl: prompt cache update took 0.01 ms
+3.24.430.906 I slot launch_slot_: id  1 | task 2147 | processing task, is_child = 0
+3.24.430.908 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.24.430.908 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.24.430.913 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.24.430.913 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.24.430.916 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.24.430.916 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.24.480.224 I srv    operator(): Chat format: peg-native
+3.25.314.874 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7338029173
+3.25.314.878 I srv  get_availabl: updating prompt cache
+3.25.314.880 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.25.314.886 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.25.314.886 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.25.314.887 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.25.314.888 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.25.314.889 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.25.314.893 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.25.314.893 I srv  get_availabl: prompt cache update took 0.02 ms
+3.25.314.942 I slot launch_slot_: id  3 | task 2150 | processing task, is_child = 0
+3.25.314.942 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.25.314.943 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.25.314.951 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.25.314.951 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.29.057.638 W decode: failed to find a memory slot for batch of size 2
+3.29.057.642 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.29.057.741 W decode: failed to find a memory slot for batch of size 2
+3.29.057.743 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.29.057.840 W decode: failed to find a memory slot for batch of size 2
+3.29.057.841 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.29.057.938 W decode: failed to find a memory slot for batch of size 2
+3.29.057.939 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.29.058.069 W decode: failed to find a memory slot for batch of size 2
+3.29.058.073 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.29.058.174 W decode: failed to find a memory slot for batch of size 2
+3.29.058.176 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.29.058.274 W decode: failed to find a memory slot for batch of size 2
+3.29.058.275 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.29.058.394 W decode: failed to find a memory slot for batch of size 2
+3.29.058.396 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.29.058.494 W decode: failed to find a memory slot for batch of size 2
+3.29.058.496 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.29.058.593 W decode: failed to find a memory slot for batch of size 2
+3.29.058.594 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.29.058.691 W decode: failed to find a memory slot for batch of size 2
+3.29.058.693 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.29.058.789 W decode: failed to find a memory slot for batch of size 1
+3.29.058.791 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.29.058.791 E srv    send_error: task id = 2147, error: Context size has been exceeded.
+3.29.058.795 I slot      release: id  1 | task 2147 | stop processing: n_tokens = 2050, truncated = 0
+3.29.058.802 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2050 tokens
+3.29.058.812 W srv          stop: cancel task, id_task = 2147
+3.29.058.991 E srv    send_error: task id = 2150, error: Context size has been exceeded.
+3.29.058.994 I slot      release: id  3 | task 2150 | stop processing: n_tokens = 2048, truncated = 0
+3.29.058.998 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+3.29.059.010 W srv          stop: cancel task, id_task = 2150
+3.29.059.183 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.29.059.190 I srv  update_slots: all slots are idle
+3.34.070.244 I srv    operator(): Chat format: peg-native
+3.34.070.337 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7344303793
+3.34.070.340 I srv  get_availabl: updating prompt cache
+3.34.070.344 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.34.070.349 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.34.070.350 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.34.070.351 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.34.070.351 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.34.070.352 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.34.070.352 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.34.070.353 I srv  get_availabl: prompt cache update took 0.01 ms
+3.34.070.638 I slot launch_slot_: id  0 | task 2246 | processing task, is_child = 0
+3.34.070.640 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.34.070.641 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.34.070.646 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.34.070.646 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.34.070.651 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.34.070.651 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.34.071.108 I srv    operator(): Chat format: peg-native
+3.34.124.888 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7344304024
+3.34.124.892 I srv  get_availabl: updating prompt cache
+3.34.124.896 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.34.124.904 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.34.124.905 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.34.124.905 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.34.124.906 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.34.124.907 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.34.124.907 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.34.124.908 I srv  get_availabl: prompt cache update took 0.01 ms
+3.34.124.978 I slot launch_slot_: id  2 | task 2248 | processing task, is_child = 0
+3.34.124.979 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.34.124.979 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.34.124.985 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.34.124.985 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.38.670.471 W decode: failed to find a memory slot for batch of size 2
+3.38.670.475 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.38.670.571 W decode: failed to find a memory slot for batch of size 2
+3.38.670.573 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.38.670.668 W decode: failed to find a memory slot for batch of size 2
+3.38.670.669 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.38.670.764 W decode: failed to find a memory slot for batch of size 2
+3.38.670.766 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.38.670.861 W decode: failed to find a memory slot for batch of size 2
+3.38.670.862 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.38.670.957 W decode: failed to find a memory slot for batch of size 2
+3.38.670.959 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.38.671.054 W decode: failed to find a memory slot for batch of size 2
+3.38.671.055 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.38.671.150 W decode: failed to find a memory slot for batch of size 2
+3.38.671.152 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.38.671.245 W decode: failed to find a memory slot for batch of size 2
+3.38.671.246 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.38.671.344 W decode: failed to find a memory slot for batch of size 2
+3.38.671.345 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.38.671.438 W decode: failed to find a memory slot for batch of size 2
+3.38.671.439 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.38.701.030 W decode: failed to find a memory slot for batch of size 1
+3.38.701.035 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+3.38.701.134 W decode: failed to find a memory slot for batch of size 1
+3.38.701.135 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+3.38.701.233 W decode: failed to find a memory slot for batch of size 1
+3.38.701.234 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+3.38.701.338 W decode: failed to find a memory slot for batch of size 1
+3.38.701.339 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+3.38.701.436 W decode: failed to find a memory slot for batch of size 1
+3.38.701.438 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+3.38.701.535 W decode: failed to find a memory slot for batch of size 1
+3.38.701.537 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+3.38.701.634 W decode: failed to find a memory slot for batch of size 1
+3.38.701.635 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+3.38.701.733 W decode: failed to find a memory slot for batch of size 1
+3.38.701.734 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+3.38.701.832 W decode: failed to find a memory slot for batch of size 1
+3.38.701.833 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+3.38.701.930 W decode: failed to find a memory slot for batch of size 1
+3.38.701.932 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+3.38.702.029 W decode: failed to find a memory slot for batch of size 1
+3.38.702.030 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+3.38.702.128 W decode: failed to find a memory slot for batch of size 1
+3.38.702.130 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+3.38.702.131 E srv    send_error: task id = 2246, error: Context size has been exceeded.
+3.38.702.137 I slot      release: id  0 | task 2246 | stop processing: n_tokens = 2049, truncated = 0
+3.38.702.146 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2049 tokens
+3.38.702.156 W srv          stop: cancel task, id_task = 2246
+3.38.702.356 E srv    send_error: task id = 2248, error: Context size has been exceeded.
+3.38.702.359 I slot      release: id  2 | task 2248 | stop processing: n_tokens = 2048, truncated = 0
+3.38.702.365 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+3.38.702.369 W srv          stop: cancel task, id_task = 2248
+3.38.702.565 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.38.702.572 I srv  update_slots: all slots are idle
+3.39.102.113 I srv    operator(): Chat format: peg-native
+3.39.102.182 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7350790464
+3.39.102.183 I srv  get_availabl: updating prompt cache
+3.39.102.186 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.39.102.191 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.39.102.192 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.39.102.193 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.39.102.193 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.39.102.193 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.39.102.194 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.39.102.194 I srv  get_availabl: prompt cache update took 0.01 ms
+3.39.102.424 I slot launch_slot_: id  1 | task 2344 | processing task, is_child = 0
+3.39.102.426 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.39.102.427 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.39.102.431 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.39.102.431 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.39.102.433 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.39.102.433 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.39.171.248 I srv    operator(): Chat format: peg-native
+3.40.018.267 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7350790663
+3.40.018.270 I srv  get_availabl: updating prompt cache
+3.40.018.272 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.40.018.278 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.40.018.279 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.40.018.280 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.40.018.280 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.40.018.281 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.40.018.281 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.40.018.281 I srv  get_availabl: prompt cache update took 0.01 ms
+3.40.018.339 I slot launch_slot_: id  3 | task 2347 | processing task, is_child = 0
+3.40.018.340 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.40.018.341 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.40.018.350 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.40.018.350 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.43.832.325 W decode: failed to find a memory slot for batch of size 2
+3.43.832.329 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.43.832.462 W decode: failed to find a memory slot for batch of size 2
+3.43.832.464 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.43.832.582 W decode: failed to find a memory slot for batch of size 2
+3.43.832.584 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.43.832.702 W decode: failed to find a memory slot for batch of size 2
+3.43.832.704 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.43.832.823 W decode: failed to find a memory slot for batch of size 2
+3.43.832.824 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.43.832.942 W decode: failed to find a memory slot for batch of size 2
+3.43.832.944 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.43.833.062 W decode: failed to find a memory slot for batch of size 2
+3.43.833.064 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.43.833.180 W decode: failed to find a memory slot for batch of size 2
+3.43.833.182 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.43.833.298 W decode: failed to find a memory slot for batch of size 2
+3.43.833.300 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.43.833.456 W decode: failed to find a memory slot for batch of size 2
+3.43.833.459 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.43.833.626 W decode: failed to find a memory slot for batch of size 2
+3.43.833.629 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.43.833.777 W decode: failed to find a memory slot for batch of size 1
+3.43.833.780 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.43.833.781 E srv    send_error: task id = 2344, error: Context size has been exceeded.
+3.43.833.790 I slot      release: id  1 | task 2344 | stop processing: n_tokens = 2050, truncated = 0
+3.43.833.800 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2050 tokens
+3.43.833.802 W srv          stop: cancel task, id_task = 2344
+3.43.834.049 E srv    send_error: task id = 2347, error: Context size has been exceeded.
+3.43.834.053 I slot      release: id  3 | task 2347 | stop processing: n_tokens = 2048, truncated = 0
+3.43.834.057 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+3.43.834.064 W srv          stop: cancel task, id_task = 2347
+3.43.834.263 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.43.834.269 I srv  update_slots: all slots are idle
+3.44.590.073 I srv    operator(): Chat format: peg-native
+3.44.590.141 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7360433806
+3.44.590.143 I srv  get_availabl: updating prompt cache
+3.44.590.146 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.44.590.152 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.44.590.153 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.44.590.154 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.44.590.154 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.44.590.155 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.44.590.155 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.44.590.156 I srv  get_availabl: prompt cache update took 0.01 ms
+3.44.590.428 I slot launch_slot_: id  0 | task 2443 | processing task, is_child = 0
+3.44.590.430 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.44.590.431 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.44.590.435 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.44.590.436 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.44.590.438 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.44.590.439 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.44.825.253 I srv    operator(): Chat format: peg-native
+3.45.479.747 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7360434028
+3.45.479.749 I srv  get_availabl: updating prompt cache
+3.45.479.752 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.45.479.757 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.45.479.757 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.45.479.758 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.45.479.758 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.45.479.759 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.45.479.759 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.45.479.759 I srv  get_availabl: prompt cache update took 0.01 ms
+3.45.479.806 I slot launch_slot_: id  2 | task 2446 | processing task, is_child = 0
+3.45.479.807 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.45.479.808 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.45.479.815 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.45.479.815 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.49.174.506 W decode: failed to find a memory slot for batch of size 2
+3.49.174.510 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.49.174.644 W decode: failed to find a memory slot for batch of size 2
+3.49.174.647 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.49.174.774 W decode: failed to find a memory slot for batch of size 2
+3.49.174.776 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.49.174.909 W decode: failed to find a memory slot for batch of size 2
+3.49.174.911 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.49.175.043 W decode: failed to find a memory slot for batch of size 2
+3.49.175.045 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.49.175.177 W decode: failed to find a memory slot for batch of size 2
+3.49.175.179 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.49.175.308 W decode: failed to find a memory slot for batch of size 2
+3.49.175.310 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.49.175.444 W decode: failed to find a memory slot for batch of size 2
+3.49.175.446 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.49.175.567 W decode: failed to find a memory slot for batch of size 2
+3.49.175.568 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.49.175.695 W decode: failed to find a memory slot for batch of size 2
+3.49.175.697 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.49.175.823 W decode: failed to find a memory slot for batch of size 2
+3.49.175.825 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.49.175.953 W decode: failed to find a memory slot for batch of size 1
+3.49.175.956 E srv        decode: Context size has been exceeded. off = 0, n_batch = 1, ret = 1
+3.49.175.956 E srv    send_error: task id = 2443, error: Context size has been exceeded.
+3.49.175.962 I slot      release: id  0 | task 2443 | stop processing: n_tokens = 2050, truncated = 0
+3.49.175.971 I slot prompt_clear: id  0 | task -1 | clearing prompt with 2050 tokens
+3.49.175.975 W srv          stop: cancel task, id_task = 2443
+3.49.176.197 E srv    send_error: task id = 2446, error: Context size has been exceeded.
+3.49.176.203 I slot      release: id  2 | task 2446 | stop processing: n_tokens = 2048, truncated = 0
+3.49.176.208 I slot prompt_clear: id  2 | task -1 | clearing prompt with 2048 tokens
+3.49.176.219 W srv          stop: cancel task, id_task = 2446
+3.49.176.457 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.49.176.468 I srv  update_slots: all slots are idle
+3.51.069.741 I srv    operator(): Chat format: peg-native
+3.51.069.814 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = 7365565459
+3.51.069.816 I srv  get_availabl: updating prompt cache
+3.51.069.821 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.51.069.830 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.51.069.831 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.51.069.832 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.51.069.833 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.51.069.834 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.51.069.835 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.51.069.835 I srv  get_availabl: prompt cache update took 0.02 ms
+3.51.070.157 I slot launch_slot_: id  1 | task 2542 | processing task, is_child = 0
+3.51.070.161 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.51.070.162 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.51.070.168 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.51.070.169 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.51.070.174 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.51.070.174 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.51.116.275 I srv    operator(): Chat format: peg-native
+3.51.119.065 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = 7365565721
+3.51.119.068 I srv  get_availabl: updating prompt cache
+3.51.119.071 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.51.119.076 I srv        update:  - cache state: 5 prompts, 821.454 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.51.119.079 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.51.119.079 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.51.119.080 I srv        update:    - prompt 0x60cd7ddaa2a0:    1149 tokens, checkpoints:  0,   143.639 MiB
+3.51.119.080 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.51.119.080 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.51.119.081 I srv  get_availabl: prompt cache update took 0.01 ms
+3.51.119.126 I slot launch_slot_: id  3 | task 2544 | processing task, is_child = 0
+3.51.119.127 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache
+3.51.119.127 I slot prompt_clear: id  0 | task -1 | clearing prompt with 0 tokens
+3.51.119.133 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.51.119.133 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.55.623.132 W decode: failed to find a memory slot for batch of size 2
+3.55.623.138 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1024, ret = 1
+3.55.623.268 W decode: failed to find a memory slot for batch of size 2
+3.55.623.272 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 512, ret = 1
+3.55.623.442 W decode: failed to find a memory slot for batch of size 2
+3.55.623.445 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 256, ret = 1
+3.55.623.599 W decode: failed to find a memory slot for batch of size 2
+3.55.623.603 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 128, ret = 1
+3.55.623.774 W decode: failed to find a memory slot for batch of size 2
+3.55.623.777 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 64, ret = 1
+3.55.623.929 W decode: failed to find a memory slot for batch of size 2
+3.55.623.931 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 32, ret = 1
+3.55.624.098 W decode: failed to find a memory slot for batch of size 2
+3.55.624.101 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 16, ret = 1
+3.55.624.269 W decode: failed to find a memory slot for batch of size 2
+3.55.624.272 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 8, ret = 1
+3.55.624.424 W decode: failed to find a memory slot for batch of size 2
+3.55.624.426 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 4, ret = 1
+3.55.624.566 W decode: failed to find a memory slot for batch of size 2
+3.55.624.569 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 2, ret = 1
+3.55.624.734 W decode: failed to find a memory slot for batch of size 2
+3.55.624.737 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 0, n_batch = 1, ret = 1
+3.55.660.873 W decode: failed to find a memory slot for batch of size 1
+3.55.660.878 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1024, ret = 1
+3.55.661.002 W decode: failed to find a memory slot for batch of size 1
+3.55.661.004 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 512, ret = 1
+3.55.661.106 W decode: failed to find a memory slot for batch of size 1
+3.55.661.108 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 256, ret = 1
+3.55.661.207 W decode: failed to find a memory slot for batch of size 1
+3.55.661.209 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 128, ret = 1
+3.55.661.311 W decode: failed to find a memory slot for batch of size 1
+3.55.661.312 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 64, ret = 1
+3.55.661.415 W decode: failed to find a memory slot for batch of size 1
+3.55.661.416 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 32, ret = 1
+3.55.661.515 W decode: failed to find a memory slot for batch of size 1
+3.55.661.516 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 16, ret = 1
+3.55.661.615 W decode: failed to find a memory slot for batch of size 1
+3.55.661.616 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 8, ret = 1
+3.55.661.718 W decode: failed to find a memory slot for batch of size 1
+3.55.661.720 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 4, ret = 1
+3.55.661.819 W decode: failed to find a memory slot for batch of size 1
+3.55.661.820 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 2, ret = 1
+3.55.661.921 W decode: failed to find a memory slot for batch of size 1
+3.55.661.923 W srv        decode: failed to find free space in the KV cache, retrying with smaller batch size, off = 1, n_batch = 1, ret = 1
+3.55.662.023 W decode: failed to find a memory slot for batch of size 1
+3.55.662.026 E srv        decode: Context size has been exceeded. off = 1, n_batch = 1, ret = 1
+3.55.662.027 E srv    send_error: task id = 2542, error: Context size has been exceeded.
+3.55.662.039 I slot      release: id  1 | task 2542 | stop processing: n_tokens = 2049, truncated = 0
+3.55.662.052 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2049 tokens
+3.55.662.089 W srv          stop: cancel task, id_task = 2542
+3.55.662.380 E srv    send_error: task id = 2544, error: Context size has been exceeded.
+3.55.662.384 I slot      release: id  3 | task 2544 | stop processing: n_tokens = 2048, truncated = 0
+3.55.662.393 I slot prompt_clear: id  3 | task -1 | clearing prompt with 2048 tokens
+3.55.662.401 W srv          stop: cancel task, id_task = 2544
+3.55.662.711 E srv  update_slots: decode() failed: Context size has been exceeded.
+3.55.662.722 I srv  update_slots: all slots are idle
+3.55.704.777 I srv    operator(): Chat format: peg-native
+3.55.704.862 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = 7370907631
+3.55.704.865 I srv  get_availabl: updating prompt cache
+3.55.704.868 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.55.704.873 I srv          load:  - found better prompt with f_keep = 0.547, sim = 0.365
+3.55.718.433 I srv    operator(): Chat format: peg-native
+3.55.734.047 I srv        update:  - cache state: 4 prompts, 677.815 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.55.734.050 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.55.734.050 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.55.734.051 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.55.734.051 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.55.734.052 I srv  get_availabl: prompt cache update took 29.19 ms
+3.55.734.102 I slot launch_slot_: id  0 | task 2640 | processing task, is_child = 0
+3.55.734.103 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.55.734.104 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.55.734.110 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache
+3.55.734.110 I slot prompt_clear: id  2 | task -1 | clearing prompt with 0 tokens
+3.55.734.112 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.55.734.113 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.55.734.118 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = 7370907871
+3.55.734.119 I srv  get_availabl: updating prompt cache
+3.55.734.120 I srv          load:  - looking for better prompt, base f_keep = -1.000, sim = 0.000
+3.55.734.122 I srv        update:  - cache state: 4 prompts, 677.815 MiB (limits: 8192.000 MiB, 4096 tokens, 65529 est)
+3.55.734.122 I srv        update:    - prompt 0x60cd7c8d3420:    1167 tokens, checkpoints:  0,   145.889 MiB
+3.55.734.123 I srv        update:    - prompt 0x60cd7c8d4810:    1261 tokens, checkpoints:  0,   157.640 MiB
+3.55.734.123 I srv        update:    - prompt 0x60cd7ea1d3c0:    1377 tokens, checkpoints:  0,   172.142 MiB
+3.55.734.123 I srv        update:    - prompt 0x60cd7cc37ca0:    1617 tokens, checkpoints:  0,   202.144 MiB
+3.55.734.124 I srv  get_availabl: prompt cache update took 0.01 ms
+3.55.734.142 I slot launch_slot_: id  2 | task 2641 | processing task, is_child = 0
+3.55.734.142 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache
+3.55.734.142 I slot prompt_clear: id  1 | task -1 | clearing prompt with 0 tokens
+3.55.734.145 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache
+3.55.734.145 I slot prompt_clear: id  3 | task -1 | clearing prompt with 0 tokens
+3.58.366.451 I slot print_timing: id  2 | task 2641 | prompt eval time =    1217.31 ms /  1485 tokens (    0.82 ms per token,  1219.91 tokens per second)
+3.58.366.454 I slot print_timing: id  2 | task 2641 |        eval time =    1414.73 ms /    47 tokens (   30.10 ms per token,    33.22 tokens per second)
+3.58.366.455 I slot print_timing: id  2 | task 2641 |       total time =    2632.04 ms /  1532 tokens
+3.58.366.456 I slot print_timing: id  2 | task 2641 |    graphs reused =       2496
+3.58.572.528 I slot      release: id  2 | task 2641 | stop processing: n_tokens = 1531, truncated = 0
+3.58.666.110 I srv  stream_sessi: stream_session_attach_pipe: conv_id= (empty=1)
+^C3.58.988.278 I srv    operator(): operator(): cleaning up before exit...
+^CReceived second interrupt, terminating immediately.
+^CReceived second interrupt, terminating immediately.
+^C^CReceived second interrupt, terminating immediately.
+Received second interrupt, terminating immediately.
+^CReceived second interrupt, terminating immediately.
+^CReceived second interrupt, terminating immediately.
+^CReceived second interrupt, terminating immediately.
