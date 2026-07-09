@@ -49,6 +49,9 @@ def main():
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
     ap.add_argument("--iterations", type=int, default=50)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--budget-tokens", type=int, default=2_000_000)
+    ap.add_argument("--retry-enabled", action="store_true", default=False)
+    ap.add_argument("--retry-cap", type=int, default=2)
     args = ap.parse_args()
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
@@ -59,6 +62,8 @@ def main():
         checkpoint_interval=5,
         random_seed=args.seed,
         diff_based_evolution=True,
+        retry_enabled=args.retry_enabled,
+        retry_cap=args.retry_cap,
         num_inspirations=0,
         num_top_programs=1,
         num_previous_programs=3,
@@ -76,7 +81,7 @@ def main():
             include_artifacts=False,
             system_message=SYSTEM_MESSAGE,
         ),
-        budget=BudgetConfig(total_tokens=2_000_000),
+        budget=BudgetConfig(total_tokens=args.budget_tokens),
         llm=LLMClientConfig(
             model=args.model,
             api_base=args.api_base,

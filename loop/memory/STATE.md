@@ -9,3 +9,5 @@
 - spec signed off (2026-07-09): spec/STUDY.md + spec/LIVE-RUNS.md are canonical; INDEX rewritten (Now: 0038, 0034, 0026, 0035, 0036, 0027); live runs are ticket-gated per LIVE-RUNS — the loop preps/verifies, never launches
 
 ## tick  iter 1
+
+## tick  iter 1
