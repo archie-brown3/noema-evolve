@@ -2,7 +2,9 @@
 loop/memory/*.log
 loop/memory/state-archive/
 loop/memory/cron.log
+loop/work-order.json
 
+*.swp
 __pycache__/
 *.pyc
 *.pyo
