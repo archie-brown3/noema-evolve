@@ -7,7 +7,7 @@ import unittest
 from types import SimpleNamespace
 
 from noema.budget.ledger import BudgetExhausted, TokenLedger
-from noema.budget.llm import BudgetedLLM
+from noema.budget.llm import BudgetedLLM, _estimate_token_count
 
 
 def fake_response(content="response text", prompt_tokens=100, completion_tokens=40):
@@ -70,6 +70,7 @@ class TestBudgetedLLM(unittest.TestCase):
         self.assertEqual(rec.iteration, 7)
         self.assertEqual(rec.tag, "mutate")
         self.assertEqual(rec.account, "mutation")
+        self.assertFalse(rec.estimated)
 
     def test_system_message_prepended(self):
         client = FakeClient([fake_response()])
@@ -143,6 +144,42 @@ class TestBudgetedLLM(unittest.TestCase):
         self.assertEqual(result, "response text")
         self.assertEqual(ledger.spent(), 0)
         self.assertEqual(len(ledger.records), 1)
+
+    def test_local_server_null_usage_fields_estimated(self):
+        # llama.cpp/vLLM-style local servers: `usage` is present but its token
+        # fields are null. The ledger must never silently charge zero for this;
+        # it estimates from the actual prompt/response text and flags the row.
+        response = fake_response(content="response text")
+        response.usage = SimpleNamespace(prompt_tokens=None, completion_tokens=None)
+        client = FakeClient([response])
+        llm, ledger = self._llm(client)
+
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        self.assertEqual(result, "response text")
+        expected_prompt = _estimate_token_count("su")
+        expected_completion = _estimate_token_count("response text")
+        rec = ledger.records[0]
+        self.assertEqual(rec.prompt_tokens, expected_prompt)
+        self.assertEqual(rec.completion_tokens, expected_completion)
+        self.assertTrue(rec.estimated)
+        self.assertEqual(ledger.spent(), expected_prompt + expected_completion)
+        self.assertGreater(ledger.spent(), 0)
+
+    def test_partial_usage_keeps_real_field_and_estimates_missing_one(self):
+        # Some responses report one real count but null out the other; the real
+        # count must land untouched while only the missing side is estimated.
+        response = fake_response(content="response text")
+        response.usage = SimpleNamespace(prompt_tokens=123, completion_tokens=None)
+        client = FakeClient([response])
+        llm, ledger = self._llm(client)
+
+        asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        rec = ledger.records[0]
+        self.assertEqual(rec.prompt_tokens, 123)
+        self.assertEqual(rec.completion_tokens, _estimate_token_count("response text"))
+        self.assertTrue(rec.estimated)
 
     def test_is_openevolve_llm_interface(self):
         # Injectability into OpenEvolve components via LLMModelConfig.init_client
