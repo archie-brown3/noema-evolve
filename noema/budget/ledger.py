@@ -47,6 +47,7 @@ class CallRecord:
     latency_s: float = 0.0
     iteration: int = -1
     timestamp: float = field(default_factory=time.time)
+    estimated: bool = False  # True if token counts are a counted estimate, not server-reported usage
 
     @property
     def total_tokens(self) -> int:

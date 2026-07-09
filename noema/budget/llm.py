@@ -23,6 +23,12 @@ from noema.budget.ledger import CallRecord, TokenLedger
 
 logger = logging.getLogger(__name__)
 
+_CHARS_PER_TOKEN = 4  # rough fallback estimate for servers that omit real usage counts
+
+
+def _estimate_token_count(text: str) -> int:
+    return max(1, len(text) // _CHARS_PER_TOKEN)
+
 
 class BudgetedLLM(LLMInterface):
     """
@@ -151,18 +157,43 @@ class BudgetedLLM(LLMInterface):
                 raise
 
             usage = getattr(response, "usage", None)
+            content = response.choices[0].message.content
+
+            # Some OpenAI-compatible local servers (llama.cpp/vLLM) return a
+            # `usage` envelope whose prompt_tokens/completion_tokens fields are
+            # null instead of omitting `usage` altogether. Estimate only the
+            # fields that came back null so the ledger never records a silent
+            # zero for tokens that were actually spent; when `usage` is absent
+            # entirely there is nothing to estimate from, so it is charged zero.
+            prompt_tokens = getattr(usage, "prompt_tokens", None) if usage is not None else None
+            completion_tokens = (
+                getattr(usage, "completion_tokens", None) if usage is not None else None
+            )
+            estimated = usage is not None and (prompt_tokens is None or completion_tokens is None)
+            if prompt_tokens is None:
+                prompt_tokens = (
+                    _estimate_token_count(
+                        "".join(m.get("content", "") for m in formatted_messages)
+                    )
+                    if usage is not None
+                    else 0
+                )
+            if completion_tokens is None:
+                completion_tokens = _estimate_token_count(content) if usage is not None else 0
+
             self.ledger.charge(
                 CallRecord(
                     account=self.account,
                     tag=tag,
                     model=self.model,
-                    prompt_tokens=getattr(usage, "prompt_tokens", 0) or 0,
-                    completion_tokens=getattr(usage, "completion_tokens", 0) or 0,
+                    prompt_tokens=prompt_tokens,
+                    completion_tokens=completion_tokens,
                     attempts=attempt + 1,
                     latency_s=time.time() - start,
                     iteration=self.iteration,
+                    estimated=estimated,
                 )
             )
-            return response.choices[0].message.content
+            return content
 
         raise last_exception  # unreachable, kept for type-checkers
