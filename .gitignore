@@ -1,3 +1,8 @@
+# loop machinery: logs stay local, ledgers/goals/prompts are committed
+loop/memory/*.log
+loop/memory/state-archive/
+loop/memory/cron.log
+
 __pycache__/
 *.pyc
 *.pyo
