@@ -303,5 +303,214 @@ class TestNoemaConfig(unittest.TestCase):
             build_coordination_module("does-not-exist")
 
 
+class RetryFailingThenSuccessClient:
+    """Fake client: first `fail_count` calls return garbage; then valid diffs"""
+
+    def __init__(self, fail_count=1, prompt_tokens=100, completion_tokens=40):
+        self.calls = []
+        self._counter = 0
+
+        async def create(**params):
+            self.calls.append(params)
+            self._counter += 1
+            if self._counter <= fail_count:
+                content = "no diffs here"
+            else:
+                val = self._counter - fail_count + 1
+                content = (
+                    f"<<<<<<< SEARCH\ndef f():\n    return 1\n=======\n"
+                    f"def f():\n    return {val}\n>>>>>>> REPLACE"
+                )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class AlwaysGarbageClient:
+    """Fake client: every response is unparseable"""
+
+    def __init__(self, prompt_tokens=10, completion_tokens=5):
+        self.calls = []
+
+        async def create(**params):
+            self.calls.append(params)
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="no diffs here"))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class TestRetryLoop(unittest.TestCase):
+    def test_parse_failure_retries_and_succeeds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=2)
+            client = RetryFailingThenSuccessClient(fail_count=1)
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model",
+                ledger=ledger,
+                account="mutation",
+                tag="mutate",
+                client=client,
+                retries=0,
+                retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            # One iteration produced a child
+            self.assertEqual(controller.db.num_programs, 2)  # initial + 1 child
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertEqual(len(children), 1)
+            # Two mutation calls: one garbage, one success
+            self.assertEqual(len(client.calls), 2)
+
+    def test_parse_failure_exhausts_retries_reports_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=1)
+            client = AlwaysGarbageClient()
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                client=client, retries=0, retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            # No child produced
+            self.assertEqual(controller.db.num_programs, 1)
+            # retry_cap + 1 = 2 mutation calls
+            self.assertEqual(len(client.calls), 2)
+
+    def test_d9_one_verdict_one_iteration_unit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=2)
+            client = AlwaysGarbageClient()
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                client=client, retries=0, retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            # Run 3 iterations; each fails with 3 calls
+            asyncio.run(controller.run(iterations=3))
+
+            # start_iteration == 3, NOT 9
+            self.assertEqual(controller.start_iteration, 3)
+            # 3 iterations × 3 calls each = 9 mutation calls
+            self.assertEqual(len(client.calls), 9)
+
+    def test_retries_metered_on_mutation_account(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=1)
+            client = AlwaysGarbageClient(prompt_tokens=10, completion_tokens=5)
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                client=client, retries=0, retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            # Each call = 10 + 5 = 15 tokens; retry_cap=1 → 2 calls total
+            self.assertEqual(ledger.spent("mutation"), 2 * 15)
+            self.assertEqual(ledger.spent("coordination"), 0)
+            # Ledger records are on the mutation account
+            self.assertEqual(len(ledger.records), 2)
+            for record in ledger.records:
+                self.assertEqual(record.account, "mutation")
+
+    def test_retry_suffix_reaches_retry_prompt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=2)
+            client = RetryFailingThenSuccessClient(fail_count=1)
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                client=client, retries=0, retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            # First call = normal prompt, second call = retry prompt
+            self.assertEqual(len(client.calls), 2)
+            first_content = client.calls[0]["messages"][-1]["content"]
+            second_content = client.calls[1]["messages"][-1]["content"]
+            self.assertNotIn("# Retry After Failure", first_content)
+            self.assertIn("# Retry After Failure", second_content)
+            self.assertIn("no parseable code block found in the response", second_content)
+            self.assertIn("Produce a corrected program", second_content)
+
+    def test_retry_enabled_false_is_byte_identical(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, client = make_controller(tmp)
+            asyncio.run(controller.run(iterations=2))
+            self.assertEqual(len(client.calls), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

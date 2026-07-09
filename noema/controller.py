@@ -246,35 +246,74 @@ class NoemaController:
         if hasattr(self.coordination.llm, "iteration"):
             self.coordination.llm.iteration = iteration
 
-        # BudgetExhausted propagates to run() and stops the loop cleanly
-        response = await self.mutation_llm.generate_with_context(
-            system_message=prompt["system"],
-            messages=[{"role": "user", "content": prompt["user"]}],
-        )
-
-        child_code, changes_summary = self._parse_response(response, parent.code)
-        if child_code is None:
-            logger.warning(f"Iteration {iteration}: no valid program in LLM response")
-            self.coordination.report_result(
-                ctx, child=None, attribution=advice.attribution, eval_failed=True
-            )
-            return
-        if len(child_code) > self.config.max_code_length:
-            logger.warning(
-                f"Iteration {iteration}: generated code exceeds max length "
-                f"({len(child_code)} > {self.config.max_code_length})"
-            )
-            self.coordination.report_result(
-                ctx, child=None, attribution=advice.attribution, eval_failed=True
-            )
-            return
-
-        # Deterministic IDs (one child per iteration): identical across arms, so
-        # openevolve's set-based island iteration order — which depends on the
-        # id strings — cannot make otherwise-identical runs diverge
+        # BudgetExhausted propagates to run() and stops the loop cleanly.
+        # Retry loop: parse/eval failures feed their real error back to
+        # the mutation LLM and retry before the iteration counts as spent.
         child_id = f"it{iteration:06d}"
-        metrics = await self.evaluator.evaluate_program(child_code, child_id)
-        artifacts = self.evaluator.get_pending_artifacts(child_id)
+        child_code = None
+        changes_summary = None
+        metrics = None
+        artifacts = None
+        eval_failed = True
+        error_text = None
+        retry_cap = self.config.retry_cap if self.config.retry_enabled else 0
+
+        for attempt in range(retry_cap + 1):
+            if attempt > 0:
+                current_prompt = self._build_retry_prompt(
+                    base_prompt, advice, error_text, attempt
+                )
+            else:
+                current_prompt = prompt
+
+            response = await self.mutation_llm.generate_with_context(
+                system_message=current_prompt["system"],
+                messages=[{"role": "user", "content": current_prompt["user"]}],
+            )
+
+            child_code, changes_summary = self._parse_response(response, parent.code)
+            if child_code is None:
+                error_text = "no parseable code block found in the response"
+                logger.warning(
+                    f"Iteration {iteration}: no valid program in LLM response "
+                    f"(attempt {attempt + 1})"
+                )
+                continue
+
+            if len(child_code) > self.config.max_code_length:
+                error_text = (
+                    f"generated code length {len(child_code)} exceeds max "
+                    f"{self.config.max_code_length}"
+                )
+                child_code = None
+                changes_summary = None
+                logger.warning(
+                    f"Iteration {iteration}: generated code exceeds max length "
+                    f"(attempt {attempt + 1}, {len(child_code)} > {self.config.max_code_length})"
+                )
+                continue
+
+            metrics = await self.evaluator.evaluate_program(child_code, child_id)
+            artifacts = self.evaluator.get_pending_artifacts(child_id)
+            eval_failed = (not metrics) or ("error" in metrics)
+            if eval_failed:
+                error_text = (artifacts or {}).get("stderr",
+                                                     "evaluation failed: unknown error")
+                logger.warning(
+                    f"Iteration {iteration}: evaluation failed "
+                    f"(attempt {attempt + 1}): {error_text[:200]}"
+                )
+                child_code = None
+                changes_summary = None
+                continue
+
+            break  # success — child_code/metrics/artifacts/changes_summary/current_prompt are set
+
+        if child_code is None:
+            self.coordination.report_result(
+                ctx, child=None, attribution=advice.attribution, eval_failed=True
+            )
+            return
 
         template_key = "diff_user" if self.config.diff_based_evolution else "full_rewrite_user"
         child = Program(
@@ -289,23 +328,14 @@ class NoemaController:
                 "changes": changes_summary,
                 "parent_metrics": parent.metrics,
                 "coordination": advice.attribution,
-                # The island this child is placed in (the rotation target for
-                # this iteration), not parent_island (which may differ from
-                # `island` when sample_from_island fell back cross-island for
-                # an empty island — matches openevolve's own process_parallel
-                # fix for this exact bug class, upstream issue #391).
                 "island": island,
-                # The evaluator's error text (empty on success). Rides on
-                # metadata so coordination modules see WHY a child failed — the
-                # ProgramView they get copies metadata verbatim. Independent of
-                # prompt.include_artifacts, which governs the mutation prompt.
                 "stderr": (artifacts or {}).get("stderr", ""),
             },
             prompts=(
                 {
                     template_key: {
-                        "system": prompt["system"],
-                        "user": prompt["user"],
+                        "system": current_prompt["system"],
+                        "user": current_prompt["user"],
                         "responses": [response],
                     }
                 }
@@ -317,13 +347,27 @@ class NoemaController:
         if artifacts:
             self.db.store_artifacts(child_id, artifacts)
 
-        eval_failed = (not metrics) or ("error" in metrics)
         self.coordination.report_result(  # coordination hook 2
             ctx,
             child=self.db.view(child),
             attribution=advice.attribution,
-            eval_failed=eval_failed,
+            eval_failed=False,
         )
+
+    def _build_retry_suffix(self, error_text: str, attempt: int) -> str:
+        return (
+            "\n\n# Retry After Failure\n"
+            f"Your previous attempt failed. Error: {error_text}\n"
+            "Produce a corrected program. Re-output the full code."
+        )
+
+    def _build_retry_prompt(
+        self, base_prompt, advice, error_text, attempt
+    ) -> Dict[str, str]:
+        prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
+        retry_suffix = self._build_retry_suffix(error_text, attempt)
+        prompt["user"] = prompt["user"] + retry_suffix
+        return prompt
 
     def _parse_response(
         self, response: str, parent_code: str

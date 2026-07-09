@@ -14,6 +14,7 @@ from noema.substrate.prompts import (
     inject_advice,
     make_prompt_sampler,
 )
+from noema.controller import NoemaController
 
 
 def make_parent() -> Program:
@@ -75,6 +76,33 @@ class TestPromptAssembly(unittest.TestCase):
             prompt["user"] + COORDINATION_HEADER + "- Use vectorized operations",
         )
         self.assertIn("Focus on speed.", injected["system"])
+
+
+class TestRetryPromptSuffix(unittest.TestCase):
+    def test_retry_suffix_structure(self):
+        suffix = NoemaController._build_retry_suffix(
+            None, error_text="IndexError: list index out of range", attempt=1
+        )
+        self.assertIn("# Retry After Failure", suffix)
+        self.assertIn("Your previous attempt failed", suffix)
+        self.assertIn("IndexError: list index out of range", suffix)
+        self.assertIn("Produce a corrected program", suffix)
+        self.assertIn("Re-output the full code", suffix)
+
+    def test_retry_suffix_includes_error_text(self):
+        suffix = NoemaController._build_retry_suffix(
+            None, error_text="no parseable code block found in the response", attempt=2
+        )
+        self.assertIn("no parseable code block found in the response", suffix)
+
+    def test_retry_suffix_is_arm_agnostic(self):
+        # Same method, same output regardless of coordination module
+        suffix = NoemaController._build_retry_suffix(
+            None, error_text="generated code length 15000 exceeds max 10000", attempt=0
+        )
+        self.assertIn("generated code length 15000 exceeds max 10000", suffix)
+        self.assertNotIn("reflection", suffix.lower())
+        self.assertNotIn("plan", suffix.lower())
 
 
 if __name__ == "__main__":

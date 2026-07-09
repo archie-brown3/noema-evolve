@@ -79,6 +79,10 @@ class NoemaConfig:
     diff_pattern: str = r"<<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE"
     max_code_length: int = 10000
 
+    # Retry loop (substrate-level, identical across arms)
+    retry_enabled: bool = False
+    retry_cap: int = 2
+
     # Prompt context sizes (mirrors openevolve's iteration defaults)
     num_inspirations: int = 3
     num_top_programs: int = 5
