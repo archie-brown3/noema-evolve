@@ -10,6 +10,7 @@ checkpoint/resume — everything except the network.
 import asyncio
 import json
 import os
+import random
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -19,6 +20,7 @@ from noema.budget.llm import BudgetedLLM
 from noema.config import BudgetConfig, NoemaConfig
 from noema.controller import NoemaController
 from noema.coordination import Advice, NullCoordination
+from noema.coordination.pes.module import PESPlannerModule
 from noema.substrate.prompts import COORDINATION_HEADER
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
@@ -510,6 +512,61 @@ class TestRetryLoop(unittest.TestCase):
             controller, _, client = make_controller(tmp)
             asyncio.run(controller.run(iterations=2))
             self.assertEqual(len(client.calls), 2)
+
+    def test_pes_retry_carries_reflection_null_does_not(self):
+        # Controlled-variable guard: same retry loop, same error, only the
+        # coordination module differs. PES retry prompt must carry reflection;
+        # Null's must not.
+        reflection_text = "The loop overran the array bound; cap the index at n-1."
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = make_config(diff_based_evolution=True, retry_enabled=True, retry_cap=2)
+
+            def run_with(module):
+                client = RetryFailingThenSuccessClient(fail_count=1)
+                ledger = TokenLedger(total_budget_tokens=1_000_000)
+                mutation_llm = BudgetedLLM(
+                    model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                    client=client, retries=0, retry_delay=0.0,
+                )
+                controller = NoemaController(
+                    config=config,
+                    evaluation_file=eval_path,
+                    initial_program_code=INITIAL_PROGRAM,
+                    output_dir=os.path.join(tmp, f"output_{id(module)}"),
+                    mutation_llm=mutation_llm,
+                    coordination=module,
+                    ledger=ledger,
+                )
+                asyncio.run(controller.run(iterations=1))
+                return client
+
+            # Null: retry prompt has raw error only, no reflection
+            null_client = run_with(NullCoordination())
+            null_retry_content = null_client.calls[1]["messages"][-1]["content"]
+            self.assertIn("# Retry After Failure", null_retry_content)
+            self.assertNotIn("# Reflection on the lineage's last failure", null_retry_content)
+
+            # PES: pre-seed reflection so retry_advice returns it (the module's
+            # own reflection pipeline normally populates this at the generation
+            # tick; here we seed directly to isolate the retry-seeding path)
+            pes_module = PESPlannerModule(config={}, llm=None, rng=random.Random(0))
+            # The parent id for it000000's mutation is "initial"
+            pes_module._plans["initial"] = {
+                "plan": "# Plan\n## Strategy\n- try something\n## Action\n1. go",
+                "outcome": "failed",
+                "parent_fitness": 0.1,
+                "child_fitness": 0.0,
+                "reflection": reflection_text,
+            }
+            pes_client = run_with(pes_module)
+            pes_retry_content = pes_client.calls[1]["messages"][-1]["content"]
+            self.assertIn("# Retry After Failure", pes_retry_content)
+            self.assertIn("# Reflection on the lineage's last failure", pes_retry_content)
+            self.assertIn(reflection_text, pes_retry_content)
+            self.assertIn("Use this causal explanation", pes_retry_content)
 
 
 if __name__ == "__main__":

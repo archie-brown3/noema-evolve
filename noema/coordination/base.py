@@ -107,6 +107,18 @@ class CoordinationModule(ABC):
         """Per-generation JSON for the run log; override for mechanism-specific fields"""
         return {}
 
+    async def retry_advice(
+        self, ctx: GenerationContext, error_text: str, attempt: int
+    ) -> str:
+        """Text to append to a retry's mutation prompt (default: none).
+
+        Called by the controller's retry loop after a failed attempt, before
+        re-issuing the mutation call. "" means the retry uses raw error only.
+        Non-abstract on purpose: NullCoordination, HiFo, and s1 inherit this
+        no-op; only PES overrides it (the sanctioned second-consumer case).
+        """
+        return ""
+
 
 class NullCoordination(CoordinationModule):
     """The coordination-OFF arm: injects nothing, learns nothing"""

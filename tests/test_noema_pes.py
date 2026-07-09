@@ -386,6 +386,51 @@ class TestPESPlannerModule(unittest.TestCase):
         asyncio.run(module.advise(make_ctx()))
         self.assertNotIn("# Recently Attempted Elsewhere", client.calls[0]["messages"][-1]["content"])
 
+    # -------------------------------------------- retry_advice (Stage 2)
+
+    def test_retry_advice_returns_reflection_when_present(self):
+        module, _, _ = self.make_module()
+        ctx = make_ctx(parent=make_view(pid="p"))
+        module._plans["p"] = {
+            "plan": PLAN_TEXT,
+            "outcome": FAILED,
+            "parent_fitness": 0.5,
+            "child_fitness": 0.0,
+            "reflection": REFLECTION_TEXT,
+        }
+        advice = asyncio.run(module.retry_advice(ctx, "IndexError", 0))
+        self.assertIn("# Reflection on the lineage's last failure", advice)
+        self.assertIn(REFLECTION_TEXT, advice)
+        self.assertIn("Use this causal explanation", advice)
+
+    def test_retry_advice_returns_empty_when_no_parent(self):
+        module, _, _ = self.make_module()
+        ctx = make_ctx(parent=None)
+        module._plans["p"] = {"reflection": REFLECTION_TEXT}
+        advice = asyncio.run(module.retry_advice(ctx, "err", 0))
+        self.assertEqual(advice, "")
+
+    def test_retry_advice_returns_empty_when_no_reflection_yet(self):
+        # Fresh lineage: parent exists but no plan/reflection stored
+        module, _, _ = self.make_module()
+        ctx = make_ctx(parent=make_view(pid="fresh"))
+        advice = asyncio.run(module.retry_advice(ctx, "err", 0))
+        self.assertEqual(advice, "")
+
+    def test_retry_advice_returns_empty_when_reflection_is_blank(self):
+        module, _, _ = self.make_module()
+        ctx = make_ctx(parent=make_view(pid="p"))
+        module._plans["p"] = {"reflection": ""}  # failed reflection call -> ""
+        advice = asyncio.run(module.retry_advice(ctx, "err", 0))
+        self.assertEqual(advice, "")
+
+    def test_null_coordination_retry_advice_is_noop(self):
+        # Regression guard: Null must NOT carry reflection (confound control)
+        from noema.coordination.base import NullCoordination
+        ctx = make_ctx()
+        advice = asyncio.run(NullCoordination().retry_advice(ctx, "err", 0))
+        self.assertEqual(advice, "")
+
 
 if __name__ == "__main__":
     unittest.main()

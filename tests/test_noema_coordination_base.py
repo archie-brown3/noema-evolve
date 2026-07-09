@@ -6,7 +6,7 @@ import asyncio
 import json
 import unittest
 
-from noema.coordination.base import Advice, GenerationContext, NullCoordination
+from noema.coordination.base import Advice, CoordinationModule, GenerationContext, NullCoordination
 from noema.substrate.views import ProgramView
 
 
@@ -50,6 +50,29 @@ class TestNullCoordination(unittest.TestCase):
 
     def test_log_snapshot_json_serializable(self):
         json.dumps(NullCoordination().log_snapshot())
+
+    def test_retry_advice_default_returns_empty_string(self):
+        # Non-abstract default: every module inherits this no-op without override
+        module = NullCoordination()
+        advice = asyncio.run(module.retry_advice(make_ctx(), "some error", 1))
+        self.assertEqual(advice, "")
+
+    def test_retry_advice_is_coroutine(self):
+        import inspect
+        module = NullCoordination()
+        self.assertTrue(
+            inspect.iscoroutinefunction(CoordinationModule.retry_advice),
+            "retry_advice must be async (awaitable) on the base class",
+        )
+
+    def test_null_coordination_inherits_noop_without_override(self):
+        # NullCoordination does NOT define retry_advice — it must inherit the base no-op
+        self.assertFalse(
+            "retry_advice" in NullCoordination.__dict__,
+            "NullCoordination must not override retry_advice; it inherits the base no-op",
+        )
+        advice = asyncio.run(NullCoordination().retry_advice(make_ctx(), "err", 0))
+        self.assertEqual(advice, "")
 
 
 class TestGenerationContext(unittest.TestCase):

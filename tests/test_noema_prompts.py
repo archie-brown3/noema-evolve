@@ -104,6 +104,19 @@ class TestRetryPromptSuffix(unittest.TestCase):
         self.assertNotIn("reflection", suffix.lower())
         self.assertNotIn("plan", suffix.lower())
 
+    def test_reflection_suffix_structure(self):
+        # The PES reflection block appended after the raw-error retry suffix.
+        # Locked substrings per spec (prompt-identity guard for Stage 2).
+        reflection_text = "The loop overran the array bound; cap the index at n-1."
+        reflection_suffix = (
+            "\n# Reflection on the lineage's last failure\n"
+            f"{reflection_text}\n"
+            "Use this causal explanation to guide the corrected mutation."
+        )
+        self.assertIn("# Reflection on the lineage's last failure", reflection_suffix)
+        self.assertIn("Use this causal explanation", reflection_suffix)
+        self.assertIn(reflection_text, reflection_suffix)
+
 
 if __name__ == "__main__":
     unittest.main()

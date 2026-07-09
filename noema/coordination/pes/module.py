@@ -1,7 +1,4 @@
 """
-PES planner coordination arm (Phase 1 of the LoongFlow transplant).
-
-Mapping from the released LoongFlow code (vault: "LoongFlow Fit Assessment"):
 - advise()          <- the Planner phase: one metered planning call per mutation,
                        plan injected as the standard coordination suffix
                        (LoongFlow: agents/general_agent/planner.py)
@@ -22,7 +19,10 @@ Documented deviations from the released code (PLAN.md section 2.2 discipline):
    upstream precedent.
 2. The plan is a prompt *suffix* after openevolve's mutation instructions, not
    the executor's primary directive. Biggest fidelity gap — flagged in the fit
-   assessment; accepted for now (closing it is Stage 2 of the Phase 2 roadmap).
+   assessment; **closed by Stage 2** ([[tasks/0050-implement-stage2-reflection-seeded-retries]]):
+   `retry_advice` now seeds retries with the lineage's causal reflection, making
+   planning and execution iterative (plan → attempt → *why it failed* → retry
+   informed by the reflection) rather than "plan once, append as static suffix."
 3. The parent is sampled by the host and handed in via GenerationContext;
    LoongFlow's planner samples it itself and can query the database with
    tools. Lineage memory here is the module-internal plan/outcome store.
@@ -238,6 +238,27 @@ class PESPlannerModule(CoordinationModule):
         return Advice(
             prompt_block=plan,
             attribution={"plan": plan, "parent_id": ctx.parent.id},
+        )
+
+    async def retry_advice(self, ctx: GenerationContext, error_text: str, attempt: int) -> str:
+        """Seed a Stage-1 retry with this lineage's causal reflection (Design 4).
+
+        Returns the stored reflection text (the "why it failed" from the deferred
+        summary call) framed as a retry-guidance block, or "" when there's no
+        parent or no reflection yet (fresh lineage). The controller concatenates
+        this after its raw-error suffix; Null inherits the no-op, so only PES
+        retries carry reflection — the controlled variable stays single.
+        """
+        if ctx.parent is None:
+            return ""
+        prior = self._plans.get(ctx.parent.id)
+        reflection = prior.get("reflection") if prior else None
+        if not reflection:
+            return ""
+        return (
+            "\n# Reflection on the lineage's last failure\n"
+            f"{reflection}\n"
+            "Use this causal explanation to guide the corrected mutation."
         )
 
     def _truncate(self, code: str) -> str:

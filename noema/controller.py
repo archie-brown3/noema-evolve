@@ -260,8 +260,8 @@ class NoemaController:
 
         for attempt in range(retry_cap + 1):
             if attempt > 0:
-                current_prompt = self._build_retry_prompt(
-                    base_prompt, advice, error_text, attempt
+                current_prompt = await self._build_retry_prompt(
+                    base_prompt, advice, error_text, attempt, ctx
                 )
             else:
                 current_prompt = prompt
@@ -361,12 +361,13 @@ class NoemaController:
             "Produce a corrected program. Re-output the full code."
         )
 
-    def _build_retry_prompt(
-        self, base_prompt, advice, error_text, attempt
+    async def _build_retry_prompt(
+        self, base_prompt, advice, error_text, attempt, ctx
     ) -> Dict[str, str]:
         prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
         retry_suffix = self._build_retry_suffix(error_text, attempt)
-        prompt["user"] = prompt["user"] + retry_suffix
+        reflection_suffix = await self.coordination.retry_advice(ctx, error_text, attempt)
+        prompt["user"] = prompt["user"] + retry_suffix + reflection_suffix
         return prompt
 
     def _parse_response(
