@@ -80,6 +80,14 @@ class SubstrateDatabase:
             if pid in self._db.programs
         ]
 
+    def per_island_bests(self) -> List[float]:
+        """Best fitness on each island (0.0 for an empty island) — the
+        cross-island status level the PES planner's Global Perspective
+        strategies compare against (task 0061)."""
+        return [
+            max(self.island_fitnesses(i), default=0.0) for i in range(self.num_islands)
+        ]
+
     def all_fitnesses(self) -> List[float]:
         """Fitness values of every program in the database (for host histories)"""
         return [self.fitness(p) for p in self._db.programs.values()]
