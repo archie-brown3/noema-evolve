@@ -159,9 +159,11 @@ class Planner:
 
         Data comes ONLY from the host-injected `island_bests_provider`
         callable — never synthesized from _plans. Returns "" when the provider
-        is absent or the database is empty: the strategies stay verbatim but
-        inert, matching a GENESIS database upstream. Not rendered by the
-        custom prompt variant (the faithful template, task 0063, consumes it).
+        is absent or returns no islands, leaving the strategies verbatim but
+        inert. An empty-but-islanded database renders 0.0000 per island (in a
+        live run the seed program exists before the first advise call). Not
+        rendered by the custom prompt variant (the faithful template, task
+        0063, consumes it).
         """
         provider = self._m.config.get("island_bests_provider")
         if provider is None:
