@@ -89,6 +89,10 @@ check_response() {
 rotate_state
 
 for ((i=1; i<=MAX_ITERS; i++)); do
+  # ---- Session archive: save all LLM outputs for post-tick review ----
+  SESSION_DIR="memory/sessions/iter$i"
+  mkdir -p "$SESSION_DIR"
+
   # ---- 1 TRIAGE: cheap reader on assembled signals; fresh file, then append ----
   SIG=$(mktemp); TRI=$(mktemp)
   {
@@ -104,6 +108,8 @@ for ((i=1; i<=MAX_ITERS; i++)); do
   } > "$SIG"
   timeout "$SEAT_TIMEOUT" claude -p "$(cat triage.md)" --model "$TRIAGE_MODEL" \
     --allowedTools "" --output-format json < "$SIG" > /tmp/triage.json || true
+  cp /tmp/triage.json "$SESSION_DIR/triage.json" 2>/dev/null || true
+  cp "$SIG" "$SESSION_DIR/signals.txt" 2>/dev/null || true
   RC=0; check_response triage /tmp/triage.json || RC=$?
   [ "$RC" -eq 4 ] && exit 4
   [ "$RC" -ne 0 ] && exit 1
@@ -126,7 +132,8 @@ $(cat contract.md)
 VAULT INDEX:
 $(cat "$VAULT/INDEX.md" 2>/dev/null || echo '(vault unavailable)')" \
     --model "$BRAIN_MODEL" --fallback-model "$FALLBACK_MODEL" --effort high \
-    --allowedTools "Read" --output-format json > /tmp/c.json || true
+    --allowedTools "Read" --add-dir /root/.claude/skills/vault-loop --output-format json > /tmp/c.json || true
+  cp /tmp/c.json "$SESSION_DIR/conductor.json" 2>/dev/null || true
   RC=0; check_response conductor /tmp/c.json fable opus-4-8 || RC=$?
   [ "$RC" -eq 2 ] && { wake_user "safeguard router swapped models mid-run"; exit 2; }
   [ "$RC" -eq 4 ] && exit 4
@@ -134,6 +141,7 @@ $(cat "$VAULT/INDEX.md" 2>/dev/null || echo '(vault unavailable)')" \
 
   # Strip accidental code fences, validate the five fields.
   jq -r '.result' /tmp/c.json | sed '/^```/d' > work-order.json
+  cp work-order.json "$SESSION_DIR/work-order.json" 2>/dev/null || true
   for k in action item skill spec done_when; do
     jq -e ".$k" work-order.json >/dev/null \
       || { echo "- malformed work order (missing $k)" >> memory/STATE.md; exit 1; }
@@ -154,6 +162,7 @@ $(cat "$OLDPWD/work-order.json")" \
       --model "$WORKER_MODEL" --effort medium \
       --allowedTools "Read Glob Grep Edit Write Bash(python3 -m unittest:*) Bash(git diff:*) Bash(git status:*) Bash(git log:*) Bash(git checkout:*) Bash(git clean:*)" \
       --output-format json > /tmp/w.json || true )
+  cp /tmp/w.json "$SESSION_DIR/worker.json" 2>/dev/null || true
   RC=0; check_response worker /tmp/w.json || RC=$?
   if [ "$RC" -ne 0 ]; then
     mark_vault todo; git -C "$REPO_ROOT" worktree remove --force "$WT"
@@ -172,6 +181,7 @@ DIFF:
 $(git -C "$WT" diff; git -C "$WT" status --short)" \
     --model "$BRAIN_MODEL" --fallback-model "$FALLBACK_MODEL" --effort high \
     --allowedTools "" --output-format json > /tmp/v.json || true
+  cp /tmp/v.json "$SESSION_DIR/verifier.json" 2>/dev/null || true
   RC=0; check_response verifier /tmp/v.json || RC=$?
   if [ "$RC" -ne 0 ]; then
     mark_vault todo

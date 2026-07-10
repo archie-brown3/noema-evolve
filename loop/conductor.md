@@ -18,9 +18,10 @@ give a recommendation, not an exhaustive survey.
    - contract-sensitive, ambiguous, or likely >400-line diff -> action: queue
    - nothing worth doing -> action: stop
 3. Else action: execute, with a spec a mediocre model can follow mechanically.
-   If the item is a vault task (tasks/NNNN-*.md), the spec MUST include: set its
-   frontmatter status to in-progress at start; on completion fill "Output /
-   notes", but leave moving it to done/ and INDEX updates to the host loop.
+   If the item is a vault task (tasks/NNNN-*.md), read SKILL.md (available via
+   --add-dir) for canonical vault conventions. The spec MUST instruct the worker
+   to follow that skill's frontmatter, status, and Output/notes conventions.
+   Leave moving to done/ and INDEX updates to the host loop.
    The spec names exact files and commands. done_when items must be checkable
    by a shell command or by inspecting the diff.
 4. Proactive dispatch — if the vault "Now" list has no unblocked, non-in-progress

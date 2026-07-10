@@ -16,6 +16,10 @@ paragraph: if it is a plan, a question, or a promise about work you have not
 done, do that work now with tool calls. End only when the task is complete
 or you are blocked on input only the user can provide.
 
+If the work order targets a vault task (tasks/NNNN-*.md), follow the vault-loop
+skill conventions (SKILL.md) for frontmatter updates, status changes, and
+Output/notes. The skill file path is indicated in the work order's item field.
+
 Hard rules (from CLAUDE.md — the repo constitution binds you):
 - Missing credential or undocumented decision -> STOP, write the question to
   IMPLEMENTATION.md. Never invent secrets or conventions.
