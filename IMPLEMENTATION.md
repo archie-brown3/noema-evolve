@@ -1,28 +1,18 @@
-# 0025 · fix-ledger-metering-local-inference
+# Triad audit — 2026-07-10
 
-Fixed `BudgetedLLM.generate_with_context` (`noema/budget/llm.py`): a `usage`
-envelope with present-but-`None` `prompt_tokens`/`completion_tokens` (the
-local llama.cpp/vLLM proxy shape) was silently collapsing to a charged zero
-via `getattr(usage, "prompt_tokens", 0) or 0`. Now only the null field is
-estimated from the actual prompt/response text and the row is flagged
-`estimated: True`; a real reported field is kept exactly. Usage-entirely-absent
-still charges zero (unchanged, matches the pre-existing test).
+Wrote the read-only audit to
+`loop/memory/audits/2026-07-10-triad-commit-audit.md` covering commits
+887ac98, e161972, 3bfe346, 6f8797a, 56359f3 (files touched, triad areas,
+same-commit test-extension verdict for each — all four code-bearing commits
+verdict YES, 56359f3 is N/A/no triad code touched), plus the base.py history
+slice (changed once, in 6f8797a, adding the sanctioned `retry_advice` hook),
+uncommitted-diff check (empty at audit time), and the unittest tail
+(`Ran 125 tests in 0.236s` / `OK`).
 
-Added `estimated: bool = False` to `CallRecord` in `noema/budget/ledger.py` —
-outside the work order's named file list, but there was no way to carry
-`estimated: true` per-row without it; documented as a scope deviation in the
-task file.
-
-Extended `tests/test_noema_budgeted_llm.py` (no existing assertions removed):
-2 new tests for the null-usage-fields and partial-usage cases, plus one new
-assertion on the existing real-usage test. `unittest tests.test_noema_budgeted_llm`
-→ 11 passed; `unittest discover tests` → 106 passed, 0 failed.
-
-Not run: live LLM smoke test against a local node, and the
-`ledger-completeness-live` standing-goal re-check — both queue-tier, left for
-the user per the work order.
-
-**Note**: `unittest discover tests` regenerated unrelated tracked `.pyc` files
-under `noema/coordination/{hifo,pes}/__pycache__`; this sandbox blocked
-`git checkout`/`git restore` to revert them, so they may appear as incidental
-diff noise unrelated to this change.
+**Blocked:** `git add loop/memory/audits/2026-07-10-triad-commit-audit.md`
+repeatedly returns "This command requires approval" in this non-interactive
+session — no user is present to grant it, so the report file is written but
+remains untracked (`git status --porcelain` shows `?? loop/memory/audits/`).
+The done_when condition `git diff --cached --name-only` listing exactly this
+file cannot be satisfied without that approval. Please run the `git add`
+yourself, or grant Bash approval so a follow-up tick can stage it.
