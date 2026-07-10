@@ -506,6 +506,31 @@ class TestNonImprovementRetry(unittest.TestCase):
             self.assertEqual(len(children), 1)
             self.assertEqual(children[0].metrics["combined_score"], 0.05)
 
+    def test_trailing_failure_still_stores_best_valid_attempt(self):
+        # attempt 0: valid but worse (recorded as best); attempt 1: garbage.
+        # The stored child must be the valid attempt, reported eval_failed=False
+        # (0062 verifier finding 4: no stale-failure state may leak through).
+        contents = ["```python\ndef f():\n    return 0.5\n```", "no code here"]
+        client = SimpleNamespace(calls=[])
+
+        async def create(**params):
+            client.calls.append(params)
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(
+                    content=contents[min(len(client.calls) - 1, 1)]))],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+        client.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(retry_enabled=True, retry_cap=1, retry_on="non_improvement")
+            controller, _, _ = make_controller(tmp, config=config, client=client)
+            asyncio.run(controller.run(iterations=1))
+            children = [p for p in controller.db._db.programs.values() if p.parent_id]
+            self.assertEqual(len(client.calls), 2)
+            self.assertEqual(len(children), 1)
+            self.assertEqual(children[0].metrics["combined_score"], 0.05)
+
     def test_retry_on_failure_default_ignores_non_improvement(self):
         with tempfile.TemporaryDirectory() as tmp:
             # regression pin: same worse child, default trigger -> no retry,
