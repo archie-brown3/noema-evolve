@@ -80,9 +80,16 @@ class NoemaConfig:
     diff_pattern: str = r"<<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE"
     max_code_length: int = 10000
 
-    # Retry loop (substrate-level, identical across arms)
+    # Retry loop (substrate-level, identical across arms).
+    # retry_cap counts RETRIES after the initial attempt (LoongFlow's
+    # max_rounds ~= retry_cap + 1 total rounds). retry_on picks the trigger
+    # (task 0062): "failure" = parse/boundary/eval failures only (today's
+    # behavior); "non_improvement" additionally retries a valid child whose
+    # fitness does not beat its parent, keeping the best attempt
+    # (execute_agent_chat.py round semantics). Inert unless retry_enabled.
     retry_enabled: bool = False
     retry_cap: int = 2
+    retry_on: str = "failure"
 
     # EoH-derived mutation operator menu (substrate-level, task 0027).
     # None = legacy path, zero behavior change (today's diff_based_evolution
@@ -106,6 +113,10 @@ class NoemaConfig:
     coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
 
     def __post_init__(self):
+        if self.retry_on not in ("failure", "non_improvement"):
+            raise ValueError(
+                f'retry_on must be "failure" or "non_improvement", got {self.retry_on!r}'
+            )
         if self.prompt.use_template_stochasticity:
             raise ValueError(
                 "noema requires prompt.use_template_stochasticity=False "

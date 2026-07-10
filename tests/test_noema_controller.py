@@ -355,6 +355,21 @@ class TestNoemaConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_coordination_module("does-not-exist")
 
+    def test_retry_on_defaults_to_failure_and_rejects_unknown(self):
+        self.assertEqual(NoemaConfig().retry_on, "failure")
+        with self.assertRaises(ValueError):
+            NoemaConfig(retry_on="always")
+
+    def test_retry_on_survives_yaml_round_trip(self):
+        config = NoemaConfig(retry_on="non_improvement", retry_enabled=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "config.yaml")
+            with open(path, "w") as f:
+                f.write(config.to_yaml())
+            restored = NoemaConfig.from_yaml(path)
+        self.assertEqual(restored.retry_on, "non_improvement")
+        self.assertTrue(restored.retry_enabled)
+
     def test_mutation_operator_seed_defaults_to_random_seed_plus_two(self):
         config = NoemaConfig(random_seed=10)
         self.assertEqual(config.mutation_operator_seed, 12)
