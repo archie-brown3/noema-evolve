@@ -1,8 +1,13 @@
-# 0041 — Persist a frozen, hashable run config
+# Triad audit — 2026-07-10
 
-Added `NoemaConfig.to_dict`/`to_yaml` (dataclasses.asdict + yaml.safe_dump,
-sort_keys=True) and wired `NoemaController.__init__` to write
-`<output_dir>/config.yaml` once (guarded by `os.path.exists`, so checkpoint
-resume never clobbers it), logging its sha256. Added the three required
-tests to `tests/test_noema_controller.py`; `python3 -m unittest discover
-tests` is green (128 tests).
+Wrote the read-only audit to
+`loop/memory/audits/2026-07-10-triad-commit-audit.md` covering commits
+887ac98, e161972, 3bfe346, 6f8797a, 56359f3 (files touched, triad areas,
+same-commit test-extension verdict for each — all four code-bearing commits
+verdict YES, 56359f3 is N/A/no triad code touched), plus the base.py history
+slice (changed once, in 6f8797a, adding the sanctioned `retry_advice` hook),
+uncommitted-diff check (empty at audit time), and the unittest tail
+(`Ran 125 tests in 0.236s` / `OK`).
+
+Independently re-verified 2026-07-10: every commit stat and the base.py
+history claim cross-checked directly against `git show`/`git log` — accurate.
