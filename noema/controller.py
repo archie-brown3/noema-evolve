@@ -24,6 +24,7 @@ from openevolve.utils.code_utils import (
     format_diff_summary,
     parse_full_rewrite,
 )
+from openevolve.utils.metrics_utils import get_fitness_score
 
 from noema.budget.ledger import (
     COORDINATION_ACCOUNT,
@@ -319,6 +320,9 @@ class NoemaController:
         eval_failed = True
         error_text = None
         retry_cap = self.config.retry_cap if self.config.retry_enabled else 0
+        # Best valid attempt across rounds (retry_on="non_improvement" only)
+        best_attempt: Optional[Dict[str, Any]] = None
+        parent_fitness = ctx.parent.fitness if ctx.parent is not None else 0.0
 
         for attempt in range(retry_cap + 1):
             if attempt > 0:
@@ -382,7 +386,46 @@ class NoemaController:
                 changes_summary = None
                 continue
 
+            if self.config.retry_on == "non_improvement" and retry_cap > 0:
+                child_fitness = get_fitness_score(metrics, self.db.feature_dimensions)
+                # Keep the best valid attempt: LoongFlow stores its best
+                # candidate even when no round beats the parent
+                # (execute_agent_chat.py round semantics), so noema stores the
+                # best attempt as the iteration's child either way — population
+                # dynamics stay comparable across retry_on modes.
+                if best_attempt is None or child_fitness > best_attempt["fitness"]:
+                    best_attempt = {
+                        "child_code": child_code,
+                        "changes_summary": changes_summary,
+                        "metrics": metrics,
+                        "artifacts": artifacts,
+                        "response": response,
+                        "prompt": current_prompt,
+                        "fitness": child_fitness,
+                    }
+                if child_fitness <= parent_fitness and attempt < retry_cap:
+                    error_text = (
+                        "the program evaluated successfully but did not beat its "
+                        f"parent: fitness {child_fitness:.4f} <= {parent_fitness:.4f}"
+                    )
+                    logger.info(
+                        f"Iteration {iteration}: valid child without improvement "
+                        f"(attempt {attempt + 1}); retrying"
+                    )
+                    continue
+
             break  # success — child_code/metrics/artifacts/changes_summary/current_prompt are set
+
+        if best_attempt is not None:
+            # retry_on="non_improvement": store the best valid attempt seen,
+            # with its own prompt/response provenance (it may or may not have
+            # beaten the parent).
+            child_code = best_attempt["child_code"]
+            changes_summary = best_attempt["changes_summary"]
+            metrics = best_attempt["metrics"]
+            artifacts = best_attempt["artifacts"]
+            response = best_attempt["response"]
+            current_prompt = best_attempt["prompt"]
 
         if child_code is None:
             self.coordination.report_result(

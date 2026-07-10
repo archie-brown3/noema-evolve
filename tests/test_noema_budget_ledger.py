@@ -1,13 +1,22 @@
 """
-Tests for noema.budget.ledger (TokenLedger accounting semantics)
+Tests for noema.budget.ledger (TokenLedger accounting semantics), plus the
+controller-driven metering contract for retry attempts (task 0062).
 """
 
+import asyncio
 import json
 import os
 import tempfile
 import unittest
+from types import SimpleNamespace
+
+from openevolve.config import DatabaseConfig, EvaluatorConfig
 
 from noema.budget.ledger import BudgetExhausted, CallRecord, TokenLedger
+from noema.budget.llm import BudgetedLLM
+from noema.config import BudgetConfig, NoemaConfig
+from noema.controller import NoemaController
+from noema.coordination.base import NullCoordination
 
 
 def record(account="mutation", prompt=100, completion=50, **kwargs):
@@ -110,6 +119,80 @@ class TestTokenLedger(unittest.TestCase):
     def test_invalid_budget_rejected(self):
         with self.assertRaises(ValueError):
             TokenLedger(total_budget_tokens=0)
+
+
+class TestRetrySpendMetering(unittest.TestCase):
+    """Every retry attempt under retry_on="non_improvement" is metered
+    per-attempt on the mutation account, and BudgetExhausted raised mid-retry
+    stops the run cleanly (task 0062; guarantee triad: metering integrity)."""
+
+    EVAL = (
+        "import re\n"
+        "def evaluate(program_path):\n"
+        "    code = open(program_path).read()\n"
+        "    m = re.search(r'return (\\d+(?:\\.\\d+)?)', code)\n"
+        "    return {'combined_score': min(1.0, (float(m.group(1)) if m else 0.0) / 10.0)}\n"
+    )
+
+    def _controller(self, tmp, budget_tokens):
+        # Fake client always emits a valid-but-worse child ("return 0.5" scores
+        # 0.05 vs the parent seed's 0.1), so every attempt is a non-improvement
+        # retry. 10 + 5 = 15 tokens per call.
+        client = SimpleNamespace(calls=[])
+
+        async def create(**params):
+            client.calls.append(params)
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(
+                    content="```python\ndef f():\n    return 0.5\n```"))],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+        client.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+        eval_path = os.path.join(tmp, "evaluator.py")
+        with open(eval_path, "w") as f:
+            f.write(self.EVAL)
+        ledger = TokenLedger(total_budget_tokens=budget_tokens)
+        controller = NoemaController(
+            config=NoemaConfig(
+                retry_enabled=True, retry_cap=1, retry_on="non_improvement",
+                database=DatabaseConfig(in_memory=True, num_islands=2,
+                                        population_size=50, random_seed=42,
+                                        migration_interval=1000),
+                evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30,
+                                          max_retries=0),
+                budget=BudgetConfig(total_tokens=budget_tokens),
+            ),
+            evaluation_file=eval_path,
+            initial_program_code="def f():\n    return 1\n",
+            output_dir=os.path.join(tmp, "output"),
+            mutation_llm=BudgetedLLM(model="fake-model", ledger=ledger,
+                                     account="mutation", tag="mutate",
+                                     client=client, retries=0, retry_delay=0.0),
+            coordination=NullCoordination(),
+            ledger=ledger,
+        )
+        return controller, ledger, client
+
+    def test_each_retry_attempt_metered_per_attempt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = self._controller(tmp, budget_tokens=1_000_000)
+            asyncio.run(controller.run(iterations=1))
+            # cap 1 -> initial + 1 retry = 2 calls, each its own ledger record
+            self.assertEqual(len(client.calls), 2)
+            self.assertEqual(ledger.spent("mutation"), 2 * 15)
+            self.assertEqual([r.account for r in ledger.records], ["mutation"] * 2)
+            self.assertEqual([r.total_tokens for r in ledger.records], [15, 15])
+
+    def test_budget_exhausted_mid_retry_stops_cleanly(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # Exactly one attempt's worth: the pool hits zero after the first
+            # call, so the non-improvement RETRY is what trips BudgetExhausted.
+            controller, ledger, client = self._controller(tmp, budget_tokens=15)
+            asyncio.run(controller.run(iterations=5))  # must not raise
+            self.assertEqual(len(client.calls), 1)
+            self.assertEqual(ledger.spent("mutation"), 15)
+            self.assertEqual(ledger.remaining(), 0)
 
 
 if __name__ == "__main__":

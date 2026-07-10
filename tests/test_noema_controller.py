@@ -452,6 +452,72 @@ class AlwaysGarbageClient:
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
 
 
+class SequenceRewriteClient:
+    """Fake client emitting full-rewrite programs returning the given values
+    (the eval script scores value/10, so fitness is directly controlled)"""
+
+    def __init__(self, values, prompt_tokens=10, completion_tokens=5):
+        self.calls = []
+        values = list(values)
+
+        async def create(**params):
+            self.calls.append(params)
+            v = values[min(len(self.calls) - 1, len(values) - 1)]
+            content = f"```python\ndef f():\n    return {v}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class TestNonImprovementRetry(unittest.TestCase):
+    """retry_on="non_improvement" (task 0062): a valid child scoring <= parent
+    retries up to retry_cap; the best attempt is kept either way."""
+
+    def _run(self, tmp, values, retry_cap=2, retry_on="non_improvement"):
+        config = make_config(retry_enabled=True, retry_cap=retry_cap, retry_on=retry_on)
+        controller, ledger, client = make_controller(
+            tmp, config=config, client=SequenceRewriteClient(values)
+        )
+        asyncio.run(controller.run(iterations=1))
+        children = [p for p in controller.db._db.programs.values() if p.parent_id]
+        return client, children
+
+    def test_worse_then_better_stops_at_two_calls_and_stores_better(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # parent "return 1" scores 0.1; 0.5 -> 0.05 (worse), 5 -> 0.5 (better)
+            client, children = self._run(tmp, values=[0.5, 5])
+            self.assertEqual(len(client.calls), 2)
+            self.assertEqual(len(children), 1)
+            self.assertEqual(children[0].metrics["combined_score"], 0.5)
+            retry_prompt = client.calls[1]["messages"][-1]["content"]
+            self.assertIn("did not beat its parent", retry_prompt)
+            self.assertIn("# Retry After Failure", retry_prompt)
+
+    def test_all_worse_respects_cap_and_keeps_best_attempt(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # all worse than parent 0.1: cap 1 -> exactly 2 calls; best kept
+            client, children = self._run(tmp, values=[0.3, 0.5], retry_cap=1)
+            self.assertEqual(len(client.calls), 2)
+            self.assertEqual(len(children), 1)
+            self.assertEqual(children[0].metrics["combined_score"], 0.05)
+
+    def test_retry_on_failure_default_ignores_non_improvement(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # regression pin: same worse child, default trigger -> no retry,
+            # single call, child stored, no outcome text in any prompt
+            client, children = self._run(tmp, values=[0.5], retry_on="failure")
+            self.assertEqual(len(client.calls), 1)
+            self.assertEqual(len(children), 1)
+            self.assertEqual(children[0].metrics["combined_score"], 0.05)
+            for call in client.calls:
+                self.assertNotIn("did not beat its parent", call["messages"][-1]["content"])
+
+
 class TestRetryLoop(unittest.TestCase):
     def test_parse_failure_retries_and_succeeds(self):
         with tempfile.TemporaryDirectory() as tmp:
