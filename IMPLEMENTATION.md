@@ -1,28 +1,12 @@
-# 0025 · fix-ledger-metering-local-inference
+# 0034 · role-structured-benchmark-layout
 
-Fixed `BudgetedLLM.generate_with_context` (`noema/budget/llm.py`): a `usage`
-envelope with present-but-`None` `prompt_tokens`/`completion_tokens` (the
-local llama.cpp/vLLM proxy shape) was silently collapsing to a charged zero
-via `getattr(usage, "prompt_tokens", 0) or 0`. Now only the null field is
-estimated from the actual prompt/response text and the row is flagged
-`estimated: True`; a real reported field is kept exactly. Usage-entirely-absent
-still charges zero (unchanged, matches the pre-existing test).
+Restructured `examples/circle_packing/initial_program.py` into F_imm (entry
+point + helpers) outside `EVOLVE-BLOCK-START/END`, F_mut (strategy) inside.
+Found the parse path (`apply_diff`, `parse_full_rewrite`) doesn't enforce the
+boundary at all, so added `noema/substrate/boundary.py::enforce_immutable_boundary`
+(called from `controller.py`'s retry loop) to restore F_imm from the parent or
+reject the mutation; it's a no-op for programs without an evolve block.
 
-Added `estimated: bool = False` to `CallRecord` in `noema/budget/ledger.py` —
-outside the work order's named file list, but there was no way to carry
-`estimated: true` per-row without it; documented as a scope deviation in the
-task file.
-
-Extended `tests/test_noema_budgeted_llm.py` (no existing assertions removed):
-2 new tests for the null-usage-fields and partial-usage cases, plus one new
-assertion on the existing real-usage test. `unittest tests.test_noema_budgeted_llm`
-→ 11 passed; `unittest discover tests` → 106 passed, 0 failed.
-
-Not run: live LLM smoke test against a local node, and the
-`ledger-completeness-live` standing-goal re-check — both queue-tier, left for
-the user per the work order.
-
-**Note**: `unittest discover tests` regenerated unrelated tracked `.pyc` files
-under `noema/coordination/{hifo,pes}/__pycache__`; this sandbox blocked
-`git checkout`/`git restore` to revert them, so they may appear as incidental
-diff noise unrelated to this change.
+Added 2 tests in `tests/test_noema_substrate_boundary.py`; `python3 -m
+unittest discover tests` → 127 passed (125 pre-existing + 2 new), 0 failed,
+no existing test modified.

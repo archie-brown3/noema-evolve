@@ -32,6 +32,7 @@ from noema.budget.ledger import (
 from noema.budget.llm import BudgetedLLM
 from noema.config import NoemaConfig
 from noema.coordination import CoordinationModule, GenerationContext, build_coordination_module
+from noema.substrate.boundary import enforce_immutable_boundary
 from noema.substrate.database import SubstrateDatabase
 from noema.substrate.evaluator import make_evaluator
 from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
@@ -277,6 +278,19 @@ class NoemaController:
                 logger.warning(
                     f"Iteration {iteration}: no valid program in LLM response "
                     f"(attempt {attempt + 1})"
+                )
+                continue
+
+            child_code = enforce_immutable_boundary(parent.code, child_code)
+            if child_code is None:
+                error_text = (
+                    "mutation broke the EVOLVE-BLOCK boundary: only code inside "
+                    "EVOLVE-BLOCK-START/END may change (F_imm is immutable)"
+                )
+                changes_summary = None
+                logger.warning(
+                    f"Iteration {iteration}: mutation touched F_imm outside the evolve "
+                    f"block (attempt {attempt + 1})"
                 )
                 continue
 
