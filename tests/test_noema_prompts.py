@@ -78,6 +78,60 @@ class TestPromptAssembly(unittest.TestCase):
         self.assertIn("Focus on speed.", injected["system"])
 
 
+class TestOperatorTemplatePassthrough(unittest.TestCase):
+    """template_key/parent2 passthrough (task 0027) — must not disturb the
+    existing legacy call path (test_prompt_deterministic_across_builds etc.
+    above use no template_key/parent2 and must stay green unchanged)."""
+
+    def test_make_prompt_sampler_registers_operator_templates(self):
+        from noema.substrate.operators import OPERATOR_TEMPLATES
+
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        for template_key in OPERATOR_TEMPLATES:
+            self.assertIn(template_key, sampler.template_manager.templates)
+
+    def test_arity_two_template_includes_parent2_code(self):
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        parent = make_parent()
+        parent2 = Program(
+            id="p2", code="def g():\n    return 2\n", language="python", metrics={}
+        )
+        prompt = build_mutation_prompt(
+            sampler,
+            parent=parent,
+            top_programs=[],
+            previous_programs=[],
+            inspirations=[],
+            language="python",
+            iteration=0,
+            diff_based_evolution=True,
+            feature_dimensions=[],
+            template_key="eoh_e2_user",
+            parent2=parent2,
+        )
+        self.assertIn("def g():\n    return 2", prompt["user"])
+        self.assertNotIn("{parent2_program}", prompt["user"])
+
+    def test_arity_one_template_no_parent2_does_not_error_or_leak_placeholder(self):
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        prompt = build_mutation_prompt(
+            sampler,
+            parent=make_parent(),
+            top_programs=[],
+            previous_programs=[],
+            inspirations=[],
+            language="python",
+            iteration=0,
+            diff_based_evolution=True,
+            feature_dimensions=[],
+            template_key="eoh_m1_user",
+            parent2=None,
+        )
+        self.assertNotIn("{parent2_program}", prompt["user"])
+        self.assertNotIn("{metrics}", prompt["user"])
+        self.assertNotIn("{current_program}", prompt["user"])
+
+
 class TestRetryPromptSuffix(unittest.TestCase):
     def test_retry_suffix_structure(self):
         suffix = NoemaController._build_retry_suffix(

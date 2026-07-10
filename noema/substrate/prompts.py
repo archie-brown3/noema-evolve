@@ -18,6 +18,8 @@ from openevolve.config import PromptConfig
 from openevolve.database import Program
 from openevolve.prompt.sampler import PromptSampler
 
+from noema.substrate.operators import OPERATOR_TEMPLATES
+
 # Delimits the coordination block in the user prompt. The header is part of the
 # controlled variable: the coordination-OFF arm has no block and no header.
 COORDINATION_HEADER = "\n\n# Coordination Guidance\n"
@@ -33,7 +35,13 @@ def make_prompt_sampler(config: Optional[PromptConfig] = None) -> PromptSampler:
             "noema requires prompt.use_template_stochasticity=False; "
             "random phrase variations void the identical-prompts guarantee across arms"
         )
-    return PromptSampler(config)
+    sampler = PromptSampler(config)
+    # NOEMA: register the EoH-derived operator menu's templates (task 0027).
+    # Registering unconditionally is harmless when mutation_operators is None
+    # (legacy path) — unused registered templates change nothing.
+    for template_key, template_text in OPERATOR_TEMPLATES.items():
+        sampler.template_manager.add_template(template_key, template_text)
+    return sampler
 
 
 def build_mutation_prompt(
@@ -47,6 +55,8 @@ def build_mutation_prompt(
     diff_based_evolution: bool,
     feature_dimensions: List[str],
     parent_artifacts: Optional[Dict[str, Any]] = None,
+    template_key: Optional[str] = None,
+    parent2: Optional[Program] = None,
 ) -> Dict[str, str]:
     """Assemble the shared (pre-coordination) mutation prompt via openevolve"""
     return sampler.build_prompt(
@@ -61,6 +71,8 @@ def build_mutation_prompt(
         diff_based_evolution=diff_based_evolution,
         program_artifacts=parent_artifacts if parent_artifacts else None,
         feature_dimensions=feature_dimensions,
+        template_key=template_key,
+        parent2_program=parent2.code if parent2 else "",
     )
 
 
