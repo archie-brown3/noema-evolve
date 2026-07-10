@@ -5,5 +5,6 @@ audit:           ; @./loop/scripts/cost-check.sh --report
 goals:           ; @./loop/verify-goals.sh
 summary:         ; @./loop/scripts/tick-summary.sh
 clean-worktrees: ; @git worktree list | awk '/wt-/{print $$1}' | xargs -rn1 git worktree remove --force
+verify-run:      ; @./loop/scripts/verify-run.sh --dir "$(DIR)" $(if $(TICKET),--ticket "$(TICKET)",)
 
-.PHONY: tick queue trust audit goals summary clean-worktrees
+.PHONY: tick queue trust audit goals summary clean-worktrees verify-run

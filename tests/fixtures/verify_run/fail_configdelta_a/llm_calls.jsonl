@@ -1,0 +1,3 @@
+{"account": "mutation", "tag": "mutate", "model": "test-model", "prompt_tokens": 1000, "completion_tokens": 200, "attempts": 1, "iteration": 0, "timestamp": 1000000000.0}
+{"account": "mutation", "tag": "mutate", "model": "test-model", "prompt_tokens": 900, "completion_tokens": 150, "attempts": 1, "iteration": 1, "timestamp": 1000000010.0}
+{"account": "mutation", "tag": "mutate", "model": "test-model", "prompt_tokens": 800, "completion_tokens": 250, "attempts": 1, "iteration": 2, "timestamp": 1000000020.0}
