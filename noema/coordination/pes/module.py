@@ -149,24 +149,7 @@ class PESPlannerModule(CoordinationModule):
     async def advise(self, ctx: GenerationContext) -> Advice:
         if ctx.parent is None or self.llm is None:
             return Advice()
-
-        prompt = self._build_planning_prompt(ctx)
-        system_message = PLANNER_SYSTEM
-        if self.domain_context:
-            system_message = f"{PLANNER_SYSTEM}\n\n# Problem Domain\n{self.domain_context}"
-        try:
-            plan = await self.llm.generate_with_context(
-                system_message=system_message,
-                messages=[{"role": "user", "content": prompt}],
-                tag="pes.plan",
-            )
-        except BudgetExhausted:
-            raise  # clean run stop, same contract as the mutation account
-        except Exception as e:
-            logger.warning(f"PES planning call failed; iteration runs unplanned: {e}")
-            return Advice()
-
-        plan = (plan or "").strip()
+        plan = await self._planner.plan(ctx)
         if not plan:
             return Advice()
         return Advice(
@@ -199,33 +182,6 @@ class PESPlannerModule(CoordinationModule):
         if len(code) > self.max_code_chars:
             return code[: self.max_code_chars] + "\n# ... (truncated)"
         return code
-
-    def _build_planning_prompt(self, ctx: GenerationContext) -> str:
-        parent = ctx.parent
-        prior = self._plans.get(parent.id)
-        if prior:
-            prior_block = (
-                f"Outcome of the plan that produced this solution: **{prior['outcome']}** "
-                f"(fitness {prior['parent_fitness']:.4f} -> {prior['child_fitness']:.4f})\n\n"
-                f"{prior['plan']}"
-            )
-            # Reflection (Phase 2) on that outcome, when available — the causal
-            # "why it worked/failed" that the deferred summary call produced.
-            reflection = prior.get("reflection")
-            if reflection:
-                prior_block += f"\n\n## Reflection on that outcome\n{reflection}"
-        else:
-            prior_block = "None — first plan for this lineage."
-
-        return PLANNER_USER_TEMPLATE.format(
-            fitness=parent.fitness,
-            metrics={k: v for k, v in parent.metrics.items() if isinstance(v, (int, float))},
-            code=self._truncate(parent.code),
-            prior_block=prior_block,
-            recent_block=self._planner._recent_strategies_block(exclude_id=parent.id),
-            best_history=[round(v, 4) for v in ctx.best_fitness_history[-_HISTORY_TAIL:]],
-            avg_history=[round(v, 4) for v in ctx.avg_fitness_history[-_HISTORY_TAIL:]],
-        )
 
     # ------------------------------------------------------- credit / state
 

@@ -9,6 +9,9 @@ config knobs, llm) and hands itself to the phase object by reference.
 import logging
 from typing import TYPE_CHECKING, List, Optional
 
+from noema.budget.ledger import BudgetExhausted
+from noema.coordination.base import GenerationContext
+
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
     from noema.coordination.pes.module import PESPlannerModule
 
@@ -95,6 +98,57 @@ class Planner:
 
     def __init__(self, module: "PESPlannerModule"):
         self._m = module
+
+    async def plan(self, ctx: GenerationContext) -> Optional[str]:
+        """One metered `pes.plan` call. Returns the stripped plan text, or
+        None when the call failed or produced nothing (the iteration then
+        runs unplanned). BudgetExhausted propagates (clean run stop)."""
+        m = self._m
+        prompt = self._build_planning_prompt(ctx)
+        system_message = PLANNER_SYSTEM
+        if m.domain_context:
+            system_message = f"{PLANNER_SYSTEM}\n\n# Problem Domain\n{m.domain_context}"
+        try:
+            plan = await m.llm.generate_with_context(
+                system_message=system_message,
+                messages=[{"role": "user", "content": prompt}],
+                tag="pes.plan",
+            )
+        except BudgetExhausted:
+            raise  # clean run stop, same contract as the mutation account
+        except Exception as e:
+            logger.warning(f"PES planning call failed; iteration runs unplanned: {e}")
+            return None
+        plan = (plan or "").strip()
+        return plan or None
+
+    def _build_planning_prompt(self, ctx: GenerationContext) -> str:
+        m = self._m
+        parent = ctx.parent
+        prior = m._plans.get(parent.id)
+        if prior:
+            prior_block = (
+                f"Outcome of the plan that produced this solution: **{prior['outcome']}** "
+                f"(fitness {prior['parent_fitness']:.4f} -> {prior['child_fitness']:.4f})\n\n"
+                f"{prior['plan']}"
+            )
+            # Reflection (Phase 2) on that outcome, when available — the causal
+            # "why it worked/failed" that the deferred summary call produced.
+            reflection = prior.get("reflection")
+            if reflection:
+                prior_block += f"\n\n## Reflection on that outcome\n{reflection}"
+        else:
+            prior_block = "None — first plan for this lineage."
+
+        return PLANNER_USER_TEMPLATE.format(
+            fitness=parent.fitness,
+            metrics={k: v for k, v in parent.metrics.items() if isinstance(v, (int, float))},
+            code=m._truncate(parent.code),
+            prior_block=prior_block,
+            recent_block=self._recent_strategies_block(exclude_id=parent.id),
+            best_history=[round(v, 4) for v in ctx.best_fitness_history[-_HISTORY_TAIL:]],
+            avg_history=[round(v, 4) for v in ctx.avg_fitness_history[-_HISTORY_TAIL:]],
+        )
 
     # -------------------------------------------- cross-lineage diversity (D2)
 
