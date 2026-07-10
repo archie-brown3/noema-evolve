@@ -1,8 +1,52 @@
-# EVOLVE-BLOCK-START
 """Constructor-based circle packing for n=26 circles"""
 import numpy as np
 
 
+# ENTRY POINT
+# F_imm: the I/O contract other code (the evaluator, run_packing callers) relies
+# on. Its signature and return shape must not change under mutation.
+def run_packing():
+    """Run the circle packing constructor for n=26"""
+    centers, radii, sum_radii = construct_packing()
+    return centers, radii, sum_radii
+
+
+# HELPER FUNCTIONS
+# F_imm: foundational utility, not part of the packing strategy.
+def visualize(centers, radii):
+    """
+    Visualize the circle packing
+
+    Args:
+        centers: np.array of shape (n, 2) with (x, y) coordinates
+        radii: np.array of shape (n) with radius of each circle
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Circle
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    # Draw unit square
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_aspect("equal")
+    ax.grid(True)
+
+    # Draw circles
+    for i, (center, radius) in enumerate(zip(centers, radii)):
+        circle = Circle(center, radius, alpha=0.5)
+        ax.add_patch(circle)
+        ax.text(center[0], center[1], str(i), ha="center", va="center")
+
+    plt.title(f"Circle Packing (n={len(centers)}, sum={sum(radii):.6f})")
+    plt.show()
+
+
+# EVOLVE-BLOCK-START
+# CONTROL FLOW
+# F_mut: the packing strategy. Evolution is free to change how circles are
+# placed, as long as construct_packing() keeps returning (centers, radii,
+# sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
 def construct_packing():
     """
     Construct a specific arrangement of 26 circles in a unit square
@@ -48,6 +92,9 @@ def construct_packing():
     return centers, radii, sum_radii
 
 
+# HELPER FUNCTIONS
+# F_mut: used only by construct_packing's strategy; evolution may replace
+# the radius-fitting approach entirely.
 def compute_max_radii(centers):
     """
     Compute the maximum possible radii for each circle position
@@ -83,45 +130,7 @@ def compute_max_radii(centers):
                 radii[j] *= scale
 
     return radii
-
-
 # EVOLVE-BLOCK-END
-
-
-# This part remains fixed (not evolved)
-def run_packing():
-    """Run the circle packing constructor for n=26"""
-    centers, radii, sum_radii = construct_packing()
-    return centers, radii, sum_radii
-
-
-def visualize(centers, radii):
-    """
-    Visualize the circle packing
-
-    Args:
-        centers: np.array of shape (n, 2) with (x, y) coordinates
-        radii: np.array of shape (n) with radius of each circle
-    """
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Circle
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-
-    # Draw unit square
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_aspect("equal")
-    ax.grid(True)
-
-    # Draw circles
-    for i, (center, radius) in enumerate(zip(centers, radii)):
-        circle = Circle(center, radius, alpha=0.5)
-        ax.add_patch(circle)
-        ax.text(center[0], center[1], str(i), ha="center", va="center")
-
-    plt.title(f"Circle Packing (n={len(centers)}, sum={sum(radii):.6f})")
-    plt.show()
 
 
 if __name__ == "__main__":

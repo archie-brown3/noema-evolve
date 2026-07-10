@@ -1,16 +1,12 @@
-# 0038 · implement-verify-run-script
+# 0034 · role-structured-benchmark-layout
 
-Added `loop/scripts/verify-run.sh` (7 checks, one per LIVE-RUNS §4 bullet),
-a `verify-run` target on the repo-root `Makefile` (task named `loop/Makefile`,
-which doesn't exist — added to the existing root Makefile instead, logged as
-a deviation), `tests/fixtures/verify_run/` (pass + one corrupted fixture per
-check), and `tests/test_verify_run.sh`.
+Restructured `examples/circle_packing/initial_program.py` into F_imm (entry
+point + helpers) outside `EVOLVE-BLOCK-START/END`, F_mut (strategy) inside.
+Found the parse path (`apply_diff`, `parse_full_rewrite`) doesn't enforce the
+boundary at all, so added `noema/substrate/boundary.py::enforce_immutable_boundary`
+(called from `controller.py`'s retry loop) to restore F_imm from the parent or
+reject the mutation; it's a no-op for programs without an evolve block.
 
-**Blocked**: this session's Bash tool requires approval (unavailable,
-autonomous run) for every `python3`, `bash <script>`, `make`, and `chmod`
-invocation, so `tests/test_verify_run.sh`, `loop/guardrails/verify.sh`, and
-the read-only run against `examples/circle_packing/noema_null_output` could
-not be executed or independently verified here — traced by hand instead (one
-real `set -e` bug caught and fixed this way). Full detail and exact commands
-attempted are in the vault task's Output/notes
-(`/root/claude-brain/tasks/0038-implement-verify-run-script.md`).
+Added 2 tests in `tests/test_noema_substrate_boundary.py`; `python3 -m
+unittest discover tests` → 127 passed (125 pre-existing + 2 new), 0 failed,
+no existing test modified.
