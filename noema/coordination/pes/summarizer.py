@@ -8,6 +8,13 @@ module docstring's deviation #4.
 """
 
 import logging
+from typing import TYPE_CHECKING
+
+from noema.coordination.base import GenerationContext
+from noema.substrate.views import ProgramView
+
+if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
+    from noema.coordination.pes.module import PESPlannerModule
 
 logger = logging.getLogger(__name__)
 
@@ -63,3 +70,59 @@ IMPROVED = "improved"
 REGRESSED = "regressed"
 STALE = "stale"
 FAILED = "failed"
+
+
+class Summarizer:
+    """Summary phase: pure-Python assessment, lineage recording, and the
+    deferred reflection queue. Shared state lives on the module façade."""
+
+    def __init__(self, module: "PESPlannerModule"):
+        self._m = module
+
+    @staticmethod
+    def assess(parent_fitness: float, child_fitness: float, eval_failed: bool) -> str:
+        """Classify one mutation outcome (LoongFlow's _assess, pure Python)."""
+        if eval_failed:
+            return FAILED
+        if child_fitness > parent_fitness:
+            return IMPROVED
+        if child_fitness < parent_fitness:
+            return REGRESSED
+        return STALE
+
+    def record(
+        self,
+        ctx: GenerationContext,
+        child: ProgramView,
+        plan: str,
+        eval_failed: bool,
+    ) -> None:
+        """Assess the outcome, store the lineage entry, and enqueue the child
+        for the deferred reflection call (drained in on_generation_end)."""
+        m = self._m
+        parent_fitness = ctx.parent.fitness
+        child_fitness = child.fitness
+        outcome = self.assess(parent_fitness, child_fitness, eval_failed)
+        m._plans[child.id] = {
+            "plan": plan,
+            "outcome": outcome,
+            "parent_fitness": parent_fitness,
+            "child_fitness": child_fitness,
+        }
+        # Pure Python, no I/O here — report_result keeps its sync/no-LLM contract.
+        # Snapshot everything the reflection prompt needs as primitives so the
+        # queue stays JSON-serializable for checkpointing (D2). stderr comes from
+        # child.metadata (the controller stamps the evaluator's error text there).
+        if m.reflection_enabled and m.llm is not None:
+            m._pending_reflections.append(
+                {
+                    "child_id": child.id,
+                    "plan": plan,
+                    "outcome": outcome,
+                    "parent_fitness": parent_fitness,
+                    "child_fitness": child_fitness,
+                    "parent_code": m._truncate(ctx.parent.code),
+                    "child_code": m._truncate(child.code),
+                    "stderr": str(child.metadata.get("stderr", ""))[: m.max_code_chars],
+                }
+            )

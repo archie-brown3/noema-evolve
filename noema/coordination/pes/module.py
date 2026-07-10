@@ -61,6 +61,7 @@ from noema.coordination.pes.summarizer import (  # noqa: F401  (re-exported)
     REFLECTION_USER_TEMPLATE,
     REGRESSED,
     STALE,
+    Summarizer,
 )
 from noema.substrate.views import ProgramView
 
@@ -100,6 +101,7 @@ class PESPlannerModule(CoordinationModule):
         # Phase objects (task 0060): share this module's state by reference.
         self._planner = Planner(self)
         self._executor = Executor(self)
+        self._summarizer = Summarizer(self)
 
     # ------------------------------------------------------------- advise
 
@@ -134,40 +136,7 @@ class PESPlannerModule(CoordinationModule):
             return
         if child is None:
             return  # no program produced: no lineage node to attach the plan to
-        parent_fitness = ctx.parent.fitness
-        child_fitness = child.fitness
-        if eval_failed:
-            outcome = FAILED
-        elif child_fitness > parent_fitness:
-            outcome = IMPROVED
-        elif child_fitness < parent_fitness:
-            outcome = REGRESSED
-        else:
-            outcome = STALE
-        self._plans[child.id] = {
-            "plan": plan,
-            "outcome": outcome,
-            "parent_fitness": parent_fitness,
-            "child_fitness": child_fitness,
-        }
-        # Enqueue for the deferred reflection call (drained in on_generation_end).
-        # Pure Python, no I/O here — report_result keeps its sync/no-LLM contract.
-        # Snapshot everything the reflection prompt needs as primitives so the
-        # queue stays JSON-serializable for checkpointing (D2). stderr comes from
-        # child.metadata (the controller stamps the evaluator's error text there).
-        if self.reflection_enabled and self.llm is not None:
-            self._pending_reflections.append(
-                {
-                    "child_id": child.id,
-                    "plan": plan,
-                    "outcome": outcome,
-                    "parent_fitness": parent_fitness,
-                    "child_fitness": child_fitness,
-                    "parent_code": self._truncate(ctx.parent.code),
-                    "child_code": self._truncate(child.code),
-                    "stderr": str(child.metadata.get("stderr", ""))[: self.max_code_chars],
-                }
-            )
+        self._summarizer.record(ctx, child, plan, eval_failed)
 
     # ------------------------------------------------ reflection (Phase 2)
 
