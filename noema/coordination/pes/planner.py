@@ -150,6 +150,28 @@ class Planner:
             avg_history=[round(v, 4) for v in ctx.avg_fitness_history[-_HISTORY_TAIL:]],
         )
 
+    # ---------------------------------------------- cross-island status (0061)
+
+    def _island_status_block(self) -> str:
+        """Cross-island best-score levels for the faithful planner's Global
+        Perspective strategies (LoongFlow served these via Get_Memory_Status /
+        Get_Best_Solutions; recast = pre-injection, task 0061).
+
+        Data comes ONLY from the host-injected `island_bests_provider`
+        callable — never synthesized from _plans. Returns "" when the provider
+        is absent or the database is empty: the strategies stay verbatim but
+        inert, matching a GENESIS database upstream. Not rendered by the
+        custom prompt variant (the faithful template, task 0063, consumes it).
+        """
+        provider = self._m.config.get("island_bests_provider")
+        if provider is None:
+            return ""
+        bests = provider()
+        if not bests:
+            return ""
+        scores = ", ".join(f"island_{i}: {b:.4f}" for i, b in enumerate(bests))
+        return f"Island status (best score per island): {scores}"
+
     # -------------------------------------------- cross-lineage diversity (D2)
 
     @staticmethod

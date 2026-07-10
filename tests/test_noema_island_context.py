@@ -124,5 +124,51 @@ class TestPerIslandBests(unittest.TestCase):
         db.add(make_program(score=0.9), target_island=1)
         self.assertEqual(db.per_island_bests(), db.per_island_bests())
 
+
+class TestIslandStatusBlock(unittest.TestCase):
+    def test_formats_provider_values(self):
+        module, _ = make_pes_module(island_bests_provider=lambda: [0.9812, 0.953])
+        self.assertEqual(
+            module._planner._island_status_block(),
+            "Island status (best score per island): island_0: 0.9812, island_1: 0.9530",
+        )
+
+    def test_empty_without_provider_or_data(self):
+        module, _ = make_pes_module()
+        self.assertEqual(module._planner._island_status_block(), "")
+        module, _ = make_pes_module(island_bests_provider=lambda: [])
+        self.assertEqual(module._planner._island_status_block(), "")
+
+    def test_deterministic_from_real_db(self):
+        db = make_db(num_islands=2)
+        db.add(make_program(score=0.6), target_island=0)
+        module, _ = make_pes_module(island_bests_provider=db.per_island_bests)
+        first = module._planner._island_status_block()
+        self.assertEqual(first, module._planner._island_status_block())
+        self.assertIn("island_0: 0.6000", first)
+
+    def test_custom_planning_prompt_byte_identical_with_provider(self):
+        # The custom prompt variant must not change whether or not the host
+        # injected the provider (the faithful variant, task 0063, consumes it).
+        with_provider, client_a = make_pes_module(
+            island_bests_provider=lambda: [0.9812, 0.953]
+        )
+        without_provider, client_b = make_pes_module()
+        asyncio.run(with_provider.advise(make_ctx()))
+        asyncio.run(without_provider.advise(make_ctx()))
+        self.assertEqual(client_a.calls[0]["messages"], client_b.calls[0]["messages"])
+
+
+class TestOtherModulesIgnoreKey(unittest.TestCase):
+    def test_null_and_hifo_ignore_unknown_key(self):
+        params = {"island_bests_provider": lambda: [0.5]}
+        null_module = NullCoordination(config=dict(params))
+        advice = asyncio.run(null_module.advise(make_ctx()))
+        self.assertEqual(advice.prompt_block, "")
+
+        hifo_module = build_coordination_module("hifo", dict(params), llm=None)
+        hifo_advice = asyncio.run(hifo_module.advise(make_ctx()))
+        self.assertIsNotNone(hifo_advice)
+
 if __name__ == "__main__":
     unittest.main()
