@@ -141,51 +141,8 @@ class PESPlannerModule(CoordinationModule):
     # ------------------------------------------------ reflection (Phase 2)
 
     async def on_generation_end(self, ctx: GenerationContext) -> None:
-        """
-        Drain the reflection queue: one metered causal-reflection call per
-        pending child (LoongFlow's Summary _reflect/_record, deferred here from
-        report_result — see deviation #4). BudgetExhausted propagates (clean
-        stop); other LLM failures degrade that entry to an empty reflection.
-        """
-        if not self.reflection_enabled or self.llm is None:
-            self._pending_reflections.clear()
-            return
-        limit = self.max_pending_reflections_per_tick
-        while self._pending_reflections:
-            if limit is not None and limit <= 0:
-                break
-            entry = self._pending_reflections.pop(0)
-            await self._reflect(entry)
-            if limit is not None:
-                limit -= 1
-
-    async def _reflect(self, entry: Dict[str, Any]) -> None:
-        child_id = entry["child_id"]
-        if child_id not in self._plans:
-            return  # lineage node gone (shouldn't happen; defensive)
-        error_block = f"\n- Reported error: {entry['stderr']}" if entry.get("stderr") else ""
-        prompt = REFLECTION_USER_TEMPLATE.format(
-            outcome=entry["outcome"],
-            parent_fitness=entry["parent_fitness"],
-            child_fitness=entry["child_fitness"],
-            error_block=error_block,
-            plan=entry["plan"],
-            parent_code=entry["parent_code"],
-            child_code=entry["child_code"],
-        )
-        try:
-            reflection = await self.llm.generate_with_context(
-                system_message=REFLECTION_SYSTEM,
-                messages=[{"role": "user", "content": prompt}],
-                tag="pes.reflect",
-            )
-        except BudgetExhausted:
-            raise  # clean run stop, same contract as the planning call
-        except Exception as e:
-            logger.warning(f"PES reflection call failed; lineage keeps plain outcome: {e}")
-            self._plans[child_id]["reflection"] = ""
-            return
-        self._plans[child_id]["reflection"] = (reflection or "").strip()
+        """Drain the deferred reflection queue — see Summarizer.reflect_pending."""
+        await self._summarizer.reflect_pending()
 
     # ----------------------------------------------------------- persistence
 
