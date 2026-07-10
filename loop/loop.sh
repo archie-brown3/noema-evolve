@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # The heartbeat. Triage (haiku) -> conduct (fable) -> execute (sonnet, worktree)
-# -> verify (fresh fable) -> gate (verify.sh) -> trust ledger -> usage check.
+# -> verify (fresh fable) -> gate (verify.sh) -> trust ledger -> [auto-tier only:
+# recheck (sonnet, re-runs the vault task's own done_when for real) -> close
+# (fable, closes the vault bookkeeping only if recheck PASSed)] -> usage check.
 # Exit map: 0 quiet/done, 1 iteration cap or seat failure, 2 reroute,
 #           3 usage cap, 4 provider session limit (resets on its own).
 set -euo pipefail
@@ -37,19 +39,28 @@ rotate_state() {
   fi
 }
 
+# resolve_vault_path <item> — echoes the vault task file path for a
+# path/slug/id-only item, or fails silently (return 1) if it isn't a vault
+# task (gh issues, goals, conductor-invented specs). Shared by mark_vault and
+# the CLOSE step below.
+resolve_vault_path() {
+  local item="$1" f
+  f="$VAULT/$item.md";       [ -f "$f" ] && { echo "$f"; return 0; }
+  f="$VAULT/tasks/$item.md"; [ -f "$f" ] && { echo "$f"; return 0; }
+  case "$item" in
+    [0-9][0-9][0-9][0-9]*) for f in "$VAULT/tasks/${item}"*.md; do [ -f "$f" ] && { echo "$f"; return 0; }; done ;;
+  esac
+  return 1
+}
+
 # mark_vault <status> — flip the dispatched vault task's frontmatter status,
 # so the next tick's conductor skips an in-flight item instead of re-executing
-# it. No-op for non-vault work orders (gh issues, goals, conductor-invented specs).
-# Keys off .item from work-order.json; robust to path / slug / id-only formats.
+# it. No-op for non-vault work orders.
 mark_vault() {
   local item f
   item=$(jq -r .item work-order.json 2>/dev/null)
   [ -z "$item" ] || [ "$item" = null ] && return 0
-  f="$VAULT/$item.md";          [ -f "$f" ] && { sed -i "s/^status:.*/status: $1/" "$f"; return 0; }
-  f="$VAULT/tasks/$item.md";    [ -f "$f" ] && { sed -i "s/^status:.*/status: $1/" "$f"; return 0; }
-  case "$item" in
-    [0-9][0-9][0-9][0-9]*) for f in "$VAULT/tasks/${item}"*.md; do [ -f "$f" ] && { sed -i "s/^status:.*/status: $1/" "$f"; return 0; }; done ;;
-  esac
+  f=$(resolve_vault_path "$item") && sed -i "s/^status:.*/status: $1/" "$f"
   return 0
 }
 
@@ -123,6 +134,10 @@ for ((i=1; i<=MAX_ITERS; i++)); do
 STATE:
 $(tail -80 memory/STATE.md)
 
+DISPATCH HISTORY (compact log of every decision already made — check this
+before re-deciding an item you may have already queued or executed):
+$(tail -15 memory/dispatch.tsv)
+
 TRUST LEDGER:
 $(./scripts/trust-log.sh --render)
 
@@ -147,14 +162,22 @@ $(cat "$VAULT/INDEX.md" 2>/dev/null || echo '(vault unavailable)')" \
       || { echo "- malformed work order (missing $k)" >> memory/STATE.md; exit 1; }
   done
   SKILL=$(jq -r .skill work-order.json); ACTION=$(jq -r .action work-order.json)
-  echo -e "$(date -Is)\titer$i\t$ACTION\t$SKILL\t$(jq -r .item work-order.json | head -c 120)" >> memory/dispatch.tsv
+  ITEM=$(jq -r .item work-order.json)
+  echo -e "$(date -Is)\titer$i\t$ACTION\t$SKILL\t$(head -c 120 <<<"$ITEM")" >> memory/dispatch.tsv
   [ "$ACTION" = stop  ] && exit 0
   [ "$ACTION" = queue ] && { echo "- queued: $SKILL — $(jq -r .item work-order.json)" >> memory/STATE.md; continue; }
 
   # ---- 3 EXECUTE: sonnet with real tools in an isolated worktree ----
   mark_vault in-progress
-  WT="$REPO_ROOT/../wt-$i"
-  git -C "$REPO_ROOT" worktree add "$WT" -b "loop/$SKILL-$(date +%s)" >/dev/null
+  # wt-$i alone collides with a same-numbered leftover from an earlier run
+  # today (worktrees aren't auto-removed after gate); a timestamp makes the
+  # path unique regardless of what's still on disk from a prior tick.
+  WT="$REPO_ROOT/../wt-$i-$(date +%s)"
+  if ! git -C "$REPO_ROOT" worktree add "$WT" -b "loop/$SKILL-$(date +%s)" >/dev/null 2>&1; then
+    mark_vault todo
+    echo "- ERROR(execute): git worktree add failed for $WT — reverted vault status, skipping this dispatch" >> memory/STATE.md
+    exit 1
+  fi
   ( cd "$WT" && timeout "$SEAT_TIMEOUT" claude -p "$(cat "$OLDPWD/workers/implement.md")
 
 WORK ORDER:
@@ -169,6 +192,11 @@ $(cat "$OLDPWD/work-order.json")" \
     [ "$RC" -eq 4 ] && exit 4; exit 1
   fi
 
+  # Stage everything the worker produced (host does this, not the worker) so
+  # new/untracked files carry full content into the verifier's diff instead of
+  # showing up as unverifiable `??` paths.
+  git -C "$WT" add -A
+
   # ---- 4 VERIFY: fresh fable, no tools, sees only spec + diff ----
   timeout "$SEAT_TIMEOUT" claude -p "$(cat workers/verify.md)
 
@@ -178,7 +206,7 @@ DONE_WHEN:
 $(jq -r '.done_when[]' work-order.json)
 
 DIFF:
-$(git -C "$WT" diff; git -C "$WT" status --short)" \
+$(git -C "$WT" diff --cached; git -C "$WT" status --short)" \
     --model "$BRAIN_MODEL" --fallback-model "$FALLBACK_MODEL" --effort high \
     --allowedTools "" --output-format json > /tmp/v.json || true
   cp /tmp/v.json "$SESSION_DIR/verifier.json" 2>/dev/null || true
@@ -188,9 +216,11 @@ $(git -C "$WT" diff; git -C "$WT" status --short)" \
     [ "$RC" -eq 4 ] && exit 4; exit 1
   fi
   V=$(jq -r '.result' /tmp/v.json | head -1)
-  STAT=$(git -C "$WT" diff --shortstat | xargs)
+  STAT=$(git -C "$WT" diff --cached --shortstat | xargs)
 
   # ---- 5 GATE: deterministic final vote; then the trust ledger ----
+  # Commit always, on every outcome — an orphaned worktree with uncommitted,
+  # undocumented changes is worse than a documented FAILED commit on its branch.
   if [[ "$V" == PASS* ]] && ( cd "$WT" && ./loop/guardrails/verify.sh >/dev/null 2>&1 ); then
     ./scripts/trust-log.sh "$SKILL" pass
     if [ "$(./scripts/trust-log.sh --tier "$SKILL")" = auto ]; then
@@ -199,6 +229,43 @@ $(git -C "$WT" diff; git -C "$WT" status --short)" \
 Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>" \
         && gh pr create --fill --draft 2>/dev/null || true )
       echo "- shipped: $SKILL ($V) [$STAT]" >> memory/STATE.md
+
+      # ---- 6 CLOSE (auto-tier only): the gate above verified the CODE;
+      # this independently re-runs the vault task's OWN done_when for real
+      # before closing its bookkeeping — a PASS verdict here was previously
+      # never followed by anything closing the task, on any outcome.
+      SHIP_LOG=$(cd "$WT" && git log -1 --format='%H %s')
+      TASK_FILE=$(resolve_vault_path "$ITEM" || true)
+      if [ -n "$TASK_FILE" ]; then
+        ( cd "$WT" && timeout "$SEAT_TIMEOUT" claude -p "$(cat "$OLDPWD/workers/recheck.md")
+
+TASK FILE:
+$(cat "$TASK_FILE")" \
+            --model "$WORKER_MODEL" --effort medium \
+            --allowedTools "Read Bash(python3:*) Bash(bash:*) Bash(make:*) Bash(grep:*) Bash(find:*) Bash(sha256sum:*) Bash(ls:*) Bash(cat:*) Bash(git diff:*) Bash(git status:*) Bash(git log:*)" \
+            --output-format json > /tmp/rc.json ) || true
+        cp /tmp/rc.json "$SESSION_DIR/recheck.json" 2>/dev/null || true
+        RC2=0; check_response recheck /tmp/rc.json || RC2=$?
+        if [ "$RC2" -eq 0 ] && jq -r '.result' /tmp/rc.json | grep -q "^DONE_WHEN: PASS"; then
+          ( cd "$VAULT" && timeout "$SEAT_TIMEOUT" claude -p "$(cat "$OLDPWD/workers/close.md")
+
+TASK: $TASK_FILE
+SKILL: $SKILL
+SHIPPED: $SHIP_LOG" \
+              --model "$BRAIN_MODEL" --fallback-model "$FALLBACK_MODEL" --effort high \
+              --allowedTools "Read Edit Bash(git mv:*)" \
+              --output-format json > /tmp/cl.json ) || true
+          cp /tmp/cl.json "$SESSION_DIR/close.json" 2>/dev/null || true
+          RC3=0; check_response close /tmp/cl.json || RC3=$?
+          if [ "$RC3" -eq 0 ]; then
+            echo "- closed: $SKILL ($TASK_FILE)" >> memory/STATE.md
+          else
+            echo "- close-error: $SKILL — closer call failed, vault left as-is" >> memory/STATE.md
+          fi
+        else
+          echo "- close-disputed: $SKILL — gate PASSed but the task's own done_when re-check did not; vault left in-progress" >> memory/STATE.md
+        fi
+      fi
     else
       ( cd "$WT" && git add -A && git commit -qm "loop draft: $SKILL
 
@@ -208,6 +275,11 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>" ) || true
   else
     mark_vault todo
     ./scripts/trust-log.sh "$SKILL" fail
+    ( cd "$WT" && git add -A && git commit -qm "loop FAILED: $SKILL
+
+$V
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>" ) || true
     echo "- FAILED: $SKILL in $WT — $V" >> memory/STATE.md
     [ "$(grep -c "FAILED: $SKILL" memory/STATE.md)" -ge 2 ] \
       && wake_user "verify failed twice on $SKILL — human needed"

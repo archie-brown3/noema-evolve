@@ -1,1 +1,11 @@
 2026-07-09T04:01:07+00:00	iter1	execute	fix-ledger-metering	tasks/0025-fix-ledger-metering-local-inference
+2026-07-09T16:50:38+00:00	iter1	execute	implement-verify-run-script	tasks/0038-implement-verify-run-script
+2026-07-09T17:14:40+00:00	iter2	execute	persist-frozen-run-config	tasks/0041-persist-frozen-run-config-with-hash
+2026-07-10T05:03:35+00:00	iter1	queue	widen-mutation-menu	tasks/0027-widen-mutation-menu-eoh-operators
+2026-07-10T05:07:37+00:00	iter2	execute	role-structured-benchmark-layout	tasks/0034-role-structured-benchmark-layout
+2026-07-10T05:17:01+00:00	iter3	execute	persist-frozen-run-config-with-hash	tasks/0041-persist-frozen-run-config-with-hash
+2026-07-10T05:25:43+00:00	iter4	execute	audit-triad-commits	guarantee-triad audit of commits 887ac98, e161972, 3bfe346, 6f8797a, 56359f3 (STATE has flagged this actionable for 4 co
+2026-07-10T05:31:57+00:00	iter5	queue	widen-mutation-menu	tasks/0027-widen-mutation-menu-eoh-operators
+2026-07-10T05:35:16+00:00	iter6	queue	fix-verifier-diff-visibility	loop.sh verifier blindness — loop/loop.sh:181 feeds the verifier only `git -C $WT diff` (unstaged, tracked-only) plus 
+2026-07-10T11:46:53+00:00	iter1	execute	port-bin-packing-benchmark	tasks/0036-port-bin-packing-benchmark
+2026-07-10T11:52:27+00:00	iter1	execute	implement-stage1-intra-iteration-retry	tasks/0049-implement-stage1-intra-iteration-retry

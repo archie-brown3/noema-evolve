@@ -1,0 +1,92 @@
+== git log ==
+face592 loop: conductor references vault-loop SKILL.md, session archives, tick-summary
+56359f3 chore: add --budget-tokens/--retry CLI args to run_noema_arm.py
+6f8797a feat: enhance retry mechanism with causal reflection for PES coordination
+3bfe346 feat: implement intra-iteration retry mechanism with error feedback
+887ac98 Merge fix-ledger-metering: BudgetedLLM null-usage-field estimation
+339acbb chore: ignore loop/work-order.json and *.swp
+93c8c8b include spec documentation and mlx example
+5f7899d add
+dd2fd21 chore: untrack remaining coordination __pycache__ binaries
+e161972 fix: enhance BudgetedLLM to estimate token counts for null usage fields and add tests
+457718c Implement phase 0 of PES arm
+5b8d0f4 chore: add OpenEvolve program checkpoints and best program data for experiments
+5bfae40 chore: add .gitignore, remove cached pycache files
+b17301f noema: initial standalone repo
+== gh issues ==
+== gh runs ==
+completed	success	Graph Update: pip in /., /examples/algotune, /examples/alphaevolve_math_problems/circle_packing_rect, /examples/alphaevolve_math_problems/erdos_min_overlap, /examples/alphaevolve_math_problems/first_autocorr_ineq, /examples/alphaevolve_math_problems/heilbronn_convex/13, /examples/alphaevolve_math_problems/heilbronn_convex/14, /examples/alphaevolve_math_problems/heilbronn_triangle, /examples/alphaevolve_math_problems/hexagon_packing/11, /examples/alphaevolve_math_problems/hexagon_packing/12, /examples/alp...	Dependency Graph	claude/noema-integration-plan-3u3cgy	dynamic	28803483679	1m51s	2026-07-06T15:35:05Z
+completed	success	Replace upstream README with noema-evolve project README	Tests	claude/noema-integration-plan-3u3cgy	push	28796892702	4m41s	2026-07-06T13:55:46Z
+== vault INDEX (Now/Blocked) ==
+## Now
+Ordered within each category. The agent works categories top-to-bottom,
+unblocked tasks within each category.
+
+### Implementation
+
+1. [[tasks/0027-widen-mutation-menu-eoh-operators]] — blocked-by: none — ~M —
+   bandit infrastructure; promoted to headline path (Decision #23); must land
+   before the bandit arm can route over anything meaningful
+2. [[tasks/0034-role-structured-benchmark-layout]] — blocked-by: none — ~S — Phase A;
+   must land before the W2 config freeze
+3. [[tasks/0036-port-bin-packing-benchmark]] — blocked-by: none — ~M — headline
+   benchmark #2; needed for the W2 freeze
+4. [[tasks/0035-implement-s1-lineage-arm]] — blocked-by: 0026 — ~M — substrate
+   toggle (reclassified Decision #9); gates a headline cell once tree crosses
+5. [[tasks/0049-implement-stage1-intra-iteration-retry]] — blocked-by: none — ~M —
+   substrate-level retry loop, applies to both arms; precondition for 0050
+6. [[tasks/0041-persist-frozen-run-config-with-hash]] — blocked-by: none — ~S —
+   gates LIVE-RUNS §1/§4 config checks for every ticket
+7. [[tasks/0038-implement-verify-run-script]] — blocked-by: none — ~M — gates RT-0001
+   and every ticket after it (LIVE-RUNS §4 automation)
+
+Also in flight: [[tasks/0025-fix-ledger-metering-local-inference]] — **blocked**
+(implementation accepted by user, e161972 merged; remaining done-when = the
+RT-0001 smoke run below; waiting on user launch).
+
+### Research
+
+- [[tasks/0026-research-mcts-ahd-further]] — blocked-by: none — ~M — reading-parity
+  gate for the s1 arm
+
+## Next
+## Blocked / queued for the user
+
+- **RT-0001 (ticket, user launch)**: merge wt-1 (`loop/fix-ledger-metering-1783569667`,
+  e161972), then the metering smoke run — clears 0025's done-when 3–4 and the
+  `ledger-completeness-live` standing goal. Ticket to be drafted by the loop once
+  0038 lands.
+- **RT-0002 (ticket, drafted 2026-07-09, user launch)**: DRAFTED at
+  `loop/runs/queue/RT-0002-pes-shakedown.md` — 3 seeds (42/43/44) × {null, pes},
+  circle_packing, 1M tokens/run, carries 0031's instrumentation ask. **Not
+  launch-ready**: blocked on RT-0001 landing first, task 0038 (verify-run script),
+  and effectively 0041 (frozen config — the ticket can't fully close its own
+  "config is the only diff" preflight check without it). Also requires a one-line
+  tracked-commit edit to `run_noema_arm.py`'s hardcoded 2M-token default before
+  Launch (flagged in the ticket, not silently applied).
+- **spec/LOOP-AUTONOMY.md (drafted 2026-07-09, awaiting your review)**: proposes
+  the loop's missing "ticket-ready → page telegram" wake condition and flags a
+  real tension — the trust schedule's Week-1 "3 consecutive clean routes" counter
+  is currently at **zero** (the one real tick needed a hand-fix), so "autonomous by
+  next week" needs you to say which you mean: cron running on schedule while still
+  gating shipping on trust (achievable), vs. unattended shipping (would mean
+  skipping graduations the schedule exists to enforce). See tasks 0046–0048.
+- [[tasks/0030-investigate-island2-and-artifact-cap]] — **awaiting user decision**
+  on the ~500-byte `include_artifacts` cap (methodology change; would need to be
+  settled before the W2 config freeze, else the frozen config decides it)
+- [[tasks/0020-assess-evoreplay-integration]] — analysis layer; W5, after the
+  headline matrix exists
+
+## Recently done
+== goal ledger tail ==
+2026-07-08T23:23:43+00:00	ledger-completeness-live	FAIL	26
+2026-07-08T23:23:45+00:00	metering-integrity	pass	1935
+2026-07-08T23:23:47+00:00	prompt-identity	pass	1521
+2026-07-08T23:23:48+00:00	tests-green	pass	1305
+2026-07-08T23:23:48+00:00	vault-freshness	pass	18
+== newest run dirs ==
+/root/noema-evolve/examples/circle_packing/noema_pes_retry_output
+/root/noema-evolve/examples/circle_packing/noema_pes_stage0_output
+/root/noema-evolve/examples/circle_packing/noema_pes_output_v3
+/root/noema-evolve/examples/circle_packing/noema_pes_output
+/root/noema-evolve/examples/circle_packing/noema_pes_output.pre-domain-context-fix-2026-07-08

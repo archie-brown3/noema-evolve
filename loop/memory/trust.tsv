@@ -1,1 +1,6 @@
 fix-ledger-metering	1	0
+implement-verify-run-script	1	0
+role-structured-benchmark-layout	1	0
+persist-frozen-run-config-with-hash	1	0
+audit-triad-commits	1	0
+implement-stage1-intra-iteration-retry	1	0

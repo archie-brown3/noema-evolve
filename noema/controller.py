@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import random
+import re
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -35,6 +36,7 @@ from noema.config import NoemaConfig
 from noema.coordination import CoordinationModule, GenerationContext, build_coordination_module
 from noema.substrate.boundary import enforce_immutable_boundary
 from noema.substrate.database import SubstrateDatabase
+from noema.substrate.operators import OPERATOR_MENU, OperatorSpec
 from noema.substrate.evaluator import make_evaluator
 from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
 
@@ -103,6 +105,10 @@ class NoemaController:
         # coordination consume identical randomness from the shared stream
         random.seed(config.random_seed)
         self.coordination_rng = random.Random(config.coordination.seed)
+        # Same isolation pattern: a dedicated stream so turning the EoH
+        # operator menu on/off never perturbs any other RNG consumer's draw
+        # sequence (task 0027).
+        self.mutation_operator_rng = random.Random(config.mutation_operator_seed)
 
         self.mutation_llm = mutation_llm or BudgetedLLM(
             model=config.llm.model,
@@ -231,10 +237,40 @@ class NoemaController:
 
     # ------------------------------------------------------------ iteration
 
+    def _choose_operator(self) -> OperatorSpec:
+        """Choose this iteration's mutation operator once (reused across every
+        retry attempt, never redrawn per attempt). None config = legacy path,
+        byte-identical to today's diff_based_evolution toggle (task 0027)."""
+        if self.config.mutation_operators is None:
+            return OperatorSpec(
+                name="legacy",
+                template_key=(
+                    "diff_user" if self.config.diff_based_evolution else "full_rewrite_user"
+                ),
+                parse_mode="diff" if self.config.diff_based_evolution else "full_rewrite",
+                arity=1,
+                has_thought=False,
+            )
+        name = self.mutation_operator_rng.choice(self.config.mutation_operators)
+        return OPERATOR_MENU[name]
+
     async def _run_iteration(self, iteration: int) -> None:
         island = iteration % self.db.num_islands
         parent, inspirations = self.db.sample_from_island(island, self.config.num_inspirations)
         parent_island = parent.metadata.get("island", island)
+
+        operator = self._choose_operator()
+        parent2: Optional[Program] = None
+        if operator.arity == 2:
+            if inspirations:
+                parent2 = self.mutation_operator_rng.choice(inspirations)
+            else:
+                # Early iterations before an island fills up: no second parent
+                # available yet. Fall back to arity-1 behavior rather than crash.
+                logger.debug(
+                    f"Iteration {iteration}: operator {operator.name} wants a second "
+                    "parent but inspirations is empty; falling back to arity-1"
+                )
 
         top_programs = self.db.top_programs(self.config.num_top_programs, island=parent_island)
         previous_programs = self.db.top_programs(
@@ -254,6 +290,8 @@ class NoemaController:
             iteration=iteration,
             diff_based_evolution=self.config.diff_based_evolution,
             feature_dimensions=self.db.feature_dimensions,
+            template_key=operator.template_key,
+            parent2=parent2,
         )
         prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
 
@@ -288,7 +326,7 @@ class NoemaController:
                 messages=[{"role": "user", "content": current_prompt["user"]}],
             )
 
-            child_code, changes_summary = self._parse_response(response, parent.code)
+            child_code, changes_summary = self._parse_response(response, parent.code, operator)
             if child_code is None:
                 error_text = "no parseable code block found in the response"
                 logger.warning(
@@ -345,7 +383,7 @@ class NoemaController:
             )
             return
 
-        template_key = "diff_user" if self.config.diff_based_evolution else "full_rewrite_user"
+        template_key = operator.template_key  # provenance: reuse the draw, don't re-derive
         child = Program(
             id=child_id,
             code=child_code,
@@ -360,6 +398,7 @@ class NoemaController:
                 "coordination": advice.attribution,
                 "island": island,
                 "stderr": (artifacts or {}).get("stderr", ""),
+                "operator": operator.name,
             },
             prompts=(
                 {
@@ -401,19 +440,34 @@ class NoemaController:
         return prompt
 
     def _parse_response(
-        self, response: str, parent_code: str
+        self, response: str, parent_code: str, operator: OperatorSpec
     ) -> Tuple[Optional[str], Optional[str]]:
-        """Extract child code + a changes summary from the mutation LLM response"""
-        if self.config.diff_based_evolution:
+        """Extract child code + a changes summary from the mutation LLM response.
+
+        When operator.has_thought, a brace-delimited thought (if the model
+        produced one) is routed through the returned summary / metadata["changes"]
+        field instead of the generic diff-summary/"Full rewrite" placeholder —
+        that field already reaches future prompts via openevolve's
+        _format_evolution_history, so this reuses an existing channel rather
+        than adding new plumbing (task 0027). A response with no {...} at all,
+        or has_thought=False (m3), falls back to today's exact behavior.
+        """
+        thought = None
+        if operator.has_thought:
+            m = re.search(r"\{(.*?)\}", response, re.DOTALL)
+            thought = m.group(1).strip() if m else None
+
+        if operator.parse_mode == "diff":
             diff_blocks = extract_diffs(response, self.config.diff_pattern)
             if not diff_blocks:
                 return None, None
             child_code = apply_diff(parent_code, response, self.config.diff_pattern)
-            return child_code, format_diff_summary(diff_blocks)
+            return child_code, thought or format_diff_summary(diff_blocks)
+
         new_code = parse_full_rewrite(response, self.config.language)
         if not new_code:
             return None, None
-        return new_code, "Full rewrite"
+        return new_code, thought or "Full rewrite"
 
     # ----------------------------------------------------------- generation
 
@@ -504,6 +558,9 @@ class NoemaController:
             "coordination": self.coordination.state_dict(),
             "global_rng_state": _encode_rng_state(random.getstate()),
             "coordination_rng_state": _encode_rng_state(self.coordination_rng.getstate()),
+            "mutation_operator_rng_state": _encode_rng_state(
+                self.mutation_operator_rng.getstate()
+            ),
         }
         with open(os.path.join(path, NOEMA_STATE_FILE), "w") as f:
             json.dump(state, f)
@@ -524,4 +581,8 @@ class NoemaController:
         self.coordination.load_state_dict(state["coordination"])
         random.setstate(_decode_rng_state(state["global_rng_state"]))
         self.coordination_rng.setstate(_decode_rng_state(state["coordination_rng_state"]))
+        if "mutation_operator_rng_state" in state:
+            self.mutation_operator_rng.setstate(
+                _decode_rng_state(state["mutation_operator_rng_state"])
+            )
         logger.info(f"Loaded checkpoint from {path} (resuming at {self.start_iteration})")

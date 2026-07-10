@@ -15,6 +15,12 @@ give a recommendation, not an exhaustive survey.
      whose status is `in-progress` or `blocked` — it is mid-flight or awaiting a
      dependency, and the loop has already marked dispatched items in-progress.
      Re-picking an in-progress task wastes a tick and produces a duplicate worktree.
+   - Before picking ANY item, check DISPATCH HISTORY below. If the same item or
+     skill was already `queue`d or `execute`d earlier in this run and nothing
+     has changed since (no vault edit, no user reply, no new commit) — do not
+     re-decide it. Move to the next distinct actionable item, or action: stop
+     if none remain. Repeating an unchanged decision is a wasted call, not a
+     safety check.
    - contract-sensitive, ambiguous, or likely >400-line diff -> action: queue
    - nothing worth doing -> action: stop
 3. Else action: execute, with a spec a mediocre model can follow mechanically.

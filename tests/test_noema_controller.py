@@ -655,5 +655,158 @@ class TestRetryLoop(unittest.TestCase):
             self.assertIn("Use this causal explanation", pes_retry_content)
 
 
+class CyclingDiffFakeClient:
+    """Fake AsyncOpenAI yielding valid SEARCH/REPLACE diffs against
+    INITIAL_PROGRAM's return statement (only valid while the parent being
+    mutated is still that exact text — fine for the single/few-iteration
+    tests below, which only ever mutate the initial program)."""
+
+    def __init__(self, prompt_tokens=100, completion_tokens=40):
+        self.calls = []
+        self._counter = 0
+
+        async def create(**params):
+            self.calls.append(params)
+            self._counter += 1
+            content = (
+                "<<<<<<< SEARCH\n"
+                "    return 1\n"
+                "=======\n"
+                f"    return {self._counter + 1}\n"
+                ">>>>>>> REPLACE\n"
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class TestMutationOperatorMenu(unittest.TestCase):
+    """Task 0027: EoH-derived operator menu, opt-in via NoemaConfig.mutation_operators."""
+
+    def test_legacy_path_rng_never_advances_when_operators_none(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)  # mutation_operators=None (default)
+            initial_state = controller.mutation_operator_rng.getstate()
+            for _ in range(5):
+                operator = controller._choose_operator()
+                self.assertEqual(operator.name, "legacy")
+            self.assertEqual(controller.mutation_operator_rng.getstate(), initial_state)
+
+    def test_legacy_operator_matches_diff_based_evolution_toggle(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp, config=make_config(diff_based_evolution=True))
+            operator = controller._choose_operator()
+            self.assertEqual(operator.template_key, "diff_user")
+            self.assertEqual(operator.parse_mode, "diff")
+
+            controller2, _, _ = make_controller(
+                tmp, config=make_config(diff_based_evolution=False)
+            )
+            operator2 = controller2._choose_operator()
+            self.assertEqual(operator2.template_key, "full_rewrite_user")
+            self.assertEqual(operator2.parse_mode, "full_rewrite")
+
+    def test_seeded_operator_sequence_matches_choice_in_a_loop(self):
+        # Confirmed correctness trap (task 0027): random.Random(seed).choice()
+        # called N times != .choices(k=N) — reconstruct with a loop, not choices().
+        menu = ["m1", "m2"]
+        seed = 7
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(mutation_operators=menu, mutation_operator_seed=seed)
+            controller, _, _ = make_controller(tmp, config=config)
+            actual = [controller._choose_operator().name for _ in range(20)]
+
+        expected_rng = random.Random(seed)
+        expected = [expected_rng.choice(menu) for _ in range(20)]
+        self.assertEqual(actual, expected)
+
+    def test_checkpoint_round_trip_preserves_operator_sequence(self):
+        menu = ["m1", "m2", "m3"]
+        seed = 3
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(mutation_operators=menu, mutation_operator_seed=seed)
+            controller, _, _ = make_controller(tmp, config=config)
+            asyncio.run(controller._ensure_initial_program())
+            first_half = [controller._choose_operator().name for _ in range(10)]
+            checkpoint = controller.save_checkpoint(0)
+
+            controller2, _, _ = make_controller(tmp, config=config)
+            controller2.load_checkpoint(checkpoint)
+            second_half = [controller2._choose_operator().name for _ in range(10)]
+
+        actual = first_half + second_half
+        expected_rng = random.Random(seed)
+        expected = [expected_rng.choice(menu) for _ in range(20)]
+        self.assertEqual(actual, expected)
+
+    def test_provenance_matches_actual_template_used(self):
+        # Guards against reintroducing the pre-0027 duplicate-derivation bug
+        # (child.prompts keyed by a re-derived template_key instead of the
+        # one actually used to build the prompt).
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(
+                mutation_operators=["m1"],
+                database=DatabaseConfig(
+                    in_memory=True, num_islands=1, population_size=50,
+                    random_seed=42, migration_interval=1000,
+                ),
+            )
+            controller, _, _ = make_controller(tmp, config=config, client=CyclingDiffFakeClient())
+            asyncio.run(controller.run(iterations=1))
+
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertEqual(len(children), 1)
+            child = children[0]
+            self.assertEqual(child.metadata["operator"], "m1")
+            self.assertIn("eoh_m1_user", child.prompts)
+
+    def test_arity_two_empty_inspirations_falls_back_without_crashing(self):
+        # Iteration 0: only the initial program exists, so inspirations is
+        # guaranteed empty. e1 (arity 2) must not crash.
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(
+                mutation_operators=["e1"],
+                database=DatabaseConfig(
+                    in_memory=True, num_islands=1, population_size=50,
+                    random_seed=42, migration_interval=1000,
+                ),
+            )
+            controller, _, client = make_controller(tmp, config=config, client=CyclingFakeClient())
+            asyncio.run(controller.run(iterations=1))
+            self.assertEqual(len(client.calls), 1)
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertEqual(len(children), 1)
+
+    def test_arity_two_with_inspirations_present(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(
+                mutation_operators=["e1"],
+                num_inspirations=2,
+                database=DatabaseConfig(
+                    in_memory=True, num_islands=1, population_size=50,
+                    random_seed=42, migration_interval=1000,
+                ),
+            )
+            controller, _, client = make_controller(tmp, config=config, client=CyclingFakeClient())
+            asyncio.run(controller.run(iterations=4))
+
+            children = [p for p in controller.db._db.programs.values() if p.parent_id is not None]
+            self.assertTrue(children)
+            # By the later iterations the island has grown enough that at
+            # least one arity-2 draw found a real second parent.
+            saw_second_parent = any(
+                "eoh_e1_user" in c.prompts
+                and "# Second Parent Program" in c.prompts["eoh_e1_user"]["user"]
+                for c in children
+                if c.prompts
+            )
+            self.assertTrue(saw_second_parent, "expected at least one child built with a real parent2")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,7 @@
 # noema
 
 Controlled ablation of coordination mechanisms in LLM-driven evolutionary search.
-Design document: [PLAN.md](../PLAN.md) at the repository root.
+Design document: [PLAN.md](PLAN.md) at the repository root.
 
 noema owns the top-level evolution loop ([`controller.py`](controller.py)) and borrows
 OpenEvolve's evaluator, program database, and prompt sampler as libraries via thin

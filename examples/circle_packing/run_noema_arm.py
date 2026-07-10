@@ -12,6 +12,7 @@ only thing that should differ between the two arms.
 import argparse
 import asyncio
 import logging
+import os
 
 from noema.config import (
     BudgetConfig,
@@ -38,7 +39,7 @@ Focus on designing an explicit constructor that places each circle in a specific
 IMPORTANT: Make sure that `compute_max_radii` is kept mathematically correct or left unmodified. The radius of any circle `i` MUST strictly satisfy `radii[i] <= min(x, y, 1 - x, 1 - y)` to stay inside the unit square, and `radii[i] + radii[j] <= dist` to avoid overlap. Any violations will result in a 0 validity score.
 CONCISENESS REQUIREMENT: You must be extremely concise. Explain your proposed mutation in at most one short sentence, then output the SEARCH/REPLACE block immediately. Do not write any other conversational filler or explanations."""
 
-EXAMPLE_DIR = "/home/archie/noema-evolve/examples/circle_packing"
+EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def main():
