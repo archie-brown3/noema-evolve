@@ -170,5 +170,59 @@ class TestOtherModulesIgnoreKey(unittest.TestCase):
         hifo_advice = asyncio.run(hifo_module.advise(make_ctx()))
         self.assertIsNotNone(hifo_advice)
 
+
+class TestControllerInjection(unittest.TestCase):
+    def test_provider_injected_into_local_params_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = NoemaConfig(
+                # the else-branch builds a real client object (no calls made)
+                llm=LLMClientConfig(api_key="test-key"),
+                database=DatabaseConfig(
+                    in_memory=True,
+                    num_islands=2,
+                    population_size=50,
+                    random_seed=42,
+                    migration_interval=1000,
+                ),
+                evaluator=EvaluatorConfig(
+                    cascade_evaluation=False, timeout=30, max_retries=0
+                ),
+                budget=BudgetConfig(total_tokens=1_000_000),
+            )
+            yaml_before = config.to_yaml()
+            sha_before = hashlib.sha256(yaml_before.encode("utf-8")).hexdigest()
+
+            mutation_llm = BudgetedLLM(
+                model="fake-model",
+                ledger=TokenLedger(total_budget_tokens=1_000_000),
+                account="mutation",
+                tag="mutate",
+                client=make_plan_client(),
+                retries=0,
+                retry_delay=0.0,
+            )
+            # No `coordination=` argument: the controller builds the module
+            # itself and runs the params-injection block under test.
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+            )
+
+            # Injected into the module's (local) params copy...
+            provider = controller.coordination.config.get("island_bests_provider")
+            self.assertTrue(callable(provider))
+            self.assertEqual(provider(), [0.0, 0.0])  # empty islands at t=0
+            # ...but never into the run config: hash unchanged, key absent.
+            self.assertNotIn("island_bests_provider", config.coordination.params)
+            sha_after = hashlib.sha256(config.to_yaml().encode("utf-8")).hexdigest()
+            self.assertEqual(sha_before, sha_after)
+
+
 if __name__ == "__main__":
     unittest.main()

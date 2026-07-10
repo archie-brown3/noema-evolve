@@ -150,6 +150,13 @@ class NoemaController:
             # ignore it, same convention as Advice.sampling_hint.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
+            # Cross-island best scores (task 0061): injected into the LOCAL
+            # params copy only — a callable must never reach the frozen config
+            # (not YAML-serializable, would perturb the run-config sha256).
+            # All modules receive it; only PES reads it.
+            coordination_params.setdefault(
+                "island_bests_provider", lambda: self.db.per_island_bests()
+            )
             self.coordination = build_coordination_module(
                 config.coordination.module,
                 coordination_params,
