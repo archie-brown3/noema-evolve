@@ -8,6 +8,7 @@ joblib subprocess copies — see PLAN.md section 2.2), and the coordination-OFF 
 coordination-ON arms differ ONLY in which CoordinationModule is plugged in.
 """
 
+import hashlib
 import json
 import logging
 import os
@@ -39,6 +40,7 @@ from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_p
 logger = logging.getLogger(__name__)
 
 NOEMA_STATE_FILE = "noema_state.json"
+FROZEN_CONFIG_FILE = "config.yaml"
 
 
 def _encode_rng_state(state) -> list:
@@ -77,6 +79,7 @@ class NoemaController:
         self.config = config
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
+        self._freeze_config(output_dir, config)
 
         self.ledger = ledger or TokenLedger(
             total_budget_tokens=config.budget.total_tokens,
@@ -161,6 +164,19 @@ class NoemaController:
         self.generation = 0
         self.start_iteration = 0
         self.generation_log: List[Dict[str, Any]] = []
+
+    @staticmethod
+    def _freeze_config(output_dir: str, config: NoemaConfig) -> None:
+        """Write the fully-resolved launch config once; a checkpoint resume
+        (same output_dir, new NoemaController) must not clobber the original."""
+        path = os.path.join(output_dir, FROZEN_CONFIG_FILE)
+        if os.path.exists(path):
+            return
+        text = config.to_yaml()
+        with open(path, "w") as f:
+            f.write(text)
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        logger.info(f"Froze run config to {path} (sha256={digest})")
 
     # ------------------------------------------------------------------ run
 
