@@ -7,6 +7,10 @@ config knobs, llm) and hands itself to the phase object by reference.
 """
 
 import logging
+from typing import TYPE_CHECKING, List, Optional
+
+if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
+    from noema.coordination.pes.module import PESPlannerModule
 
 logger = logging.getLogger(__name__)
 
@@ -83,3 +87,62 @@ bullets; output ONLY the plan):
 # ============================== END BORROWED =================================
 
 _HISTORY_TAIL = 5  # recent history entries shown to the planner
+
+
+class Planner:
+    """Plan phase: builds the planning prompt and makes the one metered
+    `pes.plan` call per mutation. Shared state lives on the module façade."""
+
+    def __init__(self, module: "PESPlannerModule"):
+        self._m = module
+
+    # -------------------------------------------- cross-lineage diversity (D2)
+
+    @staticmethod
+    def _extract_strategy(plan_text: str) -> str:
+        """Pull the `## Strategy` section body out of a stored plan (or '')."""
+        marker = "## Strategy"
+        start = plan_text.find(marker)
+        if start < 0:
+            return ""
+        rest = plan_text[start + len(marker):]
+        end = rest.find("\n##")
+        section = rest[:end] if end >= 0 else rest
+        return " ".join(section.split()).strip()
+
+    def _recent_strategies_block(self, exclude_id: Optional[str] = None) -> str:
+        """
+        A population-wide, cross-lineage digest of recently-attempted strategies
+        and their outcomes — noema-original (deviation #6). Built from the
+        module's _plans (flat across all islands/lineages, insertion-ordered =
+        iteration-ordered), so a fresh lineage's first plan still sees what
+        other islands already tried and failed. No LLM call: plain truncation
+        of the `## Strategy` section (D4). Returns "" when there's nothing to
+        show yet.
+        """
+        m = self._m
+        if m.recent_strategies_k <= 0:
+            return ""
+        seen = set()
+        lines: List[str] = []
+        for cid, entry in reversed(m._plans.items()):
+            if cid == exclude_id:
+                continue  # the lineage's own last plan is already in prior_block
+            strategy = self._extract_strategy(entry.get("plan", ""))
+            if not strategy:
+                continue
+            digest = strategy[: m.strategy_digest_chars].strip()
+            key = digest.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            lines.append(f"- [{entry.get('outcome', '?')}] {digest}")
+            if len(lines) >= m.recent_strategies_k:
+                break
+        if not lines:
+            return ""
+        return (
+            "\n# Recently Attempted Elsewhere\n"
+            "Strategies already tried across the population — avoid repeating the "
+            "failed ones, and prefer a distinct approach:\n" + "\n".join(lines) + "\n"
+        )

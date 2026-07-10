@@ -51,6 +51,7 @@ from noema.coordination.pes.planner import (  # noqa: F401  (re-exported)
     _HISTORY_TAIL,
     PLANNER_SYSTEM,
     PLANNER_USER_TEMPLATE,
+    Planner,
 )
 from noema.substrate.views import ProgramView
 
@@ -140,6 +141,8 @@ class PESPlannerModule(CoordinationModule):
         self._plans: Dict[str, Dict[str, Any]] = {}
         # children awaiting a reflection call, drained at the generation tick
         self._pending_reflections: List[Dict[str, Any]] = []
+        # Phase objects (task 0060): share this module's state by reference.
+        self._planner = Planner(self)
 
     # ------------------------------------------------------------- advise
 
@@ -219,58 +222,9 @@ class PESPlannerModule(CoordinationModule):
             metrics={k: v for k, v in parent.metrics.items() if isinstance(v, (int, float))},
             code=self._truncate(parent.code),
             prior_block=prior_block,
-            recent_block=self._recent_strategies_block(exclude_id=parent.id),
+            recent_block=self._planner._recent_strategies_block(exclude_id=parent.id),
             best_history=[round(v, 4) for v in ctx.best_fitness_history[-_HISTORY_TAIL:]],
             avg_history=[round(v, 4) for v in ctx.avg_fitness_history[-_HISTORY_TAIL:]],
-        )
-
-    # -------------------------------------------- cross-lineage diversity (D2)
-
-    @staticmethod
-    def _extract_strategy(plan_text: str) -> str:
-        """Pull the `## Strategy` section body out of a stored plan (or '')."""
-        marker = "## Strategy"
-        start = plan_text.find(marker)
-        if start < 0:
-            return ""
-        rest = plan_text[start + len(marker):]
-        end = rest.find("\n##")
-        section = rest[:end] if end >= 0 else rest
-        return " ".join(section.split()).strip()
-
-    def _recent_strategies_block(self, exclude_id: Optional[str] = None) -> str:
-        """
-        A population-wide, cross-lineage digest of recently-attempted strategies
-        and their outcomes — noema-original (deviation #6). Built from self._plans
-        (flat across all islands/lineages, insertion-ordered = iteration-ordered),
-        so a fresh lineage's first plan still sees what other islands already
-        tried and failed. No LLM call: plain truncation of the `## Strategy`
-        section (D4). Returns "" when there's nothing to show yet.
-        """
-        if self.recent_strategies_k <= 0:
-            return ""
-        seen = set()
-        lines: List[str] = []
-        for cid, entry in reversed(self._plans.items()):
-            if cid == exclude_id:
-                continue  # the lineage's own last plan is already in prior_block
-            strategy = self._extract_strategy(entry.get("plan", ""))
-            if not strategy:
-                continue
-            digest = strategy[: self.strategy_digest_chars].strip()
-            key = digest.lower()
-            if key in seen:
-                continue
-            seen.add(key)
-            lines.append(f"- [{entry.get('outcome', '?')}] {digest}")
-            if len(lines) >= self.recent_strategies_k:
-                break
-        if not lines:
-            return ""
-        return (
-            "\n# Recently Attempted Elsewhere\n"
-            "Strategies already tried across the population — avoid repeating the "
-            "failed ones, and prefer a distinct approach:\n" + "\n".join(lines) + "\n"
         )
 
     # ------------------------------------------------------- credit / state
