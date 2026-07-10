@@ -9,12 +9,13 @@ prompt stochasticity off, evaluator cascade off.
 
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import dacite
 import yaml
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
+from noema.substrate.operators import OPERATOR_MENU
 
 
 def _default_prompt_config() -> PromptConfig:
@@ -83,6 +84,12 @@ class NoemaConfig:
     retry_enabled: bool = False
     retry_cap: int = 2
 
+    # EoH-derived mutation operator menu (substrate-level, task 0027).
+    # None = legacy path, zero behavior change (today's diff_based_evolution
+    # toggle is the sole control). Strictly opt-in.
+    mutation_operators: Optional[List[str]] = None
+    mutation_operator_seed: Optional[int] = None  # defaults to random_seed + 2
+
     # Prompt context sizes (mirrors openevolve's iteration defaults)
     num_inspirations: int = 3
     num_top_programs: int = 5
@@ -106,6 +113,23 @@ class NoemaConfig:
             )
         if self.coordination.seed is None:
             self.coordination.seed = self.random_seed + 1
+        if self.mutation_operator_seed is None:
+            self.mutation_operator_seed = self.random_seed + 2
+        if self.mutation_operators is not None:
+            unknown = [n for n in self.mutation_operators if n not in OPERATOR_MENU]
+            if unknown:
+                raise ValueError(
+                    f"unknown mutation operator(s) {unknown}; valid names are "
+                    f"{sorted(OPERATOR_MENU)}"
+                )
+            if self.prompt.programs_as_changes_description and any(
+                OPERATOR_MENU[n].parse_mode == "full_rewrite" for n in self.mutation_operators
+            ):
+                raise ValueError(
+                    "prompt.programs_as_changes_description=True requires every "
+                    "selected mutation operator to be parse_mode='diff' (mirrors "
+                    "openevolve's own diff_based_evolution validator)"
+                )
 
     def to_dict(self) -> Dict[str, Any]:
         """Fully-resolved config (CLI-derived values and nested dataclasses included)"""

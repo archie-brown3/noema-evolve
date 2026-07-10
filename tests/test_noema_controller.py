@@ -355,6 +355,41 @@ class TestNoemaConfig(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_coordination_module("does-not-exist")
 
+    def test_mutation_operator_seed_defaults_to_random_seed_plus_two(self):
+        config = NoemaConfig(random_seed=10)
+        self.assertEqual(config.mutation_operator_seed, 12)
+
+    def test_mutation_operators_none_by_default(self):
+        self.assertIsNone(NoemaConfig().mutation_operators)
+
+    def test_unknown_mutation_operator_rejected(self):
+        with self.assertRaises(ValueError):
+            NoemaConfig(mutation_operators=["not-a-real-operator"])
+
+    def test_full_rewrite_operator_rejected_with_changes_description(self):
+        from openevolve.config import PromptConfig
+
+        with self.assertRaises(ValueError):
+            NoemaConfig(
+                mutation_operators=["e1"],  # full_rewrite
+                prompt=PromptConfig(
+                    use_template_stochasticity=False,
+                    programs_as_changes_description=True,
+                ),
+            )
+
+    def test_diff_only_operator_allowed_with_changes_description(self):
+        from openevolve.config import PromptConfig
+
+        # m1 is parse_mode="diff" — should not raise
+        NoemaConfig(
+            mutation_operators=["m1"],
+            prompt=PromptConfig(
+                use_template_stochasticity=False,
+                programs_as_changes_description=True,
+            ),
+        )
+
 
 class RetryFailingThenSuccessClient:
     """Fake client: first `fail_count` calls return garbage; then valid diffs"""
