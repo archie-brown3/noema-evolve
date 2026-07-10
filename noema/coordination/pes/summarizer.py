@@ -107,6 +107,7 @@ class Summarizer:
         m._plans[child.id] = {
             "plan": plan,
             "outcome": outcome,
+            "parent_id": ctx.parent.id,
             "parent_fitness": parent_fitness,
             "child_fitness": child_fitness,
         }

@@ -1,12 +1,18 @@
 """
-- advise()          <- the Planner phase: one metered planning call per mutation,
-                       plan injected as the standard coordination suffix
+Phase classes live in sibling files (task 0060 split, mirroring LoongFlow's own
+planner/ executor/ summary/ layout): planner.py (Planner), executor.py
+(Executor), summarizer.py (Summarizer). This façade owns all shared state.
+
+- advise()          <- Planner.plan -> Executor.build_advice: one metered
+                       planning call per mutation, plan injected as the
+                       standard coordination suffix
                        (LoongFlow: agents/general_agent/planner.py)
-- report_result()   <- the Summary phase's _gather + _assess (pure Python):
+- retry_advice()    <- Executor.retry_block: reflection-seeded retries
+- report_result()   <- Summarizer.assess + record (pure Python):
                        computes IMPROVEMENT/REGRESSION/STALE vs parent score
                        (agents/general_agent/summary.py:228-247) and enqueues
                        the child for reflection. No LLM call here.
-- on_generation_end <- the Summary phase's _reflect + _record (Phase 2): drains
+- on_generation_end <- Summarizer.reflect_pending (Phase 2): drains
                        the queue, one metered reflection call per child
                        (summary.py:249-409, Reflexion-derived), storing the
                        causal explanation so the next plan for that lineage
@@ -45,7 +51,6 @@ Documented deviations from the released code (PLAN.md section 2.2 discipline):
 import logging
 from typing import Any, Dict, List, Optional
 
-from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext
 from noema.coordination.pes.executor import Executor
 from noema.coordination.pes.planner import (  # noqa: F401  (re-exported)
