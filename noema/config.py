@@ -7,7 +7,7 @@ differ from openevolve where the plan requires it (PLAN.md section 3.4 risk 3):
 prompt stochasticity off, evaluator cascade off.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
@@ -106,6 +106,14 @@ class NoemaConfig:
             )
         if self.coordination.seed is None:
             self.coordination.seed = self.random_seed + 1
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Fully-resolved config (CLI-derived values and nested dataclasses included)"""
+        return asdict(self)
+
+    def to_yaml(self) -> str:
+        """Deterministic YAML text for freezing/hashing a run's config"""
+        return yaml.safe_dump(self.to_dict(), sort_keys=True)
 
     @classmethod
     def from_yaml(cls, path: Union[str, Path]) -> "NoemaConfig":

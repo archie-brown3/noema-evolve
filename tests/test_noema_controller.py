@@ -15,9 +15,11 @@ import tempfile
 import unittest
 from types import SimpleNamespace
 
+import yaml
+
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.config import BudgetConfig, NoemaConfig
+from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig
 from noema.controller import NoemaController
 from noema.coordination import Advice, NullCoordination
 from noema.coordination.pes.module import PESPlannerModule
@@ -267,6 +269,55 @@ class TestControllerEndToEnd(unittest.TestCase):
                 self.assertTrue(eval_failed)
             # No children were added
             self.assertEqual(controller.db.num_programs, 1)
+
+
+class TestFrozenConfig(unittest.TestCase):
+    def test_run_dir_contains_frozen_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            config_path = os.path.join(tmp, "output", "config.yaml")
+            self.assertTrue(os.path.exists(config_path))
+
+            with open(config_path) as f:
+                text = f.read()
+            reloaded = NoemaConfig.from_dict(yaml.safe_load(text))
+            self.assertEqual(reloaded.max_iterations, controller.config.max_iterations)
+            self.assertEqual(
+                reloaded.database.num_islands, controller.config.database.num_islands
+            )
+            self.assertEqual(reloaded.coordination.module, controller.config.coordination.module)
+
+    def test_paired_arm_configs_differ_only_in_coordination_module(self):
+        null_config = make_config(coordination=CoordinationConfig(module="null"))
+        pes_config = make_config(coordination=CoordinationConfig(module="pes"))
+
+        null_lines = null_config.to_yaml().splitlines()
+        pes_lines = pes_config.to_yaml().splitlines()
+        self.assertEqual(len(null_lines), len(pes_lines))
+
+        differing = [
+            (a, b) for a, b in zip(null_lines, pes_lines) if a != b
+        ]
+        self.assertTrue(differing)
+        for a, b in differing:
+            self.assertIn("module", a)
+            self.assertIn("module", b)
+
+    def test_resume_does_not_clobber_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            config_path = os.path.join(tmp, "output", "config.yaml")
+            with open(config_path) as f:
+                original_text = f.read()
+
+            # Second controller construction against the same output_dir
+            # (as happens on checkpoint resume) must not overwrite it.
+            different_config = make_config(max_iterations=999)
+            make_controller(tmp, config=different_config)
+
+            with open(config_path) as f:
+                after_text = f.read()
+            self.assertEqual(original_text, after_text)
 
 
 class TestNoemaConfig(unittest.TestCase):
