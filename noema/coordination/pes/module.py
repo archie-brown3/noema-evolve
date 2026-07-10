@@ -47,6 +47,7 @@ from typing import Any, Dict, List, Optional
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext
+from noema.coordination.pes.executor import Executor
 from noema.coordination.pes.planner import (  # noqa: F401  (re-exported)
     _HISTORY_TAIL,
     PLANNER_SYSTEM,
@@ -143,6 +144,7 @@ class PESPlannerModule(CoordinationModule):
         self._pending_reflections: List[Dict[str, Any]] = []
         # Phase objects (task 0060): share this module's state by reference.
         self._planner = Planner(self)
+        self._executor = Executor(self)
 
     # ------------------------------------------------------------- advise
 
@@ -152,31 +154,11 @@ class PESPlannerModule(CoordinationModule):
         plan = await self._planner.plan(ctx)
         if not plan:
             return Advice()
-        return Advice(
-            prompt_block=plan,
-            attribution={"plan": plan, "parent_id": ctx.parent.id},
-        )
+        return self._executor.build_advice(plan, ctx)
 
     async def retry_advice(self, ctx: GenerationContext, error_text: str, attempt: int) -> str:
-        """Seed a Stage-1 retry with this lineage's causal reflection (Design 4).
-
-        Returns the stored reflection text (the "why it failed" from the deferred
-        summary call) framed as a retry-guidance block, or "" when there's no
-        parent or no reflection yet (fresh lineage). The controller concatenates
-        this after its raw-error suffix; Null inherits the no-op, so only PES
-        retries carry reflection — the controlled variable stays single.
-        """
-        if ctx.parent is None:
-            return ""
-        prior = self._plans.get(ctx.parent.id)
-        reflection = prior.get("reflection") if prior else None
-        if not reflection:
-            return ""
-        return (
-            "\n# Reflection on the lineage's last failure\n"
-            f"{reflection}\n"
-            "Use this causal explanation to guide the corrected mutation."
-        )
+        """Reflection-seeded retries (Design 4) — see Executor.retry_block."""
+        return self._executor.retry_block(ctx, error_text, attempt)
 
     def _truncate(self, code: str) -> str:
         if len(code) > self.max_code_chars:
