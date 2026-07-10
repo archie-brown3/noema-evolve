@@ -1,0 +1,3 @@
+2026-07-09 10:00:00 INFO iteration 0 started
+2026-07-09 10:00:05 ERROR context overflow detected while building prompt, truncating history
+2026-07-09 10:00:06 INFO iteration 0 completed
