@@ -48,6 +48,9 @@ class CallRecord:
     iteration: int = -1
     timestamp: float = field(default_factory=time.time)
     estimated: bool = False  # True if token counts are a counted estimate, not server-reported usage
+    finish_reason: str = ""  # "stop" | "length" | "content_filter" | "" (local servers)
+    reasoning_tokens: int = 0  # thinking tokens (DeepSeek R1, o1, etc.)
+    cost: float = 0.0  # dollar cost (OpenRouter x-openrouter-cost header or 0.0)
 
     @property
     def total_tokens(self) -> int:

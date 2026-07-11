@@ -159,6 +159,18 @@ class BudgetedLLM(LLMInterface):
             usage = getattr(response, "usage", None)
             content = response.choices[0].message.content
 
+            finish_reason = getattr(response.choices[0], "finish_reason", "") or ""
+
+            reasoning_tokens = 0
+            if usage is not None:
+                details = getattr(usage, "completion_tokens_details", None)
+                if details is not None:
+                    reasoning_tokens = getattr(details, "reasoning_tokens", 0) or 0
+
+            cost = 0.0
+            if usage is not None:
+                cost = float(getattr(usage, "cost", 0.0) or 0.0)
+
             # Some OpenAI-compatible local servers (llama.cpp/vLLM) return a
             # `usage` envelope whose prompt_tokens/completion_tokens fields are
             # null instead of omitting `usage` altogether. Estimate only the
@@ -192,6 +204,9 @@ class BudgetedLLM(LLMInterface):
                     latency_s=time.time() - start,
                     iteration=self.iteration,
                     estimated=estimated,
+                    finish_reason=finish_reason,
+                    reasoning_tokens=reasoning_tokens,
+                    cost=cost,
                 )
             )
             return content
