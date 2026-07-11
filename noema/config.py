@@ -1,0 +1,171 @@
+"""
+Experiment configuration for noema.
+
+Composes openevolve's component configs (database, evaluator, prompt) with
+noema's own budget / coordination / mutation-LLM settings. Defaults deliberately
+differ from openevolve where the plan requires it (PLAN.md section 3.4 risk 3):
+prompt stochasticity off, evaluator cascade off.
+"""
+
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
+
+import dacite
+import yaml
+
+from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
+from noema.substrate.operators import OPERATOR_MENU
+
+
+def _default_prompt_config() -> PromptConfig:
+    # openevolve defaults stochasticity ON; noema requires it OFF (identical
+    # prompts across arms)
+    return PromptConfig(use_template_stochasticity=False)
+
+
+def _default_evaluator_config() -> EvaluatorConfig:
+    # openevolve defaults cascade ON, which warns and falls back unless the
+    # eval script defines evaluate_stage1
+    return EvaluatorConfig(cascade_evaluation=False)
+
+
+@dataclass
+class BudgetConfig:
+    """Token budget: one shared pool, per-account accounting (PLAN.md 3.2)"""
+
+    total_tokens: int = 1_000_000
+    account_caps: Dict[str, int] = field(default_factory=dict)
+    log_path: Optional[str] = None  # JSONL of every CallRecord; defaults under output_dir
+
+
+@dataclass
+class LLMClientConfig:
+    """Settings for a BudgetedLLM client"""
+
+    model: str = "gpt-4o-mini"
+    api_base: Optional[str] = None
+    api_key: Optional[str] = None
+    temperature: Optional[float] = 0.7
+    top_p: Optional[float] = None
+    max_tokens: Optional[int] = 4096
+    seed: Optional[int] = None
+    timeout: float = 60.0
+    retries: int = 3
+    retry_delay: float = 5.0
+
+
+@dataclass
+class CoordinationConfig:
+    """Which coordination module runs, and its mechanism-specific parameters"""
+
+    module: str = "null"  # registry key: "null" (OFF arm), "hifo", ...
+    params: Dict[str, Any] = field(default_factory=dict)
+    seed: Optional[int] = None  # module RNG; defaults to NoemaConfig.random_seed + 1
+
+
+@dataclass
+class NoemaConfig:
+    """Master configuration for a noema run"""
+
+    # Loop settings
+    max_iterations: int = 100
+    checkpoint_interval: int = 50
+    random_seed: int = 42
+
+    # Program representation
+    language: str = "python"
+    file_suffix: str = ".py"
+    diff_based_evolution: bool = True
+    diff_pattern: str = r"<<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE"
+    max_code_length: int = 10000
+
+    # Retry loop (substrate-level, identical across arms).
+    # retry_cap counts RETRIES after the initial attempt (LoongFlow's
+    # max_rounds ~= retry_cap + 1 total rounds). retry_on picks the trigger
+    # (task 0062): "failure" = parse/boundary/eval failures only (today's
+    # behavior); "non_improvement" additionally retries a valid child whose
+    # fitness does not beat its parent, keeping the best attempt
+    # (execute_agent_chat.py round semantics). Inert unless retry_enabled.
+    retry_enabled: bool = False
+    retry_cap: int = 2
+    retry_on: str = "failure"
+
+    # EoH-derived mutation operator menu (substrate-level, task 0027).
+    # None = legacy path, zero behavior change (today's diff_based_evolution
+    # toggle is the sole control). Strictly opt-in.
+    mutation_operators: Optional[List[str]] = None
+    mutation_operator_seed: Optional[int] = None  # defaults to random_seed + 2
+
+    # Prompt context sizes (mirrors openevolve's iteration defaults)
+    num_inspirations: int = 3
+    num_top_programs: int = 5
+    num_previous_programs: int = 3
+
+    # Borrowed component configs
+    database: DatabaseConfig = field(default_factory=DatabaseConfig)
+    evaluator: EvaluatorConfig = field(default_factory=_default_evaluator_config)
+    prompt: PromptConfig = field(default_factory=_default_prompt_config)
+
+    # noema-owned configs
+    budget: BudgetConfig = field(default_factory=BudgetConfig)
+    llm: LLMClientConfig = field(default_factory=LLMClientConfig)
+    coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
+
+    def __post_init__(self):
+        if self.retry_on not in ("failure", "non_improvement"):
+            raise ValueError(
+                f'retry_on must be "failure" or "non_improvement", got {self.retry_on!r}'
+            )
+        if self.prompt.use_template_stochasticity:
+            raise ValueError(
+                "noema requires prompt.use_template_stochasticity=False "
+                "(identical prompts across arms)"
+            )
+        if self.coordination.seed is None:
+            self.coordination.seed = self.random_seed + 1
+        if self.mutation_operator_seed is None:
+            self.mutation_operator_seed = self.random_seed + 2
+        if self.mutation_operators is not None:
+            unknown = [n for n in self.mutation_operators if n not in OPERATOR_MENU]
+            if unknown:
+                raise ValueError(
+                    f"unknown mutation operator(s) {unknown}; valid names are "
+                    f"{sorted(OPERATOR_MENU)}"
+                )
+            if self.prompt.programs_as_changes_description and any(
+                OPERATOR_MENU[n].parse_mode == "full_rewrite" for n in self.mutation_operators
+            ):
+                raise ValueError(
+                    "prompt.programs_as_changes_description=True requires every "
+                    "selected mutation operator to be parse_mode='diff' (mirrors "
+                    "openevolve's own diff_based_evolution validator)"
+                )
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Fully-resolved config (CLI-derived values and nested dataclasses included)"""
+        return asdict(self)
+
+    def to_yaml(self) -> str:
+        """Deterministic YAML text for freezing/hashing a run's config"""
+        return yaml.safe_dump(self.to_dict(), sort_keys=True)
+
+    @classmethod
+    def from_yaml(cls, path: Union[str, Path]) -> "NoemaConfig":
+        with open(path) as f:
+            data = yaml.safe_load(f) or {}
+        return cls.from_dict(data)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "NoemaConfig":
+        return dacite.from_dict(
+            data_class=cls,
+            data=data,
+            config=dacite.Config(
+                cast=[list, dict],
+                strict=False,
+                # DatabaseConfig.novelty_llm is annotated with a forward ref
+                # (same workaround as openevolve.config.Config.from_dict)
+                forward_references={"LLMInterface": Any},
+            ),
+        )
