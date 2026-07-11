@@ -89,6 +89,17 @@ class PESPlannerModule(CoordinationModule):
         # sees. Populated from NoemaConfig.prompt.system_message by the
         # controller unless the experiment overrides it in coordination.params.
         self.domain_context: str = self.config.get("domain_context", "")
+        # Prompt variant (task 0063): "custom" = the lean noema recast
+        # (default, byte-identical to pre-0063 behavior); "faithful" = the
+        # near-verbatim LoongFlow math-agent port. Task 0066 binds the
+        # pes-faithful registry key to it; variant identity lives in the
+        # registry key, this knob is the internal switch.
+        self.prompt_variant: str = self.config.get("prompt_variant", "custom")
+        if self.prompt_variant not in ("custom", "faithful"):
+            raise ValueError(
+                "pes prompt_variant must be 'custom' or 'faithful', "
+                f"got {self.prompt_variant!r}"
+            )
         # Reflection (Phase 2 Stage 0). D1 escape hatches: disable entirely, or
         # cap how many queued children get reflected on per generation tick if
         # the coordination-account spend proves too high in practice.

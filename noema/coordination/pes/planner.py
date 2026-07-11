@@ -6,8 +6,9 @@ PESPlannerModule façade owns all shared state (_plans, the reflection queue,
 config knobs, llm) and hands itself to the phase object by reference.
 """
 
+import json
 import logging
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import GenerationContext
@@ -237,6 +238,7 @@ VERY, VERY IMPORTANT: This is your last chance. To beat the baseline, your plan 
 </Example>
 
 Begin your generation plan now. Write the three outlines, the comparison, and then the final best plan under the `### Final Child Solution Generation Plan` heading."""
+
 # NOEMA (§1.2) ADAPTs vs EVOLVE_PLANNER_USER_PROMPT, in order: the
 # `# Workspace` section is DROPPED; `{island_status_block}` is a new
 # conditional slot (task 0061) after the `# Database` sentence; step 2 tool
@@ -260,6 +262,22 @@ FINAL_PLAN_HEADING = "### Final Child Solution Generation Plan"
 # Floor for the faithful planner completion (three outlines + comparison +
 # expanded plan; design note §1.4).
 FAITHFUL_PLANNER_MIN_TOKENS = 2048
+
+
+def extract_final_plan(completion: str) -> Tuple[str, bool]:
+    """Slice the executor-bound plan out of a faithful planner completion.
+
+    The completion legitimately contains three outlines + a comparison before
+    the plan; the executor must never see them. Rule: the text after the LAST
+    occurrence of FINAL_PLAN_HEADING (the prompt's <Example> re-states the
+    heading, so a completion may echo it more than once — the real plan is the
+    final one). Missing heading -> (full stripped completion, False); the
+    caller logs the fallback (shakedown gate 1 counts these).
+    """
+    idx = completion.rfind(FINAL_PLAN_HEADING)
+    if idx < 0:
+        return completion.strip(), False
+    return completion[idx + len(FINAL_PLAN_HEADING):].strip(), True
 
 
 class Planner:
@@ -320,9 +338,49 @@ class Planner:
             avg_history=[round(v, 4) for v in ctx.avg_fitness_history[-_HISTORY_TAIL:]],
         )
 
+    # ------------------------------------------------ faithful variant (0063)
+
+    def _build_faithful_prompt(self, ctx: GenerationContext) -> str:
+        """User prompt for the faithful variant (design note §1.3 mapping):
+        {task_info} <- domain_context (moves from the system-message suffix to
+        here, matching upstream placement); {parent_solution} <- lineage JSON
+        with nulls for a fresh lineage; {island_num} <- provider length (the
+        controller always injects the provider in a live run; without it the
+        count degrades to the only island we can attest to);
+        {island_status_block} <- the 0061 conditional block; noema's
+        custom-only recent_block is deliberately absent (Decision #27)."""
+        m = self._m
+        parent = ctx.parent
+        prior = m._plans.get(parent.id)
+        parent_solution = {
+            "generate_plan": prior["plan"] if prior else None,
+            "solution": m._truncate(parent.code),
+            "score": parent.fitness,
+            "summary": prior.get("reflection") if prior else None,
+        }
+        provider = m.config.get("island_bests_provider")
+        bests = provider() if provider is not None else []
+        return FAITHFUL_PLANNER_USER_TEMPLATE.format(
+            task_info=m.domain_context or "None provided.",
+            parent_solution=json.dumps(parent_solution, indent=2),
+            island_num=len(bests) if bests else ctx.island + 1,
+            parent_island=ctx.island,
+            island_status_block=self._island_status_block(bests),
+        )
+
+    def _faithful_max_tokens(self) -> Optional[int]:
+        """Completion cap for the faithful plan call: at least
+        FAITHFUL_PLANNER_MIN_TOKENS, so three outlines + comparison + expanded
+        plan fit (design note §1.4). A configured cap above the floor is kept;
+        None (no configured cap) stays None and the parameter is omitted."""
+        configured = getattr(self._m.llm, "max_tokens", None)
+        if configured is not None and configured < FAITHFUL_PLANNER_MIN_TOKENS:
+            return FAITHFUL_PLANNER_MIN_TOKENS
+        return configured
+
     # ---------------------------------------------- cross-island status (0061)
 
-    def _island_status_block(self) -> str:
+    def _island_status_block(self, bests: Optional[List[float]] = None) -> str:
         """Cross-island best-score levels for the faithful planner's Global
         Perspective strategies (LoongFlow served these via Get_Memory_Status /
         Get_Best_Solutions; recast = pre-injection, task 0061).
@@ -333,12 +391,14 @@ class Planner:
         inert. An empty-but-islanded database renders 0.0000 per island (in a
         live run the seed program exists before the first advise call). Not
         rendered by the custom prompt variant (the faithful template, task
-        0063, consumes it).
+        0063, consumes it). `bests` may be passed pre-fetched (the faithful
+        prompt builder already called the provider); None means fetch here.
         """
-        provider = self._m.config.get("island_bests_provider")
-        if provider is None:
-            return ""
-        bests = provider()
+        if bests is None:
+            provider = self._m.config.get("island_bests_provider")
+            if provider is None:
+                return ""
+            bests = provider()
         if not bests:
             return ""
         scores = ", ".join(f"island_{i}: {b:.4f}" for i, b in enumerate(bests))
