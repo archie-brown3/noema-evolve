@@ -20,7 +20,6 @@ examples/**/*.log
 # Dev artefacts
 loop/
 work-order.json
-CONFIG.md
 
 # Test fixture logs
 tests/**/*.log
