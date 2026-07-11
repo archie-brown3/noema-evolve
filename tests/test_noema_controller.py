@@ -761,6 +761,135 @@ class TestRetryLoop(unittest.TestCase):
             self.assertIn("Use this causal explanation", pes_retry_content)
 
 
+def make_pes_plan_client(plan_text):
+    """Fake AsyncOpenAI for the PES coordination LLM (planning calls only)."""
+    calls = []
+
+    async def create(**params):
+        calls.append(params)
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=plan_text))],
+            usage=SimpleNamespace(prompt_tokens=50, completion_tokens=20),
+        )
+
+    return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)), calls=calls)
+
+
+def make_pes_directive_module(plan_text="# Plan\n## Strategy\n- try something\n## Action\n1. go"):
+    ledger = TokenLedger(total_budget_tokens=1_000_000)
+    coordination_llm = BudgetedLLM(
+        model="fake-model", ledger=ledger, account="coordination", tag="pes.coordination",
+        client=make_pes_plan_client(plan_text), retries=0, retry_delay=0.0,
+    )
+    return PESPlannerModule(
+        config={"executor_mode": "directive"}, llm=coordination_llm, rng=random.Random(0)
+    )
+
+
+class FullRewriteFailThenSucceedClient:
+    """Fake mutation client: first `fail_count` calls return garbage; then a
+    valid full-rewrite ```python``` block."""
+
+    def __init__(self, fail_count=1, prompt_tokens=100, completion_tokens=40):
+        self.calls = []
+        self._counter = 0
+
+        async def create(**params):
+            self.calls.append(params)
+            self._counter += 1
+            if self._counter <= fail_count:
+                content = ""  # parse_full_rewrite falls back to plain-text
+                # otherwise, so an empty response is the only reliable "no
+                # parseable code" case in full-rewrite mode
+            else:
+                content = f"```python\ndef f():\n    return {self._counter + 1}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(
+                    prompt_tokens=prompt_tokens, completion_tokens=completion_tokens
+                ),
+            )
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class TestPESDirectiveExecutor(unittest.TestCase):
+    """Task 0065: executor_mode="directive" — the plan as the mutation call's
+    primary instruction (verbatim LoongFlow executor prompt), dispatched via
+    the `full_executor_prompt` attribution flag (Decision #25 scoped exemption)."""
+
+    def _run(self, tmp, module, mutation_client, config=None):
+        eval_path = os.path.join(tmp, "evaluator.py")
+        with open(eval_path, "w") as f:
+            f.write(EVAL_SCRIPT)
+        config = config or make_config()
+        ledger = TokenLedger(total_budget_tokens=1_000_000)
+        mutation_llm = BudgetedLLM(
+            model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+            client=mutation_client, retries=0, retry_delay=0.0,
+        )
+        controller = NoemaController(
+            config=config,
+            evaluation_file=eval_path,
+            initial_program_code=INITIAL_PROGRAM,
+            output_dir=os.path.join(tmp, "output"),
+            mutation_llm=mutation_llm,
+            coordination=module,
+            ledger=ledger,
+        )
+        return controller
+
+    def test_directive_end_to_end_produces_children(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = make_pes_directive_module()
+            client = CyclingFakeClient()
+            controller = self._run(tmp, module, client, config=make_config(max_iterations=3))
+            asyncio.run(controller.run())
+
+            self.assertGreater(controller.db.num_programs, 1)
+            first_call = client.calls[0]
+            self.assertTrue(
+                first_call["messages"][0]["content"].startswith("You are an expert software developer")
+            )
+            self.assertIn("# Task Information", first_call["messages"][-1]["content"])
+            self.assertIn("# Parent Solution", first_call["messages"][-1]["content"])
+
+    def test_directive_retry_reformats_full_template_with_previous_attempts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = make_pes_directive_module()
+            client = FullRewriteFailThenSucceedClient(fail_count=1)
+            config = make_config(retry_enabled=True, retry_cap=2)
+            controller = self._run(tmp, module, client, config=config)
+            asyncio.run(controller.run(iterations=1))
+
+            self.assertEqual(len(client.calls), 2)
+            first_user = client.calls[0]["messages"][-1]["content"]
+            retry_user = client.calls[1]["messages"][-1]["content"]
+            self.assertNotIn("Round 1, Candidate 0", first_user)
+            self.assertIn("# Task Information", retry_user)  # full template re-formatted
+            self.assertIn(
+                "Round 1, Candidate 0, Evaluation Result: "
+                "no parseable code block found in the response",
+                retry_user,
+            )
+
+    def test_advisory_mode_through_controller_is_byte_identical(self):
+        # Regression pin: executor_mode="advisory" (default) still produces
+        # the standard mutation prompt with the plan as a suffix — same as
+        # before task 0065 existed.
+        with tempfile.TemporaryDirectory() as tmp:
+            module = make_pes_directive_module()
+            module.executor_mode = "advisory"
+            client = CyclingFakeClient()
+            controller = self._run(tmp, module, client)
+            asyncio.run(controller.run(iterations=1))
+
+            user_text = client.calls[0]["messages"][-1]["content"]
+            self.assertIn(COORDINATION_HEADER, user_text)
+            self.assertNotIn("# Task Information", user_text)
+            self.assertNotIn("# Parent Solution", user_text)
+
+
 class CyclingDiffFakeClient:
     """Fake AsyncOpenAI yielding valid SEARCH/REPLACE diffs against
     INITIAL_PROGRAM's return statement (only valid while the parent being

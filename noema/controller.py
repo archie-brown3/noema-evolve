@@ -15,6 +15,7 @@ import os
 import random
 import re
 import time
+from dataclasses import replace as dataclass_replace
 from typing import Any, Dict, List, Optional, Tuple
 
 from openevolve.database import Program
@@ -288,20 +289,31 @@ class NoemaController:
         ctx = self._make_context(iteration, parent_island, parent, inspirations)
         advice = await self.coordination.advise(ctx)  # coordination hook 1
 
-        base_prompt = build_mutation_prompt(
-            self.sampler,
-            parent=parent,
-            top_programs=top_programs,
-            previous_programs=previous_programs,
-            inspirations=inspirations,
-            language=self.config.language,
-            iteration=iteration,
-            diff_based_evolution=self.config.diff_based_evolution,
-            feature_dimensions=self.db.feature_dimensions,
-            template_key=operator.template_key,
-            parent2=parent2,
-        )
-        prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
+        if advice.attribution.get("full_executor_prompt"):
+            # Directive-mode fidelity anchor (task 0065, Decision #25 scoped
+            # exemption): the advice IS the full prompt — the plan is the
+            # mutation call's primary instruction, not a suffix appended to
+            # openevolve's own template. Skip build_mutation_prompt/inject_advice
+            # entirely and force full-rewrite parsing (the template asks for a
+            # full ```python``` block, never a SEARCH/REPLACE diff).
+            base_prompt = {"system": advice.system_block, "user": advice.prompt_block}
+            prompt = base_prompt
+            operator = dataclass_replace(operator, parse_mode="full_rewrite")
+        else:
+            base_prompt = build_mutation_prompt(
+                self.sampler,
+                parent=parent,
+                top_programs=top_programs,
+                previous_programs=previous_programs,
+                inspirations=inspirations,
+                language=self.config.language,
+                iteration=iteration,
+                diff_based_evolution=self.config.diff_based_evolution,
+                feature_dimensions=self.db.feature_dimensions,
+                template_key=operator.template_key,
+                parent2=parent2,
+            )
+            prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
 
         # Provenance on ledger records (BudgetedLLM only; injected fakes may not have it)
         if hasattr(self.mutation_llm, "iteration"):
@@ -483,6 +495,17 @@ class NoemaController:
     async def _build_retry_prompt(
         self, base_prompt, advice, error_text, attempt, ctx
     ) -> Dict[str, str]:
+        if advice.attribution.get("full_executor_prompt"):
+            # Directive mode: re-format the FULL LoongFlow template with
+            # {previous_attempts} populated, not the generic retry suffix.
+            # build_retry_prompt is duck-typed (not part of the
+            # CoordinationModule ABC — base.py stays untouched); only PES
+            # directive mode sets the attribution flag that leads here.
+            build_directive_retry = getattr(self.coordination, "build_retry_prompt", None)
+            if build_directive_retry is not None:
+                directive_prompt = build_directive_retry(ctx, advice.attribution, attempt, error_text)
+                if directive_prompt is not None:
+                    return directive_prompt
         prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
         retry_suffix = self._build_retry_suffix(error_text, attempt)
         reflection_suffix = await self.coordination.retry_advice(ctx, error_text, attempt)
