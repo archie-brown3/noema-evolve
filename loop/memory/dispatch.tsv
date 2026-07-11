@@ -12,3 +12,8 @@
 2026-07-10T20:58:23+00:00	iter1	verify	pes-phase-class-refactor	tasks/0060-pes-phase-class-refactor
 2026-07-10T21:07:24+00:00	iter1	verify	pes-cross-island-context-provider	tasks/0061-pes-cross-island-context-provider
 2026-07-10T21:18:18+00:00	iter1	verify	retry-trigger-config	tasks/0062-retry-trigger-config
+2026-07-11T05:02:19+00:00	iter1	execute	pes-faithful-summarizer-recast	tasks/0064-pes-faithful-summarizer-recast
+2026-07-11T06:03:10+00:00	iter1	execute	pes-directive-executor	tasks/0065-pes-directive-executor
+2026-07-11T06:18:09+00:00	iter2	queue	stage-loongflow-clone	LoongFlow source prerequisite — network egress or a pre-staged clone — now blocks the entire PES-faithful chain (WP4
+2026-07-11T06:20:21+00:00	iter3	execute	port-bin-packing-benchmark	tasks/0036-port-bin-packing-benchmark
+2026-07-11T10:52:53+00:00	iter1	verify	pes-faithful-planner-recast	tasks/0063-pes-faithful-planner-recast
