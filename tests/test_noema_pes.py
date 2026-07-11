@@ -511,6 +511,34 @@ class TestPESPlannerModule(unittest.TestCase):
         advice = asyncio.run(module.advise(ctx))
         self.assertIsNone(module.build_retry_prompt(ctx, advice.attribution, 1, "err"))
 
+    def test_directive_attempts_do_not_bleed_into_the_next_mutation(self):
+        # One Executor instance serves every iteration and island, and the
+        # attempt log lives on it. A later mutation must never see an earlier
+        # lineage's failures: build_advice clears the log. (Iterations run
+        # sequentially in the controller; this pins the property so a future
+        # refactor cannot silently start leaking one lineage's errors into
+        # another's prompt — which would corrupt the treatment.)
+        module, _, _ = self.make_module(executor_mode="directive")
+
+        first_ctx = make_ctx(parent=make_view(pid="lineage-a"))
+        first_advice = asyncio.run(module.advise(first_ctx))
+        retry = module.build_retry_prompt(
+            first_ctx, first_advice.attribution, 1, "SECRET-A: divide by zero"
+        )
+        self.assertIn("SECRET-A", retry["user"])
+
+        second_ctx = make_ctx(parent=make_view(pid="lineage-b"))
+        second_advice = asyncio.run(module.advise(second_ctx))
+        # Fresh mutation: empty attempt log, no trace of lineage A.
+        self.assertNotIn("SECRET-A", second_advice.prompt_block)
+        self.assertNotIn("Round 1, Candidate 0", second_advice.prompt_block)
+        # ...and its own first retry starts the round count over.
+        second_retry = module.build_retry_prompt(
+            second_ctx, second_advice.attribution, 1, "TypeError: b"
+        )
+        self.assertNotIn("SECRET-A", second_retry["user"])
+        self.assertIn("Round 1, Candidate 0, Evaluation Result: TypeError: b", second_retry["user"])
+
 
 if __name__ == "__main__":
     unittest.main()
