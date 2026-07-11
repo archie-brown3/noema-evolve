@@ -644,6 +644,67 @@ class TestFaithfulSummaryPath(unittest.TestCase):
         self.assertEqual(calls[2]["max_tokens"], 1024)
 
 
+    def test_faithful_only_child_note(self):
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        record_child(module, "child-a", self._parent(), 0.6, "plan text")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        user = calls[0]["messages"][1]["content"]
+        self.assertIn("Current solution's rank by score (X): 1 out of 1", user)
+        self.assertIn("its rank is 1 out of 1", user)
+
+    def test_faithful_storage_split_and_capped_slice(self):
+        module, _ = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        record_child(module, "child-a", self._parent(), 0.6, "plan text")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        entry = module._plans["child-a"]
+        # Full brief stays in module state...
+        self.assertEqual(entry["reflection_full"], FAITHFUL_BRIEF.strip())
+        # ...only Executive Summary + Actionable Guidance re-enter prompts,
+        # with the model's preamble stripped and the middle sections dropped.
+        slice_text = entry["reflection"]
+        self.assertIn("**1. Executive Summary:**", slice_text)
+        self.assertIn("**4. Actionable Guidance", slice_text)
+        self.assertNotIn("**2. Data-Driven Findings", slice_text)
+        self.assertNotIn("**3. Strategic Analysis", slice_text)
+        self.assertNotIn("Here is my analysis", slice_text)
+        self.assertLessEqual(len(slice_text), module.reflection_slice_max_tokens * 4 + 20)
+
+    def test_capped_slice_is_what_downstream_prompts_reinject(self):
+        # The binding context-protection rule: later planner prompts carry the
+        # capped slice, never the full brief (design note §2.3(a)).
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        parent = self._parent()
+        record_child(module, "child-a", parent, 0.6, "plan text")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        child_view = ProgramView(
+            id="child-a", code="def f():\n    return 0.6\n", fitness=0.6,
+            metrics={"score": 0.6},
+        )
+        asyncio.run(module.advise(make_pes_ctx(parent=child_view)))
+        planner_user = calls[-1]["messages"][1]["content"]
+        self.assertIn("**1. Executive Summary:**", planner_user)
+        self.assertNotIn("**2. Data-Driven Findings", planner_user)
+        self.assertNotIn("Here is my analysis", planner_user)
+
+    def test_prompt_size_assertion_fails_loud_before_dispatch(self):
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF,
+            prompt_variant="faithful",
+            context_window_tokens=1500,  # smaller than prompt + 1024 reserve
+        )
+        record_child(module, "child-a", self._parent(), 0.6, "plan text")
+        with self.assertRaises(ValueError) as cm:
+            asyncio.run(module.on_generation_end(make_pes_ctx()))
+        self.assertIn("overflow the context window", str(cm.exception))
+        self.assertEqual(calls, [])  # nothing was dispatched
+
+
 class TestExtractFinalPlan(unittest.TestCase):
     def test_normal_extraction(self):
         from noema.coordination.pes.planner import extract_final_plan

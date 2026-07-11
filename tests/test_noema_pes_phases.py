@@ -71,5 +71,56 @@ class TestPlansParentId(unittest.TestCase):
         self.assertEqual(module.log_snapshot()["plans_stored"], 1)
 
 
+class TestFaithfulBriefCheckpointRoundTrip(unittest.TestCase):
+    """The faithful summarizer's storage split (task 0064) must survive a
+    checkpoint: the full brief lives only in module state, so losing it on
+    resume would silently downgrade later prompts to the capped slice."""
+
+    def test_reflection_full_and_slice_round_trip(self):
+        module = PESPlannerModule()
+        module._plans["child-1"] = {
+            "plan": "plan text",
+            "outcome": IMPROVED,
+            "parent_id": "parent-1",
+            "parent_fitness": 0.5,
+            "child_fitness": 0.7,
+            "reflection_full": "**1. Executive Summary:**\nfull brief body",
+            "reflection": "**1. Executive Summary:**\ncapped slice",
+        }
+
+        restored = PESPlannerModule()
+        restored.load_state_dict(module.state_dict())
+
+        entry = restored._plans["child-1"]
+        self.assertEqual(
+            entry["reflection_full"], "**1. Executive Summary:**\nfull brief body"
+        )
+        self.assertEqual(entry["reflection"], "**1. Executive Summary:**\ncapped slice")
+        # log_snapshot counts the entry as reflected (it reads "reflection").
+        self.assertEqual(restored.log_snapshot()["reflections_stored"], 1)
+
+    def test_load_state_dict_accepts_entries_without_reflection_full(self):
+        # pes-custom checkpoints (and any pre-0064 checkpoint) have no
+        # reflection_full key; loading them must not fail.
+        module = PESPlannerModule()
+        module.load_state_dict(
+            {
+                "plans": {
+                    "old-child": {
+                        "plan": "p",
+                        "outcome": "improved",
+                        "parent_id": "old-parent",
+                        "parent_fitness": 0.4,
+                        "child_fitness": 0.6,
+                        "reflection": "short custom note",
+                    }
+                },
+                "pending_reflections": [],
+            }
+        )
+        self.assertIsNone(module._plans["old-child"].get("reflection_full"))
+        self.assertEqual(module._plans["old-child"]["reflection"], "short custom note")
+
+
 if __name__ == "__main__":
     unittest.main()
