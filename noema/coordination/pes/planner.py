@@ -290,25 +290,49 @@ class Planner:
     async def plan(self, ctx: GenerationContext) -> Optional[str]:
         """One metered `pes.plan` call. Returns the stripped plan text, or
         None when the call failed or produced nothing (the iteration then
-        runs unplanned). BudgetExhausted propagates (clean run stop)."""
+        runs unplanned). BudgetExhausted propagates (clean run stop).
+
+        prompt_variant == "faithful" (task 0063): the LoongFlow-recast prompt,
+        a max_tokens floor (outlines + comparison + plan must fit), and the
+        last-heading extraction of the executor-bound plan slice. A raising
+        island_bests_provider propagates out of advise() — fail loud: a broken
+        provider is a host bug, and silently dropping the block would silently
+        change the treatment mid-run (0061 verifier finding 9 posture)."""
         m = self._m
-        prompt = self._build_planning_prompt(ctx)
-        system_message = PLANNER_SYSTEM
-        if m.domain_context:
-            system_message = f"{PLANNER_SYSTEM}\n\n# Problem Domain\n{m.domain_context}"
+        if m.prompt_variant == "faithful":
+            prompt = self._build_faithful_prompt(ctx)
+            # task_info rides in the user prompt (upstream placement); no
+            # domain-context system suffix in faithful mode.
+            system_message = FAITHFUL_PLANNER_SYSTEM
+            call_kwargs = {"max_tokens": self._faithful_max_tokens()}
+        else:
+            prompt = self._build_planning_prompt(ctx)
+            system_message = PLANNER_SYSTEM
+            if m.domain_context:
+                system_message = f"{PLANNER_SYSTEM}\n\n# Problem Domain\n{m.domain_context}"
+            call_kwargs = {}
         try:
-            plan = await m.llm.generate_with_context(
+            completion = await m.llm.generate_with_context(
                 system_message=system_message,
                 messages=[{"role": "user", "content": prompt}],
                 tag="pes.plan",
+                **call_kwargs,
             )
         except BudgetExhausted:
             raise  # clean run stop, same contract as the mutation account
         except Exception as e:
             logger.warning(f"PES planning call failed; iteration runs unplanned: {e}")
             return None
-        plan = (plan or "").strip()
-        return plan or None
+        completion = (completion or "").strip()
+        if m.prompt_variant == "faithful" and completion:
+            plan, extracted = extract_final_plan(completion)
+            if not extracted:
+                logger.warning(
+                    "PES faithful planner: final-plan heading missing at iteration "
+                    f"{ctx.iteration}; using the full completion (shakedown gate 1)"
+                )
+            return plan or None
+        return completion or None
 
     def _build_planning_prompt(self, ctx: GenerationContext) -> str:
         m = self._m

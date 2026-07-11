@@ -2,18 +2,26 @@
 Tests for noema.substrate.prompts — the identical-prompts-across-arms guarantee
 """
 
+import asyncio
+import random
 import unittest
 import uuid
+from types import SimpleNamespace
 
 from openevolve.config import PromptConfig
 from openevolve.database import Program
 
+from noema.budget.ledger import TokenLedger
+from noema.budget.llm import BudgetedLLM
+from noema.coordination.base import GenerationContext
+from noema.coordination.pes.module import PESPlannerModule
 from noema.substrate.prompts import (
     COORDINATION_HEADER,
     build_mutation_prompt,
     inject_advice,
     make_prompt_sampler,
 )
+from noema.substrate.views import ProgramView
 from noema.controller import NoemaController
 
 
@@ -249,6 +257,123 @@ class TestFaithfulPlannerConstants(unittest.TestCase):
         # The custom-only recent_block is deliberately absent (Decision #27).
         self.assertNotIn("{recent_block}", both)
         self.assertNotIn("Recently Attempted Elsewhere", both)
+
+
+# ---------------------------------------------------------------- PES fixtures
+
+FAITHFUL_COMPLETION = (
+    "## Plan Outline 1\nA\n## Plan Outline 2\nB\n## Plan Outline 3\nC\n"
+    "Comparison: outline B is the most robust.\n"
+    "### Final Child Solution Generation Plan\n\n"
+    "**Best Plan:** apply `scipy.optimize.minimize` with method 'SLSQP'."
+)
+
+
+def make_pes_ctx() -> GenerationContext:
+    parent = ProgramView(
+        id="parent-1",
+        code="def f():\n    return 1\n",
+        fitness=0.5,
+        metrics={"score": 0.5},
+    )
+    return GenerationContext(
+        iteration=0,
+        generation=0,
+        island=0,
+        parent=parent,
+        best_fitness_history=[0.1, 0.2],
+        avg_fitness_history=[0.05, 0.1],
+    )
+
+
+def make_pes_module(response_text=FAITHFUL_COMPLETION, llm_max_tokens=None, **params):
+    """PESPlannerModule over a fake chat client; returns (module, captured calls)."""
+    calls = []
+
+    async def create(**call_params):
+        calls.append(call_params)
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=response_text))],
+            usage=SimpleNamespace(prompt_tokens=300, completion_tokens=80),
+        )
+
+    llm = BudgetedLLM(
+        model="fake-model",
+        ledger=TokenLedger(total_budget_tokens=100_000),
+        account="coordination",
+        tag="pes.coordination",
+        max_tokens=llm_max_tokens,
+        client=SimpleNamespace(
+            chat=SimpleNamespace(completions=SimpleNamespace(create=create))
+        ),
+        retries=0,
+        retry_delay=0.0,
+    )
+    return PESPlannerModule(config=params, llm=llm, rng=random.Random(0)), calls
+
+
+class TestFaithfulPlannerPath(unittest.TestCase):
+    """prompt_variant wiring (task 0063 C2) — prompt identity at advise() time."""
+
+    def test_custom_default_prompt_byte_identical_regression(self):
+        # Default variant is "custom": the emitted planning prompt must be the
+        # pre-0063 bytes exactly (template fill pinned here), with the plain
+        # system prompt and no max_tokens override on the call.
+        from noema.coordination.pes.planner import PLANNER_SYSTEM, PLANNER_USER_TEMPLATE
+
+        module, calls = make_pes_module()
+        ctx = make_pes_ctx()
+        asyncio.run(module.advise(ctx))
+        expected_user = PLANNER_USER_TEMPLATE.format(
+            fitness=0.5,
+            metrics={"score": 0.5},
+            code=ctx.parent.code,
+            prior_block="None — first plan for this lineage.",
+            recent_block="",
+            best_history=[0.1, 0.2],
+            avg_history=[0.05, 0.1],
+        )
+        self.assertEqual(module.prompt_variant, "custom")
+        self.assertEqual(
+            calls[0]["messages"],
+            [
+                {"role": "system", "content": PLANNER_SYSTEM},
+                {"role": "user", "content": expected_user},
+            ],
+        )
+        self.assertNotIn("max_tokens", calls[0])
+
+    def test_faithful_prompt_at_advise_time_with_provider(self):
+        # Deferred 0061 verifier condition: the island status block appears in
+        # the FAITHFUL planning prompt at advise() time with the provider's
+        # values; and the advice carries only the extracted final-plan slice.
+        from noema.coordination.pes.planner import FAITHFUL_PLANNER_SYSTEM
+
+        module, calls = make_pes_module(
+            prompt_variant="faithful",
+            island_bests_provider=lambda: [0.5, 0.9812],
+        )
+        advice = asyncio.run(module.advise(make_pes_ctx()))
+        system, user = calls[0]["messages"][0], calls[0]["messages"][1]
+        self.assertEqual(system["content"], FAITHFUL_PLANNER_SYSTEM)
+        self.assertIn(
+            "Island status (best score per island): island_0: 0.5000, island_1: 0.9812",
+            user["content"],
+        )
+        self.assertIn("The current database includes 2 islands", user["content"])
+        self.assertNotIn("Recently Attempted Elsewhere", user["content"])
+        # Executor sees the final plan slice only — never the three outlines.
+        self.assertIn("apply `scipy.optimize.minimize`", advice.prompt_block)
+        self.assertNotIn("## Plan Outline", advice.prompt_block)
+
+    def test_faithful_prompt_block_absent_without_provider(self):
+        # Deferred 0061 verifier condition, second half: no provider -> the
+        # block renders "" (absent), strategies stay verbatim but inert.
+        module, calls = make_pes_module(prompt_variant="faithful")
+        asyncio.run(module.advise(make_pes_ctx()))
+        user = calls[0]["messages"][1]["content"]
+        self.assertNotIn("Island status", user)
+        self.assertIn("# Database", user)
 
 
 if __name__ == "__main__":
