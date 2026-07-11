@@ -359,21 +359,38 @@ class Summarizer:
         child_id = entry["child_id"]
         if child_id not in m._plans:
             return  # lineage node gone (shouldn't happen; defensive)
-        error_block = f"\n- Reported error: {entry['stderr']}" if entry.get("stderr") else ""
-        prompt = REFLECTION_USER_TEMPLATE.format(
-            outcome=entry["outcome"],
-            parent_fitness=entry["parent_fitness"],
-            child_fitness=entry["child_fitness"],
-            error_block=error_block,
-            plan=entry["plan"],
-            parent_code=entry["parent_code"],
-            child_code=entry["child_code"],
-        )
+        faithful = m.prompt_variant == "faithful"
+        if faithful:
+            system_message = FAITHFUL_REFLECTION_SYSTEM
+            prompt = self._build_faithful_prompt(entry)
+            call_kwargs = {"max_tokens": self._faithful_max_tokens()}
+            # Pre-flight, never mid-run (design note §2.3(b)): the substrate's
+            # context is locked and was already patched once for overflow, so a
+            # prompt that would overflow it fails loudly here rather than being
+            # silently truncated by the server — silent truncation would change
+            # the treatment invisibly.
+            self._assert_prompt_fits(system_message, prompt, call_kwargs["max_tokens"])
+        else:
+            error_block = (
+                f"\n- Reported error: {entry['stderr']}" if entry.get("stderr") else ""
+            )
+            system_message = REFLECTION_SYSTEM
+            prompt = REFLECTION_USER_TEMPLATE.format(
+                outcome=entry["outcome"],
+                parent_fitness=entry["parent_fitness"],
+                child_fitness=entry["child_fitness"],
+                error_block=error_block,
+                plan=entry["plan"],
+                parent_code=entry["parent_code"],
+                child_code=entry["child_code"],
+            )
+            call_kwargs = {}
         try:
             reflection = await m.llm.generate_with_context(
-                system_message=REFLECTION_SYSTEM,
+                system_message=system_message,
                 messages=[{"role": "user", "content": prompt}],
                 tag="pes.reflect",
+                **call_kwargs,
             )
         except BudgetExhausted:
             raise  # clean run stop, same contract as the planning call
@@ -381,7 +398,15 @@ class Summarizer:
             logger.warning(f"PES reflection call failed; lineage keeps plain outcome: {e}")
             m._plans[child_id]["reflection"] = ""
             return
-        m._plans[child_id]["reflection"] = (reflection or "").strip()
+        brief = (reflection or "").strip()
+        if not faithful:
+            m._plans[child_id]["reflection"] = brief
+            return
+        # Storage split (design note §2.3(a)): the whole brief stays in module
+        # state; ONLY the capped Executive Summary + Actionable Guidance slice
+        # re-enters downstream prompts.
+        m._plans[child_id]["reflection_full"] = brief
+        m._plans[child_id]["reflection"] = self._downstream_slice(brief)
 
     # ------------------------------------------------ faithful variant (0064)
 

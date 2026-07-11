@@ -269,8 +269,8 @@ FAITHFUL_COMPLETION = (
 )
 
 
-def make_pes_ctx() -> GenerationContext:
-    parent = ProgramView(
+def make_pes_ctx(parent=None) -> GenerationContext:
+    parent = parent or ProgramView(
         id="parent-1",
         code="def f():\n    return 1\n",
         fitness=0.5,
@@ -284,6 +284,16 @@ def make_pes_ctx() -> GenerationContext:
         best_fitness_history=[0.1, 0.2],
         avg_fitness_history=[0.05, 0.1],
     )
+
+
+# Frozen bytes of the custom (pes-custom) reflection constants — an edit to
+# the constants themselves must not slip past the regression pin below.
+CUSTOM_REFLECTION_SYSTEM_SHA = (
+    "c02f780880a5f50996086913b37de6c6bf26569569f042c192e0a798f28f84cf"
+)
+CUSTOM_REFLECTION_USER_SHA = (
+    "b0496e5af86ac50f1d3207a7e5d8f00b699a0e089a7c21b1b9ef9438fe8abadb"
+)
 
 
 def make_pes_module(response_text=FAITHFUL_COMPLETION, llm_max_tokens=None, **params):
@@ -524,6 +534,114 @@ class TestFaithfulSummaryConstants(unittest.TestCase):
             "human-provided",
         ):
             self.assertNotIn(residue, both)
+
+
+FAITHFUL_BRIEF = """Here is my analysis of the iteration.
+
+**1. Executive Summary:**
+This iteration was a breakthrough because the LP refinement guaranteed validity.
+
+**2. Data-Driven Findings (Facts ONLY):**
+* **Sibling Rank:** 1 out of 3.
+
+**3. Strategic Analysis (The "So What?"):**
+* **Root Cause:** plan quality.
+
+**4. Actionable Guidance (The "What's Next?"):**
+* `Recommend Fusion`: fuse the local-search module into the Delaunay sibling.
+"""
+
+
+def record_child(module, child_id, parent, fitness, plan, outcome_failed=False):
+    """Run report_result for one child so it lands in _plans + the queue."""
+    child = ProgramView(
+        id=child_id,
+        code=f"def f():\n    return {fitness}\n",
+        fitness=fitness,
+        metrics={"score": fitness},
+        metadata={"stderr": ""},
+    )
+    ctx = GenerationContext(
+        iteration=0, generation=0, island=0, parent=parent,
+        best_fitness_history=[], avg_fitness_history=[],
+    )
+    module.report_result(
+        ctx, child, {"plan": plan, "parent_id": parent.id}, eval_failed=outcome_failed
+    )
+
+
+class TestFaithfulSummaryPath(unittest.TestCase):
+    """prompt_variant wiring for the summarizer (task 0064, C2)."""
+
+    def _parent(self):
+        return ProgramView(
+            id="parent-1", code="def f():\n    return 1\n", fitness=0.5,
+            metrics={"score": 0.5},
+        )
+
+    def test_custom_default_reflection_prompt_byte_identical_regression(self):
+        from noema.coordination.pes.summarizer import (
+            REFLECTION_SYSTEM,
+            REFLECTION_USER_TEMPLATE,
+        )
+
+        module, calls = make_pes_module(response_text="because X")
+        parent = self._parent()
+        record_child(module, "child-1", parent, 0.7, "# Plan\n\n## Strategy\n- x")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        expected_user = REFLECTION_USER_TEMPLATE.format(
+            outcome="improved",
+            parent_fitness=0.5,
+            child_fitness=0.7,
+            error_block="",
+            plan="# Plan\n\n## Strategy\n- x",
+            parent_code=parent.code,
+            child_code="def f():\n    return 0.7\n",
+        )
+        self.assertEqual(
+            calls[0]["messages"],
+            [
+                {"role": "system", "content": REFLECTION_SYSTEM},
+                {"role": "user", "content": expected_user},
+            ],
+        )
+        self.assertNotIn("max_tokens", calls[0])
+        # Frozen-hash pin of the custom reflection constants themselves.
+        import hashlib
+
+        self.assertEqual(
+            hashlib.sha256(REFLECTION_SYSTEM.encode()).hexdigest(),
+            CUSTOM_REFLECTION_SYSTEM_SHA,
+        )
+        self.assertEqual(
+            hashlib.sha256(REFLECTION_USER_TEMPLATE.encode()).hexdigest(),
+            CUSTOM_REFLECTION_USER_SHA,
+        )
+        # Custom stores the plain reflection; no full/slice split.
+        self.assertEqual(module._plans["child-1"]["reflection"], "because X")
+        self.assertNotIn("reflection_full", module._plans["child-1"])
+
+    def test_faithful_sibling_block_stats_for_three_siblings(self):
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        parent = self._parent()
+        record_child(module, "child-a", parent, 0.60, "# Plan\n\n## Strategy\n- alpha")
+        record_child(module, "child-b", parent, 0.90, "# Plan\n\n## Strategy\n- beta")
+        record_child(module, "child-c", parent, 0.75, "# Plan\n\n## Strategy\n- gamma")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        # Three reflect calls; check the last child's prompt (rank 2 of 3).
+        user_c = calls[2]["messages"][1]["content"]
+        self.assertIn("Total children of this parent (Y): 3", user_c)
+        self.assertIn("Current solution's rank by score (X): 2 out of 3", user_c)
+        self.assertIn("Top sibling score (Z): 0.9000", user_c)
+        # The table lists the family, current row marked, strategies digested.
+        self.assertIn("| child-c (current) | 0.7500 | improved | - gamma |", user_c)
+        self.assertIn("| child-b | 0.9000 | improved | - beta |", user_c)
+        self.assertNotIn("only child", user_c)
+        # Assessment line: label + delta, host-computed.
+        self.assertIn("IMPROVED: fitness 0.5000 -> 0.7500 (score delta +0.2500)", user_c)
+        self.assertEqual(calls[2]["max_tokens"], 1024)
 
 
 class TestExtractFinalPlan(unittest.TestCase):
