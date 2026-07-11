@@ -1,0 +1,65 @@
+# pes-faithful arm — circle packing (task 0066).
+#
+# The fidelity anchor: near-verbatim LoongFlow math-agent prompts, the plan as
+# the executor's brief, non-improvement retries. Load with
+# NoemaConfig.from_yaml(); this is a CONFIG ONLY — no run is started from it
+# (live runs are launched by the user, see spec/LIVE-RUNS.md).
+#
+# Pair this against config_pes_custom.yaml: the ONLY field that may differ
+# between the two is coordination.module (verify-run invariant) — with the
+# exception of the retry_on/retry_cap pair below, which is this arm's declared
+# substrate default (Decision #28) and is recorded in the ticket rather than
+# treated as an incidental config delta.
+
+max_iterations: 50
+checkpoint_interval: 5
+random_seed: 42
+diff_based_evolution: true
+num_inspirations: 0
+num_top_programs: 1
+num_previous_programs: 3
+
+# Intra-iteration retries. NOTE: these are SUBSTRATE config (NoemaConfig), not
+# coordination module params — the arm key alone does not set them.
+# Decision #28: the faithful arm retries on non-improvement (a valid child that
+# scores <= its parent), cap 2, mirroring LoongFlow's max_rounds=3.
+retry_enabled: true
+retry_cap: 2
+retry_on: non_improvement
+
+coordination:
+  # Arm identity lives in this key, and only in this key. Passing any
+  # arm-defining knob (prompt_variant, executor_mode, recent_strategies_k) in
+  # params below raises ValueError — see noema/coordination/pes/arms.py.
+  module: pes-faithful
+  params: {}
+
+budget:
+  total_tokens: 1000000
+
+llm:
+  model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+  api_base: http://localhost:8091/v1
+  api_key: none
+  temperature: 0.7
+  top_p: 0.95
+  # Floors apply on top of this: the faithful planner asks for >= 2048 and the
+  # faithful summary >= 1024 completion tokens (three outlines + comparison +
+  # plan; the four-section brief).
+  max_tokens: 4096
+  timeout: 300
+
+database:
+  population_size: 60
+  archive_size: 25
+  num_islands: 4
+  elite_selection_ratio: 0.3
+  exploitation_ratio: 0.7
+
+evaluator:
+  cascade_evaluation: false
+  timeout: 60
+
+prompt:
+  use_template_stochasticity: false
+  include_artifacts: false

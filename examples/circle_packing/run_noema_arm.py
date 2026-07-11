@@ -3,7 +3,8 @@ Run one noema coordination arm on circle_packing against a single inference node
 
 Usage:
     python run_noema_arm.py --arm null --api-base http://localhost:8090/v1 --output-dir noema_null_output
-    python run_noema_arm.py --arm pes  --api-base http://localhost:8091/v1 --output-dir noema_pes_output
+    python run_noema_arm.py --arm pes-custom   --api-base http://localhost:8091/v1 --output-dir noema_pes_output
+    python run_noema_arm.py --arm pes-faithful --api-base http://localhost:8091/v1 --output-dir noema_pes_faithful_output
 
 Both invocations must use the same --seed (default below) and the same model/
 --iterations for the comparison to be meaningful: coordination.module is the
@@ -44,7 +45,12 @@ EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", choices=["null", "pes", "hifo"], required=True)
+    ap.add_argument(
+        "--arm",
+        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes"],
+        required=True,
+        help="'pes' is a deprecated alias for pes-custom (task 0066)",
+    )
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
