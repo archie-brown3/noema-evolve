@@ -20,11 +20,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from openevolve.database import Program
 from openevolve.utils.code_utils import (
-    apply_diff,
     extract_diffs,
     format_diff_summary,
     parse_full_rewrite,
 )
+from noema.substrate.diff import apply_diff_lenient as apply_diff
 from openevolve.utils.metrics_utils import get_fitness_score
 
 from noema.budget.ledger import (
