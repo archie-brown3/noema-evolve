@@ -7,6 +7,21 @@ OpenEvolve components (evaluator, program database, prompt sampler) through
 isolated adapters. The study compares coordination **arms** by changing only
 `coordination.module`, while keeping seeds, prompts, budget, and loop behavior fixed.
 
+## OpenEvolve library context
+
+noema uses OpenEvolve as an installed **library dependency**, not as vendored code
+or a local submodule in this repository.
+
+- Borrowed from OpenEvolve: evaluator, program database, prompt sampler, and related
+  utility modules accessed through `noema/substrate/` adapters.
+- Not borrowed: OpenEvolve's top-level iteration orchestration. noema runs its own
+  controller loop in `noema/controller.py`.
+- Dependency pin: `openevolve @ git+https://github.com/codelion/openevolve@80945ed`
+  (defined in `pyproject.toml`).
+
+This separation keeps the study variable controlled: coordination changes are
+isolated to noema modules while substrate behavior remains pinned and auditable.
+
 ## What this repository provides
 
 - A standalone controller loop in `noema/controller.py`
@@ -25,7 +40,7 @@ Python 3.10+ is required.
 pip install -e ".[dev]"
 ```
 
-This installs `noema` plus a pinned OpenEvolve dependency from commit `80945ed`.
+This installs `noema` plus the pinned OpenEvolve library dependency from commit `80945ed`.
 
 ## Minimal run example
 
