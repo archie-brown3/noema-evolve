@@ -11,3 +11,14 @@ uncommitted-diff check (empty at audit time), and the unittest tail
 
 Independently re-verified 2026-07-10: every commit stat and the base.py
 history claim cross-checked directly against `git show`/`git log` — accurate.
+
+# Deviation — 0063 C1 split (2026-07-11)
+
+The planned C1 (faithful planner constants + their prompt-test pins) measured
+249 changed lines — over the 200-line/commit law. Conservative option taken:
+split into C1a (`noema/coordination/pes/planner.py` constants only, 170 lines)
+and C1b (`tests/test_noema_prompts.py` pins, 79 lines), committed back-to-back.
+Triad reading: C1a adds dead constants only — no emitted prompt changes, no
+prompt-identity effect, existing prompt tests unmodified and green — so the
+same-commit test-extension obligation binds at C2 (prompt_variant wiring),
+which will extend test_noema_prompts.py again in that commit.

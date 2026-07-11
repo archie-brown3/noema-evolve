@@ -172,5 +172,84 @@ class TestRetryPromptSuffix(unittest.TestCase):
         self.assertIn(reflection_text, reflection_suffix)
 
 
+class TestFaithfulPlannerConstants(unittest.TestCase):
+    """pes-faithful planner prompt constants (task 0063, C1).
+
+    Pins the load-bearing recast structure per the design note
+    'PES Faithful Prompt Recast Design — 2026-07-10' §1: the exact headings the
+    host slices on, the enforcement clauses, the kept-verbatim pressure lines
+    (they are the treatment), and the absence of tool/workspace residue and of
+    the custom-only recent_block (Decision #27)."""
+
+    def test_headings_mandates_and_pressure_lines_present(self):
+        from noema.coordination.pes.planner import (
+            FAITHFUL_PLANNER_MIN_TOKENS,
+            FAITHFUL_PLANNER_SYSTEM,
+            FAITHFUL_PLANNER_USER_TEMPLATE,
+            FINAL_PLAN_HEADING,
+        )
+
+        # Extraction anchor: exact heading, stated in step 9, the enforcement
+        # closer, and the <Example> (three occurrences minimum).
+        self.assertEqual(
+            FINAL_PLAN_HEADING, "### Final Child Solution Generation Plan"
+        )
+        self.assertGreaterEqual(
+            FAITHFUL_PLANNER_USER_TEMPLATE.count(FINAL_PLAN_HEADING), 3
+        )
+        # Outline headings mandated twice (step 4 + IMPORTANT enforcement).
+        for heading in ("## Plan Outline 1", "## Plan Outline 2", "## Plan Outline 3"):
+            self.assertGreaterEqual(
+                FAITHFUL_PLANNER_USER_TEMPLATE.count(f"`{heading}`"), 2
+            )
+        # Self-containment rule (prevents dangling outline references after
+        # the host slices on the last heading).
+        self.assertIn(
+            "handed to the Phase 2 executor verbatim", FAITHFUL_PLANNER_USER_TEMPLATE
+        )
+        self.assertIn("must be self-contained", FAITHFUL_PLANNER_USER_TEMPLATE)
+        # Pressure lines kept verbatim — they are part of the treatment.
+        self.assertIn("PUNISHED and DISMISSED", FAITHFUL_PLANNER_SYSTEM)
+        self.assertIn("This is your last chance", FAITHFUL_PLANNER_USER_TEMPLATE)
+        # Global-perspective strategies and mandates kept verbatim.
+        self.assertIn("1 + 1 > 2", FAITHFUL_PLANNER_SYSTEM)
+        self.assertIn("Multi-Start Mandate", FAITHFUL_PLANNER_USER_TEMPLATE)
+        self.assertIn("CRITICAL THOUGHT PROCESS", FAITHFUL_PLANNER_USER_TEMPLATE)
+        # Template variables the host fills (island block is the conditional
+        # slot from task 0061).
+        for var in (
+            "{task_info}",
+            "{parent_solution}",
+            "{island_num}",
+            "{parent_island}",
+            "{island_status_block}",
+        ):
+            self.assertIn(var, FAITHFUL_PLANNER_USER_TEMPLATE)
+        # Sizing floor for the single-call recast (design note §1.4).
+        self.assertGreaterEqual(FAITHFUL_PLANNER_MIN_TOKENS, 2048)
+
+    def test_no_tool_workspace_residue_and_no_recent_block(self):
+        from noema.coordination.pes.planner import (
+            FAITHFUL_PLANNER_SYSTEM,
+            FAITHFUL_PLANNER_USER_TEMPLATE,
+        )
+
+        both = FAITHFUL_PLANNER_SYSTEM + FAITHFUL_PLANNER_USER_TEMPLATE
+        # No interactive-tool or workspace residue may survive the recast.
+        for residue in (
+            "Get_Memory_Status",
+            "generate_final_answer",
+            "Write Tool",
+            "Write tool",
+            "plan_1.txt",
+            "# Workspace",
+            "{workspace}",
+        ):
+            self.assertNotIn(residue, both)
+        # The custom-only recent_block is deliberately absent (Decision #27).
+        self.assertNotIn("{recent_block}", both)
+        self.assertNotIn("Recently Attempted Elsewhere", both)
+
+
 if __name__ == "__main__":
     unittest.main()
