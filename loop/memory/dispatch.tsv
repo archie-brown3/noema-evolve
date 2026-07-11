@@ -18,3 +18,4 @@
 2026-07-11T06:20:21+00:00	iter3	execute	port-bin-packing-benchmark	tasks/0036-port-bin-packing-benchmark
 2026-07-11T10:52:53+00:00	iter1	verify	pes-faithful-planner-recast	tasks/0063-pes-faithful-planner-recast
 2026-07-11T11:10:43+00:00	iter1	verify	pes-faithful-summarizer-recast	tasks/0064-pes-faithful-summarizer-recast
+2026-07-11T11:21:33+00:00	iter1	verify	pes-directive-executor	tasks/0065-pes-directive-executor
