@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "noema"
+version = "0.1.0"
+description = "Controlled ablation of coordination mechanisms in LLM-driven evolutionary search"
+readme = "noema/README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "archie" }]
+dependencies = [
+    # Pinned to the audited snapshot (commit 80945ed, tag v0.2.27, "Fix bugs (#442)").
+    # A PyPI release may substitute only if its sdist is verified byte-identical to
+    # 80945ed in every module noema imports:
+    #   database, evaluator, prompt.sampler, config, llm.base,
+    #   utils.code_utils, utils.metrics_utils
+    # Otherwise the PLAN.md audit must be re-run against that version.
+    "openevolve @ git+https://github.com/codelion/openevolve@80945ed",
+    "openai>=1.0.0",
+    "pyyaml>=6.0",
+    "numpy>=1.22.0",
+    "tqdm>=4.64.0",
+    "dacite>=1.9.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "mypy>=0.950",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests requiring external services",
+]
+addopts = "--strict-markers"
+
+[tool.setuptools.packages.find]
+include = ["noema*"]

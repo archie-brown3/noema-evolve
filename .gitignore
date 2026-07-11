@@ -1,0 +1,36 @@
+# loop machinery: logs stay local, ledgers/goals/prompts are committed
+loop/memory/*.log
+loop/memory/state-archive/
+loop/memory/cron.log
+loop/work-order.json
+
+# Experiment output
+examples/**/openevolve_output*/
+examples/**/noema_*_output/
+examples/**/best_program.py
+examples/**/best_program_info.json
+examples/arc_benchmark/outputs/
+examples/arc_benchmark/images/
+examples/**/evolution_plot.png
+examples/**/circle_packing_*.png
+examples/**/*.backup
+examples/attention_optimization/legacy/
+examples/**/*.log
+
+# Dev artefacts
+loop/
+work-order.json
+CONFIG.md
+
+# Test fixture logs
+tests/**/*.log
+
+*.swp
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv*/
+dist/
+build/
+.pytest_cache/
