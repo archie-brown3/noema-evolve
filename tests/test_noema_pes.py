@@ -431,6 +431,86 @@ class TestPESPlannerModule(unittest.TestCase):
         advice = asyncio.run(NullCoordination().retry_advice(ctx, "err", 0))
         self.assertEqual(advice, "")
 
+    # --------------------------------------- executor_mode="directive" (0065)
+
+    def test_advisory_is_default_and_byte_identical(self):
+        # Regression pin: default executor_mode leaves advisory behavior untouched
+        module, _, _ = self.make_module()
+        self.assertEqual(module.executor_mode, "advisory")
+        advice = asyncio.run(module.advise(make_ctx()))
+        self.assertEqual(advice.prompt_block, PLAN_TEXT)
+        self.assertEqual(advice.system_block, "")
+        self.assertNotIn("full_executor_prompt", advice.attribution)
+
+    def test_directive_mode_returns_full_executor_prompt(self):
+        from noema.coordination.pes.executor import (
+            EXECUTOR_SYSTEM_WITH_PLAN,
+            EXECUTOR_USER_WITH_PLAN,
+        )
+
+        module, _, _ = self.make_module(executor_mode="directive")
+        advice = asyncio.run(module.advise(make_ctx()))
+
+        self.assertEqual(advice.system_block, EXECUTOR_SYSTEM_WITH_PLAN)
+        self.assertIn("# Task Information", advice.prompt_block)
+        self.assertIn("# Plan", advice.prompt_block)
+        self.assertIn("# Parent Solution", advice.prompt_block)
+        self.assertIn("# Requirement", advice.prompt_block)
+        self.assertIn(PLAN_TEXT, advice.prompt_block)
+        self.assertIs(advice.attribution["full_executor_prompt"], True)
+        self.assertNotIn("{previous_attempts}", advice.prompt_block)
+        self.assertNotEqual(EXECUTOR_USER_WITH_PLAN, advice.prompt_block)  # was formatted
+
+    def test_directive_mode_includes_parent_solution_json(self):
+        module, _, _ = self.make_module(executor_mode="directive")
+        parent = make_view(pid="p", fitness=0.75, code="def g():\n    return 2\n")
+        advice = asyncio.run(module.advise(make_ctx(parent=parent)))
+
+        parsed = json.loads(
+            advice.prompt_block.split("# Parent Solution\n", 1)[1].split("\n\n## Filed", 1)[0]
+        )
+        self.assertEqual(parsed["solution"], "def g():\n    return 2\n")
+        self.assertEqual(parsed["score"], 0.75)
+
+    def test_directive_mode_no_plan_is_noop(self):
+        module, _, client = self.make_module(executor_mode="directive", fail_with=RuntimeError("boom"))
+        advice = asyncio.run(module.advise(make_ctx()))
+        self.assertEqual(advice.prompt_block, "")
+        self.assertEqual(advice.attribution, {})
+
+    def test_directive_retry_advice_is_empty(self):
+        # LoongFlow retries carry evaluation text via build_retry_prompt, not
+        # the reflection-suffix path — directive retry_advice always yields "".
+        module, _, _ = self.make_module(executor_mode="directive")
+        ctx = make_ctx(parent=make_view(pid="p"))
+        module._plans["p"] = {"reflection": REFLECTION_TEXT}
+        advice = asyncio.run(module.retry_advice(ctx, "err", 1))
+        self.assertEqual(advice, "")
+
+    def test_build_retry_prompt_formats_previous_attempts(self):
+        module, _, _ = self.make_module(executor_mode="directive")
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+
+        retry1 = module.build_retry_prompt(ctx, advice.attribution, 1, "IndexError: boom")
+        self.assertIn(
+            "Round 1, Candidate 0, Evaluation Result: IndexError: boom\n\n",
+            retry1["user"],
+        )
+        self.assertIn(PLAN_TEXT, retry1["user"])
+        self.assertEqual(retry1["system"], advice.system_block)
+
+        # Accumulates across successive retries of the same mutation
+        retry2 = module.build_retry_prompt(ctx, advice.attribution, 2, "still failing")
+        self.assertIn("Round 1, Candidate 0, Evaluation Result: IndexError: boom\n\n", retry2["user"])
+        self.assertIn("Round 2, Candidate 0, Evaluation Result: still failing\n\n", retry2["user"])
+
+    def test_build_retry_prompt_returns_none_for_advisory(self):
+        module, _, _ = self.make_module()
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        self.assertIsNone(module.build_retry_prompt(ctx, advice.attribution, 1, "err"))
+
 
 if __name__ == "__main__":
     unittest.main()

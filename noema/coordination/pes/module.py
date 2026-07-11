@@ -100,6 +100,16 @@ class PESPlannerModule(CoordinationModule):
                 "pes prompt_variant must be 'custom' or 'faithful', "
                 f"got {self.prompt_variant!r}"
             )
+        # "advisory" (default): plan rides as the standard coordination suffix,
+        # byte-identical to today. "directive" (task 0065, pes-faithful only):
+        # the verbatim LoongFlow executor prompt, plan as the primary
+        # instruction — the Decision #25 scoped prompt-identity exemption.
+        self.executor_mode: str = self.config.get("executor_mode", "advisory")
+        if self.executor_mode not in ("advisory", "directive"):
+            raise ValueError(
+                "pes executor_mode must be 'advisory' or 'directive', "
+                f"got {self.executor_mode!r}"
+            )
         # Reflection (Phase 2 Stage 0). D1 escape hatches: disable entirely, or
         # cap how many queued children get reflected on per generation tick if
         # the coordination-account spend proves too high in practice.
@@ -139,8 +149,22 @@ class PESPlannerModule(CoordinationModule):
         return self._executor.build_advice(plan, ctx)
 
     async def retry_advice(self, ctx: GenerationContext, error_text: str, attempt: int) -> str:
-        """Reflection-seeded retries (Design 4) — see Executor.retry_block."""
+        """Reflection-seeded retries (Design 4) — see Executor.retry_block.
+        Directive mode yields "" (see build_retry_prompt instead)."""
         return self._executor.retry_block(ctx, error_text, attempt)
+
+    def build_retry_prompt(
+        self, ctx: GenerationContext, attribution: Dict[str, Any], attempt: int, error_text: str
+    ) -> Optional[Dict[str, str]]:
+        """Directive-mode retry hook (task 0065): the controller duck-types
+        this optional method (not part of the CoordinationModule ABC — see
+        base.py's docstring on mechanism-specific semantics) to get the FULL
+        re-formatted LoongFlow template for a retry, instead of the generic
+        suffix path. Returns None when this mutation wasn't built in
+        directive mode, so the controller falls back to the standard path."""
+        if not attribution.get("full_executor_prompt"):
+            return None
+        return self._executor.retry_prompt(attempt, error_text)
 
     def _truncate(self, code: str) -> str:
         if len(code) > self.max_code_chars:
