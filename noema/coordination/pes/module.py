@@ -107,6 +107,15 @@ class PESPlannerModule(CoordinationModule):
         self.max_pending_reflections_per_tick: Optional[int] = self.config.get(
             "max_pending_reflections_per_tick", None
         )
+        # Context protection for the faithful brief (task 0064, design note
+        # §2.3): only a capped Executive-Summary + Actionable-Guidance slice of
+        # the brief re-enters downstream prompts (the full text stays in
+        # _plans[child]["reflection_full"]), and a pre-flight size assertion
+        # fails loud rather than letting the locked context window overflow.
+        self.reflection_slice_max_tokens: int = self.config.get(
+            "reflection_slice_max_tokens", 300
+        )
+        self.context_window_tokens: int = self.config.get("context_window_tokens", 10240)
         # Cross-lineage diversity signal (Phase 2 Stage 0, Design 2). D4 knobs.
         self.recent_strategies_k: int = self.config.get("recent_strategies_k", 3)
         self.strategy_digest_chars: int = self.config.get("strategy_digest_chars", 150)

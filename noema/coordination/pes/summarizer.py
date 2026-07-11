@@ -7,11 +7,13 @@ pure Python (LoongFlow's _assess); only the causal reflection is an LLM call
 module docstring's deviation #4.
 """
 
+import json
 import logging
 from typing import TYPE_CHECKING, Any, Dict
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import GenerationContext
+from noema.coordination.pes.planner import Planner
 from noema.substrate.views import ProgramView
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
@@ -254,6 +256,9 @@ BRIEF_EXEC_SUMMARY_HEADER = "**1. Executive Summary:**"
 BRIEF_GUIDANCE_HEADER = "**4. Actionable Guidance"
 # Floor for the faithful reflection completion (design note §2.3).
 FAITHFUL_REFLECTION_MIN_TOKENS = 1024
+# Same rough estimator the ledger uses for servers that omit usage counts —
+# good enough for a pre-flight size guard (it never bills anything).
+_CHARS_PER_TOKEN = 4
 
 # Outcome labels mirror LoongFlow's Assessment enum (summary.py:233-247)
 IMPROVED = "improved"
@@ -308,6 +313,7 @@ class Summarizer:
             m._pending_reflections.append(
                 {
                     "child_id": child.id,
+                    "parent_id": ctx.parent.id,
                     "plan": plan,
                     "outcome": outcome,
                     "parent_fitness": parent_fitness,
@@ -315,6 +321,13 @@ class Summarizer:
                     "parent_code": m._truncate(ctx.parent.code),
                     "child_code": m._truncate(child.code),
                     "stderr": str(child.metadata.get("stderr", ""))[: m.max_code_chars],
+                    # numeric metrics only — the faithful brief's `evaluation`
+                    # field pairs them with stderr as the score's evidence
+                    "metrics": {
+                        k: v
+                        for k, v in child.metrics.items()
+                        if isinstance(v, (int, float))
+                    },
                 }
             )
 
@@ -369,3 +382,152 @@ class Summarizer:
             m._plans[child_id]["reflection"] = ""
             return
         m._plans[child_id]["reflection"] = (reflection or "").strip()
+
+    # ------------------------------------------------ faithful variant (0064)
+
+    def _build_faithful_prompt(self, entry: Dict[str, Any]) -> str:
+        m = self._m
+        parent_id = entry.get("parent_id")
+        parent_entry = m._plans.get(parent_id) if parent_id else None
+        # GENESIS parent (no stored lineage entry): solution_id None + empty
+        # fields, exactly the state the prompt's own note describes.
+        parent_solution = {
+            "solution_id": parent_id if parent_entry else None,
+            "parent_id": parent_entry.get("parent_id") if parent_entry else None,
+            "generate_plan": parent_entry.get("plan") if parent_entry else None,
+            "solution": entry["parent_code"],
+            "score": entry["parent_fitness"],
+            "evaluation": None,
+            "summary": parent_entry.get("reflection") if parent_entry else None,
+        }
+        current_solution = {
+            "solution_id": entry["child_id"],
+            "parent_id": parent_id,
+            "generate_plan": entry["plan"],
+            "solution": entry["child_code"],
+            "score": entry["child_fitness"],
+            "evaluation": {
+                "stderr": entry.get("stderr", ""),
+                "metrics": entry.get("metrics", {}),
+            },
+            "summary": None,  # the placeholder the prompt tells it to disregard
+        }
+        delta = entry["child_fitness"] - entry["parent_fitness"]
+        assessment = (
+            f"{entry['outcome'].upper()}: fitness {entry['parent_fitness']:.4f} -> "
+            f"{entry['child_fitness']:.4f} (score delta {delta:+.4f})"
+        )
+        return FAITHFUL_REFLECTION_USER_TEMPLATE.format(
+            task_info=m.domain_context or "None provided.",
+            parent_solution=json.dumps(parent_solution, indent=2),
+            current_solution=json.dumps(current_solution, indent=2),
+            assessment_result=assessment,
+            sibling_block=self._sibling_block(entry),
+        )
+
+    def _sibling_block(self, entry: Dict[str, Any]) -> str:
+        """Host-precomputed `# 4. Sibling Solutions` content (the recast of
+        LoongFlow's `get_childs_by_parent_id` tool fetch).
+
+        X (rank), Y (count) and Z (top score) are computed here so the model
+        copies them into its checklist instead of computing them — the key 14B
+        mitigation (design note §2.2). Siblings come from `_plans` filtered by
+        `parent_id` (stored since task 0060); the current child is already
+        recorded, so it is in the family it is ranked against.
+        """
+        m = self._m
+        child_id = entry["child_id"]
+        parent_id = entry.get("parent_id")
+        family = [
+            (cid, e)
+            for cid, e in m._plans.items()
+            if e.get("parent_id") == parent_id and parent_id is not None
+        ]
+        # Deterministic: score-descending, insertion order (= iteration order)
+        # breaking ties, so the same state always renders the same block.
+        ranked = sorted(family, key=lambda kv: -kv[1].get("child_fitness", 0.0))
+        total = len(ranked)
+        rank = next(
+            (i + 1 for i, (cid, _) in enumerate(ranked) if cid == child_id), total
+        )
+        top = ranked[0][1].get("child_fitness", 0.0) if ranked else 0.0
+        lines = [
+            f"Total children of this parent (Y): {total}",
+            f"Current solution's rank by score (X): {rank} out of {total}",
+            f"Top sibling score (Z): {top:.4f}",
+        ]
+        if total <= 1:
+            lines.append(
+                "This solution is an only child: its rank is 1 out of 1 and there are "
+                "no siblings to compare against. State this plainly."
+            )
+        lines.append("")
+        lines.append("| solution_id | score | outcome | strategy |")
+        lines.append("| --- | --- | --- | --- |")
+        for cid, e in ranked:
+            marker = " (current)" if cid == child_id else ""
+            lines.append(
+                f"| {cid}{marker} | {e.get('child_fitness', 0.0):.4f} | "
+                f"{e.get('outcome', '?')} | {self._strategy_digest(e.get('plan', ''))} |"
+            )
+        return "\n".join(lines)
+
+    def _strategy_digest(self, plan_text: str) -> str:
+        """One-line digest of a sibling's plan for the table. Prefers the custom
+        plan's `## Strategy` section; the faithful plan has no such section, so
+        it falls back to the plan's opening text. No LLM call."""
+        strategy = Planner._extract_strategy(plan_text)
+        if not strategy:
+            strategy = " ".join(plan_text.split())
+        return strategy[: self._m.strategy_digest_chars].strip() or "-"
+
+    def _downstream_slice(self, brief: str) -> str:
+        """The ONLY part of the brief that re-enters later prompts: Executive
+        Summary + Actionable Guidance, token-capped (design note §2.3(a),(c)).
+
+        Also strips any preamble the model emits before the first `**1.`
+        section header. Falls back to the capped whole brief when the model
+        ignored the section structure (the shakedown's format-compliance gate
+        counts those, it is not this method's job to hide them).
+        """
+        m = self._m
+        body = brief
+        start = body.find("**1.")
+        if start > 0:
+            body = body[start:]
+        parts = []
+        exec_start = body.find(BRIEF_EXEC_SUMMARY_HEADER)
+        if exec_start >= 0:
+            exec_end = body.find("**2.", exec_start)
+            parts.append(
+                body[exec_start : exec_end if exec_end >= 0 else len(body)].strip()
+            )
+        guidance_start = body.find(BRIEF_GUIDANCE_HEADER)
+        if guidance_start >= 0:
+            parts.append(body[guidance_start:].strip())
+        text = "\n\n".join(parts) if parts else body.strip()
+        cap = m.reflection_slice_max_tokens * _CHARS_PER_TOKEN
+        if len(text) > cap:
+            text = text[:cap].rstrip() + "\n... (truncated)"
+        return text
+
+    def _faithful_max_tokens(self) -> int:
+        """Completion cap for the faithful reflect call: at least
+        FAITHFUL_REFLECTION_MIN_TOKENS (design note §2.3); a configured cap
+        above the floor is kept. Sent explicitly even when unset, so a local
+        server's low default cannot truncate the brief mid-section."""
+        configured = getattr(self._m.llm, "max_tokens", None)
+        return max(configured or 0, FAITHFUL_REFLECTION_MIN_TOKENS)
+
+    def _assert_prompt_fits(self, system_message: str, prompt: str, max_tokens: int) -> None:
+        """Fail loud before dispatch if prompt + reserved completion would
+        overflow the substrate's locked context window (design note §2.3(b))."""
+        m = self._m
+        estimated = (len(system_message) + len(prompt)) // _CHARS_PER_TOKEN
+        if estimated + max_tokens > m.context_window_tokens:
+            raise ValueError(
+                "PES faithful reflection prompt would overflow the context window: "
+                f"~{estimated} prompt tokens + {max_tokens} reserved completion tokens "
+                f"> {m.context_window_tokens} (context_window_tokens). Reduce "
+                "max_code_chars or raise the window; never let it truncate silently."
+            )
