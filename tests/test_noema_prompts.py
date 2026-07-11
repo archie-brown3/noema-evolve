@@ -342,6 +342,19 @@ class TestFaithfulPlannerPath(unittest.TestCase):
             ],
         )
         self.assertNotIn("max_tokens", calls[0])
+        # Frozen-hash pin of the custom template bytes themselves, so an edit
+        # to the constants can't slip past the fixture-side render above
+        # (0063 verifier finding 2).
+        import hashlib
+
+        self.assertEqual(
+            hashlib.sha256(PLANNER_SYSTEM.encode()).hexdigest(),
+            "b7f5d5917ec3da6cf9b0f204a727fa29ab4137a1b79fb59c8f0a4c9082bf434b",
+        )
+        self.assertEqual(
+            hashlib.sha256(PLANNER_USER_TEMPLATE.encode()).hexdigest(),
+            "e54eaca3fd4401209063fb82fe8fb235c0f951072b890c936dec982161ab48a9",
+        )
 
     def test_faithful_prompt_at_advise_time_with_provider(self):
         # Deferred 0061 verifier condition: the island status block appears in
@@ -387,16 +400,15 @@ class TestFaithfulPlannerPath(unittest.TestCase):
 
     def test_faithful_max_tokens_floor(self):
         # A configured cap below the floor is raised to it; above is kept;
-        # unset stays unset (no cap to raise).
-        for configured, expected in ((1024, 2048), (4096, 4096)):
+        # unset sends the floor explicitly (local servers may default an
+        # omitted max_tokens low enough to truncate the three-outline
+        # completion — 0063 verifier finding 1).
+        for configured, expected in ((1024, 2048), (4096, 4096), (None, 2048)):
             module, calls = make_pes_module(
                 llm_max_tokens=configured, prompt_variant="faithful"
             )
             asyncio.run(module.advise(make_pes_ctx()))
             self.assertEqual(calls[0].get("max_tokens"), expected)
-        module, calls = make_pes_module(prompt_variant="faithful")
-        asyncio.run(module.advise(make_pes_ctx()))
-        self.assertNotIn("max_tokens", calls[0])
 
     def test_raising_provider_propagates_out_of_advise(self):
         # Fail-loud posture (0061 verifier finding 9, decided in 0063): a
@@ -421,6 +433,20 @@ class TestFaithfulPlannerPath(unittest.TestCase):
         self.assertTrue(any("final-plan heading missing" in m for m in logs.output))
         # Fallback: the full completion becomes the plan.
         self.assertIn("no final heading here", advice.prompt_block)
+
+    def test_empty_slice_after_heading_logs_and_runs_unplanned(self):
+        # Heading present, nothing after it: a truncation symptom shakedown
+        # gate 1 must also see (0063 verifier finding 5).
+        from noema.coordination.pes.planner import FINAL_PLAN_HEADING
+
+        module, _ = make_pes_module(
+            response_text=f"## Plan Outline 1\nA\n{FINAL_PLAN_HEADING}\n   ",
+            prompt_variant="faithful",
+        )
+        with self.assertLogs("noema.coordination.pes.planner", level="WARNING") as logs:
+            advice = asyncio.run(module.advise(make_pes_ctx()))
+        self.assertTrue(any("empty plan slice" in m for m in logs.output))
+        self.assertEqual(advice.prompt_block, "")  # no plan -> default Advice()
 
     def test_invalid_prompt_variant_rejected(self):
         with self.assertRaises(ValueError):

@@ -334,6 +334,13 @@ class Planner:
                     "PES faithful planner: final-plan heading missing at iteration "
                     f"{ctx.iteration}; using the full completion (shakedown gate 1)"
                 )
+            elif not plan:
+                # Heading present but nothing after it — a truncation symptom
+                # gate 1 must also see (0063 verifier finding 5).
+                logger.warning(
+                    "PES faithful planner: empty plan slice after the heading at "
+                    f"iteration {ctx.iteration}; iteration runs unplanned (shakedown gate 1)"
+                )
             return plan or None
         return completion or None
 
@@ -395,15 +402,15 @@ class Planner:
             island_status_block=self._island_status_block(bests),
         )
 
-    def _faithful_max_tokens(self) -> Optional[int]:
+    def _faithful_max_tokens(self) -> int:
         """Completion cap for the faithful plan call: at least
         FAITHFUL_PLANNER_MIN_TOKENS, so three outlines + comparison + expanded
-        plan fit (design note §1.4). A configured cap above the floor is kept;
-        None (no configured cap) stays None and the parameter is omitted."""
+        plan fit (design note §1.4). A configured cap above the floor is kept.
+        The floor is sent explicitly even with no configured cap: local
+        OpenAI-compatible servers may default an omitted max_tokens low enough
+        to truncate before the final-plan heading (0063 verifier finding 1)."""
         configured = getattr(self._m.llm, "max_tokens", None)
-        if configured is not None and configured < FAITHFUL_PLANNER_MIN_TOKENS:
-            return FAITHFUL_PLANNER_MIN_TOKENS
-        return configured
+        return max(configured or 0, FAITHFUL_PLANNER_MIN_TOKENS)
 
     # ---------------------------------------------- cross-island status (0061)
 

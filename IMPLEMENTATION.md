@@ -22,3 +22,15 @@ Triad reading: C1a adds dead constants only — no emitted prompt changes, no
 prompt-identity effect, existing prompt tests unmodified and green — so the
 same-commit test-extension obligation binds at C2 (prompt_variant wiring),
 which will extend test_noema_prompts.py again in that commit.
+
+# Deviations — 0063 verifier follow-ups (2026-07-11)
+
+Fresh-context verifier PASS; SHOULD-FIX findings applied: faithful plan call
+now sends the 2048 floor explicitly even with no configured cap (finding 1),
+and the custom regression pin freezes the template bytes with sha256 literals
+(finding 2). An empty plan slice after the heading now logs a gate-1 warning
+(finding 5). Recorded KEEP-section deviations (finding 3/4): upstream's un-raw
+`\times` renders tab+`imes` at runtime — we render the intended `\times`,
+annotated `# NOEMA` in planner.py; `{island_num}` derives from the provider's
+length (single fetch) with a `ctx.island + 1` fallback only in provider-less
+test/degenerate runs (live runs always inject the provider).
