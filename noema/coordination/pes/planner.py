@@ -253,6 +253,9 @@ Begin your generation plan now. Write the three outlines, the comparison, and th
 # not refer back to the outlines); closing line inverted (write, don't call).
 # {task_info} <- domain_context; {parent_solution} <- lineage JSON;
 # noema's custom-only {recent_block} is deliberately ABSENT (Decision #27).
+# One rendering fix: upstream's un-raw string mangles the <Example>'s
+# "$-1 \times" into a literal tab + "imes" at runtime (their SyntaxWarning
+# confirms the accident); this constant renders the intended \times.
 
 # ============================== END BORROWED =================================
 
