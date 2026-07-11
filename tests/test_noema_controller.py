@@ -21,9 +21,18 @@ from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig
 from noema.controller import NoemaController
-from noema.coordination import Advice, NullCoordination
+from noema.coordination import (
+    DEPRECATED_ALIASES,
+    MODULE_REGISTRY,
+    Advice,
+    NullCoordination,
+    build_coordination_module,
+)
+from noema.coordination.base import GenerationContext
+from noema.coordination.pes.arms import PESCustomModule
 from noema.coordination.pes.module import PESPlannerModule
 from noema.substrate.prompts import COORDINATION_HEADER
+from noema.substrate.views import ProgramView
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 
@@ -1041,6 +1050,131 @@ class TestMutationOperatorMenu(unittest.TestCase):
                 if c.prompts
             )
             self.assertTrue(saw_second_parent, "expected at least one child built with a real parent2")
+
+
+class TestArmRegistryCapabilityTable(unittest.TestCase):
+    """The two PES arms are two registry KEYS, not one key plus sub-options
+    (task 0066). Paired runs must differ in exactly one config setting —
+    coordination.module — so this table pins what each key can and cannot do.
+    If a capability ever migrates between arms, this fails."""
+
+    @staticmethod
+    def _pes_llm(response_text="# Plan\n\n## Strategy\n- vectorize the loop"):
+        async def create(**params):
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=response_text))],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+        return BudgetedLLM(
+            model="fake-model",
+            ledger=TokenLedger(total_budget_tokens=100_000),
+            account="coordination",
+            tag="pes.coordination",
+            client=SimpleNamespace(
+                chat=SimpleNamespace(completions=SimpleNamespace(create=create))
+            ),
+            retries=0,
+            retry_delay=0.0,
+        )
+
+    @staticmethod
+    def _ctx():
+        return GenerationContext(
+            iteration=0,
+            generation=0,
+            island=0,
+            parent=ProgramView(
+                id="p", code="def f():\n    return 1\n", fitness=0.5, metrics={}
+            ),
+            best_fitness_history=[0.1],
+            avg_fitness_history=[0.1],
+        )
+
+    def _seed_sibling_lineage(self, module):
+        module._plans["other"] = {
+            "plan": "# Plan\n\n## Strategy\n- simulated annealing",
+            "outcome": "improved",
+            "parent_id": "elsewhere",
+            "parent_fitness": 0.4,
+            "child_fitness": 0.6,
+        }
+
+    def _seed_reflection(self, module):
+        module._plans["p"] = {
+            "plan": "p",
+            "outcome": "failed",
+            "parent_id": "root",
+            "parent_fitness": 0.5,
+            "child_fitness": 0.0,
+            "reflection": "the loop overran the array bound",
+        }
+
+    def test_capability_table(self):
+        custom = build_coordination_module("pes-custom", llm=self._pes_llm())
+        faithful = build_coordination_module("pes-faithful", llm=self._pes_llm())
+
+        # Arm-defining knobs come from the KEY, not from params.
+        self.assertEqual(custom.prompt_variant, "custom")
+        self.assertEqual(custom.executor_mode, "advisory")
+        self.assertEqual(faithful.prompt_variant, "faithful")
+        self.assertEqual(faithful.executor_mode, "directive")
+
+        # recent_block ("Recently Attempted Elsewhere"): custom only (#27).
+        for module in (custom, faithful):
+            self._seed_sibling_lineage(module)
+        self.assertIn(
+            "Recently Attempted Elsewhere", custom._planner._recent_strategies_block()
+        )
+        self.assertEqual(faithful._planner._recent_strategies_block(), "")
+        self.assertEqual(faithful.recent_strategies_k, 0)
+
+        # Reflection-seeded retry_advice: custom yields text, faithful "".
+        ctx = self._ctx()
+        for module in (custom, faithful):
+            self._seed_reflection(module)
+        self.assertIn(
+            "overran the array bound",
+            asyncio.run(custom.retry_advice(ctx, "IndexError", 1)),
+        )
+        self.assertEqual(asyncio.run(faithful.retry_advice(ctx, "IndexError", 1)), "")
+
+        # Only faithful (directive) claims the whole mutation prompt.
+        custom_advice = asyncio.run(custom.advise(ctx))
+        faithful_advice = asyncio.run(faithful.advise(ctx))
+        self.assertNotIn("full_executor_prompt", custom_advice.attribution)
+        self.assertIs(faithful_advice.attribution["full_executor_prompt"], True)
+
+    def test_pes_alias_resolves_to_custom_and_warns(self):
+        with self.assertLogs("noema.coordination", level="WARNING") as logs:
+            module = build_coordination_module("pes", llm=self._pes_llm())
+        self.assertTrue(any("deprecated" in m for m in logs.output))
+        self.assertIsInstance(module, PESCustomModule)
+        self.assertEqual(module.prompt_variant, "custom")
+        self.assertEqual(module.executor_mode, "advisory")
+
+    def test_arm_defining_knobs_cannot_be_overridden_by_config(self):
+        # Silent drift is the failure mode: a "pes-faithful" run that quietly
+        # used custom prompts would still report itself as pes-faithful.
+        for knob, value in (
+            ("prompt_variant", "custom"),
+            ("executor_mode", "advisory"),
+            ("recent_strategies_k", 5),
+        ):
+            with self.assertRaises(ValueError) as cm:
+                build_coordination_module("pes-faithful", params={knob: value})
+            self.assertIn(knob, str(cm.exception))
+        # Non-arm-defining params still pass through untouched.
+        module = build_coordination_module("pes-faithful", params={"max_code_chars": 123})
+        self.assertEqual(module.max_code_chars, 123)
+
+    def test_registry_keys_and_no_pes_full(self):
+        self.assertEqual(
+            sorted(MODULE_REGISTRY), ["hifo", "null", "pes-custom", "pes-faithful"]
+        )
+        # Decision #26: "pes-full" is a prose alias only, never a config key.
+        self.assertNotIn("pes-full", MODULE_REGISTRY)
+        self.assertNotIn("pes-full", DEPRECATED_ALIASES)
 
 
 if __name__ == "__main__":
