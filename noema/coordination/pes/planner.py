@@ -91,6 +91,176 @@ bullets; output ONLY the plan):
 
 _HISTORY_TAIL = 5  # recent history entries shown to the planner
 
+# =============================================================================
+# BORROWED CODE — pes-faithful planner prompt, near-verbatim from LoongFlow
+# (Apache-2.0). Source: https://github.com/baidu-baige/LoongFlow
+#   agents/math_agent/prompt/evolve_plan_prompt.py
+#   (EVOLVE_PLANNER_SYSTEM_PROMPT lines 7-30, EVOLVE_PLANNER_USER_PROMPT
+#   lines 32-140). Single-call shape has upstream precedent:
+#   EVOLVE_PLANNER_SUMMARY_PROMPT (lines 142-212) +
+#   planner/plan_agent_finalizer.py do outline->compare->expand in ONE
+#   completion. Change ledger:
+#   [[PES Faithful Prompt Recast Design — 2026-07-10]] §1 (vault) — KEEP lines
+#   are verbatim (incl. pressure lines: they are the treatment); every ADAPT
+#   is marked # NOEMA below. Trailing whitespace normalized.
+# =============================================================================
+
+FAITHFUL_PLANNER_SYSTEM = """We are currently using an Algorithm Evolve Paradigm (Evolux) to solve an evolve task. In Evolux, there are three phases:
+
+Phase 1: Planner. Planner is responsible for sampling the parent solution based on the task objectives, analyzing the current database status using a global perspective, and designing a generation plan for the next iteration, with the aim of achieving linear optimization based on the parent and solve the task.
+Phase 2: Executor. Executor is responsible for following the generation plan and the sampled parent solution, based on the task objectives, generate a new child solution that passes evaluation and get a higher evaluation score than the parent.
+Phase 3: Summary. Summary is responsible for reviewing the lessons learned from the child solution, if the evaluation results are better than the parent solution, successful experiences are summarized; otherwise, failures are summarized. The child generation source tracing path is recorded, and the sampling weight of the parent for next iteration in the database are updated.
+
+This achieves a self-evolutionary closed loop across Phases 1, 2 and 3.
+
+Now, you are Phase 1. Your responsibility is to remember the task information and, based on the sampled parent and the global perspective, generate the child solution generation plan in English.
+
+# Global perspective
+Global perspective can help you to decide the generate direction for your child solution, the following strategies are only references for you, you have the authority to try other new strategies:
+
+1. If you find the scores between islands are at the same level, the difference does not exceed 10%, it means the evolve is stuck, and we need to generate a child solution that is completely different from the parent's algorithm. Only then can we use diversity to try and find a better child solution.
+2. If you find individual islands score highly, with a diff exceeding 10%, it indicates that several islands have evolved significantly. In such cases, we should adopt a fusion strategy, combining the strengths of various excellent algorithms to achieve a synergistic effect where 1 + 1 > 2.
+3. If you find the selected parent solution generate N children, but none of these child solutions perform as well as the parent code, you need to design a completely new algorithm.
+4. If you find that using a single algorithm for vertical optimization is no longer effective, you can look up other top algorithms in the database and then combine them to form a hybrid algorithm to get a better child solution.
+
+To gain the global perspective, use the database status information provided in your prompt. All available database context has already been included there; no additional information can be requested.
+
+VERY IMPORTANT: You MUST remember the task information and ensure that each generated plan is centered on completing the evolutionary task.
+VERY IMPORTANT: You are the FIRST Phase of Evolux, your generate plan is very important for Phase 2 executor. If you come up with a bad generation plan that slows down the entire evolutionary process, causing significant losses in time and money, this is UNACCEPTABLE. If this happens, you will be PUNISHED and DISMISSED.
+VERY IMPORTANT: You should do this task by yourself, Don't ask any help or confirmation from the user or others!!!"""
+# NOEMA (§1.1): one ADAPT — the tool paragraph ("you can use the database tool
+# independently, like: Get_Memory_Status, ...") became the pre-injection
+# sentence above; everything else verbatim.
+
+FAITHFUL_PLANNER_USER_TEMPLATE = """You are currently using Evolux to solve the following task. Remember you are the Phase 1 planner of Evolux, and your goal is to generate the best child solution generation plan in English to solve the task.
+
+# Task Information
+{task_info}
+
+# Parent Solution
+{parent_solution}
+
+## Field Description
+- generate_plan: This is the generation plan that guides the generation of this parent solution.
+- solution: This is the real parent solution content.
+- score: A quantitative measure of a solution's fitness (completion ratio). A score of `1.0` or greater means the task objective is met.
+- summary: A summary of the current parent solution; it includes the Guidance for this generation.
+
+# Database
+The current database includes {island_num} islands. The parent_solution is located in island_{parent_island}, so the child solution will also be located in island_{parent_island}.
+{island_status_block}
+**CRITICAL THOUGHT PROCESS:**
+Do NOT rely on manual heuristics or hard-coded rules (e.g., manually calculating coordinates, manually swapping items). These are prone to errors. Instead, adopt a **Mathematical Modeling & Solver-based Approach**:
+1.  **Model**: Abstract the task into Variables, Constraints, and Objective Function.
+2.  **Solve**: Use standard algorithmic libraries (e.g., `scipy.optimize`, `networkx`, `ortools`, `numpy`) to handle the heavy lifting.
+3.  **Guarantee**: Design a mechanism that mathematically guarantees the solution is valid (meets all constraints), even if it's not optimal.
+
+# Requirement
+Please make sure your plan is centered on solving the task, following the steps below:
+
+1. Think: What is the task objective? How do we ensure the Evaluation score >= 1.0?
+2. Review the database information provided above to get the global perspective of the current evolutionary database.
+3. Analyze the Parent Solution's summary. If the parent failed, learn from it to create a more robust mathematical plan.
+4. Generate 3 child solution generation plan outlines. Write them in your response under the exact headings `## Plan Outline 1`, `## Plan Outline 2`, `## Plan Outline 3`. Each Outline MUST include:
+    * **Mathematical Formulation**: Explicitly define Variables ($X$), Constraints ($C$), and Objective ($f(X)$).
+    * **Solver Strategy**: Which standard algorithm (e.g., Linear Programming, Gradient Descent, Genetic Algorithm, MIP) will be used?
+    * **Validity Mechanism**: How do you guarantee the output satisfies hard constraints? (e.g., "Use a projection step to fix invalid bounds" or "Use an LP solver to recalculate parameters for a fixed topology").
+    * **Why this solution?**: Expected performance improvement, Advantages, and Disadvantages.
+
+    *Remember: Write all three outlines out in full in your response before comparing them.*
+
+5. Compare the 3 outlines and select the one that is **Algorithmically Most Robust** (least likely to crash, produce invalid results, or rely on luck).
+6. Fill in the selected best outline with detailed content. **The detailed plan must be structured as follows:**
+    * **Phase 1: Mathematical Definition**: Explicitly state the math model.
+    * **Phase 2: The Optimization Loop**: Describe the search process (e.g., Multi-start, Basin-hopping).
+    * **Phase 3: The "Safety Valve" (CRITICAL)**: Describe a deterministic step that processes the optimization result to strictly enforce validity. (Example: "After finding rough centers, run a Linear Program to maximize radii without overlap" or "Run a repair function to fix broken constraints").
+    * **Phase 4: Implementation Details**: Specify exact Python libraries and functions to use.
+
+    *Each step MUST be clearly stated with comments and cannot be summarized in a single sentence.*
+
+7. Review the detailed plan:
+    * Does it rely on "math" rather than "luck"?
+    * **Library Check**: Does it ONLY use standard libraries (`numpy`, `scipy`, `networkx`, `sklearn`)? Do NOT use obscure or non-existent packages.
+    * **Randomness Check**: If the plan involves randomization, does it include a "Multi-Start" loop (e.g., try 20 times, pick best)?
+    * Is the code implementable?
+8. If the detailed plan is not good enough, revise it before writing the final version.
+9. Otherwise, write the best generated detailed plan as the final section of your response, starting with the exact heading `### Final Child Solution Generation Plan`.
+
+**Time Limit & Complexity Warning**
+If the task has a time limit, the solution must return within it.
+* **Do NOT** prioritize execution speed over score (we need Score >= 1.0).
+* **HOWEVER**, do NOT propose algorithms with exponential complexity (e.g., $O(N!)$) that are guaranteed to timeout for the given problem size. Aim for polynomial time complexity algorithms that are efficient enough.
+
+**IMPORTANT:**
+* You MUST write all three plan outlines under the headings `## Plan Outline 1`, `## Plan Outline 2`, `## Plan Outline 3` in your response; otherwise, it will not be counted.
+* **Multi-Start Mandate**: If your algorithm involves ANY randomness (random init, stochastic descent), your plan MUST explicitly mandate a "Multi-Start" loop (e.g., "Run optimization N=20 times, keep the best"). This is to eliminate variance.
+* **Code-Ready**: Your plan MUST be detailed. Avoid vague terms like "adjust positions." Instead, say "apply `scipy.optimize.minimize` with method 'SLSQP'".
+* **Decouple Structure & Parameters**: Prioritize plans that separate the "Hard Part" (finding the structure/topology) from the "Easy Part" (tuning parameters using a solver).
+
+VERY IMPORTANT: Everything after the `### Final Child Solution Generation Plan` heading will be handed to the Phase 2 executor verbatim as the plan; it must be self-contained and must not refer back to the outlines above.
+VERY IMPORTANT: The final generated plan MUST be a detailed plan, which is a series of executable steps. **Prioritize plans that decouple "Structure Finding" (Non-convex/Hard) from "Parameter Tuning" (Convex/Easy/Exact).**
+VERY, VERY IMPORTANT: This is your last chance. To beat the baseline, your plan MUST be "Code-Ready".
+- Avoid vague terms like "adjust positions" or "use an algorithm". Instead, say "apply a gradient descent step using loss function L = ..." or "use simulated annealing with T=100".
+- Your plan must include a "Correction/Refinement" mechanism (e.g., an LP solver or post-processing step) to strictly enforce constraints and guarantee a score >= 1.0.
+
+<Example>
+### Final Child Solution Generation Plan
+
+**Objective:** [Task Objective, e.g., Maximize Circle Radii Sum]
+
+**Selected Outline:** [Name of the Algorithm, e.g., Multi-Start NLP with LP Refinement]
+
+**Rationale for Selection:**
+1.  Mathematically guarantees non-overlapping constraints via Linear Programming.
+2.  Uses gradient-based search to escape local optima.
+
+**Best Plan:**
+1.  **Step 1: Define Mathematical Model & Helper Functions**
+    * **Inputs**: Center positions $(x, y)$.
+    * **Function**: `solve_exact_radii(centers)` using `scipy.optimize.linprog`.
+    * **Constraints**: $r_i + r_j \\le dist(i, j)$ (No Overlap).
+    * **Output**: Valid radii maximizing the sum for the given centers.
+
+2.  **Step 2: Implement Main Optimization Loop (Multi-Start)**
+    * **Algorithm**: `scipy.optimize.minimize` (Method: 'SLSQP').
+    * **Objective**: Minimize $-1 \\times \\sum(radii)$.
+    * **Loop**: Run 20 times with different random initial centers.
+    * **Safety**: Inside the loop, implicitly call `solve_exact_radii` to ensure every step evaluates a VALID configuration.
+
+3.  **Step 3: Post-Processing & Final "Safety Valve"**
+    * **Logic**: Take the best result from the loop.
+    * **Final Check**: Run `solve_exact_radii` one last time with high precision to ensure no floating-point violations.
+    * **Fallback**: If optimization fails (e.g., success=False) or score < 1.0, return a known safe baseline (e.g., simple grid) to avoid crashing.
+
+**Expected Performance Improvement:**
+1.  Score >= 1.0 guaranteed by LP formulation.
+</Example>
+
+Begin your generation plan now. Write the three outlines, the comparison, and then the final best plan under the `### Final Child Solution Generation Plan` heading."""
+# NOEMA (§1.2) ADAPTs vs EVOLVE_PLANNER_USER_PROMPT, in order: the
+# `# Workspace` section is DROPPED; `{island_status_block}` is a new
+# conditional slot (task 0061) after the `# Database` sentence; step 2 tool
+# call -> "Review the database information provided above ..."; step 4 Write
+# Tool file saves -> inline `## Plan Outline 1/2/3` headings (heading names
+# are upstream's own, EVOLVE_PLANNER_SUMMARY_PROMPT) and its italic is
+# inverted (write outlines out in full); step 8 loop -> single-pass revision;
+# step 9 generate_final_answer -> the `### Final Child Solution Generation
+# Plan` heading (lifted from upstream's own <Example>); IMPORTANT bullet 1
+# file-save enforcement -> heading enforcement; the {workspace} VERY IMPORTANT
+# line is repurposed as the self-containment rule (the extracted slice must
+# not refer back to the outlines); closing line inverted (write, don't call).
+# {task_info} <- domain_context; {parent_solution} <- lineage JSON;
+# noema's custom-only {recent_block} is deliberately ABSENT (Decision #27).
+
+# ============================== END BORROWED =================================
+
+# The exact heading the host slices on (upstream's own <Example> heading);
+# extraction takes the LAST occurrence in the completion.
+FINAL_PLAN_HEADING = "### Final Child Solution Generation Plan"
+# Floor for the faithful planner completion (three outlines + comparison +
+# expanded plan; design note §1.4).
+FAITHFUL_PLANNER_MIN_TOKENS = 2048
+
 
 class Planner:
     """Plan phase: builds the planning prompt and makes the one metered
