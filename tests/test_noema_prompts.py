@@ -375,6 +375,89 @@ class TestFaithfulPlannerPath(unittest.TestCase):
         self.assertNotIn("Island status", user)
         self.assertIn("# Database", user)
 
+    def test_faithful_prompt_deterministic(self):
+        # Same module state + same ctx -> byte-identical prompt on every call
+        # (guarantee triad #3; advise() does not mutate _plans).
+        module, calls = make_pes_module(
+            prompt_variant="faithful", island_bests_provider=lambda: [0.5, 0.9812]
+        )
+        asyncio.run(module.advise(make_pes_ctx()))
+        asyncio.run(module.advise(make_pes_ctx()))
+        self.assertEqual(calls[0]["messages"], calls[1]["messages"])
+
+    def test_faithful_max_tokens_floor(self):
+        # A configured cap below the floor is raised to it; above is kept;
+        # unset stays unset (no cap to raise).
+        for configured, expected in ((1024, 2048), (4096, 4096)):
+            module, calls = make_pes_module(
+                llm_max_tokens=configured, prompt_variant="faithful"
+            )
+            asyncio.run(module.advise(make_pes_ctx()))
+            self.assertEqual(calls[0].get("max_tokens"), expected)
+        module, calls = make_pes_module(prompt_variant="faithful")
+        asyncio.run(module.advise(make_pes_ctx()))
+        self.assertNotIn("max_tokens", calls[0])
+
+    def test_raising_provider_propagates_out_of_advise(self):
+        # Fail-loud posture (0061 verifier finding 9, decided in 0063): a
+        # broken provider is a host bug; silently dropping the block would
+        # silently change the treatment mid-run.
+        def broken_provider():
+            raise RuntimeError("db exploded")
+
+        module, _ = make_pes_module(
+            prompt_variant="faithful", island_bests_provider=broken_provider
+        )
+        with self.assertRaises(RuntimeError):
+            asyncio.run(module.advise(make_pes_ctx()))
+
+    def test_missing_heading_falls_back_with_logged_warning(self):
+        module, _ = make_pes_module(
+            response_text="## Plan Outline 1\nA\nno final heading here",
+            prompt_variant="faithful",
+        )
+        with self.assertLogs("noema.coordination.pes.planner", level="WARNING") as logs:
+            advice = asyncio.run(module.advise(make_pes_ctx()))
+        self.assertTrue(any("final-plan heading missing" in m for m in logs.output))
+        # Fallback: the full completion becomes the plan.
+        self.assertIn("no final heading here", advice.prompt_block)
+
+    def test_invalid_prompt_variant_rejected(self):
+        with self.assertRaises(ValueError):
+            make_pes_module(prompt_variant="verbatim")
+
+
+class TestExtractFinalPlan(unittest.TestCase):
+    def test_normal_extraction(self):
+        from noema.coordination.pes.planner import extract_final_plan
+
+        plan, extracted = extract_final_plan(FAITHFUL_COMPLETION)
+        self.assertTrue(extracted)
+        self.assertEqual(
+            plan, "**Best Plan:** apply `scipy.optimize.minimize` with method 'SLSQP'."
+        )
+
+    def test_multiple_headings_takes_last(self):
+        from noema.coordination.pes.planner import (
+            FINAL_PLAN_HEADING,
+            extract_final_plan,
+        )
+
+        completion = (
+            f"{FINAL_PLAN_HEADING}\nEchoed from the example.\n"
+            f"outlines...\n{FINAL_PLAN_HEADING}\nThe real plan."
+        )
+        plan, extracted = extract_final_plan(completion)
+        self.assertTrue(extracted)
+        self.assertEqual(plan, "The real plan.")
+
+    def test_missing_heading_returns_full_text_unextracted(self):
+        from noema.coordination.pes.planner import extract_final_plan
+
+        plan, extracted = extract_final_plan("  just prose, no heading  ")
+        self.assertFalse(extracted)
+        self.assertEqual(plan, "just prose, no heading")
+
 
 if __name__ == "__main__":
     unittest.main()
