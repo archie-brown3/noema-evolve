@@ -466,8 +466,15 @@ class Summarizer:
         family = [
             (cid, e)
             for cid, e in m._plans.items()
-            if e.get("parent_id") == parent_id and parent_id is not None
+            if parent_id is not None and e.get("parent_id") == parent_id
         ]
+        if not family:
+            # No identifiable family: a GENESIS/blank parent id, or a queue
+            # entry checkpointed before parent_id existed. Degenerate to the
+            # only-child case rather than rendering "0 out of 0" stats the
+            # model is told to copy verbatim (0064 verifier finding 1).
+            own = m._plans.get(child_id)
+            family = [(child_id, own)] if own is not None else []
         # Deterministic: score-descending, insertion order (= iteration order)
         # breaking ties, so the same state always renders the same block.
         ranked = sorted(family, key=lambda kv: -kv[1].get("child_fitness", 0.0))
@@ -498,12 +505,16 @@ class Summarizer:
         return "\n".join(lines)
 
     def _strategy_digest(self, plan_text: str) -> str:
-        """One-line digest of a sibling's plan for the table. Prefers the custom
-        plan's `## Strategy` section; the faithful plan has no such section, so
-        it falls back to the plan's opening text. No LLM call."""
+        """One-line digest of a sibling's plan for the table cell. Prefers the
+        custom plan's `## Strategy` section (already newline-flattened by
+        _extract_strategy); the faithful plan has no such section, so it falls
+        back to the plan's opening text. Pipes are escaped — an unescaped `|`
+        in a plan would add phantom columns to the table the model reads its
+        stats from (0064 verifier finding 2). No LLM call."""
         strategy = Planner._extract_strategy(plan_text)
         if not strategy:
             strategy = " ".join(plan_text.split())
+        strategy = strategy.replace("|", "\\|")
         return strategy[: self._m.strategy_digest_chars].strip() or "-"
 
     def _downstream_slice(self, brief: str) -> str:

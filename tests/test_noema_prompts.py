@@ -692,6 +692,96 @@ class TestFaithfulSummaryPath(unittest.TestCase):
         self.assertNotIn("**2. Data-Driven Findings", planner_user)
         self.assertNotIn("Here is my analysis", planner_user)
 
+    def test_sibling_block_degenerates_to_only_child_without_parent_id(self):
+        # A GENESIS/blank parent id, or a queue entry checkpointed before
+        # parent_id existed, must not render "0 out of 0" stats the model is
+        # told to copy verbatim (0064 verifier finding 1).
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        module._plans["child-a"] = {
+            "plan": "plan text",
+            "outcome": "improved",
+            "parent_fitness": 0.5,
+            "child_fitness": 0.6,
+        }  # legacy entry: no parent_id
+        module._pending_reflections.append(
+            {  # legacy queue entry: no parent_id, no metrics
+                "child_id": "child-a",
+                "plan": "plan text",
+                "outcome": "improved",
+                "parent_fitness": 0.5,
+                "child_fitness": 0.6,
+                "parent_code": "def f():\n    return 1\n",
+                "child_code": "def f():\n    return 0.6\n",
+                "stderr": "",
+            }
+        )
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        user = calls[0]["messages"][1]["content"]
+        self.assertIn("Total children of this parent (Y): 1", user)
+        self.assertIn("Current solution's rank by score (X): 1 out of 1", user)
+        self.assertIn("Top sibling score (Z): 0.6000", user)
+        self.assertNotIn("0 out of 0", user)
+        self.assertIn("| child-a (current) | 0.6000 |", user)
+
+    def test_strategy_digest_escapes_pipes(self):
+        # An unescaped pipe would add phantom columns to the stats table the
+        # model copies from (0064 verifier finding 2).
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful"
+        )
+        record_child(
+            module,
+            "child-a",
+            self._parent(),
+            0.6,
+            "# Plan\n\n## Strategy\n- pipe | in | plan",
+        )
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        user = calls[0]["messages"][1]["content"]
+        self.assertIn("- pipe \\| in \\| plan |", user)
+
+    def test_downstream_slice_truncates_over_cap(self):
+        # Exercises the truncation branch itself: the cap is in CHARS
+        # (tokens * 4), so an over-cap brief must actually be cut. Without
+        # this the cap could be wrong by 4x and every test still passes
+        # (0064 verifier finding 3).
+        long_guidance = "x" * 900
+        brief = (
+            "**1. Executive Summary:**\nshort.\n\n"
+            "**2. Data-Driven Findings (Facts ONLY):**\ndropped.\n\n"
+            '**4. Actionable Guidance (The "What\'s Next?"):**\n' + long_guidance + "\n"
+        )
+        module, _ = make_pes_module(
+            response_text=brief,
+            prompt_variant="faithful",
+            reflection_slice_max_tokens=100,  # cap = 400 chars
+        )
+        record_child(module, "child-a", self._parent(), 0.6, "plan text")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        entry = module._plans["child-a"]
+        slice_text = entry["reflection"]
+        self.assertLess(len(slice_text), len(entry["reflection_full"]))
+        self.assertTrue(slice_text.endswith("... (truncated)"))
+        self.assertLessEqual(len(slice_text), 400 + len("\n... (truncated)"))
+
+    def test_downstream_slice_strips_preamble_on_fallback(self):
+        # When the model malforms the section headers the slice falls back to
+        # the whole brief — but the preamble strip must still fire, so chatty
+        # lead-ins never re-enter later prompts (design note §2.3(c);
+        # 0064 verifier finding 4: the happy path alone does not pin this).
+        brief = (
+            "Sure! Here is my analysis.\n\n"
+            "**1. Executive Summary**\nno colon, so no header match.\n"
+        )
+        module, _ = make_pes_module(response_text=brief, prompt_variant="faithful")
+        record_child(module, "child-a", self._parent(), 0.6, "plan text")
+        asyncio.run(module.on_generation_end(make_pes_ctx()))
+        slice_text = module._plans["child-a"]["reflection"]
+        self.assertTrue(slice_text.startswith("**1. Executive Summary**"))
+        self.assertNotIn("Sure! Here is my analysis", slice_text)
+
     def test_prompt_size_assertion_fails_loud_before_dispatch(self):
         module, calls = make_pes_module(
             response_text=FAITHFUL_BRIEF,
@@ -703,6 +793,38 @@ class TestFaithfulSummaryPath(unittest.TestCase):
             asyncio.run(module.on_generation_end(make_pes_ctx()))
         self.assertIn("overflow the context window", str(cm.exception))
         self.assertEqual(calls, [])  # nothing was dispatched
+
+    def test_faithful_constants_byte_pinned(self):
+        # The KEEP lines ARE the fidelity claim (a recorded verbatim diff is
+        # not machine-checked); pin all four faithful constants by hash so an
+        # edit inside them can't drift silently (0064 verifier finding 5).
+        import hashlib
+
+        from noema.coordination.pes.planner import (
+            FAITHFUL_PLANNER_SYSTEM,
+            FAITHFUL_PLANNER_USER_TEMPLATE,
+        )
+        from noema.coordination.pes.summarizer import (
+            FAITHFUL_REFLECTION_SYSTEM,
+            FAITHFUL_REFLECTION_USER_TEMPLATE,
+        )
+
+        expected = {
+            FAITHFUL_PLANNER_SYSTEM: (
+                "e163b2371d1203832ff982a0147275286def177e2c371b128e88152d38378693"
+            ),
+            FAITHFUL_PLANNER_USER_TEMPLATE: (
+                "cb1c0356e194a4c4936ed129cc247940012edc26ea1a028b9a59a05e07193b0e"
+            ),
+            FAITHFUL_REFLECTION_SYSTEM: (
+                "727f904b7f089f687a6d7121e803ebbfd335ab98c459e9728975123ce99c49ae"
+            ),
+            FAITHFUL_REFLECTION_USER_TEMPLATE: (
+                "545b7202de4bf929bd5600382bdd63382667f8bd81486596b6d08565f7e2e83b"
+            ),
+        }
+        for constant, sha in expected.items():
+            self.assertEqual(hashlib.sha256(constant.encode()).hexdigest(), sha)
 
 
 class TestExtractFinalPlan(unittest.TestCase):

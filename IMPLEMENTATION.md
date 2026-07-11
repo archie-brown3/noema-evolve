@@ -34,3 +34,31 @@ and the custom regression pin freezes the template bytes with sha256 literals
 annotated `# NOEMA` in planner.py; `{island_num}` derives from the provider's
 length (single fetch) with a `ctx.island + 1` fallback only in provider-less
 test/degenerate runs (live runs always inject the provider).
+
+# Deviations — 0064 (2026-07-11)
+
+Verifier seat substitution: the DISPATCH table routes the verifier to
+claude-fable-5, which returned "out of usage credits" mid-run for this task.
+Conservative option taken: ran the identical fresh-context check (same bundle,
+single Read, no other tools) on Opus 4.8 rather than skipping the independent
+check or self-assessing. Verdict PASS. If fable credits return before 0065,
+the seat goes back to fable.
+
+Verifier SHOULD-FIX findings applied: (1) an absent/None parent_id (GENESIS or
+a pre-0064 checkpointed queue entry) rendered "0 out of 0" sibling stats the
+prompt tells the model to copy — it now degenerates to the only-child case;
+(2) pipes in a plan digest are escaped so they cannot add phantom columns to
+the stats table (the finding's newline half was checked and is already handled
+— _extract_strategy flattens); (3) the cap test was a tautology (fixture under
+cap) — an over-cap fixture now exercises the truncation branch; (4) the
+preamble strip was unpinned (the happy path never needs it) — a malformed-
+header fallback fixture now pins it; (5) all four faithful constants are
+sha256-pinned, so the KEEP lines (the fidelity claim itself) are machine-
+checked, not just substring-asserted.
+
+Accepted as-is, recorded not fixed: the pre-flight size guard's 4-chars/token
+estimate is optimistic for JSON-escaped code (~3 chars/token), so it is a
+guard against gross overflow rather than an exact bound, and
+context_window_tokens (10240) is a hand-maintained mirror of the substrate's
+window. Both are knobs the shakedown (RT-0003) measures against real prompts
+before the matrix.
