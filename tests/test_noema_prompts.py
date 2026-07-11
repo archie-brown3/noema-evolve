@@ -453,6 +453,79 @@ class TestFaithfulPlannerPath(unittest.TestCase):
             make_pes_module(prompt_variant="verbatim")
 
 
+class TestFaithfulSummaryConstants(unittest.TestCase):
+    """pes-faithful summary prompt constants (task 0064, C1).
+
+    Pins the load-bearing recast structure per design note §2: the four brief
+    sections and their mandatory checklists, the guidance tags, the kept
+    pressure line, the pre-injected sibling section replacing the tool fetch,
+    and the absence of tool residue."""
+
+    def test_brief_structure_and_pressure_line_present(self):
+        from noema.coordination.pes.summarizer import (
+            BRIEF_EXEC_SUMMARY_HEADER,
+            BRIEF_GUIDANCE_HEADER,
+            FAITHFUL_REFLECTION_MIN_TOKENS,
+            FAITHFUL_REFLECTION_SYSTEM,
+            FAITHFUL_REFLECTION_USER_TEMPLATE,
+        )
+
+        # The four-section brief spec, verbatim.
+        for section in (
+            "**1. Executive Summary:**",
+            "**2. Data-Driven Findings (Facts ONLY):**",
+            '**3. Strategic Analysis (The "So What?"):**',
+            '**4. Actionable Guidance (The "What\'s Next?"):**',
+        ):
+            self.assertIn(section, FAITHFUL_REFLECTION_SYSTEM)
+        # The headers the host slices the capped downstream slice on must
+        # actually occur in the spec the model is told to follow.
+        self.assertIn(BRIEF_EXEC_SUMMARY_HEADER, FAITHFUL_REFLECTION_SYSTEM)
+        self.assertIn(BRIEF_GUIDANCE_HEADER, FAITHFUL_REFLECTION_SYSTEM)
+        # Mandatory checklist variables (X/Y/Z echo the host-computed stats).
+        self.assertIn("`**Sibling Rank:**` X out of Y children.", FAITHFUL_REFLECTION_SYSTEM)
+        self.assertIn("`**Score Delta:**`", FAITHFUL_REFLECTION_SYSTEM)
+        for tag in (
+            "Recommend Fusion",
+            "Recommend Stripping",
+            "Recommend Exploration",
+            "Warn",
+        ):
+            self.assertIn(tag, FAITHFUL_REFLECTION_SYSTEM)
+        # Pressure line kept verbatim — it is the treatment.
+        self.assertIn("Do not fail in this duty.", FAITHFUL_REFLECTION_SYSTEM)
+        # Glossary + the sibling section the tool fetch was recast into.
+        self.assertIn("# 1. Data Field Glossary", FAITHFUL_REFLECTION_USER_TEMPLATE)
+        self.assertIn("# 4. Sibling Solutions", FAITHFUL_REFLECTION_USER_TEMPLATE)
+        self.assertIn("# 4. Sibling Solutions", FAITHFUL_REFLECTION_SYSTEM)
+        self.assertIn("system-provided", FAITHFUL_REFLECTION_USER_TEMPLATE)
+        for var in (
+            "{task_info}",
+            "{parent_solution}",
+            "{current_solution}",
+            "{assessment_result}",
+            "{sibling_block}",
+        ):
+            self.assertIn(var, FAITHFUL_REFLECTION_USER_TEMPLATE)
+        self.assertGreaterEqual(FAITHFUL_REFLECTION_MIN_TOKENS, 1024)
+
+    def test_no_tool_residue(self):
+        from noema.coordination.pes.summarizer import (
+            FAITHFUL_REFLECTION_SYSTEM,
+            FAITHFUL_REFLECTION_USER_TEMPLATE,
+        )
+
+        both = FAITHFUL_REFLECTION_SYSTEM + FAITHFUL_REFLECTION_USER_TEMPLATE
+        for residue in (
+            "generate_final_answer",
+            "get_childs_by_parent_id",
+            "get_parents_by_child_id",
+            "Use your tools",
+            "human-provided",
+        ):
+            self.assertNotIn(residue, both)
+
+
 class TestExtractFinalPlan(unittest.TestCase):
     def test_normal_extraction(self):
         from noema.coordination.pes.planner import extract_final_plan
