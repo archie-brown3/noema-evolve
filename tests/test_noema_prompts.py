@@ -13,7 +13,7 @@ from openevolve.database import Program
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.coordination.base import Advice, GenerationContext
+from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
 from noema.substrate.prompts import (
     COORDINATION_HEADER,
@@ -903,6 +903,93 @@ class TestPESExecutorDirectiveConstants(unittest.TestCase):
         self.assertEqual(advice.prompt_block, "my plan")
         self.assertEqual(advice.system_block, "")
         self.assertNotIn("full_executor_prompt", advice.attribution)
+
+
+class TestPromptIdentityDecision25Exemption(unittest.TestCase):
+    """Prompt-identity guarantee, re-based per Decision #25 (Decisions.md,
+    user 2026-07-10): the shared mutation-prompt prefix is asserted
+    byte-identical across every arm EXCEPT the declared pes-faithful fidelity
+    anchor in executor_mode="directive" — and even there, the exemption's
+    exact scope is checked: only that one arm, only in directive mode, and
+    no other arm can trip the same attribution flag.
+
+    (s1 is named in Decision #25 but is not yet a registered coordination
+    arm — MODULE_REGISTRY currently holds null/hifo/pes only; this test
+    covers every arm that exists.)
+    """
+
+    def _shared_prefix_prompt(self, advice):
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        base = build(sampler, make_parent())
+        return inject_advice(base, advice.prompt_block, advice.system_block), base
+
+    def test_null_and_hifo_and_pes_advisory_share_the_prefix(self):
+        from noema.coordination.base import NullCoordination
+        from noema.coordination.hifo.module import HiFoPromptModule
+
+        ctx = GenerationContext(
+            iteration=0, generation=0, island=0,
+            parent=ProgramView(id="p", code="def f():\n    return 1\n", fitness=0.5, metrics={}),
+            best_fitness_history=[0.1], avg_fitness_history=[0.1],
+        )
+        # PES advisory is driven through a real advise() with a fake LLM, so a
+        # NON-EMPTY advice block is what gets injected — substituting Advice()
+        # here would assert on the fixture, not on the arm.
+        pes_advisory, _ = make_pes_module(
+            response_text="# Plan\n\n## Strategy\n- x", executor_mode="advisory"
+        )
+        for module in (NullCoordination(), HiFoPromptModule(), pes_advisory):
+            advice = asyncio.run(module.advise(ctx))
+            injected, base = self._shared_prefix_prompt(advice)
+            self.assertTrue(injected["user"].startswith(base["user"]))
+            self.assertTrue(injected["system"].startswith(base["system"]))
+            self.assertNotIn("full_executor_prompt", advice.attribution)
+        # The PES advisory arm really did produce a plan block (i.e. the
+        # prefix-sharing above was tested against a non-trivial suffix).
+        pes_advice = asyncio.run(pes_advisory.advise(ctx))
+        self.assertIn("## Strategy", pes_advice.prompt_block)
+
+    def test_only_pes_directive_sets_full_executor_prompt(self):
+        from noema.budget.ledger import TokenLedger
+        from noema.budget.llm import BudgetedLLM
+        from noema.coordination.pes.module import PESPlannerModule
+        from noema.coordination.pes.executor import (
+            EXECUTOR_SYSTEM_WITH_PLAN,
+            EXECUTOR_USER_WITH_PLAN,
+        )
+        from types import SimpleNamespace
+
+        async def create(**params):
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content="# Plan\nfoo"))],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+        client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+        llm = BudgetedLLM(
+            model="fake-model", ledger=TokenLedger(total_budget_tokens=100_000),
+            account="coordination", tag="pes.coordination", client=client, retries=0, retry_delay=0.0,
+        )
+        ctx = GenerationContext(
+            iteration=0, generation=0, island=0,
+            parent=ProgramView(id="p", code="def f():\n    return 1\n", fitness=0.5, metrics={}),
+            best_fitness_history=[0.1], avg_fitness_history=[0.1],
+        )
+
+        advisory = PESPlannerModule(config={"executor_mode": "advisory"}, llm=llm)
+        advisory_advice = asyncio.run(advisory.advise(ctx))
+        self.assertNotIn("full_executor_prompt", advisory_advice.attribution)
+
+        directive = PESPlannerModule(config={"executor_mode": "directive"}, llm=llm)
+        directive_advice = asyncio.run(directive.advise(ctx))
+        self.assertIs(directive_advice.attribution["full_executor_prompt"], True)
+
+        # Exemption's exact scope: the directive prompt matches the verbatim
+        # template exactly (not a shared-prefix + suffix construction)
+        self.assertEqual(directive_advice.system_block, EXECUTOR_SYSTEM_WITH_PLAN)
+        self.assertNotEqual(directive_advice.prompt_block, EXECUTOR_USER_WITH_PLAN)  # formatted
+        for section in ("{task}", "{plan}", "{parent_solution}", "{previous_attempts}"):
+            self.assertNotIn(section, directive_advice.prompt_block)  # placeholders all filled
 
 
 if __name__ == "__main__":
