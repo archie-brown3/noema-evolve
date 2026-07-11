@@ -13,7 +13,7 @@ from openevolve.database import Program
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.coordination.base import GenerationContext
+from noema.coordination.base import Advice, GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
 from noema.substrate.prompts import (
     COORDINATION_HEADER,
@@ -857,6 +857,52 @@ class TestExtractFinalPlan(unittest.TestCase):
         plan, extracted = extract_final_plan("  just prose, no heading  ")
         self.assertFalse(extracted)
         self.assertEqual(plan, "just prose, no heading")
+class TestPESExecutorDirectiveConstants(unittest.TestCase):
+    """Regression pin for the verbatim LoongFlow executor prompt constants
+    (task 0065, BORROWED CODE header in noema/coordination/pes/executor.py)."""
+
+    def test_executor_system_with_plan_is_pinned(self):
+        from noema.coordination.pes.executor import EXECUTOR_SYSTEM_WITH_PLAN
+
+        self.assertIn("expert software developer", EXECUTOR_SYSTEM_WITH_PLAN)
+        self.assertIn("generation plan", EXECUTOR_SYSTEM_WITH_PLAN)
+
+    def test_executor_user_with_plan_is_pinned(self):
+        from noema.coordination.pes.executor import EXECUTOR_USER_WITH_PLAN
+
+        for marker in (
+            "{task}",
+            "{plan}",
+            "{parent_solution}",
+            "{previous_attempts}",
+            "# Task Information",
+            "# Plan",
+            "# Parent Solution",
+            "# Previous Iteration Attempts",
+            "# Requirement",
+            "```python",
+        ):
+            self.assertIn(marker, EXECUTOR_USER_WITH_PLAN)
+
+    def test_advisory_mode_never_formats_the_directive_template(self):
+        # Regression guard for the executor_mode="advisory" default (task 0065):
+        # the directive template's section headers must never leak into the
+        # advisory suffix, which is just the raw plan text.
+        from noema.coordination.pes.executor import Executor
+        from noema.coordination.base import GenerationContext
+        from noema.substrate.views import ProgramView
+        from types import SimpleNamespace
+
+        module = SimpleNamespace(executor_mode="advisory", _plans={}, domain_context="")
+        executor = Executor(module)
+        ctx = GenerationContext(
+            iteration=0, generation=0, island=0,
+            parent=ProgramView(id="p", code="def f(): pass", fitness=0.5, metrics={}),
+        )
+        advice = executor.build_advice("my plan", ctx)
+        self.assertEqual(advice.prompt_block, "my plan")
+        self.assertEqual(advice.system_block, "")
+        self.assertNotIn("full_executor_prompt", advice.attribution)
 
 
 if __name__ == "__main__":
