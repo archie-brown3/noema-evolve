@@ -1,0 +1,13 @@
+{
+  "arm": "pes",
+  "seed": 42,
+  "config_sha256": "582f42e15c88f2e9962b247c98a53f1cedf89d7f9cfdb31844f735d9db3d1c4b",
+  "config": {
+    "coordination_module": "pes",
+    "num_top_programs": 1,
+    "num_inspirations": 0,
+    "include_artifacts": false,
+    "budget_tokens": 3300
+  },
+  "prompt_system": "You are an expert programmer improving a candidate solution.<<<COORD>>>[pes: per-mutation plan follows]"
+}
