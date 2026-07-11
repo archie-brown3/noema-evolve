@@ -6,7 +6,7 @@ loop/work-order.json
 
 # Experiment output
 examples/**/openevolve_output*/
-examples/**/noema_*_output/
+examples/**/noema_*output*/
 examples/**/best_program.py
 examples/**/best_program_info.json
 examples/arc_benchmark/outputs/
