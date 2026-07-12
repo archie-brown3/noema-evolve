@@ -59,6 +59,10 @@ def main():
     ap.add_argument("--budget-tokens", type=int, default=2_000_000)
     ap.add_argument("--retry-enabled", action="store_true", default=False)
     ap.add_argument("--retry-cap", type=int, default=2)
+    ap.add_argument("--retry-on", choices=["failure", "non_improvement"], default="failure")
+    ap.add_argument("--num-inspirations", type=int, default=0)
+    ap.add_argument("--num-top-programs", type=int, default=1)
+    ap.add_argument("--include-artifacts", action="store_true", default=False)
     args = ap.parse_args()
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
@@ -71,8 +75,9 @@ def main():
         diff_based_evolution=True,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
-        num_inspirations=0,
-        num_top_programs=1,
+        retry_on=args.retry_on,
+        num_inspirations=args.num_inspirations,
+        num_top_programs=args.num_top_programs,
         num_previous_programs=3,
         database=DatabaseConfig(
             population_size=60,
@@ -85,7 +90,7 @@ def main():
         evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=60),
         prompt=PromptConfig(
             use_template_stochasticity=False,
-            include_artifacts=False,
+            include_artifacts=args.include_artifacts,
             system_message=SYSTEM_MESSAGE,
         ),
         budget=BudgetConfig(total_tokens=args.budget_tokens),
