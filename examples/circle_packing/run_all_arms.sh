@@ -36,9 +36,17 @@ COMMON_ARGS=(
 )
 
 # arm:retry_flags — retry is arm-defining, not a shared knob (0070 config table).
+#
+# hifo is DROPPED from this sweep (2026-07-12, vault task 0072): three verified
+# fidelity defects make its number uninterpretable — insight extraction is fed
+# truncated code (changes_description is never set anywhere), the navigator
+# cannot reach its exploitation regime (stagnation_count pins at 3 even under
+# steady improvement, because histories update per generation-tick but advise()
+# runs per mutation), and its foresight regime has no operator scheduler to
+# govern. Re-add once 0072 lands. null/pes-* are unaffected — all three defects
+# are hifo-internal.
 ARMS=(
   "null:"
-  "hifo:"
   "pes-custom:--retry-enabled --retry-cap 2 --retry-on failure"
   "pes-faithful:--retry-enabled --retry-cap 2 --retry-on non_improvement"
 )

@@ -309,7 +309,9 @@ class Summarizer:
         # Snapshot everything the reflection prompt needs as primitives so the
         # queue stays JSON-serializable for checkpointing (D2). stderr comes from
         # child.metadata (the controller stamps the evaluator's error text there).
-        if m.reflection_enabled and m.llm is not None:
+        # An empty plan means the planning call failed (task 0042): the lineage
+        # entry above still stands, but there is no plan to reflect on.
+        if plan and m.reflection_enabled and m.llm is not None:
             m._pending_reflections.append(
                 {
                     "child_id": child.id,
