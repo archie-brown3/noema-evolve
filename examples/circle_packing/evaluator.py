@@ -13,6 +13,8 @@ import traceback
 import sys
 import pickle
 
+from openevolve.evaluation_result import EvaluationResult
+
 
 class TimeoutError(Exception):
     pass
@@ -125,11 +127,14 @@ try:
     print(f"Results saved to {temp_file.name}.results")
     
 except Exception as e:
-    # If an error occurs, save the error instead
+    # If an error occurs, save the error AND the full traceback — the
+    # traceback text is what a reflective coordination mechanism needs to
+    # diagnose the failure, not just the exception's one-line message.
+    tb_text = traceback.format_exc()
     print(f"Error in subprocess: {{str(e)}}")
-    traceback.print_exc()
+    print(tb_text)
     with open('{temp_file.name}.results', 'wb') as f:
-        pickle.dump({{'error': str(e)}}, f)
+        pickle.dump({{'error': str(e), 'traceback': tb_text}}, f)
     print(f"Error saved to {temp_file.name}.results")
 """
         temp_file.write(script.encode())
@@ -163,7 +168,9 @@ except Exception as e:
 
                 # Check if an error was returned
                 if "error" in results:
-                    raise RuntimeError(f"Program execution failed: {results['error']}")
+                    error = RuntimeError(f"Program execution failed: {results['error']}")
+                    error.child_traceback = results.get("traceback", results["error"])
+                    raise error
 
                 return results["centers"], results["radii"], results["sum_radii"]
             else:
@@ -217,24 +224,31 @@ def evaluate(program_path):
 
         # Check for NaN values before validation
         if np.isnan(centers).any() or np.isnan(radii).any():
-            print("NaN values detected in solution")
-            return {
-                "sum_radii": 0.0,
-                "target_ratio": 0.0,
-                "validity": 0.0,
-                "eval_time": float(time.time() - start_time),
-                "combined_score": 0.0,
-            }
+            message = "NaN values detected in solution"
+            print(message)
+            return EvaluationResult(
+                metrics={
+                    "sum_radii": 0.0,
+                    "target_ratio": 0.0,
+                    "validity": 0.0,
+                    "eval_time": float(time.time() - start_time),
+                    "combined_score": 0.0,
+                },
+                artifacts={"stderr": message},
+            )
 
         # Validate solution
         valid = validate_packing(centers, radii)
 
         # Check shape and size
         shape_valid = centers.shape == (26, 2) and radii.shape == (26,)
+        shape_error = None
         if not shape_valid:
-            print(
-                f"Invalid shapes: centers={centers.shape}, radii={radii.shape}, expected (26, 2) and (26,)"
+            shape_error = (
+                f"Invalid shapes: centers={centers.shape}, radii={radii.shape}, "
+                "expected (26, 2) and (26,)"
             )
+            print(shape_error)
             valid = False
 
         # Calculate sum
@@ -257,24 +271,36 @@ def evaluate(program_path):
             f"Evaluation: valid={valid}, sum_radii={sum_radii:.6f}, target={TARGET_VALUE}, ratio={target_ratio:.6f}, time={eval_time:.2f}s"
         )
 
-        return {
-            "sum_radii": float(sum_radii),
-            "target_ratio": float(target_ratio),
-            "validity": float(validity),
-            "eval_time": float(eval_time),
-            "combined_score": float(combined_score),
-        }
+        return EvaluationResult(
+            metrics={
+                "sum_radii": float(sum_radii),
+                "target_ratio": float(target_ratio),
+                "validity": float(validity),
+                "eval_time": float(eval_time),
+                "combined_score": float(combined_score),
+            },
+            artifacts={"stderr": shape_error} if shape_error else {},
+        )
 
     except Exception as e:
+        # child_traceback (set on the RuntimeError raised by run_with_timeout,
+        # above) carries the CHILD PROGRAM's traceback — e.g. the actual
+        # NameError inside the model's code — which is what a reflective
+        # coordination mechanism needs. Fall back to this evaluator's own
+        # traceback only if the failure happened outside the child's execution.
+        stderr_text = getattr(e, "child_traceback", None) or traceback.format_exc()
         print(f"Evaluation failed completely: {str(e)}")
-        traceback.print_exc()
-        return {
-            "sum_radii": 0.0,
-            "target_ratio": 0.0,
-            "validity": 0.0,
-            "eval_time": 0.0,
-            "combined_score": 0.0,
-        }
+        print(stderr_text)
+        return EvaluationResult(
+            metrics={
+                "sum_radii": 0.0,
+                "target_ratio": 0.0,
+                "validity": 0.0,
+                "eval_time": 0.0,
+                "combined_score": 0.0,
+            },
+            artifacts={"stderr": stderr_text},
+        )
 
 
 # Stage-based evaluation for cascade evaluation
