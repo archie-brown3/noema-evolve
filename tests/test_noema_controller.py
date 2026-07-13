@@ -745,6 +745,53 @@ class TestRetryLoop(unittest.TestCase):
         self.assertEqual(controller.db.num_programs, 1)
         self.assertEqual(controller.start_iteration, 1)
 
+    def test_retry_exhausted_parse_failure_is_logged_as_artifact(self):
+        # "no valid program in LLM response" left zero trace beyond a log
+        # line — nothing was added to the database, so the raw response and
+        # failure reason are only ever recoverable if the controller writes
+        # them out itself. fail_count=99 exhausts every retry attempt.
+        config = make_config(
+            diff_based_evolution=True, retry_enabled=True, retry_cap=1, max_iterations=1
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            client = RetryFailingThenSuccessClient(fail_count=99)
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            mutation_llm = BudgetedLLM(
+                model="fake-model",
+                ledger=ledger,
+                account="mutation",
+                tag="mutate",
+                client=client,
+                retries=0,
+                retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            # No child was added — that half was already true before this fix
+            self.assertEqual(controller.db.num_programs, 1)
+
+            log_path = os.path.join(tmp, "output", "rejected_children.jsonl")
+            self.assertTrue(os.path.exists(log_path))
+            with open(log_path) as f:
+                records = [json.loads(line) for line in f]
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["iteration"], 0)
+            self.assertEqual(records[0]["attempts"], 2)  # retry_cap=1 -> 2 attempts
+            self.assertIn("no parseable code block", records[0]["error"])
+            self.assertEqual(records[0]["response"], "no diffs here")
+
     def test_parse_failure_retries_and_succeeds(self):
         with tempfile.TemporaryDirectory() as tmp:
             eval_path = os.path.join(tmp, "evaluator.py")

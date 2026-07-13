@@ -70,6 +70,13 @@ def main():
     ap.add_argument("--num-inspirations", type=int, default=0)
     ap.add_argument("--num-top-programs", type=int, default=1)
     ap.add_argument("--include-artifacts", action="store_true", default=False)
+    ap.add_argument(
+        "--evaluation-file",
+        default=None,
+        help="Override the evaluate() module (default: evaluator.py). "
+        "evaluator_with_artifacts.py wraps it to capture failure tracebacks "
+        "into the artifacts channel without editing the shared evaluator.",
+    )
     ap.add_argument("--substrate", choices=["islands", "tree"], default="islands")
     ap.add_argument(
         "--selection-policy",
@@ -143,7 +150,7 @@ def main():
 
     controller = NoemaController(
         config=config,
-        evaluation_file=f"{EXAMPLE_DIR}/evaluator.py",
+        evaluation_file=args.evaluation_file or f"{EXAMPLE_DIR}/evaluator.py",
         initial_program_code=initial_program_code,
         output_dir=args.output_dir,
     )

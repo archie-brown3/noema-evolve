@@ -476,6 +476,7 @@ class NoemaController:
         self.substrate.set_tokens_spent(self.ledger.spent())
 
         if child_code is None:
+            self._log_rejected_child(iteration, attempt + 1, error_text, response)
             self.substrate.on_child_rejected(
                 parent=parent, child=None, eval_failed=True
             )
@@ -528,6 +529,26 @@ class NoemaController:
             attribution=advice.attribution,
             eval_failed=False,
         )
+
+    def _log_rejected_child(
+        self, iteration: int, attempts: int, error_text: Optional[str], response: str
+    ) -> None:
+        """Append-only diagnostic record for an iteration that produced no
+        child at all after every retry was exhausted (unparseable response,
+        F_imm violation, oversized code, or eval failure with no valid
+        attempt). Unlike an evaluated child, nothing here is ever added to
+        the database, so without this record the failure left zero trace
+        beyond a log line — the raw response is preserved so a human or a
+        future reflective mechanism can see exactly what the LLM produced."""
+        record = {
+            "iteration": iteration,
+            "attempts": attempts,
+            "error": error_text,
+            "response": response,
+        }
+        path = os.path.join(self.output_dir, "rejected_children.jsonl")
+        with open(path, "a") as f:
+            f.write(json.dumps(record) + "\n")
 
     def _build_retry_suffix(self, error_text: str, attempt: int) -> str:
         return (
