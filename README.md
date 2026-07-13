@@ -64,12 +64,47 @@ best = asyncio.run(controller.run())
 budget:
   total_tokens: 1000000
 coordination:
-  module: "null"   # OFF / brute-force baseline
+  module: "null"            # OFF / brute-force baseline
   # module: "hifo"
-  # module: "pes"
+  # module: "pes-faithful"
+substrate:
+  kind: "islands"           # "tree" is specified but not yet implemented
+selection:
+  policy: "substrate_default"   # or "stock_openevolve" / "boltzmann"
 ```
 
 Use identical config outside `coordination.module` when comparing arms.
+
+## Ablation axes — what exists, what is planned
+
+The study varies coordination **mechanisms** against population **substrates** at
+equal token budget. Selection policy is a third axis, decoupled from topology, so
+any policy can be paired with any store.
+
+### Mechanisms — `coordination.module`
+
+| mechanism | status | what it is |
+|---|---|---|
+| `null` | **implemented** | coordination-OFF. The control arm. |
+| `hifo` | **implemented — not valid** | HiFo-Prompt insight pool + evolutionary navigator. Fidelity defects found after the transplant; excluded from reported results pending remediation. |
+| `pes-faithful` | **implemented** | LoongFlow plan–execute–summarize, near-verbatim recast. The reference / validity anchor. Its variant behaviour (retry trigger, executor mode, prompt variant) is set by config, not by a separate arm. |
+| `bandit` | *planned* | AsymmetricUCB over the operator menu. Zero coordination LLM calls — the only free mechanism on the axis. |
+| `punctuated` | *planned* | Punctuated equilibrium: hill-climb between periodic regime changes, rather than reasoning on every mutation. |
+
+### Substrates — `substrate.kind`
+
+| substrate | status | what it is |
+|---|---|---|
+| `islands` | **implemented** | islands + MAP-Elites. Migration-mixed fronts, broken lineages. |
+| `tree` | *planned* | global tree + UCT. Deep persistent lineages. Raises explicitly until built. |
+
+### Selection policies — `selection.policy`
+
+| policy | status | what it is |
+|---|---|---|
+| `substrate_default` | **implemented** | the store's native policy. |
+| `stock_openevolve` | **implemented** | OpenEvolve's sampling, unchanged. |
+| `boltzmann` | **implemented** | Boltzmann sampling with adaptive temperature and optional stagnation detection. |
 
 ## Outputs and resume
 
@@ -105,9 +140,9 @@ Borrowed files include provenance headers; local changes are marked with `NOEMA:
 ```text
 noema/       framework code (controller, budget, coordination, substrate adapters)
 tests/       regression tests for noema guarantees and modules
-examples/    experiment inputs and run artifacts
+examples/    benchmark inputs (run artifacts are gitignored, not committed)
+spec/        the study contract: claims, matrix, pre-registered predictions
 PLAN.md      architecture and audit design notes
-loop/        task loop and guardrail scripts
 ```
 
 ## Run tests
