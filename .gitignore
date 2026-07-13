@@ -36,3 +36,4 @@ dist/
 build/
 .pytest_cache/
 .env
+runs/

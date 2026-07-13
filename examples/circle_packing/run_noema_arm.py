@@ -88,6 +88,13 @@ def main():
         if not api_key:
             raise SystemExit(f"--api-key-env {args.api_key_env}: variable is empty or unset")
 
+    # Mirror all logging (and any crash) into the run dir — console-only logs
+    # were lost when the 0085 shakedown's first run crashed.
+    os.makedirs(args.output_dir, exist_ok=True)
+    file_handler = logging.FileHandler(os.path.join(args.output_dir, "run.log"))
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logging.getLogger().addHandler(file_handler)
+
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
 
@@ -140,7 +147,11 @@ def main():
         initial_program_code=initial_program_code,
         output_dir=args.output_dir,
     )
-    best = asyncio.run(controller.run())
+    try:
+        best = asyncio.run(controller.run())
+    except Exception:
+        logging.getLogger(__name__).exception("run crashed")
+        raise
     print("BEST:", best.metrics if best else None)
 
 
