@@ -438,11 +438,21 @@ class Planner:
             # Declared adaptation: the substrate is not islands, so the noun and
             # the labels come from the substrate, not from LoongFlow's wording.
             here = self._region_label(regions, parent_scope)
-            lines = [
-                f"The current database includes {count} regions. The parent_solution "
-                f"is located in {here}, so the child solution will also be located "
-                f"in {here}."
-            ]
+            if here is None:
+                # Global-scope substrate (tree): target_scope() is None, so no
+                # region matches scope_id and the parent's location cannot be
+                # named. State only what is true — descent — rather than a
+                # location claim; richer wording is task 0082's decision.
+                location = (
+                    "The child solution will be generated directly from the "
+                    "parent_solution."
+                )
+            else:
+                location = (
+                    f"The parent_solution is located in {here}, so the child "
+                    f"solution will also be located in {here}."
+                )
+            lines = [f"The current database includes {count} regions. {location}"]
             scores = ", ".join(f"{r.label}: {r.best_fitness:.4f}" for r in regions)
             lines.append(f"Region status (best score per region): {scores}")
             return "\n".join(lines)
@@ -459,11 +469,13 @@ class Planner:
         return f"{block}\nIsland status (best score per island): {scores}"
 
     @staticmethod
-    def _region_label(regions: Sequence["RegionSummary"], scope: Any) -> str:
+    def _region_label(regions: Sequence["RegionSummary"], scope: Any) -> Optional[str]:
+        """The label of the region whose scope matches, or None — never a
+        synthesized name (str(None) rendered "located in None" on the tree)."""
         for region in regions:
             if region.scope == scope:
                 return region.label
-        return str(scope)
+        return None
 
     def topology_adaptation(self, ctx: GenerationContext) -> Optional[str]:
         """The declared prompt deviation for this context, or None on the native

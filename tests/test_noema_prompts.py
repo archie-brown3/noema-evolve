@@ -277,7 +277,7 @@ def make_regions(bests, topology="islands", prefix="island"):
     )
 
 
-def make_pes_ctx(parent=None, regions=(), topology="islands") -> GenerationContext:
+def make_pes_ctx(parent=None, regions=(), topology="islands", scope_id=0) -> GenerationContext:
     parent = parent or ProgramView(
         id="parent-1",
         code="def f():\n    return 1\n",
@@ -287,7 +287,7 @@ def make_pes_ctx(parent=None, regions=(), topology="islands") -> GenerationConte
     return GenerationContext(
         iteration=0,
         generation=0,
-        scope_id=0,
+        scope_id=scope_id,
         parent=parent,
         global_population=PopulationSnapshot(
             scope=None, topology=topology, regions=tuple(regions)
@@ -461,6 +461,40 @@ class TestFaithfulPlannerPath(unittest.TestCase):
         self.assertEqual(
             advice.attribution["topology_adaptation"],
             "region_worded_database_block:cvt_regions",
+        )
+
+    def test_global_scope_topology_makes_no_location_claim(self):
+        # Tree substrate: target_scope() is None, so ctx.scope_id matches no
+        # region and the parent's location cannot be named from scope alone.
+        # The block must state only what is true — descent — never render a
+        # synthesized location ("located in None" was the observed bug).
+        module, calls = make_pes_module(prompt_variant="faithful")
+        advice = asyncio.run(
+            module.advise(
+                make_pes_ctx(
+                    regions=(
+                        RegionSummary("trunk:seed", "trunk", 0.5, 1),
+                        RegionSummary("branch:a", "branch:a", 0.9812, 2),
+                    ),
+                    topology="tree_branches",
+                    scope_id=None,
+                )
+            )
+        )
+        user = calls[0]["messages"][1]["content"]
+        self.assertIn("The current database includes 2 regions.", user)
+        self.assertIn(
+            "The child solution will be generated directly from the parent_solution.",
+            user,
+        )
+        self.assertNotIn("located in", user)
+        self.assertIn(
+            "Region status (best score per region): trunk: 0.5000, branch:a: 0.9812",
+            user,
+        )
+        self.assertEqual(
+            advice.attribution["topology_adaptation"],
+            "region_worded_database_block:tree_branches",
         )
 
     def test_missing_heading_falls_back_with_logged_warning(self):
