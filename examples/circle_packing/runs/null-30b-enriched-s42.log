@@ -1,0 +1,2158 @@
+2026-07-13 01:16:34,748 - INFO - Froze run config to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/config.yaml (sha256=52b4adc92bc3b9e86de0e2584cbf9153ac03b8d768146d9193fb838e1dac3fd5)
+2026-07-13 01:16:34,748 - INFO - Initialized program database with 0 programs
+2026-07-13 01:16:34,749 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:34,749 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:34,750 - INFO - Initialized prompt sampler
+2026-07-13 01:16:34,852 - INFO - Evaluating and adding initial program
+2026-07-13 01:16:35,156 - INFO - Evaluated program initial in 0.30s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.2943, combined_score=0.3642
+2026-07-13 01:16:35,156 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-13 01:18:27,644 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:18:27,851 - INFO - Evaluated program it000000 in 0.19s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:18:27,851 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-13 01:20:47,659 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:20:47,798 - INFO - Evaluated program it000001 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:20:47,799 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 0}
+2026-07-13 01:21:23,657 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:21:23,797 - INFO - Evaluated program it000002 in 0.14s: sum_radii=1.2910, target_ratio=0.4900, validity=1.0000, eval_time=0.1350, combined_score=0.4900
+2026-07-13 01:21:23,798 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 0}
+2026-07-13 01:21:23,798 - INFO - New best program it000002 replaces initial (combined_score: 0.3642 → 0.4900, +0.1257)
+2026-07-13 01:21:53,166 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:21:53,313 - INFO - Evaluated program it000003 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:21:53,314 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 7, 'diversity': 0}
+2026-07-13 01:23:15,434 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:23:15,606 - INFO - Evaluated program it000004 in 0.17s: sum_radii=1.2910, target_ratio=0.4900, validity=1.0000, eval_time=0.1674, combined_score=0.4900
+2026-07-13 01:23:15,608 - INFO - Island 0 MAP-Elites cell improved: {'complexity': 5, 'diversity': 0} (fitness: 0.364 -> 0.490)
+2026-07-13 01:23:15,612 - INFO - Saved database with 6 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_4
+2026-07-13 01:23:15,613 - INFO - Saved checkpoint at iteration 4 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_4
+2026-07-13 01:25:22,642 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:25:22,821 - INFO - Evaluated program it000005 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:25:22,822 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 0}
+2026-07-13 01:27:42,562 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:27:42,706 - INFO - Evaluated program it000006 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:30:05,677 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:30:06,028 - INFO - Evaluated program it000007 in 0.35s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:30:06,030 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 8, 'diversity': 0}
+2026-07-13 01:32:45,589 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:32:45,736 - INFO - Evaluated program it000008 in 0.15s: sum_radii=1.2678, target_ratio=0.4811, validity=1.0000, eval_time=0.1431, combined_score=0.4811
+2026-07-13 01:32:45,737 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 0}
+2026-07-13 01:36:13,104 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpxbt5zw0a.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9597642169962064
+Results saved to /tmp/tmptaqg9xqx.py.results
+
+Evaluation: valid=True, sum_radii=0.959764, target=2.635, ratio=0.364237, time=0.29s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpqs1hu5rj.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmptj4yt_hy.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmptj4yt_hy.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpqs1hu5rj.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpqs1hu5rj.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.75 * np.cos(angle), 0.5 + 0.75 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpsz9svrn9.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpmuonbe_o.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpmuonbe_o.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpsz9svrn9.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpsz9svrn9.py", line 88, in construct_packing
+    centers[i + 19] = [0.5 + 0.68 * np.cos(angle), 0.5 + 0.68 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpkfw8gr64.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.291028306735757
+Results saved to /tmp/tmpmfkq8ztz.py.results
+
+Evaluation: valid=True, sum_radii=1.291028, target=2.635, ratio=0.489954, time=0.13s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp6xzngcqi.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpnbbp2wgm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpnbbp2wgm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp6xzngcqi.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp6xzngcqi.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.7 * np.cos(angle), 0.5 + 0.7 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp_yqlhem1.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.291028306735757
+Results saved to /tmp/tmpekesag3_.py.results
+
+Evaluation: valid=True, sum_radii=1.291028, target=2.635, ratio=0.489954, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpae3ch6c8.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpha1r2_ur.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpha1r2_ur.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpae3ch6c8.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpae3ch6c8.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpgj1m9mzu.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpqypjtvop.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpqypjtvop.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpgj1m9mzu.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpgj1m9mzu.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0hvco3ov.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpdup981ci.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpdup981ci.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp0hvco3ov.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp0hvco3ov.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.68 * np.cos(angle), 0.5 + 0.68 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp9vhs_2_r.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2677918654675746
+Results saved to /tmp/tmp5vx7koe1.py.results
+
+Evaluation: valid=True, sum_radii=1.267792, target=2.635, ratio=0.481135, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp_c8s0jxw.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp6ex0degx.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp6ex0degx.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_c8s0jxw.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_c8s0jxw.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.6 * np.cos(angle), 0.5 + 0.6 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:36:13,270 - INFO - Evaluated program it000009 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:36:13,276 - INFO - Saved database with 11 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_9
+2026-07-13 01:36:13,278 - INFO - Saved checkpoint at iteration 9 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_9
+2026-07-13 01:39:39,645 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:39:39,791 - INFO - Evaluated program it000010 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:39:39,793 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 7, 'diversity': 0}
+2026-07-13 01:43:04,759 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:43:04,909 - INFO - Evaluated program it000011 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:43:04,912 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 9, 'diversity': 9}
+2026-07-13 01:47:24,374 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:47:24,512 - INFO - Evaluated program it000012 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:47:24,514 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 3, 'diversity': 0}
+2026-07-13 01:52:22,565 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:52:22,713 - INFO - Evaluated program it000013 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:52:22,715 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 3, 'diversity': 0}
+2026-07-13 01:57:22,806 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 01:57:44,883 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:57:45,028 - INFO - Evaluated program it000014 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:57:45,030 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 0}
+2026-07-13 01:57:45,038 - INFO - Saved database with 16 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_14
+2026-07-13 01:57:45,041 - INFO - Saved checkpoint at iteration 14 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_14
+2026-07-13 02:01:39,190 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:01:39,383 - INFO - Evaluated program it000015 in 0.19s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:01:39,386 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 5, 'diversity': 2}
+2026-07-13 02:06:06,876 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:06:07,061 - INFO - Evaluated program it000016 in 0.18s: sum_radii=1.4517, target_ratio=0.5509, validity=1.0000, eval_time=0.1818, combined_score=0.5509
+2026-07-13 02:06:07,064 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 4, 'diversity': 0}
+2026-07-13 02:06:07,064 - INFO - New best program it000016 replaces it000002 (combined_score: 0.4900 → 0.5509, +0.0610)
+2026-07-13 02:11:07,155 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 02:11:40,621 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:11:40,767 - INFO - Evaluated program it000017 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:15:47,080 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpax_xhurz.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp5debt6ss.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp5debt6ss.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpax_xhurz.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpax_xhurz.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.68 * np.cos(angle), 0.5 + 0.68 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpmfnvneik.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpowsd900x.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpowsd900x.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmfnvneik.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpmfnvneik.py", line 90, in construct_packing
+    centers[i + 19] = [0.5 + radial_offset * np.cos(angle), 0.5 + radial_offset * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpzxan2p8a.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpsmdvvbqw.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpsmdvvbqw.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzxan2p8a.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzxan2p8a.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.6 * np.cos(angle), 0.5 + 0.6 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpuih1sxi4.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp8b_741d3.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp8b_741d3.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuih1sxi4.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuih1sxi4.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.5 * np.cos(angle), 0.5 + 0.5 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpskj3sqbd.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmppytz28yt.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmppytz28yt.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpskj3sqbd.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpskj3sqbd.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.7 * np.cos(angle), 0.5 + 0.7 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpbwq9ox3x.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp99tk9xav.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp99tk9xav.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbwq9ox3x.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbwq9ox3x.py", line 89, in construct_packing
+    centers[i + 19] = [0.5 + radial_offset * np.cos(angle), 0.5 + radial_offset * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp9dbu28pl.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4517128455227146
+Results saved to /tmp/tmpv2gl6d3v.py.results
+
+Evaluation: valid=True, sum_radii=1.451713, target=2.635, ratio=0.550935, time=0.18s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp4hr78rvl.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp8nyxd8k0.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp8nyxd8k0.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4hr78rvl.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4hr78rvl.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.45 * np.cos(angle), 0.5 + 0.45 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpp65uz_0h.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp0re_q2k_.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp0re_q2k_.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp65uz_0h.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpp65uz_0h.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.62 * np.cos(angle), 0.5 + 0.62 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:15:47,255 - INFO - Evaluated program it000018 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:20:20,671 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:20:20,819 - INFO - Evaluated program it000019 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:20:20,821 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 4, 'diversity': 0}
+2026-07-13 02:20:20,830 - INFO - Saved database with 21 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_19
+2026-07-13 02:20:20,832 - INFO - Saved checkpoint at iteration 19 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_19
+2026-07-13 02:24:23,215 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:24:23,360 - INFO - Evaluated program it000020 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:29:23,405 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 02:30:38,687 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:30:38,847 - INFO - Evaluated program it000021 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:30:38,851 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 0}
+2026-07-13 02:35:20,586 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:35:20,742 - INFO - Evaluated program it000022 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:40:20,368 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:40:20,511 - INFO - Evaluated program it000023 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:40:20,514 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 6, 'diversity': 4}
+2026-07-13 02:44:46,356 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:44:46,503 - INFO - Evaluated program it000024 in 0.14s: sum_radii=1.2678, target_ratio=0.4811, validity=1.0000, eval_time=0.1421, combined_score=0.4811
+2026-07-13 02:44:46,505 - INFO - Island 0 MAP-Elites cell improved: {'complexity': 3, 'diversity': 0} (fitness: 0.000 -> 0.481)
+2026-07-13 02:44:46,517 - INFO - Saved database with 26 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_24
+2026-07-13 02:44:46,519 - INFO - Saved checkpoint at iteration 24 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_24
+2026-07-13 02:47:37,408 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:47:37,556 - INFO - Evaluated program it000025 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:51:52,423 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:51:52,564 - INFO - Evaluated program it000026 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:54:42,394 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0s5t16fs.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpkopawdn8.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpkopawdn8.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp0s5t16fs.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp0s5t16fs.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.64 * np.cos(angle), 0.5 + 0.64 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpjog552xa.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp_y1pnm7k.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp_y1pnm7k.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpjog552xa.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpjog552xa.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp4g4f5pkl.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpbl2o2vu1.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpbl2o2vu1.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4g4f5pkl.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4g4f5pkl.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.42 * np.cos(angle), 0.5 + 0.42 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpcpmzrsi2.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmprw60hyqp.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmprw60hyqp.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpcpmzrsi2.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpcpmzrsi2.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.58 * np.cos(angle), 0.5 + 0.58 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpzmhg_z2f.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpk8y1um_4.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpk8y1um_4.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzmhg_z2f.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzmhg_z2f.py", line 88, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpr4cj1dm9.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2677918654675746
+Results saved to /tmp/tmpq75h4bbv.py.results
+
+Evaluation: valid=True, sum_radii=1.267792, target=2.635, ratio=0.481135, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpuk4mqdrm.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpl59ez4hy.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpl59ez4hy.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuk4mqdrm.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuk4mqdrm.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.5 * np.cos(angle), 0.5 + 0.5 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpfxbklqyz.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpgff41cr5.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpgff41cr5.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpfxbklqyz.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpfxbklqyz.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpbmuni7v8.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpabjt3ixz.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpabjt3ixz.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbmuni7v8.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbmuni7v8.py", line 90, in construct_packing
+    centers[i + 19] = [0.5 + radial_offset * np.cos(angle), 0.5 + radial_offset * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 02:54:42,559 - INFO - Evaluated program it000027 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 02:54:42,562 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 6, 'diversity': 3}
+2026-07-13 02:59:12,731 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:59:12,908 - INFO - Evaluated program it000028 in 0.18s: sum_radii=1.4517, target_ratio=0.5509, validity=1.0000, eval_time=0.1725, combined_score=0.5509
+2026-07-13 02:59:12,911 - INFO - Island 0 MAP-Elites cell improved: {'complexity': 3, 'diversity': 0} (fitness: 0.481 -> 0.551)
+2026-07-13 03:01:48,980 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:01:49,126 - INFO - Evaluated program it000029 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:01:49,174 - INFO - Saved database with 31 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_29
+2026-07-13 03:01:49,178 - INFO - Saved checkpoint at iteration 29 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_29
+2026-07-13 03:06:21,721 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:06:21,861 - INFO - Evaluated program it000030 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:08:28,575 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:08:28,765 - INFO - Evaluated program it000031 in 0.19s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:12:26,702 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:12:26,906 - INFO - Evaluated program it000032 in 0.20s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:14:53,312 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:14:53,458 - INFO - Evaluated program it000033 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:17:45,027 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:17:45,189 - INFO - Evaluated program it000034 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:17:45,193 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 4, 'diversity': 0}
+2026-07-13 03:17:45,215 - INFO - Saved database with 36 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_34
+2026-07-13 03:17:45,219 - INFO - Saved checkpoint at iteration 34 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_34
+2026-07-13 03:20:26,444 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:20:26,592 - INFO - Evaluated program it000035 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:20:26,597 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 8, 'diversity': 6}
+2026-07-13 03:24:20,107 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:24:20,254 - INFO - Evaluated program it000036 in 0.15s: sum_radii=1.2678, target_ratio=0.4811, validity=1.0000, eval_time=0.1428, combined_score=0.4811
+2026-07-13 03:27:04,729 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpt3cnoaxa.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4517128455227146
+Results saved to /tmp/tmpdq0ah9gc.py.results
+
+Evaluation: valid=True, sum_radii=1.451713, target=2.635, ratio=0.550935, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp8em7yrii.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp6d2mbhqd.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp6d2mbhqd.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp8em7yrii.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp8em7yrii.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.5 * np.cos(angle), 0.5 + 0.5 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpuv3l5pai.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp4p4hy0_m.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp4p4hy0_m.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuv3l5pai.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuv3l5pai.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmps1i6eziq.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpeu2f6mjm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpeu2f6mjm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmps1i6eziq.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmps1i6eziq.py", line 87, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpnxivespd.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpg1r6osgw.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpg1r6osgw.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpnxivespd.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpnxivespd.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpd0itqhh9.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp_h_z6zdu.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp_h_z6zdu.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpd0itqhh9.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpd0itqhh9.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.55 * np.cos(angle), 0.5 + 0.55 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpb5wm17y7.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp26xyjcyq.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp26xyjcyq.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpb5wm17y7.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpb5wm17y7.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.58 * np.cos(angle), 0.5 + 0.58 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpoa0coyko.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmplc2ysx7u.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmplc2ysx7u.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpoa0coyko.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpoa0coyko.py", line 89, in construct_packing
+    centers[i + 19] = [0.5 + 0.66 * np.cos(angle), 0.5 + 0.66 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp343hldfe.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2677918654675746
+Results saved to /tmp/tmpijkuhqni.py.results
+
+Evaluation: valid=True, sum_radii=1.267792, target=2.635, ratio=0.481135, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpnuk_chy4.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpf5o49lb7.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpf5o49lb7.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpnuk_chy4.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpnuk_chy4.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.5 * np.cos(angle), 0.5 + 0.5 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:27:04,867 - INFO - Evaluated program it000037 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:29:48,164 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:29:48,314 - INFO - Evaluated program it000038 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:34:45,181 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:34:45,333 - INFO - Evaluated program it000039 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:34:45,336 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 4, 'diversity': 1}
+2026-07-13 03:34:45,354 - INFO - Saved database with 41 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_39
+2026-07-13 03:34:45,357 - INFO - Saved checkpoint at iteration 39 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_39
+2026-07-13 03:36:59,337 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:36:59,504 - INFO - Evaluated program it000040 in 0.17s: sum_radii=1.2678, target_ratio=0.4811, validity=1.0000, eval_time=0.1630, combined_score=0.4811
+2026-07-13 03:39:15,966 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:39:16,112 - INFO - Evaluated program it000041 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:41:34,723 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:41:34,889 - INFO - Evaluated program it000042 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:44:09,402 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:44:09,578 - INFO - Evaluated program it000043 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:44:09,581 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 7, 'diversity': 5}
+2026-07-13 03:44:09,581 - INFO - Island 3 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-13 03:46:49,762 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:46:49,903 - INFO - Evaluated program it000044 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:46:49,927 - INFO - Saved database with 46 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_44
+2026-07-13 03:46:49,929 - INFO - Saved checkpoint at iteration 44 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_44
+2026-07-13 03:49:43,731 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:49:43,892 - INFO - Evaluated program it000045 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:51:48,872 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpx2tos0vu.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpvh720uom.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpvh720uom.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpx2tos0vu.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpx2tos0vu.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.55 * np.cos(angle), 0.5 + 0.55 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpbp17y7rs.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpm78pr2bn.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpm78pr2bn.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbp17y7rs.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbp17y7rs.py", line 87, in construct_packing
+    centers[i + 19] = [0.5 + 0.62 * np.cos(angle), 0.5 + 0.62 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmphpisk352.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2677918654675746
+Results saved to /tmp/tmp9i83qpbi.py.results
+
+Evaluation: valid=True, sum_radii=1.267792, target=2.635, ratio=0.481135, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpapjaayxm.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpcasv3jcs.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpcasv3jcs.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpapjaayxm.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpapjaayxm.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.45 * np.cos(angle), 0.5 + 0.45 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp9ifzb_z1.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpcz7n50oy.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpcz7n50oy.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp9ifzb_z1.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp9ifzb_z1.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.6 * np.cos(angle), 0.5 + 0.6 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpi28o5np6.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp6iivz75f.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp6iivz75f.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpi28o5np6.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpi28o5np6.py", line 89, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp4pyb27m4.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpejwh_oz2.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpejwh_oz2.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4pyb27m4.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4pyb27m4.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.7 * np.cos(angle), 0.5 + 0.7 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpef8s1siw.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp5f1u_4hm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp5f1u_4hm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpef8s1siw.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpef8s1siw.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.5 * np.cos(angle), 0.5 + 0.5 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpron7d4rp.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpqo9moqtm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpqo9moqtm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpron7d4rp.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpron7d4rp.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:51:49,059 - INFO - Evaluated program it000046 in 0.19s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:54:28,381 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 03:54:28,515 - INFO - Evaluated program it000047 in 0.13s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 03:54:28,517 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 5, 'diversity': 1}
+2026-07-13 03:57:02,142 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:57:02,374 - INFO - Evaluated program it000048 in 0.23s: sum_radii=1.4517, target_ratio=0.5509, validity=1.0000, eval_time=0.2255, combined_score=0.5509
+2026-07-13 04:01:55,908 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:01:56,088 - INFO - Evaluated program it000049 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:01:56,092 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 2}
+2026-07-13 04:01:56,116 - INFO - Saved database with 51 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_49
+2026-07-13 04:01:56,119 - INFO - Saved checkpoint at iteration 49 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_49
+2026-07-13 04:03:59,253 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:03:59,393 - INFO - Evaluated program it000050 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:06:27,484 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:06:27,694 - INFO - Evaluated program it000051 in 0.21s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:10:42,651 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:10:42,815 - INFO - Evaluated program it000052 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:13:32,616 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:13:32,763 - INFO - Evaluated program it000053 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:15:35,675 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:15:35,844 - INFO - Evaluated program it000054 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:15:35,868 - INFO - Saved database with 56 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_54
+2026-07-13 04:15:35,871 - INFO - Saved checkpoint at iteration 54 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_54
+2026-07-13 04:17:00,995 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:17:01,197 - INFO - Evaluated program it000055 in 0.20s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:17:01,202 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 8, 'diversity': 7}
+2026-07-13 04:21:13,413 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpyj0x9nrz.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmprw4zla9a.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmprw4zla9a.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpyj0x9nrz.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpyj0x9nrz.py", line 87, in construct_packing
+    centers[i + 19] = [0.5 + 0.64 * np.cos(angle), 0.5 + 0.64 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpy55uzvmw.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4517128455227146
+Results saved to /tmp/tmp27ufll66.py.results
+
+Evaluation: valid=True, sum_radii=1.451713, target=2.635, ratio=0.550935, time=0.23s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpktzwnkem.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmprh7oc03b.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmprh7oc03b.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpktzwnkem.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpktzwnkem.py", line 89, in construct_packing
+    centers[i + 19] = [0.5 + offset * np.cos(angle), 0.5 + offset * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp8q9ucbf6.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpdciwo7gk.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpdciwo7gk.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp8q9ucbf6.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp8q9ucbf6.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpz4wpb1n8.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpewm4ca3t.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpewm4ca3t.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpz4wpb1n8.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpz4wpb1n8.py", line 88, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmphn4k3gzr.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpbefep3w7.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpbefep3w7.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmphn4k3gzr.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmphn4k3gzr.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpoy0duhfw.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpn7su0kt2.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpn7su0kt2.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpoy0duhfw.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpoy0duhfw.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.35 * np.cos(angle), 0.5 + 0.35 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpe_0qpj25.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmply87u1i7.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmply87u1i7.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpe_0qpj25.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpe_0qpj25.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmps_z_ywg5.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpd6b2u4jh.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpd6b2u4jh.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmps_z_ywg5.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmps_z_ywg5.py", line 90, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpjm5_d_et.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4438712791005113
+Results saved to /tmp/tmpxlr6kqho.py.results
+2026-07-13 04:21:13,598 - INFO - Evaluated program it000056 in 0.18s: sum_radii=1.4439, target_ratio=0.5480, validity=1.0000, eval_time=0.1780, combined_score=0.5480
+2026-07-13 04:21:13,602 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 1}
+2026-07-13 04:24:15,911 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:24:16,081 - INFO - Evaluated program it000057 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:27:25,477 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:27:25,667 - INFO - Evaluated program it000058 in 0.19s: sum_radii=1.3962, target_ratio=0.5299, validity=1.0000, eval_time=0.1841, combined_score=0.5299
+2026-07-13 04:27:25,671 - INFO - Island 2 MAP-Elites cell improved: {'complexity': 4, 'diversity': 0} (fitness: 0.000 -> 0.530)
+2026-07-13 04:30:22,409 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:30:22,593 - INFO - Evaluated program it000059 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:30:22,593 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:30:22,594 - INFO - Population size after cleanup: 60
+2026-07-13 04:30:22,631 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_59
+2026-07-13 04:30:22,634 - INFO - Saved checkpoint at iteration 59 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_59
+2026-07-13 04:33:49,181 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:33:49,357 - INFO - Evaluated program it000060 in 0.17s: sum_radii=1.4439, target_ratio=0.5480, validity=1.0000, eval_time=0.1710, combined_score=0.5480
+2026-07-13 04:33:49,360 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:33:49,360 - INFO - Population size after cleanup: 60
+2026-07-13 04:33:49,360 - INFO - Cleaned up 1 stale island best program references
+2026-07-13 04:37:45,686 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:37:45,864 - INFO - Evaluated program it000061 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:37:45,869 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 5, 'diversity': 1}
+2026-07-13 04:37:45,869 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:37:45,869 - INFO - Population size after cleanup: 60
+2026-07-13 04:37:45,869 - INFO - Cleaned up 1 stale island best program references
+2026-07-13 04:42:27,875 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:42:28,029 - INFO - Evaluated program it000062 in 0.15s: sum_radii=1.2823, target_ratio=0.4867, validity=1.0000, eval_time=0.1490, combined_score=0.4867
+2026-07-13 04:42:28,033 - INFO - Island 2 MAP-Elites cell improved: {'complexity': 3, 'diversity': 0} (fitness: 0.000 -> 0.487)
+2026-07-13 04:42:28,034 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:42:28,034 - INFO - Population size after cleanup: 60
+2026-07-13 04:47:28,139 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:47:56,967 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:47:57,110 - INFO - Evaluated program it000063 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:47:57,113 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:47:57,114 - INFO - Population size after cleanup: 60
+2026-07-13 04:51:33,353 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:51:33,522 - INFO - Evaluated program it000064 in 0.17s: sum_radii=1.4517, target_ratio=0.5509, validity=1.0000, eval_time=0.1642, combined_score=0.5509
+2026-07-13 04:51:33,526 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:51:33,526 - INFO - Population size after cleanup: 60
+2026-07-13 04:51:33,556 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_64
+2026-07-13 04:51:33,560 - INFO - Saved checkpoint at iteration 64 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_64
+2026-07-13 04:53:54,048 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:53:54,191 - INFO - Evaluated program it000065 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:53:54,194 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:53:54,194 - INFO - Population size after cleanup: 60
+2026-07-13 04:58:54,156 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 04:58:54,296 - INFO - Evaluated program it000066 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 04:58:54,299 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 04:58:54,299 - INFO - Population size after cleanup: 60
+2026-07-13 05:01:16,459 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation: valid=True, sum_radii=1.443871, target=2.635, ratio=0.547959, time=0.18s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpj6usz1lw.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp1m0en12p.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp1m0en12p.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpj6usz1lw.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpj6usz1lw.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.40 * np.cos(angle), 0.5 + 0.40 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0q_7yqzx.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3961624006540254
+Results saved to /tmp/tmpcda_1l5e.py.results
+
+Evaluation: valid=True, sum_radii=1.396162, target=2.635, ratio=0.529853, time=0.18s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpu6owu7st.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmphdp91naj.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmphdp91naj.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpu6owu7st.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpu6owu7st.py", line 88, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpgp9m7jxo.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4438712791005113
+Results saved to /tmp/tmphsk9ugbt.py.results
+
+Evaluation: valid=True, sum_radii=1.443871, target=2.635, ratio=0.547959, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp7ndspsd1.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpczzjx609.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpczzjx609.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp7ndspsd1.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp7ndspsd1.py", line 87, in construct_packing
+    centers[i + 19] = [0.5 + 0.35 * np.cos(angle), 0.5 + 0.35 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp7v4lpov2.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2823291545004654
+Results saved to /tmp/tmpzexiwdjj.py.results
+
+Evaluation: valid=True, sum_radii=1.282329, target=2.635, ratio=0.486652, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp4goz45bs.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp1q42bpog.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp1q42bpog.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4goz45bs.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp4goz45bs.py", line 90, in construct_packing
+    centers[i + 19] = [x, y]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpz7dtuhfh.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4517128455227146
+Results saved to /tmp/tmpyeg9_nyf.py.results
+
+Evaluation: valid=True, sum_radii=1.451713, target=2.635, ratio=0.550935, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpkamg2cac.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp4q0inj25.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp4q0inj25.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkamg2cac.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkamg2cac.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.35 * np.cos(angle), 0.5 + 0.35 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpzg5s9vof.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpvela1urc.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpvela1urc.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzg5s9vof.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpzg5s9vof.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.68 * np.cos(angle), 0.5 + 0.68 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp1anqx9_r.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp22b4xvrs.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp22b4xvrs.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp1anqx9_r.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp1anqx9_r.py", line 90, in construct_packing
+    centers[i + 19] = [0.5 + 0.97 * (x - 0.5), 0.5 + 0.97 * (y - 0.5)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:01:16,662 - INFO - Evaluated program it000067 in 0.20s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:01:16,665 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:01:16,666 - INFO - Population size after cleanup: 60
+2026-07-13 05:05:40,521 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:05:40,678 - INFO - Evaluated program it000068 in 0.15s: sum_radii=1.4637, target_ratio=0.5555, validity=1.0000, eval_time=0.1518, combined_score=0.5555
+2026-07-13 05:05:40,683 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 1}
+2026-07-13 05:05:40,684 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:05:40,684 - INFO - Population size after cleanup: 60
+2026-07-13 05:05:40,684 - INFO - New best program it000068 replaces it000016 (combined_score: 0.5509 → 0.5555, +0.0046)
+2026-07-13 05:08:21,657 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:08:21,805 - INFO - Evaluated program it000069 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:08:21,808 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:08:21,809 - INFO - Population size after cleanup: 60
+2026-07-13 05:08:21,836 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_69
+2026-07-13 05:08:21,839 - INFO - Saved checkpoint at iteration 69 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_69
+2026-07-13 05:12:02,675 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:12:02,823 - INFO - Evaluated program it000070 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:12:02,827 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:12:02,828 - INFO - Population size after cleanup: 60
+2026-07-13 05:16:43,700 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:16:43,867 - INFO - Evaluated program it000071 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:16:43,872 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 9, 'diversity': 8}
+2026-07-13 05:16:43,872 - INFO - Island 3 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-13 05:16:43,872 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:16:43,872 - INFO - Population size after cleanup: 60
+2026-07-13 05:21:43,969 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:22:52,144 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:22:52,324 - INFO - Evaluated program it000072 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:22:52,328 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:22:52,328 - INFO - Population size after cleanup: 60
+2026-07-13 05:22:52,328 - INFO - Cleaned up 1 stale island best program references
+2026-07-13 05:27:50,961 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:27:51,110 - INFO - Evaluated program it000073 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:27:51,114 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:27:51,114 - INFO - Population size after cleanup: 60
+2026-07-13 05:30:52,439 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:30:52,612 - INFO - Evaluated program it000074 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:30:52,613 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:30:52,613 - INFO - Population size after cleanup: 60
+2026-07-13 05:30:52,649 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_74
+2026-07-13 05:30:52,654 - INFO - Saved checkpoint at iteration 74 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_74
+2026-07-13 05:35:41,595 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:35:41,745 - INFO - Evaluated program it000075 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:35:41,748 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 9, 'diversity': 9}
+2026-07-13 05:35:41,748 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:35:41,748 - INFO - Population size after cleanup: 60
+2026-07-13 05:39:18,838 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:39:18,984 - INFO - Evaluated program it000076 in 0.14s: sum_radii=1.4439, target_ratio=0.5480, validity=1.0000, eval_time=0.1420, combined_score=0.5480
+2026-07-13 05:39:18,987 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:39:18,987 - INFO - Population size after cleanup: 60
+2026-07-13 05:44:10,219 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0k0mseow.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4637337116877895
+Results saved to /tmp/tmpu5mwbm50.py.results
+
+Evaluation: valid=True, sum_radii=1.463734, target=2.635, ratio=0.555497, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp5_o7met6.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpds739nlz.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpds739nlz.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp5_o7met6.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp5_o7met6.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.35 * np.cos(angle), 0.5 + 0.35 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp3s4sklb5.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpqlzdfqnm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpqlzdfqnm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp3s4sklb5.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp3s4sklb5.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmphgw6j3a0.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpfpnz5rj_.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpfpnz5rj_.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmphgw6j3a0.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmphgw6j3a0.py", line 96, in construct_packing
+    centers[i + 19] = [0.5 + scale * (x - 0.5), 0.5 + scale * (y - 0.5)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpyv5kgf17.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp_3r97a6y.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp_3r97a6y.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpyv5kgf17.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpyv5kgf17.py", line 85, in construct_packing
+    centers[i + 19] = [0.5 + 0.63 * np.cos(angle), 0.5 + 0.63 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpa6btl05v.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp4bqnbkpz.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp4bqnbkpz.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpa6btl05v.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpa6btl05v.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.38 * np.cos(angle), 0.5 + 0.38 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpuk_m7ifw.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmppwobmc0v.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmppwobmc0v.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuk_m7ifw.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpuk_m7ifw.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.65 * np.cos(angle), 0.5 + 0.65 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp68pjkn_3.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp38_aebui.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp38_aebui.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp68pjkn_3.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp68pjkn_3.py", line 98, in construct_packing
+    centers[i + 19] = [0.5 + scale * (x - 0.5), 0.5 + scale * (y - 0.5)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpm7hy01yf.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4438712791005113
+Results saved to /tmp/tmpcetidj9d.py.results
+
+Evaluation: valid=True, sum_radii=1.443871, target=2.635, ratio=0.547959, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpkzs43gol.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmplghgo1zl.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmplghgo1zl.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkzs43gol.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkzs43gol.py", line 86, in construct_packing
+    centers[i + 19] = [0.5 + 0.30 * np.cos(angle), 0.5 + 0.30 * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:44:10,399 - INFO - Evaluated program it000077 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:44:10,402 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 0}
+2026-07-13 05:44:10,403 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:44:10,403 - INFO - Population size after cleanup: 60
+2026-07-13 05:48:21,030 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:48:21,175 - INFO - Evaluated program it000078 in 0.14s: sum_radii=1.2823, target_ratio=0.4867, validity=1.0000, eval_time=0.1412, combined_score=0.4867
+2026-07-13 05:48:21,175 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:48:21,175 - INFO - Population size after cleanup: 60
+2026-07-13 05:53:21,231 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:54:07,525 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:54:07,708 - INFO - Evaluated program it000079 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:54:07,715 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:54:07,715 - INFO - Population size after cleanup: 60
+2026-07-13 05:54:07,755 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_79
+2026-07-13 05:54:07,760 - INFO - Saved checkpoint at iteration 79 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_79
+2026-07-13 05:58:14,524 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:58:14,703 - INFO - Evaluated program it000080 in 0.18s: sum_radii=1.4517, target_ratio=0.5509, validity=1.0000, eval_time=0.1734, combined_score=0.5509
+2026-07-13 05:58:14,704 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 05:58:14,704 - INFO - Population size after cleanup: 60
+2026-07-13 06:02:34,181 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 06:02:34,331 - INFO - Evaluated program it000081 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 06:02:34,334 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 06:02:34,334 - INFO - Population size after cleanup: 60
+2026-07-13 06:06:08,516 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:06:08,690 - INFO - Evaluated program it000082 in 0.17s: sum_radii=1.2823, target_ratio=0.4867, validity=1.0000, eval_time=0.1690, combined_score=0.4867
+2026-07-13 06:06:08,691 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 06:06:08,691 - INFO - Population size after cleanup: 60
+2026-07-13 06:11:08,749 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 06:11:40,001 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 06:11:40,185 - INFO - Evaluated program it000083 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 06:11:40,189 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 7, 'diversity': 6}
+2026-07-13 06:11:40,189 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 06:11:40,190 - INFO - Population size after cleanup: 60
+2026-07-13 06:16:36,552 - INFO - HTTP Request: POST http://100.95.96.20:8080/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:16:36,731 - INFO - Evaluated program it000084 in 0.18s: sum_radii=1.4439, target_ratio=0.5480, validity=1.0000, eval_time=0.1742, combined_score=0.5480
+2026-07-13 06:16:36,734 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 2}
+2026-07-13 06:16:36,734 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-13 06:16:36,734 - INFO - Population size after cleanup: 60
+2026-07-13 06:16:36,766 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_84
+2026-07-13 06:16:36,771 - INFO - Saved checkpoint at iteration 84 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_84
+2026-07-13 06:16:36,776 - INFO - Stopping at iteration 85: Budget exhausted for account 'mutation': spent 1002061 of cap 1000000
+2026-07-13 06:16:36,818 - INFO - Saved database with 60 programs to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_84
+2026-07-13 06:16:36,823 - INFO - Saved checkpoint at iteration 84 to /root/noema-evolve/examples/circle_packing/runs/null-30b-enriched-s42/checkpoints/checkpoint_84
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpabjjde0p.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2823291545004654
+Results saved to /tmp/tmp6p_4_p_p.py.results
+
+Evaluation: valid=True, sum_radii=1.282329, target=2.635, ratio=0.486652, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp_vokxcap.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpbos9g4yx.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpbos9g4yx.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_vokxcap.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_vokxcap.py", line 95, in construct_packing
+    centers[i + 19] = [0.5 + scale * (x - 0.5), 0.5 + scale * (y - 0.5)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpg9nccfhf.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4517128455227146
+Results saved to /tmp/tmpjo9rrgq1.py.results
+
+Evaluation: valid=True, sum_radii=1.451713, target=2.635, ratio=0.550935, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmprehqrj3g.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpfrv40qor.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpfrv40qor.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmprehqrj3g.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmprehqrj3g.py", line 88, in construct_packing
+    centers[i + 19] = [0.5 + offset * np.cos(angle), 0.5 + offset * np.sin(angle)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp627gtrjg.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2823291545004654
+Results saved to /tmp/tmpueji5ndk.py.results
+
+Evaluation: valid=True, sum_radii=1.282329, target=2.635, ratio=0.486652, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpr03qcj65.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmp7af5wlrr.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp7af5wlrr.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpr03qcj65.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpr03qcj65.py", line 94, in construct_packing
+    centers[i + 19] = [0.5 + scale * (x - 0.5), 0.5 + scale * (y - 0.5)]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpvcz3fwsa.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4438712791005113
+Results saved to /tmp/tmphmqxoxsf.py.results
+
+Evaluation: valid=True, sum_radii=1.443871, target=2.635, ratio=0.547959, time=0.17s
+BEST: {'sum_radii': 1.4637337116877895, 'target_ratio': 0.5554966647771498, 'validity': 1.0, 'eval_time': 0.15183448791503906, 'combined_score': 0.5554966647771498}

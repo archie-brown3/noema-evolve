@@ -1,0 +1,6 @@
+interface:
+  display_name: "Brain vault"
+  short_description: "Read and maintain the claude-brain vault"
+  default_prompt: "Use $brain to orient from claude-brain and retrieve or save connected project context."
+policy:
+  allow_implicit_invocation: true

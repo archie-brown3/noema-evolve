@@ -112,9 +112,10 @@ Status reflects current (2026-07-10) state._
 9. **(done)** Role-structured benchmark layout — F_imm / F_mut boundary (task 0034)
 10. **(done)** Frozen run config with hash (task 0041)
 11. **(done)** `verify-run.sh` script (task 0038)
-12. **Sampling-hint pathway** — separately open; coordination modules may supply
-    template-knob hints (e.g. temperature, top_p) through `Advice.sampling_hint`.
-    Not yet implemented; no module consumes it today.
+12. **(done — task 0074)** Pre-selection substrate request seam. Coordination
+    modules may synchronously return a neutral `SamplingRequest` before parent
+    selection. `Advice.sampling_hint` was removed because advice is produced too
+    late to influence selection. Operator routing remains task 0073.
 13. **(done — task 0027)** Substrate-level EoH operator menu (e1, e2, m1, m2, m3;
     i1 excluded — population-init only in EoH, no per-iteration equivalent).
     Uniform-random-per-iteration selection, strictly opt-in via
@@ -122,11 +123,12 @@ Status reflects current (2026-07-10) state._
     Adaptive/reward-based operator selection is future work, separate from this
     task (see task 0018 / bandit arm).
 14. **(pending)** Port bin-packing benchmark (task 0036)
-15. **(pending)** Implement s1 lineage arm (task 0035, blocked-by 0026)
+15. **(superseded)** s1 lineage arm (task 0035). Reconsider only as explicit
+    substrate-level lineage context after TreeStore; it is not a headline arm.
 16. **(pending)** Population-store seam → TreeStore (task 0037, Phase B)
 17. **(pending)** Wire evolution tracer with ledger (task 0039)
 18. **(pending)** PES full controller-loop test (task 0040)
-19. **(pending)** Fix PES lineage loss on plan failure (task 0042)
+19. **(done — task 0042)** Fix PES lineage loss on plan failure
 
 [^1]: Narrows the prior assumption that noema uses only OpenEvolve-style
     diff/rewrite mutation prompts. The legacy toggle (`diff_based_evolution`)

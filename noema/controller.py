@@ -400,15 +400,17 @@ class NoemaController:
                 continue
 
             if len(child_code) > self.config.max_code_length:
+                child_length = len(child_code)
                 error_text = (
-                    f"generated code length {len(child_code)} exceeds max "
+                    f"generated code length {child_length} exceeds max "
                     f"{self.config.max_code_length}"
                 )
                 child_code = None
                 changes_summary = None
                 logger.warning(
                     f"Iteration {iteration}: generated code exceeds max length "
-                    f"(attempt {attempt + 1}, {len(child_code)} > {self.config.max_code_length})"
+                    f"(attempt {attempt + 1}, {child_length} > "
+                    f"{self.config.max_code_length})"
                 )
                 continue
 

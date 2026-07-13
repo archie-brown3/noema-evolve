@@ -1,0 +1,804 @@
+2026-07-13 01:16:35,065 - INFO - Froze run config to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/config.yaml (sha256=b7202f2f448f3f74fedeb43ff1a1e59b7f7a0835c4bbba3ee5a95a5468019834)
+2026-07-13 01:16:35,065 - INFO - Initialized program database with 0 programs
+2026-07-13 01:16:35,066 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:35,066 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:35,070 - INFO - Initialized prompt sampler
+2026-07-13 01:16:35,153 - INFO - Evaluating and adding initial program
+2026-07-13 01:16:35,437 - INFO - Evaluated program initial in 0.28s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.2790, combined_score=0.3642
+2026-07-13 01:16:35,438 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-13 01:17:18,912 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:19:22,297 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:19:22,491 - INFO - Evaluated program it000000 in 0.19s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1878, combined_score=0.5678
+2026-07-13 01:19:22,492 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-13 01:19:22,492 - INFO - New best program it000000 replaces initial (combined_score: 0.3642 → 0.5678, +0.2036)
+2026-07-13 01:20:04,993 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:22:35,384 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:22:35,529 - INFO - Evaluated program it000001 in 0.14s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1406, combined_score=0.5678
+2026-07-13 01:22:35,529 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 5, 'diversity': 0}
+2026-07-13 01:23:39,896 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:24:59,838 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:24:59,995 - INFO - Evaluated program it000002 in 0.15s: sum_radii=1.4275, target_ratio=0.5418, validity=1.0000, eval_time=0.1506, combined_score=0.5418
+2026-07-13 01:24:59,996 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 0}
+2026-07-13 01:25:48,755 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:27:14,270 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:27:14,414 - INFO - Evaluated program it000003 in 0.14s: sum_radii=1.3541, target_ratio=0.5139, validity=1.0000, eval_time=0.1410, combined_score=0.5139
+2026-07-13 01:27:14,415 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 9, 'diversity': 9}
+2026-07-13 01:28:14,504 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:29:11,234 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:30:14,606 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:30:41,746 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:31:20,651 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:33:20,198 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:33:20,342 - INFO - Evaluated program it000004 in 0.14s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1389, combined_score=0.5678
+2026-07-13 01:33:20,344 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 3, 'diversity': 0}
+2026-07-13 01:33:20,347 - INFO - Saved database with 6 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_4
+2026-07-13 01:33:20,349 - INFO - Saved checkpoint at iteration 4 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_4
+2026-07-13 01:34:20,242 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:36:30,183 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:36:30,354 - INFO - Evaluated program it000005 in 0.17s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1656, combined_score=0.5718
+2026-07-13 01:36:30,355 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 1, 'diversity': 3}
+2026-07-13 01:36:30,355 - INFO - New best program it000005 replaces it000000 (combined_score: 0.5678 → 0.5718, +0.0040)
+2026-07-13 01:37:44,912 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:40:07,123 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:40:07,296 - INFO - Evaluated program it000006 in 0.17s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1685, combined_score=0.5678
+2026-07-13 01:40:07,297 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 0}
+2026-07-13 01:41:19,466 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:43:59,661 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:43:59,832 - INFO - Evaluated program it000007 in 0.17s: sum_radii=1.5404, target_ratio=0.5846, validity=1.0000, eval_time=0.1651, combined_score=0.5846
+2026-07-13 01:43:59,834 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 3, 'diversity': 5}
+2026-07-13 01:43:59,834 - INFO - New best program it000007 replaces it000005 (combined_score: 0.5718 → 0.5846, +0.0128)
+2026-07-13 01:44:34,202 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:45:23,035 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:45:53,566 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:46:35,654 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:47:36,155 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:52:36,262 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 01:53:13,386 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:53:13,594 - INFO - Evaluated program it000008 in 0.21s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.2055, combined_score=0.0000
+2026-07-13 01:53:13,596 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 2}
+2026-07-13 01:54:12,640 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:57:23,208 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:57:23,373 - INFO - Evaluated program it000009 in 0.16s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1599, combined_score=0.5718
+2026-07-13 01:57:23,375 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 1, 'diversity': 5}
+2026-07-13 01:57:23,381 - INFO - Saved database with 11 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_9
+2026-07-13 01:57:23,383 - INFO - Saved checkpoint at iteration 9 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_9
+2026-07-13 01:58:26,618 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:02:19,711 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:02:19,859 - INFO - Evaluated program it000010 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1459, combined_score=0.0000
+2026-07-13 02:02:19,861 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 9}
+2026-07-13 02:03:11,028 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:07:26,573 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:07:26,742 - INFO - Evaluated program it000011 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1668, combined_score=0.0000
+2026-07-13 02:07:26,744 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 6, 'diversity': 4}
+2026-07-13 02:08:19,510 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:09:10,112 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:09:42,099 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:10:23,616 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:11:18,086 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:15:46,337 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:15:46,503 - INFO - Evaluated program it000012 in 0.16s: sum_radii=1.3426, target_ratio=0.5095, validity=1.0000, eval_time=0.1618, combined_score=0.5095
+2026-07-13 02:15:46,507 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 5}
+2026-07-13 02:16:37,426 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:21:13,200 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:21:13,414 - INFO - Evaluated program it000013 in 0.21s: sum_radii=1.9534, target_ratio=0.7413, validity=1.0000, eval_time=0.2087, combined_score=0.7413
+2026-07-13 02:21:13,417 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 7}
+2026-07-13 02:21:13,417 - INFO - New best program it000013 replaces it000007 (combined_score: 0.5846 → 0.7413, +0.1567)
+2026-07-13 02:22:11,367 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:27:11,381 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 02:28:28,362 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:28:28,534 - INFO - Evaluated program it000014 in 0.17s: sum_radii=1.5652, target_ratio=0.5940, validity=1.0000, eval_time=0.1679, combined_score=0.5940
+2026-07-13 02:28:28,537 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 8, 'diversity': 7}
+2026-07-13 02:28:28,546 - INFO - Saved database with 16 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_14
+2026-07-13 02:28:28,551 - INFO - Saved checkpoint at iteration 14 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_14
+2026-07-13 02:29:22,907 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:33:25,102 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:33:25,252 - INFO - Evaluated program it000015 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1474, combined_score=0.0000
+2026-07-13 02:34:27,751 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:34:57,046 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:35:43,969 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:36:23,772 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:37:21,590 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:42:11,445 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:42:11,590 - INFO - Evaluated program it000016 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1424, combined_score=0.0000
+2026-07-13 02:42:11,592 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 2}
+2026-07-13 02:43:03,159 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:47:23,342 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:47:23,495 - INFO - Evaluated program it000017 in 0.15s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1483, combined_score=0.5718
+2026-07-13 02:47:23,495 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 2, 'diversity': 1}
+2026-07-13 02:47:51,121 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:52:51,165 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 02:53:57,443 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 02:53:57,601 - INFO - Evaluated program it000018 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1558, combined_score=0.0000
+2026-07-13 02:53:57,604 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 4}
+2026-07-13 02:55:24,331 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:00:24,438 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 03:01:51,642 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmprggwi4hb.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9597642169962064
+Results saved to /tmp/tmpm0ey31zx.py.results
+
+Evaluation: valid=True, sum_radii=0.959764, target=2.635, ratio=0.364237, time=0.28s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpsfke8vba.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmppkcsi0va.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.19s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpklg3tbub.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmptsg1czjj.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmptet95gh_.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.427545177538312
+Results saved to /tmp/tmpmugf5z3g.py.results
+
+Evaluation: valid=True, sum_radii=1.427545, target=2.635, ratio=0.541763, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpv2fk7vfo.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3541146071490195
+Results saved to /tmp/tmpw_b5jyga.py.results
+
+Evaluation: valid=True, sum_radii=1.354115, target=2.635, ratio=0.513895, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp57o1exa_.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmpb49lo03j.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpqrjellu0.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmpxbsl_2qy.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpozwvlqcm.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmpt_a0b7t0.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpbbqwf2ec.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5404435298358452
+Results saved to /tmp/tmp74erl35k.py.results
+
+Evaluation: valid=True, sum_radii=1.540444, target=2.635, ratio=0.584609, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmps5773bqh.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2658087443449688
+Results saved to /tmp/tmpu18_81at.py.results
+
+Circle 19 has negative radius -0.10000000000000009
+Warning: Reported sum 1.2658087443449688 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.21s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0f__qyg3.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmpl3f66het.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0uirzeb3.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.8556810931081507
+Results saved to /tmp/tmpa5ktnfmj.py.results
+
+Circle 10 has negative radius -0.007434015224390578
+Warning: Reported sum 0.8556810931081507 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp1c8t_d2x.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5209032354189826
+Results saved to /tmp/tmp3ee0xhyk.py.results
+
+Circle 25 has negative radius -0.020000000000000018
+Warning: Reported sum 1.5209032354189826 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpcorx0d5w.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3426168865438386
+Results saved to /tmp/tmpqrylga2f.py.results
+
+Evaluation: valid=True, sum_radii=1.342617, target=2.635, ratio=0.509532, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmprdjncucj.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.953415201189003
+Results saved to /tmp/tmps6hgb9tf.py.results
+
+Evaluation: valid=True, sum_radii=1.953415, target=2.635, ratio=0.741334, time=0.21s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp3uwmkrhg.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5652305102575064
+Results saved to /tmp/tmpxkhxk949.py.results
+
+Evaluation: valid=True, sum_radii=1.565231, target=2.635, ratio=0.594015, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpe1kgcg56.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5209032354189826
+Results saved to /tmp/tmp3xw2s4ll.py.results
+
+Circle 25 has negative radius -0.020000000000000018
+Warning: Reported sum 1.5209032354189826 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp5bodjrpp.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2658087443449688
+Results saved to /tmp/tmp2lbiyujx.py.results
+
+Circle 19 has negative radius -0.10000000000000009
+Warning: Reported sum 1.2658087443449688 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp758oq0bt.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmppoovdwkd.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp289hrxja.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.319053601379195
+Results saved to /tmp/tmpcb62qjct.py.results
+
+Circle 10 has negative radius -0.007434015224390578
+Warning: Reported sum 1.319053601379195 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpr7ddwe0d.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2994208135690783
+Results saved to /tmp/tmpr9o_6llc.py.results
+2026-07-13 03:01:51,812 - INFO - Evaluated program it000019 in 0.17s: sum_radii=1.2994, target_ratio=0.4931, validity=1.0000, eval_time=0.1654, combined_score=0.4931
+2026-07-13 03:01:51,816 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 4, 'diversity': 2}
+2026-07-13 03:03:26,812 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:04:15,511 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:04:37,864 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:05:27,514 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:05:27,525 - INFO - Saved database with 21 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_19
+2026-07-13 03:05:27,528 - INFO - Saved checkpoint at iteration 19 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_19
+2026-07-13 03:06:47,401 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:11:22,472 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:11:22,619 - INFO - Evaluated program it000020 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1442, combined_score=0.0000
+2026-07-13 03:13:47,206 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:18:47,278 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 03:21:24,543 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:21:24,545 - WARNING - Iteration 21: no valid program in LLM response (attempt 1)
+2026-07-13 03:22:44,119 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:22:44,295 - INFO - Evaluated program it000021 in 0.17s: sum_radii=1.9534, target_ratio=0.7413, validity=1.0000, eval_time=0.1714, combined_score=0.7413
+2026-07-13 03:23:29,716 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:27:10,829 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:27:10,987 - INFO - Evaluated program it000022 in 0.16s: sum_radii=1.5912, target_ratio=0.6039, validity=1.0000, eval_time=0.1527, combined_score=0.6039
+2026-07-13 03:27:10,991 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 5, 'diversity': 3}
+2026-07-13 03:28:38,265 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:33:38,349 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 03:34:55,173 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:34:55,322 - INFO - Evaluated program it000023 in 0.15s: sum_radii=1.2994, target_ratio=0.4931, validity=1.0000, eval_time=0.1450, combined_score=0.4931
+2026-07-13 03:35:58,446 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:36:37,224 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:37:32,588 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:38:09,562 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:38:56,964 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:41:36,940 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:41:37,085 - INFO - Evaluated program it000024 in 0.14s: sum_radii=1.4197, target_ratio=0.5388, validity=1.0000, eval_time=0.1409, combined_score=0.5388
+2026-07-13 03:41:37,088 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 3}
+2026-07-13 03:41:37,104 - INFO - Saved database with 26 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_24
+2026-07-13 03:41:37,109 - INFO - Saved checkpoint at iteration 24 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_24
+2026-07-13 03:42:54,657 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:47:33,270 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:47:33,423 - INFO - Evaluated program it000025 in 0.15s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1479, combined_score=0.5718
+2026-07-13 03:49:27,917 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:54:27,981 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 03:55:10,620 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 03:55:10,792 - INFO - Evaluated program it000026 in 0.17s: sum_radii=1.5912, target_ratio=0.6039, validity=1.0000, eval_time=0.1667, combined_score=0.6039
+2026-07-13 03:56:27,845 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:01:27,949 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:02:21,269 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:02:21,444 - INFO - Evaluated program it000027 in 0.17s: sum_radii=1.6167, target_ratio=0.6135, validity=1.0000, eval_time=0.1709, combined_score=0.6135
+2026-07-13 04:02:21,447 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 3, 'diversity': 3}
+2026-07-13 04:03:30,564 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:04:20,719 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:05:18,898 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:06:06,609 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:07:19,624 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:12:19,710 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:12:42,446 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:12:42,613 - INFO - Evaluated program it000028 in 0.16s: sum_radii=1.4197, target_ratio=0.5388, validity=1.0000, eval_time=0.1611, combined_score=0.5388
+2026-07-13 04:14:10,405 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:19:10,510 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:20:27,275 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:20:27,421 - INFO - Evaluated program it000029 in 0.14s: sum_radii=1.9373, target_ratio=0.7352, validity=1.0000, eval_time=0.1408, combined_score=0.7352
+2026-07-13 04:20:27,424 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 3}
+2026-07-13 04:20:27,439 - INFO - Saved database with 31 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_29
+2026-07-13 04:20:27,442 - INFO - Saved checkpoint at iteration 29 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_29
+2026-07-13 04:21:33,972 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:26:34,065 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:28:07,876 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:28:08,046 - INFO - Evaluated program it000030 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1679, combined_score=0.0000
+2026-07-13 04:29:12,720 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:34:12,828 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:34:32,456 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:34:32,636 - INFO - Evaluated program it000031 in 0.18s: sum_radii=1.5404, target_ratio=0.5846, validity=1.0000, eval_time=0.1739, combined_score=0.5846
+2026-07-13 04:34:32,637 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 3, 'diversity': 1}
+2026-07-13 04:35:36,675 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:36:21,061 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:36:45,941 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:37:29,957 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:38:36,423 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:43:29,683 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:43:29,837 - INFO - Evaluated program it000032 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1505, combined_score=0.0000
+2026-07-13 04:43:29,840 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 2}
+2026-07-13 04:44:53,436 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:49:20,343 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:49:20,518 - INFO - Evaluated program it000033 in 0.17s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1701, combined_score=0.5718
+2026-07-13 04:50:33,767 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:55:33,867 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 04:56:21,425 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 04:56:21,571 - INFO - Evaluated program it000034 in 0.14s: sum_radii=1.7164, target_ratio=0.6514, validity=1.0000, eval_time=0.1416, combined_score=0.6514
+2026-07-13 04:56:21,575 - INFO - Island 2 MAP-Elites cell improved: {'complexity': 5, 'diversity': 3} (fitness: 0.604 -> 0.651)
+2026-07-13 04:56:21,593 - INFO - Saved database with 36 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_34
+2026-07-13 04:56:21,598 - INFO - Saved checkpoint at iteration 34 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_34
+2026-07-13 04:57:18,525 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:02:07,700 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:02:07,859 - INFO - Evaluated program it000035 in 0.16s: sum_radii=1.4259, target_ratio=0.5411, validity=1.0000, eval_time=0.1519, combined_score=0.5411
+2026-07-13 05:03:05,492 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:03:58,182 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:04:40,709 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:05:41,394 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:06:58,504 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:11:52,199 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:11:52,351 - INFO - Evaluated program it000036 in 0.15s: sum_radii=1.4197, target_ratio=0.5388, validity=1.0000, eval_time=0.1449, combined_score=0.5388
+2026-07-13 05:13:00,946 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:18:01,046 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:18:22,800 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:18:22,960 - INFO - Evaluated program it000037 in 0.16s: sum_radii=1.9373, target_ratio=0.7352, validity=1.0000, eval_time=0.1547, combined_score=0.7352
+2026-07-13 05:21:07,495 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:26:07,549 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:27:08,694 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:27:08,899 - INFO - Evaluated program it000038 in 0.20s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1998, combined_score=0.5678
+2026-07-13 05:27:08,902 - INFO - Island 2 MAP-Elites cell improved: {'complexity': 9, 'diversity': 9} (fitness: 0.000 -> 0.568)
+2026-07-13 05:29:00,141 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:32:36,929 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:32:37,071 - INFO - Evaluated program it000039 in 0.14s: sum_radii=1.5404, target_ratio=0.5846, validity=1.0000, eval_time=0.1370, combined_score=0.5846
+2026-07-13 05:32:37,071 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 0}
+2026-07-13 05:33:30,233 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:34:02,010 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:35:18,883 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:36:16,421 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:36:16,448 - INFO - Saved database with 41 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_39
+2026-07-13 05:36:16,456 - INFO - Saved checkpoint at iteration 39 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_39
+2026-07-13 05:37:40,842 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:42:40,930 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:43:18,037 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation: valid=True, sum_radii=1.299421, target=2.635, ratio=0.493139, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp8i12kcls.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2658087443449688
+Results saved to /tmp/tmpxs30n34j.py.results
+
+Circle 19 has negative radius -0.10000000000000009
+Warning: Reported sum 1.2658087443449688 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpa_8smkhz.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.953415201189003
+Results saved to /tmp/tmp_0bfjxaj.py.results
+
+Evaluation: valid=True, sum_radii=1.953415, target=2.635, ratio=0.741334, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmphfep27ul.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5911815125748472
+Results saved to /tmp/tmpnx7j3jnf.py.results
+
+Evaluation: valid=True, sum_radii=1.591182, target=2.635, ratio=0.603864, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp3nz784yi.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2994208135690783
+Results saved to /tmp/tmprvwf22ys.py.results
+
+Evaluation: valid=True, sum_radii=1.299421, target=2.635, ratio=0.493139, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmph6a27tud.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4197302590050924
+Results saved to /tmp/tmp3wfa_hwl.py.results
+
+Evaluation: valid=True, sum_radii=1.419730, target=2.635, ratio=0.538797, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpak7z93to.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmp73zrftjf.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp6o0xgz_z.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5911815125748472
+Results saved to /tmp/tmpm8lhvhlk.py.results
+
+Evaluation: valid=True, sum_radii=1.591182, target=2.635, ratio=0.603864, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmppnjgw27c.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.616658629686672
+Results saved to /tmp/tmplzuvla4v.py.results
+
+Evaluation: valid=True, sum_radii=1.616659, target=2.635, ratio=0.613533, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp3nffovcc.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4197302590050924
+Results saved to /tmp/tmpywd9obci.py.results
+
+Evaluation: valid=True, sum_radii=1.419730, target=2.635, ratio=0.538797, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmptewzacq8.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.9372774231295053
+Results saved to /tmp/tmpgvmk2jy6.py.results
+
+Evaluation: valid=True, sum_radii=1.937277, target=2.635, ratio=0.735210, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpqkpv6o5q.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3121928069582858
+Results saved to /tmp/tmp51a2papx.py.results
+
+Circle 10 has negative radius -0.007434015224390578
+Warning: Reported sum 1.3121928069582858 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp92vgbs07.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5404435298358452
+Results saved to /tmp/tmpj6d2pwa8.py.results
+
+Evaluation: valid=True, sum_radii=1.540444, target=2.635, ratio=0.584609, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp6tybc9fl.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.2750627547833397
+Results saved to /tmp/tmprfdx3940.py.results
+
+Circle 19 has negative radius -0.036210351700002974
+Warning: Reported sum 1.2750627547833397 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpuwabqfto.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmpd4f6tp6h.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp0xcknpa_.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.7164279861898106
+Results saved to /tmp/tmpwgk2yj9g.py.results
+
+Evaluation: valid=True, sum_radii=1.716428, target=2.635, ratio=0.651396, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpys4ls982.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4259164922835745
+Results saved to /tmp/tmp_7x3r7uf.py.results
+
+Evaluation: valid=True, sum_radii=1.425916, target=2.635, ratio=0.541145, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpwgdugild.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4197302590050924
+Results saved to /tmp/tmp_0zkn481.py.results
+
+Evaluation: valid=True, sum_radii=1.419730, target=2.635, ratio=0.538797, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmppd5ggbjs.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.9372774231295053
+Results saved to /tmp/tmp2mi_szzm.py.results
+
+Evaluation: valid=True, sum_radii=1.937277, target=2.635, ratio=0.735210, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmptjww5noy.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmp341bpsu2.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.20s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpah4n0xg2.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5404435298358452
+Results saved to /tmp/tmplwb8dmky.py.results
+
+Evaluation: valid=True, sum_radii=1.540444, target=2.635, ratio=0.584609, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpq7tuk2fk.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.6118022761142778
+Results saved to /tmp/tmp1mwze3ds.py.results
+
+Circle 19 has negative radius -0.10000000000000009
+Warning: Reported sum 0.6118022761142778 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.17s2026-07-13 05:43:18,209 - INFO - Evaluated program it000040 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1681, combined_score=0.0000
+2026-07-13 05:43:18,211 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 0}
+2026-07-13 05:44:22,537 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:47:14,062 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:47:14,222 - INFO - Evaluated program it000041 in 0.16s: sum_radii=1.9373, target_ratio=0.7352, validity=1.0000, eval_time=0.1549, combined_score=0.7352
+2026-07-13 05:47:14,222 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 2, 'diversity': 1} (fitness: 0.572 -> 0.735)
+2026-07-13 05:48:29,932 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 05:53:30,040 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 05:54:49,148 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 05:54:49,329 - INFO - Evaluated program it000042 in 0.18s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 05:54:49,332 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 1, 'diversity': 0}
+2026-07-13 05:56:16,593 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:00:54,796 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:00:54,996 - INFO - Evaluated program it000043 in 0.20s: sum_radii=1.5404, target_ratio=0.5846, validity=1.0000, eval_time=0.1943, combined_score=0.5846
+2026-07-13 06:00:55,000 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 5, 'diversity': 3}
+2026-07-13 06:01:54,508 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:02:36,860 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:03:30,889 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:04:32,405 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:05:12,732 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:08:30,524 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:08:30,690 - INFO - Evaluated program it000044 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1634, combined_score=0.0000
+2026-07-13 06:08:30,693 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 0}
+2026-07-13 06:08:30,693 - INFO - Island 0 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-13 06:08:30,716 - INFO - Saved database with 46 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_44
+2026-07-13 06:08:30,721 - INFO - Saved checkpoint at iteration 44 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_44
+2026-07-13 06:10:06,038 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:15:06,153 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 06:15:52,490 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:15:52,638 - INFO - Evaluated program it000045 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1443, combined_score=0.0000
+2026-07-13 06:15:52,641 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 1}
+2026-07-13 06:17:35,861 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:22:35,951 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 06:24:29,179 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:24:29,350 - INFO - Evaluated program it000046 in 0.17s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1658, combined_score=0.5678
+2026-07-13 06:25:53,927 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:30:09,028 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 06:30:09,335 - INFO - Evaluated program it000047 in 0.30s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 06:31:17,939 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:31:54,253 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:32:45,882 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:33:27,233 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:34:43,236 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:38:25,888 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:38:26,029 - INFO - Evaluated program it000048 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1385, combined_score=0.0000
+2026-07-13 06:39:34,771 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:42:16,496 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:42:16,690 - INFO - Evaluated program it000049 in 0.19s: sum_radii=1.5068, target_ratio=0.5718, validity=1.0000, eval_time=0.1900, combined_score=0.5718
+2026-07-13 06:42:16,690 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 1, 'diversity': 0}
+2026-07-13 06:42:16,722 - INFO - Saved database with 51 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_49
+2026-07-13 06:42:16,730 - INFO - Saved checkpoint at iteration 49 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_49
+2026-07-13 06:43:27,953 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:48:07,081 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:48:07,246 - INFO - Evaluated program it000050 in 0.16s: sum_radii=1.4962, target_ratio=0.5678, validity=1.0000, eval_time=0.1604, combined_score=0.5678
+2026-07-13 06:48:07,250 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 5, 'diversity': 4}
+2026-07-13 06:49:29,345 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:53:06,940 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:53:07,183 - INFO - Evaluated program it000051 in 0.24s: sum_radii=0.9363, target_ratio=0.3553, validity=1.0000, eval_time=0.2337, combined_score=0.3553
+2026-07-13 06:53:07,187 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 0}
+2026-07-13 06:54:14,624 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:54:45,548 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:55:33,929 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:56:48,597 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 06:58:06,872 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:01:02,915 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:01:03,143 - INFO - Evaluated program it000052 in 0.22s: sum_radii=1.4330, target_ratio=0.5438, validity=1.0000, eval_time=0.2213, combined_score=0.5438
+2026-07-13 07:01:03,146 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 1}
+2026-07-13 07:02:19,639 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:06:45,892 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:06:46,063 - INFO - Evaluated program it000053 in 0.17s: sum_radii=1.9373, target_ratio=0.7352, validity=1.0000, eval_time=0.1675, combined_score=0.7352
+2026-07-13 07:07:56,929 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:12:56,977 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 07:14:30,685 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:14:30,845 - INFO - Evaluated program it000054 in 0.16s: sum_radii=1.4326, target_ratio=0.5437, validity=1.0000, eval_time=0.1556, combined_score=0.5437
+2026-07-13 07:14:30,849 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 2}
+2026-07-13 07:14:30,888 - INFO - Saved database with 56 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_54
+2026-07-13 07:14:30,896 - INFO - Saved checkpoint at iteration 54 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_54
+2026-07-13 07:15:40,866 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:20:40,974 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 07:21:15,706 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:21:15,884 - INFO - Evaluated program it000055 in 0.18s: sum_radii=1.5183, target_ratio=0.5762, validity=1.0000, eval_time=0.1727, combined_score=0.5762
+2026-07-13 07:21:15,888 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 1}
+2026-07-13 07:21:15,888 - INFO - Island 3 MAP-Elites coverage reached 10.0% (10/100 cells)
+2026-07-13 07:22:21,852 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:23:03,225 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:23:58,537 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:25:00,413 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:26:45,177 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:31:45,210 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-13 07:32:40,717 - INFO - HTTP Request: POST http://100.95.96.20:8081/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 07:32:40,854 - INFO - Evaluated program it000056 in 0.13s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1336, combined_score=0.0000
+2026-07-13 07:32:40,857 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 0}
+2026-07-13 07:32:40,858 - INFO - Stopping at iteration 57: Budget exhausted for account 'coordination': spent 1013477 of cap 1000000
+2026-07-13 07:32:40,885 - INFO - Saved database with 58 programs to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_56
+2026-07-13 07:32:40,891 - INFO - Saved checkpoint at iteration 56 to /root/noema-evolve/examples/circle_packing/runs/pes-custom-30b-enriched-s42/checkpoints/checkpoint_56
+
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmppnx6kp8r.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.9372774231295053
+Results saved to /tmp/tmpy6y58fp4.py.results
+
+Evaluation: valid=True, sum_radii=1.937277, target=2.635, ratio=0.735210, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp_smirr26.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpnxnfnpk3.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpnxnfnpk3.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_smirr26.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp_smirr26.py", line 82, in construct_packing
+    centers[22 + i] = [0.875, pos]  # Right edge
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpqesrcd1c.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5404435298358452
+Results saved to /tmp/tmp3gbnb8j_.py.results
+
+Evaluation: valid=True, sum_radii=1.540444, target=2.635, ratio=0.584609, time=0.19s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpdi7n0g49.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.1766216903250433
+Results saved to /tmp/tmpn4ot6v3j.py.results
+
+Circle 19 has negative radius -0.10000000000000009
+Warning: Reported sum 1.1766216903250433 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp2kgpg8gm.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9119287839544529
+Results saved to /tmp/tmpbb5t0qs3.py.results
+
+Circle 25 has negative radius -0.050000000000000044
+Warning: Reported sum 0.9119287839544529 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpqsw4yr2t.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmp0znzx42d.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp5xwr5jgl.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpbh4uouk0.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpbh4uouk0.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp5xwr5jgl.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp5xwr5jgl.py", line 85, in construct_packing
+    centers[idx] = [base_x[col] + (0.05 if row == 1 else 0), base_y[row] + (0.05 if col == 2 or col == 4 else 0)]
+    ~~~~~~~^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpl835j3m1.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3464019281121355
+Results saved to /tmp/tmpbgtwftgy.py.results
+
+Circle 15 has negative radius -0.07955549577344101
+Warning: Reported sum 1.3464019281121355 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.14s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpmo38bn54.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5067532435899231
+Results saved to /tmp/tmp4klqvj7q.py.results
+
+Evaluation: valid=True, sum_radii=1.506753, target=2.635, ratio=0.571823, time=0.19s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp5_lbsosg.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4961823387761655
+Results saved to /tmp/tmpac60oq0_.py.results
+
+Evaluation: valid=True, sum_radii=1.496182, target=2.635, ratio=0.567811, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp14oessa0.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9362927216849285
+Results saved to /tmp/tmpq77aqhf6.py.results
+
+Evaluation: valid=True, sum_radii=0.936293, target=2.635, ratio=0.355329, time=0.23s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpcf9gt4uw.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4329531803639026
+Results saved to /tmp/tmpj44nq5q3.py.results
+
+Evaluation: valid=True, sum_radii=1.432953, target=2.635, ratio=0.543815, time=0.22s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp6iypvsbh.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.9372774231295053
+Results saved to /tmp/tmplwivt1io.py.results
+
+Evaluation: valid=True, sum_radii=1.937277, target=2.635, ratio=0.735210, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpx9k29qfx.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.4325840508492793
+Results saved to /tmp/tmph1iusss2.py.results
+
+Evaluation: valid=True, sum_radii=1.432584, target=2.635, ratio=0.543675, time=0.16s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpa02pug99.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.5183047758976331
+Results saved to /tmp/tmppq8696d8.py.results
+
+Evaluation: valid=True, sum_radii=1.518305, target=2.635, ratio=0.576207, time=0.17s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp37vq7vq3.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9334968642893691
+Results saved to /tmp/tmp3qcy5f83.py.results
+
+Circle 19 has negative radius -0.09700249916681547
+Warning: Reported sum 0.9334968642893691 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.13s
+BEST: {'sum_radii': 1.953415201189003, 'target_ratio': 0.7413340421969651, 'validity': 1.0, 'eval_time': 0.20870590209960938, 'combined_score': 0.7413340421969651}

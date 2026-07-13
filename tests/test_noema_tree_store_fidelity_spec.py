@@ -1,10 +1,11 @@
-"""Red behavioural specification for the MCTS-AHD-derived TreeStore.
+"""Behavioural specification for MCTS-AHD tree topology + UCT selection.
 
 The population-store seam is task 0074; the concrete tree is task 0037.  These
-tests pin the scientific behavior before either implementation lands.  They do
-not prescribe a public ``TreeNode`` type: callers see only neutral Selection and
-PopulationSnapshot values, while the small kernel helpers make the borrowed
-MCTS equations directly auditable.
+tests pin the scientific behavior before either implementation lands.  TreeStore
+owns topology/storage; UCTSelectionPolicy owns selection and visit state; callers
+compose them through SubstrateRuntime and see only neutral Selection and
+PopulationSnapshot values.  The kernel helpers keep the borrowed equations
+directly auditable.
 """
 
 from __future__ import annotations
@@ -67,25 +68,27 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
 
 
 class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
-    def make_store(self, seed=7):
+    def make_runtime(self, seed=7):
         module = _module(self)
-        return module.TreeStore(
-            steps_per_generation=4,
+        base = importlib.import_module("noema.substrate.base")
+        store = module.TreeStore(steps_per_generation=4)
+        policy = module.UCTSelectionPolicy(
             token_budget=10_000,
             initial_exploration=0.1,
             random_seed=seed,
         )
+        return base.SubstrateRuntime(store, policy)
 
     @unittest.expectedFailure
     def test_virtual_root_is_not_exposed_as_a_program(self):
-        store = self.make_store()
+        store = self.make_runtime().store
         snapshot = store.snapshot(scope=None)
         self.assertEqual(snapshot.top_programs, ())
         self.assertIsNone(snapshot.best_program)
 
     @unittest.expectedFailure
     def test_one_accepted_child_is_inserted_per_host_iteration(self):
-        store = self.make_store()
+        store = self.make_runtime().store
         root_child = {"id": "p0", "fitness": 1.0, "parent_id": None}
         store.add(root_child, target_scope=None)
         before = store.snapshot(scope=None)
@@ -98,13 +101,13 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
         self.assertEqual(after.best_program, child)
 
     @unittest.expectedFailure
-    def test_tree_selection_uses_neutral_selection_value(self):
-        module = _module(self)
+    def test_runtime_selection_uses_neutral_selection_value(self):
         base = importlib.import_module("noema.substrate.base")
-        store = self.make_store()
+        runtime = self.make_runtime()
+        store = runtime.store
         store.add({"id": "p0", "fitness": 1.0, "parent_id": None})
 
-        selected = store.select(target_scope=None, num_inspirations=0)
+        selected = runtime.select(target_scope=None, num_inspirations=0)
 
         self.assertIsInstance(selected, base.Selection)
         self.assertEqual(selected.parent["id"], "p0")
@@ -113,7 +116,8 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_checkpoint_resume_preserves_the_selection_trace(self):
-        store = self.make_store(seed=123)
+        runtime = self.make_runtime(seed=123)
+        store = runtime.store
         for index, fitness in enumerate((1.0, 0.5, 1.3, 0.9)):
             store.add(
                 {
@@ -124,15 +128,18 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
             )
 
         for _ in range(3):
-            store.select(target_scope=None, num_inspirations=0)
-        state = json.loads(json.dumps(store.state_dict()))
+            runtime.select(target_scope=None, num_inspirations=0)
+        state = json.loads(
+            json.dumps({"store": store.state_dict(), "runtime": runtime.state_dict()})
+        )
         expected = [
-            store.select(target_scope=None, num_inspirations=0).parent["id"]
+            runtime.select(target_scope=None, num_inspirations=0).parent["id"]
             for _ in range(8)
         ]
 
-        resumed = self.make_store(seed=999)
-        resumed.load_state_dict(state)
+        resumed = self.make_runtime(seed=999)
+        resumed.store.load_state_dict(state["store"])
+        resumed.load_state_dict(state["runtime"])
         actual = [
             resumed.select(target_scope=None, num_inspirations=0).parent["id"]
             for _ in range(8)

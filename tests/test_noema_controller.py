@@ -664,6 +664,21 @@ class TestNonImprovementRetry(unittest.TestCase):
 
 
 class TestRetryLoop(unittest.TestCase):
+    def test_overlength_response_is_rejected_without_crashing_run(self):
+        config = make_config(
+            max_code_length=10,
+            retry_enabled=False,
+            max_iterations=1,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = make_controller(tmp, config=config)
+            asyncio.run(controller.run(iterations=1))
+
+        self.assertEqual(len(client.calls), 1)
+        self.assertGreater(ledger.spent("mutation"), 0)
+        self.assertEqual(controller.db.num_programs, 1)
+        self.assertEqual(controller.start_iteration, 1)
+
     def test_parse_failure_retries_and_succeeds(self):
         with tempfile.TemporaryDirectory() as tmp:
             eval_path = os.path.join(tmp, "evaluator.py")

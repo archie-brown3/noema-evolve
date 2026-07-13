@@ -1,70 +1,3 @@
-- ERROR(triage): You've hit your session limit · resets 2:40am (UTC)
-
-## tick 2026-07-09T04:00:25+00:00 iter 1
-- finding: Standing goal `ledger-completeness-live` FAIL (26); top-of-Now task 0025-fix-ledger-metering-local-inference is unblocked and targets its resolution
-  evidence: goal ledger tail (FAIL), vault INDEX Now (unblocked task)
-  status: actionable
-- FAILED: fix-ledger-metering in /root/noema-evolve/../wt-1 — FAIL: diff touches files outside the spec's allowed set (noema/budget/ledger.py and six __pycache__ *.pyc binaries; spec permitted only noema/budget/llm.py, tests/test_noema_budgeted_llm.py, and the task file); the missing-usage fallback is wrong — when `usage` is absent entirely the code charges 0 tokens with estimated=False instead of computing a counted estimate with estimated:true as step 3 ordered, and the required test 4(b) for that absent-usage shape is missing (only null-field and partial-field fixtures were added); and the diff shows no edit to the vault task file, so the status: in-progress and Output/notes done_when items are unevidenced.
-- human (2026-07-09): 0025 done by hand — worker's diff accepted, committed e161972 on wt-1 branch; task marked in-progress in vault; do NOT re-dispatch. Loop fixes landed: usage cap is notional (subscription), pycs untracked, worker self-reviews + may git checkout/clean
-- spec signed off (2026-07-09): spec/STUDY.md + spec/LIVE-RUNS.md are canonical; INDEX rewritten (Now: 0038, 0034, 0026, 0035, 0036, 0027); live runs are ticket-gated per LIVE-RUNS — the loop preps/verifies, never launches
-
-## tick  iter 1
-
-## tick  iter 1
-
-## tick 2026-07-09T14:41:32+00:00 iter 1
-
-## tick 2026-07-09T16:50:00+00:00 iter 1
-- finding: ledger-completeness-live goal FAIL; required for clearing task 0025 done-when and unblocking RT-0001 smoke run
-  evidence: goal ledger tail (2026-07-08T23:23:43+00:00)
-  status: actionable
-
-- finding: tasks/0038-implement-verify-run-script unblocked and top of Now queue; gates RT-0001 and all downstream live-run tickets
-  evidence: vault INDEX Now section, position 1
-  status: actionable
-
-- finding: Recent commits modify coordination/ and budget/ contract-sensitive areas; verify compliance with CLAUDE.md interface restrictions
-  evidence: commits 6f8797a 3bfe346 887ac98 e161972
-  status: actionable
-- FAILED: implement-verify-run-script in /root/noema-evolve/../wt-1 — FAIL: none of the executable done_when items are evidenced — IMPLEMENTATION.md itself states tests/test_verify_run.sh, loop/guardrails/verify.sh, and the read-only run against examples/circle_packing/noema_null_output were never executed ("traced by hand instead"), and hand-tracing is not "the check passed"; additionally the diff omits the contents of verify-run.sh, the fixtures, and the test script (shown only as untracked `??` entries), so the per-§4-check PASS/FAIL behavior cannot be verified, the Makefile target landed in the root Makefile rather than the spec's loop/Makefile, and the required task-frontmatter `status: in-progress` change is nowhere in the diff.
-
-## tick 2026-07-09T17:13:08+00:00 iter 2
-finding: tasks/0038-implement-verify-run-script is at top of unblocked Now list
-evidence: vault task tasks/0038-implement-verify-run-script
-status: actionable
-
-finding: ledger-completeness-live FAIL (26)
-evidence: goal ledger row 2026-07-08T23:23:43+00:00
-status: actionable
-
-finding: tasks/0041-persist-frozen-run-config is unblocked, promoted 2026-07-09; no frozen config artifact yet, blocking LIVE-RUNS protocol checks for all tickets
-evidence: vault task tasks/0041-persist-frozen-run-config-with-hash
-status: actionable
-
-finding: commits 887ac98, e161972 (BudgetedLLM), 6f8797a, 3bfe346 (retry/coordination) modify contract-sensitive code; require guarantee-triad verification
-evidence: git commits 887ac98, e161972, 6f8797a, 3bfe346
-status: actionable
-
-finding: tasks/0025-fix-ledger-metering in-progress on wt-1; awaiting merge of e161972 and RT-0001 smoke run; loop must not re-dispatch
-evidence: vault task tasks/0025-fix-ledger-metering-local-inference
-status: informational
-- SESSION-LIMIT(worker): You've hit your session limit · resets 7:10pm (UTC)
-
-## tick 2026-07-10T05:02:10+00:00 iter 1
-- finding: ledger-completeness-live goal failing (26 checks)
-  evidence: ledger-completeness-live
-  status: actionable
-
-- finding: New experiment run directory noema_pes_retry_output; contract-sensitive per CLAUDE.md
-  evidence: noema_pes_retry_output
-  status: actionable
-
-- finding: Task 0027 (widen-mutation-menu) unblocked and at top of Now queue
-  evidence: tasks/0027-widen-mutation-menu-eoh-operators
-  status: actionable
-- queued: widen-mutation-menu — tasks/0027-widen-mutation-menu-eoh-operators
-
-## tick 2026-07-10T05:05:56+00:00 iter 2
 - finding: Unblocked task 0027 at top of Implementation queue
   evidence: tasks/0027-widen-mutation-menu-eoh-operators
   status: actionable
@@ -171,3 +104,111 @@ status: informational
   evidence: ledger-completeness-live
   status: actionable
 - FAILED: implement-stage1-intra-iteration-retry in /root/noema-evolve/../wt-1-1783684347 — FAIL: The diff touches only IMPLEMENTATION.md and satisfies none of the done_when items — it adds no test code to tests/test_noema_controller.py, tests/test_noema_prompts.py, or the budget test files (done_when explicitly requires "diff adds test code"), the required offline e2e file was admittedly deleted via git clean rather than committed (done_when requires it to exist), and the vault task file status/Output-notes update is absent from the diff; the maker's claim that prior commits already did the work is unverifiable from this diff and is not evidence.
+
+## tick 2026-07-12T05:01:19+00:00 iter 1
+- finding: FAIL goal `ledger-completeness-live` from 2026-07-08 ledger tail — standing issue blocking task 0025's done-when
+  evidence: goal ledger tail
+  status: actionable
+
+- finding: Task 0064 listed in "Now" Implementation section but marked as done in PES-faithful chain — conflicting state
+  evidence: vault INDEX
+  status: actionable
+
+- finding: Untracked file `goals/pes-arm-registry-split.md` suggests task 0066 completion not yet formalized per CLAUDE.md contract
+  evidence: git status
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-12T06:01:39+00:00 iter 1
+- finding: ledger-completeness-live standing goal FAIL unresolved since 2026-07-08 (root cause: RT-0001 not launched)
+  evidence: goal ledger tail (2026-07-08T23:23:43)
+  status: actionable
+
+- finding: tasks/0036 (port-bin-packing-benchmark) unblocked and in Now list, needed for W2 freeze
+  evidence: vault INDEX Now section (blocked-by: none)
+  status: actionable
+
+- finding: Completion marker for tasks/0066 untracked (goals/pes-arm-registry-split.md exists but not committed; C1-C3 work in git log)
+  evidence: untracked file in git status, commits fd03e44/fceb685/888a937
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-12T07:01:24+00:00 iter 1
+- finding: ledger-completeness-live goal FAIL (2026-07-08)
+  evidence: goal-ledger-tail
+  status: actionable
+
+- finding: Task 0064 listed in "Now" section but indexed as tasks/done/0064-pes-faithful-summarizer-recast in WP chain
+  evidence: vault-INDEX
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-12T08:01:46+00:00 iter 1
+- finding: Vault INDEX inconsistent: tasks/0064 listed in Now/Implementation but also in done/ chain
+  evidence: vault INDEX (Now section vs. PES-faithful chain)
+  status: actionable
+
+- finding: Unblocked implementation task ready: tasks/0036-port-bin-packing-benchmark (headline benchmark #2; needed for W2 freeze)
+  evidence: vault INDEX Now/Implementation
+  status: actionable
+
+- finding: Goal ledger FAIL on ledger-completeness-live (2026-07-08; related to RT-0001 metering smoke run)
+  evidence: goal ledger tail
+  status: actionable
+
+- finding: RT-0002 pes-shakedown launch blocked on one-line tracked code edit to run_noema_arm.py token default (contract-sensitive; flagged in ticket, not silently applied)
+  evidence: vault RT-0002 notes
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-13T05:00:26+00:00 iter 1
+- finding: ledger-completeness-live goal shows FAIL status (value 26)
+  evidence: goal ledger tail (2026-07-08T23:23:43)
+  status: actionable
+
+- finding: task 0070-all-arms-enriched-sweep unblocked and top-ranked in Now/Diagnostic
+  evidence: vault task 0070-all-arms-enriched-sweep (baseline gate; script ready)
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-13T06:01:54+00:00 iter 1
+- finding: unblocked baseline sweep 0070-all-arms-enriched-sweep at top of Diagnostic queue
+  evidence: tasks/0070-all-arms-enriched-sweep
+  status: actionable
+
+- finding: standing goal ledger-completeness-live FAIL for 5 days; awaiting RT-0001 user launch
+  evidence: goal ledger 2026-07-08T23:23:43+00:00 ledger-completeness-live FAIL 26
+  status: actionable
+
+- finding: unblocked blocker 0037-population-store-seam-treestore (tree substrate axis) marked ready for parallel start with diagnostics
+  evidence: tasks/0037-population-store-seam-treestore (vault INDEX Implementation/Now #1)
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-13T07:02:05+00:00 iter 1
+- finding: 0070-all-arms-enriched-sweep is unblocked; baseline diagnostic gate for enriched-prompt ablation
+  evidence: tasks/0070-all-arms-enriched-sweep
+  status: actionable
+
+- finding: 0037-population-store-seam-treestore is unblocked; declared THE HEADLINE BLOCKER (tree store substrate axis required for study validity)
+  evidence: tasks/0037-population-store-seam-treestore
+  status: actionable
+
+- finding: ledger-completeness-live FAIL since 2026-07-08 (related to 0025, blocked on user launch of RT-0001)
+  evidence: ledger-completeness-live
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.
+
+## tick 2026-07-13T08:01:51+00:00 iter 1
+- finding: task 0070 unblocked; top of Now/Diagnostic
+  evidence: 0070
+  status: actionable
+
+- finding: task 0037 unblocked; THE HEADLINE BLOCKER at top of Now/Implementation
+  evidence: 0037
+  status: actionable
+
+- finding: goal ledger shows ledger-completeness-live FAIL
+  evidence: ledger-completeness-live
+  status: actionable
+- ERROR(conductor): You're out of usage credits. Run /usage-credits to keep using Fable 5 or /model to switch models.

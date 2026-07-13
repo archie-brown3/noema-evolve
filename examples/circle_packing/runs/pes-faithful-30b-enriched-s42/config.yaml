@@ -1,0 +1,119 @@
+budget:
+  account_caps: {}
+  log_path: null
+  total_tokens: 1000000
+checkpoint_interval: 5
+coordination:
+  module: pes-faithful
+  params: {}
+  seed: 43
+database:
+  archive_size: 25
+  artifact_retention_days: 30
+  artifact_size_threshold: 32768
+  artifacts_base_path: null
+  cleanup_old_artifacts: true
+  db_path: /root/noema-evolve/examples/circle_packing/runs/pes-faithful-30b-enriched-s42/db
+  diversity_metric: edit_distance
+  diversity_reference_size: 20
+  elite_selection_ratio: 0.3
+  embedding_model: null
+  exploitation_ratio: 0.7
+  exploration_ratio: 0.2
+  feature_bins: 10
+  feature_dimensions:
+  - complexity
+  - diversity
+  in_memory: true
+  log_prompts: true
+  max_snapshot_artifacts: 100
+  migration_interval: 50
+  migration_rate: 0.1
+  novelty_llm: null
+  num_islands: 4
+  population_size: 60
+  random_seed: 42
+  similarity_threshold: 0.99
+diff_based_evolution: true
+diff_pattern: <<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE
+evaluator:
+  cascade_evaluation: false
+  cascade_thresholds:
+  - 0.5
+  - 0.75
+  - 0.9
+  cpu_limit: null
+  distributed: false
+  enable_artifacts: true
+  llm_feedback_weight: 0.1
+  max_artifact_storage: 104857600
+  max_retries: 3
+  memory_limit_mb: null
+  parallel_evaluations: 1
+  timeout: 60
+  use_llm_feedback: false
+file_suffix: .py
+language: python
+llm:
+  api_base: http://100.95.96.20:8082/v1
+  api_key: none
+  max_tokens: 4096
+  model: Qwen3-30B-A3B-Instruct-2507-Q8_0
+  retries: 3
+  retry_delay: 5.0
+  seed: null
+  temperature: 0.7
+  timeout: 300
+  top_p: 0.95
+max_code_length: 10000
+max_iterations: 2000
+mutation_operator_seed: 44
+mutation_operators: null
+num_inspirations: 3
+num_previous_programs: 3
+num_top_programs: 3
+prompt:
+  artifact_security_filter: true
+  code_length_threshold: null
+  comprehensive_implementation_min_lines: 50
+  concise_implementation_max_lines: 10
+  diff_summary_max_line_len: 100
+  diff_summary_max_lines: 30
+  evaluator_system_message: evaluator_system_message
+  include_artifacts: true
+  include_changes_under_chars: 100
+  initial_changes_description: ''
+  max_artifact_bytes: 20480
+  meta_prompt_weight: 0.1
+  num_diverse_programs: 2
+  num_top_programs: 3
+  programs_as_changes_description: false
+  suggest_simplification_after_chars: 500
+  system_message: "You are an expert mathematician specializing in circle packing\
+    \ problems and computational geometry. Your task is to improve a constructor function\
+    \ that directly produces a specific arrangement of 26 circles in a unit square,\
+    \ maximizing the sum of their radii. The AlphaEvolve paper achieved a sum of 2.635\
+    \ for n=26.\n\nKey geometric insights:\n- Circle packings often follow hexagonal\
+    \ patterns in the densest regions\n- Maximum density for infinite circle packing\
+    \ is pi/(2*sqrt(3)) \u2248 0.9069\n- Edge effects make square container packing\
+    \ harder than infinite packing\n- Circles can be placed in layers or shells when\
+    \ confined to a square\n- Similar radius circles often form regular patterns,\
+    \ while varied radii allow better space utilization\n- Perfect symmetry may not\
+    \ yield the optimal packing due to edge effects\n\nFocus on designing an explicit\
+    \ constructor that places each circle in a specific position, rather than an iterative\
+    \ search algorithm.\nIMPORTANT: Make sure that `compute_max_radii` is kept mathematically\
+    \ correct or left unmodified. The radius of any circle `i` MUST strictly satisfy\
+    \ `radii[i] <= min(x, y, 1 - x, 1 - y)` to stay inside the unit square, and `radii[i]\
+    \ + radii[j] <= dist` to avoid overlap. Any violations will result in a 0 validity\
+    \ score.\nCONCISENESS REQUIREMENT: You must be extremely concise. Explain your\
+    \ proposed mutation in at most one short sentence, then output the SEARCH/REPLACE\
+    \ block immediately. Do not write any other conversational filler or explanations."
+  system_message_changes_description: null
+  template_dir: null
+  template_variations: {}
+  use_meta_prompting: false
+  use_template_stochasticity: false
+random_seed: 42
+retry_cap: 2
+retry_enabled: true
+retry_on: non_improvement

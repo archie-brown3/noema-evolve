@@ -52,8 +52,76 @@ coordination:
   # params: {tips_per_prompt: 3, extraction_probability: 0.8}
 ```
 
+## Population substrate and parent selection
+
+Population topology and parent selection are independent configuration axes. The
+substrate owns population storage, topology, insertion, and generation cadence;
+the selection policy chooses parents and inspirations. A coordination arm does
+not choose either one, so every arm in an ablation can be run against the same
+configured substrate and policy.
+
+Existing configurations need no changes. Omitting both blocks is equivalent to:
+
+```yaml
+substrate:
+  kind: islands
+
+selection:
+  policy: substrate_default  # resolves to stock_openevolve for islands
+```
+
+This default performs one atomic delegation to OpenEvolve's stock island sampler,
+preserving its parent/inspiration behavior and global Python RNG stream.
+
+To use the LoongFlow-compatible Boltzmann policy with the islands store:
+
+```yaml
+random_seed: 42
+
+substrate:
+  kind: islands
+  # Optional. Defaults to database.num_islands for the islands substrate.
+  # This controls generation-tick and migration cadence, not population size.
+  # steps_per_generation: 4
+
+selection:
+  policy: boltzmann
+  seed: 45                        # optional; defaults to random_seed + 3
+  boltzmann_temperature: 1.0      # must be > 0
+  boltzmann_exploration_rate: 0.2 # probability in [0, 1]
+  stagnation_detection_enabled: false
+  stagnation_mode: released       # exact LoongFlow 0.0.1 branch behavior
+```
+
+Boltzmann selection adapts temperature from population diversity, optionally
+raises exploration after recent-score stagnation, and incorporates inherited
+`sample_weight` values. Inspirations remain uniform samples without replacement.
+Policy RNG, recent-score history, and sampling-weight state survive checkpoint
+resume. The implementation intentionally preserves two released LoongFlow 0.0.1
+quirks—the elite ID/object comparison and the unreachable ×4 stagnation branch—so
+the policy remains a scientifically traceable fidelity anchor.
+
+### Configuration fields
+
+| Field | Default | Meaning |
+|---|---:|---|
+| `substrate.kind` | `islands` | Population-store implementation. `tree` is reserved for the forthcoming TreeStore and currently fails clearly at controller construction. |
+| `substrate.steps_per_generation` | unset | Optional cadence override. Islands otherwise use `database.num_islands`. Keep this identical across coordination arms. |
+| `selection.policy` | `substrate_default` | Native policy for the selected substrate. Current runnable choices are `stock_openevolve` and `boltzmann` with islands. `uct` is reserved for TreeStore. |
+| `selection.seed` | `random_seed + 3` | Independent Boltzmann RNG seed. The stock policy continues to use OpenEvolve's existing global-Python-RNG path. |
+| `selection.boltzmann_temperature` | `1.0` | Initial temperature before diversity adaptation; must be positive. |
+| `selection.boltzmann_exploration_rate` | `0.2` | Base probability of uniform exploratory parent selection, from `0` to `1`. |
+| `selection.stagnation_detection_enabled` | `false` | Enables LoongFlow's recent-five-score exploration adjustment. |
+| `selection.stagnation_mode` | `released` | Fidelity mode for the released LoongFlow 0.0.1 stagnation logic; currently the only implemented mode. |
+
+For controlled comparisons, change `coordination.module` independently and keep
+both `substrate` and `selection` byte-identical across arms. Selection requests
+made by coordination modules are logged per generation as requested, honored, or
+ignored; unsupported hints do not silently alter the policy.
+
 Checkpoints under `output_dir/checkpoints/` bundle the openevolve database with
-noema state (ledger, coordination state, histories, RNG streams); resume with
+noema state (ledger, coordination and selection-policy state, histories, RNG
+streams); resume with
 `controller.load_checkpoint(path)` before `run()`. Every LLM call is logged to
 `output_dir/llm_calls.jsonl` with exact token usage per account.
 

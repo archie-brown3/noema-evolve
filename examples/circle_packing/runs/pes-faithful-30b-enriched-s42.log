@@ -1,0 +1,395 @@
+2026-07-13 01:16:34,968 - INFO - Froze run config to /root/noema-evolve/examples/circle_packing/runs/pes-faithful-30b-enriched-s42/config.yaml (sha256=8dc9fd75408044487bf3b3031dfecdfbc7c023558bd182b2ae0366a555597869)
+2026-07-13 01:16:34,968 - INFO - Initialized program database with 0 programs
+2026-07-13 01:16:34,969 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:34,969 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 01:16:34,972 - INFO - Initialized prompt sampler
+2026-07-13 01:16:35,145 - INFO - Evaluating and adding initial program
+2026-07-13 01:16:35,412 - INFO - Evaluated program initial in 0.27s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.2614, combined_score=0.3642
+2026-07-13 01:16:35,412 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-13 01:19:19,471 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:21:41,562 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'linprog' is not defined
+2026-07-13 01:21:41,725 - INFO - Evaluated program it000000 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:21:41,726 - INFO - Iteration 0: valid child without improvement (attempt 1); retrying
+2026-07-13 01:23:18,238 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:23:18,388 - INFO - Evaluated program it000000 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:23:18,388 - INFO - Iteration 0: valid child without improvement (attempt 2); retrying
+2026-07-13 01:24:59,509 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'linprog' is not defined
+2026-07-13 01:24:59,675 - INFO - Evaluated program it000000 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:24:59,676 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-13 01:28:00,389 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:30:50,470 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'differential_evolution' is not defined
+2026-07-13 01:30:50,645 - INFO - Evaluated program it000001 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:30:50,645 - INFO - Iteration 1: valid child without improvement (attempt 1); retrying
+2026-07-13 01:32:34,259 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'differential_evolution' is not defined
+2026-07-13 01:32:34,415 - INFO - Evaluated program it000001 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:32:34,415 - INFO - Iteration 1: valid child without improvement (attempt 2); retrying
+2026-07-13 01:34:21,550 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'differential_evolution' is not defined
+2026-07-13 01:34:21,708 - INFO - Evaluated program it000001 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:34:21,708 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 9}
+2026-07-13 01:35:48,603 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:38:24,983 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'linprog' is not defined
+2026-07-13 01:38:25,153 - INFO - Evaluated program it000002 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:38:25,153 - INFO - Iteration 2: valid child without improvement (attempt 1); retrying
+2026-07-13 01:39:51,360 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpgjh_y1p2.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 0.9597642169962064
+Results saved to /tmp/tmpqil1gf29.py.results
+
+Evaluation: valid=True, sum_radii=0.959764, target=2.635, ratio=0.364237, time=0.26s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpy7m4_pl4.py
+Calling run_packing()...
+Error in subprocess: name 'linprog' is not defined
+Error saved to /tmp/tmp_xjunde1.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp_xjunde1.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpy7m4_pl4.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpy7m4_pl4.py", line 81, in construct_packing
+    radii = compute_max_radii(centers)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpy7m4_pl4.py", line 127, in compute_max_radii
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs', tol=1e-10)
+             ^^^^^^^
+NameError: name 'linprog' is not defined
+
+Evaluation failed completely: Program execution failed: name 'linprog' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmprdwupwoa.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmpn7vsa4u3.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpn7vsa4u3.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmprdwupwoa.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmprdwupwoa.py", line 86, in construct_packing
+    centers[25 + i] = [0.9, 0.2 + 0.2 * i]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmph8nh5uvg.py
+Calling run_packing()...
+Error in subprocess: name 'linprog' is not defined
+Error saved to /tmp/tmp6bdjv1n_.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp6bdjv1n_.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmph8nh5uvg.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmph8nh5uvg.py", line 82, in construct_packing
+    radii = compute_max_radii(centers)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmph8nh5uvg.py", line 132, in compute_max_radii
+    res = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs', tol=1e-10)
+          ^^^^^^^
+NameError: name 'linprog' is not defined
+
+Evaluation failed completely: Program execution failed: name 'linprog' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp2mbm7fza.py
+Calling run_packing()...
+Error in subprocess: name 'differential_evolution' is not defined
+Error saved to /tmp/tmpkf731tv4.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpkf731tv4.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp2mbm7fza.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp2mbm7fza.py", line 76, in construct_packing
+    result = differential_evolution(
+             ^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'differential_evolution' is not defined
+
+Evaluation failed completely: Program execution failed: name 'differential_evolution' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmp1hsfd0an.py
+Calling run_packing()...
+Error in subprocess: name 'differential_evolution' is not defined
+Error saved to /tmp/tmpv4vlehdk.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpv4vlehdk.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp1hsfd0an.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmp1hsfd0an.py", line 76, in construct_packing
+    result = differential_evolution(
+             ^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'differential_evolution' is not defined
+
+Evaluation failed completely: Program execution failed: name 'differential_evolution' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpxrgsoe8h.py
+Calling run_packing()...
+Error in subprocess: name 'differential_evolution' is not defined
+Error saved to /tmp/tmp0k9ze9cm.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp0k9ze9cm.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpxrgsoe8h.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpxrgsoe8h.py", line 79, in construct_packing
+    result = differential_evolution(
+             ^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'differential_evolution' is not defined
+
+Evaluation failed completely: Program execution failed: name 'differential_evolution' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpkfijiqjk.py
+Calling run_packing()...
+Error in subprocess: name 'linprog' is not defined
+Error saved to /tmp/tmpdx7ezkfa.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpdx7ezkfa.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkfijiqjk.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkfijiqjk.py", line 87, in construct_packing
+    radii = compute_max_radii(centers)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpkfijiqjk.py", line 133, in compute_max_radii
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs', tol=1e-10)
+             ^^^^^^^
+NameError: name 'linprog' is not defined
+
+Evaluation failed completely: Program execution failed: name 'linprog' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmptwldduaf.py
+Calling run_packing()...
+Error in subprocess: name 'linprog' is not defined
+Error saved to /tmp/tmp2fj_x311.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmp2fj_x311.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmptwldduaf.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmptwldduaf.py", line 87, in construct_packing
+    radii = compute_max_radii(centers)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmptwldduaf.py", line 133, in compute_max_radii
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs', tol=1e-10)
+             ^^^^^^^
+NameError: name 'linprog' is not defined
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'linprog' is not defined
+2026-07-13 01:39:51,510 - INFO - Evaluated program it000002 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:39:51,511 - INFO - Iteration 2: valid child without improvement (attempt 2); retrying
+2026-07-13 01:41:21,418 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:41:21,569 - INFO - Evaluated program it000002 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.1485, combined_score=0.0000
+2026-07-13 01:41:21,570 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 3}
+2026-07-13 01:42:55,789 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 01:45:37,914 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+2026-07-13 01:45:38,127 - INFO - Evaluated program it000003 in 0.21s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:45:38,128 - INFO - Iteration 3: valid child without improvement (attempt 1); retrying
+2026-07-13 01:46:57,358 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'linprog' is not defined
+2026-07-13 01:46:57,503 - INFO - Evaluated program it000003 in 0.14s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:46:57,503 - INFO - Iteration 3: valid child without improvement (attempt 2); retrying
+2026-07-13 01:48:58,657 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 205, in evaluate
+    centers, radii, reported_sum = run_with_timeout(
+                                   ^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/examples/circle_packing/evaluator.py", line 166, in run_with_timeout
+    raise RuntimeError(f"Program execution failed: {results['error']}")
+RuntimeError: Program execution failed: name 'differential_evolution' is not defined
+2026-07-13 01:48:58,829 - INFO - Evaluated program it000003 in 0.17s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 01:48:58,830 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 9, 'diversity': 4}
+2026-07-13 01:50:57,128 - INFO - HTTP Request: POST http://100.95.96.20:8082/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation failed completely: Program execution failed: name 'linprog' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpsfcd8x_j.py
+Calling run_packing()...
+run_packing() returned successfully: sum_radii = 1.3500000000000003
+Results saved to /tmp/tmp7rapxfn8.py.results
+
+Circles 0 and 1 overlap: dist=0.12, r1+r2=0.15000000000000002
+Warning: Reported sum 1.3500000000000003 doesn't match calculated sum 0.0
+Evaluation: valid=False, sum_radii=0.000000, target=2.635, ratio=0.000000, time=0.15s
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmplciim1jl.py
+Calling run_packing()...
+Error in subprocess: index 26 is out of bounds for axis 0 with size 26
+Error saved to /tmp/tmprqeo085z.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmprqeo085z.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmplciim1jl.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmplciim1jl.py", line 91, in construct_packing
+    centers[i + 23] = [0.5 + (i - 1.5) * col_spacing, 0.9 - 5.5 * row_spacing]
+    ~~~~~~~^^^^^^^^
+IndexError: index 26 is out of bounds for axis 0 with size 26
+
+Evaluation failed completely: Program execution failed: index 26 is out of bounds for axis 0 with size 26
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpbws55rgl.py
+Calling run_packing()...
+Error in subprocess: name 'linprog' is not defined
+Error saved to /tmp/tmptxm99t4l.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmptxm99t4l.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbws55rgl.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbws55rgl.py", line 89, in construct_packing
+    radii = compute_max_radii(centers)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpbws55rgl.py", line 135, in compute_max_radii
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method='highs', tol=1e-10)
+             ^^^^^^^
+NameError: name 'linprog' is not defined
+
+Evaluation failed completely: Program execution failed: name 'linprog' is not defined
+Subprocess stdout: Running in subprocess, Python version: 3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]
+Program path: /tmp/tmpc7wdsnr4.py
+Calling run_packing()...
+Error in subprocess: name 'differential_evolution' is not defined
+Error saved to /tmp/tmpdt29so5y.py.results
+
+Subprocess stderr: Traceback (most recent call last):
+  File "/tmp/tmpdt29so5y.py", line 23, in <module>
+    centers, radii, sum_radii = program.run_packing()
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpc7wdsnr4.py", line 10, in run_packing
+    centers, radii, sum_radii = construct_packing()
+                                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/tmpc7wdsnr4.py", line 82, in construct_packing
+    result = differential_evolution(
+             ^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'differential_evolution' is not defined
+
+Evaluation failed completely: Program execution failed: name 'differential_evolution' is not defined
+Traceback (most recent call last):
+  File "/root/noema-evolve/examples/circle_packing/run_noema_arm.py", line 120, in <module>
+    main()
+  File "/root/noema-evolve/examples/circle_packing/run_noema_arm.py", line 115, in main
+    best = asyncio.run(controller.run())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/noema/controller.py", line 215, in run
+    await self._generation_tick(iteration)
+  File "/root/noema-evolve/noema/controller.py", line 560, in _generation_tick
+    await self.coordination.on_generation_end(ctx)  # coordination hook 3
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/noema-evolve/noema/coordination/pes/module.py", line 202, in on_generation_end
+    await self._summarizer.reflect_pending()
+  File "/root/noema-evolve/noema/coordination/pes/summarizer.py", line 355, in reflect_pending
+    await self._reflect(entry)
+  File "/root/noema-evolve/noema/coordination/pes/summarizer.py", line 374, in _reflect
+    self._assert_prompt_fits(system_message, prompt, call_kwargs["max_tokens"])
+  File "/root/noema-evolve/noema/coordination/pes/summarizer.py", line 566, in _assert_prompt_fits
+    raise ValueError(
+ValueError: PES faithful reflection prompt would overflow the context window: ~6268 prompt tokens + 4096 reserved completion tokens > 10240 (context_window_tokens). Reduce max_code_chars or raise the window; never let it truncate silently.

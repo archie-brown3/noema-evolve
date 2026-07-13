@@ -1,26 +1,30 @@
 == git log ==
-892f242 Merge: guarantee-triad audit of commits 887ac98, e161972, 3bfe346, 6f8797a, 56359f3
-30595b8 Merge task 0041: persist-frozen-run-config-with-hash
-4186032 Merge task 0034: role-structured-benchmark-layout
-4860127 Merge task 0038: implement-verify-run-script
-336f796 chore: set executable bit on verify-run.sh and its test
-924e0e1 loop draft (pending review): audit-triad-commits
-eb35d3a loop draft (pending review): persist-frozen-run-config-with-hash
-f6d8980 loop draft (pending review): role-structured-benchmark-layout
-5a3bfe1 loop draft (pending review): implement-verify-run-script
-face592 loop: conductor references vault-loop SKILL.md, session archives, tick-summary
-56359f3 chore: add --budget-tokens/--retry CLI args to run_noema_arm.py
-6f8797a feat: enhance retry mechanism with causal reflection for PES coordination
-3bfe346 feat: implement intra-iteration retry mechanism with error feedback
-887ac98 Merge fix-ledger-metering: BudgetedLLM null-usage-field estimation
-339acbb chore: ignore loop/work-order.json and *.swp
-93c8c8b include spec documentation and mlx example
-5f7899d add
-dd2fd21 chore: untrack remaining coordination __pycache__ binaries
-e161972 fix: enhance BudgetedLLM to estimate token counts for null usage fields and add tests
-457718c Implement phase 0 of PES arm
+52f3237 feat(0070): run each arm on its own cluster, concurrently
+2832d95 fix(0042): PES keeps lineage for a real child when only planning failed
+f8aee1a chore(0070 prep): enriched-prompt CLI knobs + all-arms sweep runner
+fd03e44 chore(0066 C3): pes-faithful example config + runner arm choices
+fceb685 feat(0066 C2): register pes-custom / pes-faithful; deprecate the 'pes' key
+888a937 feat(0066 C1): named PES arm classes (pes-custom, pes-faithful)
+debcca9 chore(0065): goal predicate + dispatch log
+8b281f9 test(0065 C5): pin that directive retry attempts never bleed across mutations
+2f5eaea test(0065 C4): re-base prompt identity on the Decision #25 scoped exemption
+b9c3880 feat(0065 C3): controller dispatches the directive prompt (flag-gated)
+9694a36 feat(0065 C2): directive executor mode (plan becomes the mutation brief)
+0183362 feat(0065 C1): verbatim LoongFlow executor-with-plan constants
+b70f7ec chore(0064): goal predicate + dispatch log
+261173b fix(0064): verifier findings — only-child degeneration, pipe escaping, real pins
+e229580 test(0064 C3): only-child note, storage split, re-injection, size guard, checkpoint
+91d9b65 feat(0064 C2b): wire prompt_variant into Summarizer._reflect (faithful brief live)
+a323a3d feat(0064 C2a): faithful summary helpers (sibling block, slice, size guard)
+0bc14b6 test(0064 C1b): pin faithful summary constants (four-section brief, no residue)
+9c8128b feat(0064 C1a): faithful summary prompt constants (LoongFlow recast)
+bde9b9d chore(0063): goal predicate + dispatch log
 == gh issues ==
 == gh runs ==
+completed	success	Running Copilot cloud agent	Copilot cloud agent	copilot/research-task-file-review	dynamic	29170078190	5m48s	2026-07-11T22:11:16Z
+completed	success	Running Copilot cloud agent	Copilot cloud agent	copilot/draft-improved-readme	dynamic	29154878589	1m11s	2026-07-11T13:45:36Z
+completed	success	Running Copilot cloud agent	Copilot cloud agent	copilot/draft-improved-readme	dynamic	29154621460	1m39s	2026-07-11T13:36:46Z
+completed	success	Graph Update: pip in /., /examples/algotune, /examples/alphaevolve_math_problems/circle_packing_rect, /examples/alphaevolve_math_problems/erdos_min_overlap, /examples/alphaevolve_math_problems/first_autocorr_ineq, /examples/alphaevolve_math_problems/heilbronn_convex/13, /examples/alphaevolve_math_problems/heilbronn_convex/14, /examples/alphaevolve_math_problems/heilbronn_triangle, /examples/alphaevolve_math_problems/hexagon_packing/11, /examples/alphaevolve_math_problems/hexagon_packing/12, /examples/alp...	Dependency Graph	main	dynamic	29153979687	1m25s	2026-07-11T13:14:30Z
 completed	success	Graph Update: pip in /., /examples/algotune, /examples/alphaevolve_math_problems/circle_packing_rect, /examples/alphaevolve_math_problems/erdos_min_overlap, /examples/alphaevolve_math_problems/first_autocorr_ineq, /examples/alphaevolve_math_problems/heilbronn_convex/13, /examples/alphaevolve_math_problems/heilbronn_convex/14, /examples/alphaevolve_math_problems/heilbronn_triangle, /examples/alphaevolve_math_problems/hexagon_packing/11, /examples/alphaevolve_math_problems/hexagon_packing/12, /examples/alp...	Dependency Graph	claude/noema-integration-plan-3u3cgy	dynamic	28803483679	1m51s	2026-07-06T15:35:05Z
 completed	success	Replace upstream README with noema-evolve project README	Tests	claude/noema-integration-plan-3u3cgy	push	28796892702	4m41s	2026-07-06T13:55:46Z
 == vault INDEX (Now/Blocked) ==
@@ -28,17 +32,58 @@ completed	success	Replace upstream README with noema-evolve project README	Tests
 Ordered within each category. The agent works categories top-to-bottom,
 unblocked tasks within each category.
 
-### Implementation
+### Diagnostic (do first)
 
-1. [[tasks/0027-widen-mutation-menu-eoh-operators]] — blocked-by: none — ~M —
-   bandit infrastructure; promoted to headline path (Decision #23); must land
-   before the bandit arm can route over anything meaningful
-2. [[tasks/0036-port-bin-packing-benchmark]] — blocked-by: none — ~M — headline
-   benchmark #2; needed for the W2 freeze
-3. [[tasks/0035-implement-s1-lineage-arm]] — blocked-by: 0026 — ~M — substrate
+1. [[tasks/0070-all-arms-enriched-sweep]] — blocked-by: none — ~M — **the baseline gate**: run the ENRICHED prompt, 500k tok each, seed 42, 30B. **hifo DROPPED from the sweep 2026-07-12** (three verified fidelity defects — see 0072); runs **null / pes-custom / pes-faithful** only. Does un-starving the prompt fix null's plateau? Do any arms separate? Script: `examples/circle_packing/run_all_arms.sh`.
+2. [[tasks/0072-hifo-fidelity-remediation]] — blocked-by: none — ~L — **the hifo arm is not currently valid**: hindsight fed truncated code (`changes_description` never set), navigator cannot reach its exploitation regime (verified by simulation), regime→operator coupling absent. Blocking unknown: clone the original HiFo-Prompt to learn whether the navigator bug is ours or the paper's.
+3. [[tasks/0069-openevolve-vs-noema-null-baseline]] — blocked-by: 0070 — ~S — is poor 30B perf a model problem or a noema bug? Run stock OpenEvolve vs noema null (enriched), same config, compare scores.
+
+### Implementation — the matrix skeleton (promoted to Now 2026-07-12)
+
+> **Why these, in this order.** An axis audit (2026-07-12) found the study cannot
+> currently run its headline. `spec/DELIVERABLES.md` needs a **5-level mechanism
+> axis** (4 built, `bandit` missing, `hifo` invalid → **3 of 5 usable**) and a
+> **2-level substrate axis** (**1 built** — there is no tree store at all).
+> **C2 — "mechanisms and substrates *interact*" — is not computable with one
+> substrate.** Every pre-registered prediction in §3.5 is a statement about the
+> substrate axis. No tree → no interaction term → no headline. 0037 is therefore
+> the single biggest blocker in the project and the main schedule risk.
+> If schedule tightens, **cut the mechanism axis (drop bandit, park hifo) and
+> protect the tree build** — not the reverse. Cutting tree downgrades the thesis
+> from "mechanism × substrate interaction" to "we compared some mechanisms."
+
+1. [[tasks/0037-population-store-seam-treestore]] — blocked-by: none — ~L —
+   **THE HEADLINE BLOCKER.** The substrate axis's second level (global-tree + UCT).
+   Promoted from Next. Largest build outstanding; start it first, in parallel with
+   the diagnostics above.
+2. [[tasks/0073-implement-bandit-arm]] — blocked-by: none — ~M — the **5th mechanism
+   arm, never built and until now had no task**. Zero-token arm (no coordination LLM
+   calls) — anchors the low end of the token-price ladder. Must build the first live
+   `sampling_hint` consumer; operator menu (0027) is its infrastructure.
+3. [[tasks/0036-port-bin-packing-benchmark]] — blocked-by: none — ~M — headline
+   benchmark #2; needed for the W2 freeze and for **C3** (program quality vs
+   published baselines — circle packing alone cannot carry that claim).
+4. [[tasks/0071-coordination-cadence-config]] — blocked-by: 0070 — ~M — `coordination.cadence`
+   knob + LEVI-style `punctuated` arm (no-op advise, regime change every N evals in
+   `on_generation_end`). Fits the existing interface; `base.py` untouched. Value of N
+   deliberately NOT frozen here — needs its own sweep after 0070. **Note: this is a
+   6th arm on a matrix whose skeleton is incomplete — it is genuinely interesting but
+   is an *addition*, not a *blocker*. Ranked below the three above for that reason.**
+5. [[tasks/0064-pes-faithful-summarizer-recast]] — blocked-by: none (0060
+   done) — ~M — WP5: faithful summarizer brief + sibling block
+6. [[tasks/0035-implement-s1-lineage-arm]] — blocked-by: 0026 — ~M — substrate
    toggle (reclassified Decision #9); gates a headline cell once tree crosses
-4. [[tasks/0049-implement-stage1-intra-iteration-retry]] — blocked-by: none — ~M —
-   substrate-level retry loop, applies to both arms; precondition for 0050
+
+**PES-faithful chain (plan approved 2026-07-10; sequenced by blocked-by):**
+WP1 [[tasks/done/0060-pes-phase-class-refactor]] ·
+WP2 [[tasks/done/0061-pes-cross-island-context-provider]] ·
+WP3 [[tasks/done/0062-retry-trigger-config]] done 2026-07-10 ·
+WP4 [[tasks/done/0063-pes-faithful-planner-recast]] ·
+WP5 [[tasks/done/0064-pes-faithful-summarizer-recast]] ·
+WP6 [[tasks/done/0065-pes-directive-executor]] done 2026-07-11 (supersedes
+0058) → [[tasks/0066-pes-arm-registry-split]] (WP7, unblocked) →
+[[tasks/0067-pes-faithful-shakedown-ticket]] (WP8, after 0066; ticket only,
+user launches)
 
 Also in flight: [[tasks/0025-fix-ledger-metering-local-inference]] — **blocked**
 (implementation accepted by user, e161972 merged; remaining done-when = the
@@ -85,8 +130,8 @@ RT-0001 smoke run below; waiting on user launch).
 2026-07-08T23:23:48+00:00	tests-green	pass	1305
 2026-07-08T23:23:48+00:00	vault-freshness	pass	18
 == newest run dirs ==
-/root/noema-evolve/examples/circle_packing/noema_pes_retry_output
 /root/noema-evolve/examples/circle_packing/noema_pes_stage0_output
 /root/noema-evolve/examples/circle_packing/noema_pes_output_v3
 /root/noema-evolve/examples/circle_packing/noema_pes_output
 /root/noema-evolve/examples/circle_packing/noema_pes_output.pre-domain-context-fix-2026-07-08
+/root/noema-evolve/examples/circle_packing/noema_null_output
