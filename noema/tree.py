@@ -66,7 +66,9 @@ class TreeStore:
     """A non-deleting global program tree with bounded prompt context."""
 
     topology = "tree_branches"
-    capabilities = frozenset({"population", "elites", "fitness", "code", "regions"})
+    capabilities = frozenset(
+        {"population", "elites", "fitness", "code", "regions", "tree_topology"}
+    )
 
     def __init__(
         self,
@@ -101,6 +103,12 @@ class TreeStore:
 
     def target_scope(self, iteration: int) -> None:
         return None
+
+    def tree_root_id(self) -> Optional[str]:
+        return self._trunk_id
+
+    def tree_children(self, program_id: str) -> Sequence[str]:
+        return tuple(sorted(self._children.get(program_id, ())))
 
     def _fitness_for(self, program: Program) -> float:
         return float(get_fitness_score(program.metrics, list(self.feature_dimensions)))

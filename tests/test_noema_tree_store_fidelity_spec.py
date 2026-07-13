@@ -33,7 +33,6 @@ def _program(program_id, fitness, parent_id=None):
 
 
 class TestMctsAhdKernelSpec(unittest.TestCase):
-    @unittest.expectedFailure
     def test_min_max_normalized_uct_matches_equation_five(self):
         module = _uct_module(self)
         import math
@@ -51,13 +50,11 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
             expected,
         )
 
-    @unittest.expectedFailure
     def test_progressive_widening_matches_equation_four(self):
         module = _uct_module(self)
         self.assertFalse(module.should_widen(visits=8, child_count=3, alpha=0.5))
         self.assertTrue(module.should_widen(visits=9, child_count=3, alpha=0.5))
 
-    @unittest.expectedFailure
     def test_exploration_decay_uses_tokens_not_evaluation_count(self):
         module = _uct_module(self)
         self.assertAlmostEqual(
@@ -87,7 +84,6 @@ class TestUCTPolicyHostAdaptationSpec(unittest.TestCase):
         )
         return base.SubstrateRuntime(store, policy)
 
-    @unittest.expectedFailure
     def test_runtime_selection_uses_neutral_selection_value(self):
         base = importlib.import_module("noema.base")
         runtime = self.make_runtime()
@@ -100,7 +96,6 @@ class TestUCTPolicyHostAdaptationSpec(unittest.TestCase):
         self.assertIsNone(selected.source_scope)
         self.assertIsNone(selected.target_scope)
 
-    @unittest.expectedFailure
     def test_checkpoint_resume_preserves_the_selection_trace(self):
         runtime = self.make_runtime(seed=123)
         for index, fitness in enumerate((1.0, 0.5, 1.3, 0.9)):

@@ -286,6 +286,7 @@ class NoemaController:
             ),
         )
         request = self.coordination.sampling_request(selection_ctx)
+        self.substrate.set_tokens_spent(self.ledger.spent())
         selection = self.substrate.select(
             target_scope=island,
             num_inspirations=self.config.num_inspirations,
@@ -469,6 +470,10 @@ class NoemaController:
             artifacts = best_attempt["artifacts"]
             response = best_attempt["response"]
             current_prompt = best_attempt["prompt"]
+
+        # Keep optional budget-aware selection policies checkpoint-exact even
+        # when the final attempt is rejected or no subsequent selection occurs.
+        self.substrate.set_tokens_spent(self.ledger.spent())
 
         if child_code is None:
             self.substrate.on_child_rejected(
@@ -663,6 +668,7 @@ class NoemaController:
         path = os.path.join(self.output_dir, "checkpoints", f"checkpoint_{iteration}")
         os.makedirs(path, exist_ok=True)
         self.db.save(path, iteration)
+        self.substrate.set_tokens_spent(self.ledger.spent())
         state = {
             "next_iteration": iteration + 1,
             "generation": self.generation,

@@ -104,6 +104,21 @@ class PopulationStore(Protocol):
 
 
 @runtime_checkable
+class TreeTopology(Protocol):
+    """Small read-only topology capability consumed by tree policies."""
+
+    def tree_root_id(self) -> Optional[str]: ...
+    def tree_children(self, program_id: str) -> Sequence[str]: ...
+
+
+@runtime_checkable
+class TokenClockObserver(Protocol):
+    """Optional policy capability for the host's cumulative token clock."""
+
+    def set_tokens_spent(self, tokens_spent: int) -> None: ...
+
+
+@runtime_checkable
 class SelectionPolicy(Protocol):
     required_capabilities: frozenset[str]
     supported_hints: frozenset[str]
@@ -184,6 +199,10 @@ class SubstrateRuntime:
         self, *, parent: Any, child: Any = None, eval_failed: bool
     ) -> None:
         self.policy.on_child_rejected(parent=parent, child=child, eval_failed=eval_failed)
+
+    def set_tokens_spent(self, tokens_spent: int) -> None:
+        if isinstance(self.policy, TokenClockObserver):
+            self.policy.set_tokens_spent(tokens_spent)
 
     def state_dict(self) -> Dict[str, Any]:
         return {
