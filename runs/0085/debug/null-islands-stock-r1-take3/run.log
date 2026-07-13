@@ -1,0 +1,112 @@
+2026-07-13 21:51:46,593 - INFO - Froze run config to runs/0085/null-islands-stock-r1-take3/config.yaml (sha256=6e034eb27e741d2fef867bca96130158dff6d647fed431894ffe207c95040949)
+2026-07-13 21:51:46,593 - INFO - Initialized program database with 0 programs
+2026-07-13 21:51:46,594 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 21:51:46,594 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 21:51:46,595 - INFO - Initialized prompt sampler
+2026-07-13 21:51:46,685 - INFO - Evaluating and adding initial program
+2026-07-13 21:51:46,853 - INFO - Evaluated program initial in 0.17s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.1628, combined_score=0.3642
+2026-07-13 21:51:46,853 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-13 21:51:49,208 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:52:15,141 - INFO - Evaluated program it000000 in 0.21s: sum_radii=1.3094, target_ratio=0.4969, validity=1.0000, eval_time=0.2019, combined_score=0.4969
+2026-07-13 21:52:15,144 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-13 21:52:15,144 - INFO - New best program it000000 replaces initial (combined_score: 0.3642 → 0.4969, +0.1327)
+2026-07-13 21:52:16,041 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:52:25,899 - INFO - Evaluated program it000001 in 0.21s: sum_radii=1.1853, target_ratio=0.4498, validity=1.0000, eval_time=0.2039, combined_score=0.4498
+2026-07-13 21:52:25,900 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 9}
+2026-07-13 21:52:26,851 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:52:49,294 - INFO - Evaluated program it000002 in 0.19s: sum_radii=1.5292, target_ratio=0.5804, validity=1.0000, eval_time=0.1901, combined_score=0.5804
+2026-07-13 21:52:49,296 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 8, 'diversity': 0}
+2026-07-13 21:52:49,296 - INFO - New best program it000002 replaces it000000 (combined_score: 0.4969 → 0.5804, +0.0834)
+2026-07-13 21:52:50,873 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:53:15,371 - INFO - Evaluated program it000003 in 0.16s: sum_radii=1.9725, target_ratio=0.7486, validity=1.0000, eval_time=0.1536, combined_score=0.7486
+2026-07-13 21:53:15,372 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 4}
+2026-07-13 21:53:15,372 - INFO - New best program it000003 replaces it000002 (combined_score: 0.5804 → 0.7486, +0.1682)
+2026-07-13 21:53:17,107 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:53:56,809 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 21:53:56,810 - WARNING - Iteration 4: no valid program in LLM response (attempt 1)
+2026-07-13 21:53:56,829 - INFO - Saved database with 5 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_4
+2026-07-13 21:53:56,837 - INFO - Saved checkpoint at iteration 4 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_4
+2026-07-13 21:53:59,280 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:55:09,467 - INFO - Evaluated program it000005 in 0.22s: sum_radii=1.4095, target_ratio=0.5349, validity=1.0000, eval_time=0.2164, combined_score=0.5349
+2026-07-13 21:55:09,469 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 9}
+2026-07-13 21:55:10,380 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:56:10,403 - INFO - Evaluated program it000006 in 0.17s: sum_radii=1.7284, target_ratio=0.6559, validity=1.0000, eval_time=0.1665, combined_score=0.6559
+2026-07-13 21:56:10,405 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 5, 'diversity': 1}
+2026-07-13 21:56:10,846 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:56:29,842 - INFO - Evaluated program it000007 in 0.38s: sum_radii=1.7874, target_ratio=0.6783, validity=1.0000, eval_time=0.3789, combined_score=0.6783
+2026-07-13 21:56:29,844 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 0, 'diversity': 9}
+2026-07-13 21:56:32,234 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:57:12,765 - INFO - Evaluated program it000008 in 0.17s: sum_radii=1.3190, target_ratio=0.5006, validity=1.0000, eval_time=0.1673, combined_score=0.5006
+2026-07-13 21:57:12,767 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 7, 'diversity': 1}
+2026-07-13 21:57:14,182 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:57:42,953 - INFO - Evaluated program it000009 in 0.21s: sum_radii=1.2192, target_ratio=0.4627, validity=1.0000, eval_time=0.2044, combined_score=0.4627
+2026-07-13 21:57:42,955 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 4}
+2026-07-13 21:57:42,962 - INFO - Saved database with 10 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_9
+2026-07-13 21:57:42,964 - INFO - Saved checkpoint at iteration 9 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_9
+2026-07-13 21:57:45,216 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:58:26,926 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 21:58:26,926 - WARNING - Iteration 10: no valid program in LLM response (attempt 1)
+2026-07-13 21:58:28,538 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:59:08,200 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 21:59:08,200 - WARNING - Iteration 11: no valid program in LLM response (attempt 1)
+2026-07-13 21:59:08,469 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 21:59:15,012 - INFO - Evaluated program it000012 in 0.17s: sum_radii=1.3122, target_ratio=0.4980, validity=1.0000, eval_time=0.1712, combined_score=0.4980
+2026-07-13 21:59:15,014 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 4}
+2026-07-13 21:59:25,035 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:00:15,089 - INFO - Evaluated program it000013 in 0.48s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.4797, combined_score=0.0000
+2026-07-13 22:00:15,092 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 3}
+2026-07-13 22:00:17,394 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:01:01,599 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:01:01,600 - WARNING - Iteration 14: no valid program in LLM response (attempt 1)
+2026-07-13 22:01:01,627 - INFO - Saved database with 12 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_14
+2026-07-13 22:01:01,637 - INFO - Saved checkpoint at iteration 14 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_14
+2026-07-13 22:01:03,159 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:01:43,512 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:01:43,512 - WARNING - Iteration 15: no valid program in LLM response (attempt 1)
+2026-07-13 22:01:45,970 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:02:12,748 - INFO - Evaluated program it000016 in 0.40s: sum_radii=1.3190, target_ratio=0.5006, validity=1.0000, eval_time=0.3559, combined_score=0.5006
+2026-07-13 22:02:14,142 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:02:40,291 - INFO - Evaluated program it000017 in 0.19s: sum_radii=1.1231, target_ratio=0.4262, validity=1.0000, eval_time=0.1824, combined_score=0.4262
+2026-07-13 22:02:40,300 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 3, 'diversity': 3}
+2026-07-13 22:02:50,347 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:03:37,428 - INFO - Evaluated program it000018 in 0.15s: sum_radii=1.6011, target_ratio=0.6076, validity=1.0000, eval_time=0.1475, combined_score=0.6076
+2026-07-13 22:03:37,430 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 8, 'diversity': 2}
+2026-07-13 22:03:38,578 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:03:56,190 - INFO - Evaluated program it000019 in 0.15s: sum_radii=1.7874, target_ratio=0.6783, validity=1.0000, eval_time=0.1503, combined_score=0.6783
+2026-07-13 22:03:56,208 - INFO - Saved database with 16 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_19
+2026-07-13 22:03:56,212 - INFO - Saved checkpoint at iteration 19 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_19
+2026-07-13 22:03:57,200 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:04:04,402 - INFO - Evaluated program it000020 in 0.18s: sum_radii=1.7724, target_ratio=0.6726, validity=1.0000, eval_time=0.1749, combined_score=0.6726
+2026-07-13 22:04:04,405 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 4}
+2026-07-13 22:04:05,382 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:04:36,216 - INFO - Evaluated program it000021 in 0.17s: sum_radii=1.4134, target_ratio=0.5364, validity=1.0000, eval_time=0.1691, combined_score=0.5364
+2026-07-13 22:04:36,218 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 2}
+2026-07-13 22:04:37,332 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:05:00,935 - INFO - Evaluated program it000022 in 0.27s: sum_radii=1.4067, target_ratio=0.5338, validity=1.0000, eval_time=0.2659, combined_score=0.5338
+2026-07-13 22:05:02,365 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:05:43,407 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:05:43,407 - WARNING - Iteration 23: no valid program in LLM response (attempt 1)
+2026-07-13 22:05:45,075 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:06:28,236 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:06:28,237 - WARNING - Iteration 24: no valid program in LLM response (attempt 1)
+2026-07-13 22:06:28,319 - INFO - Saved database with 19 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_24
+2026-07-13 22:06:28,322 - INFO - Saved checkpoint at iteration 24 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_24
+2026-07-13 22:06:29,040 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:06:38,032 - INFO - Evaluated program it000025 in 0.20s: sum_radii=1.4723, target_ratio=0.5587, validity=1.0000, eval_time=0.1941, combined_score=0.5587
+2026-07-13 22:06:38,037 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 1}
+2026-07-13 22:06:39,260 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:02,088 - INFO - Evaluated program it000026 in 0.17s: sum_radii=1.3808, target_ratio=0.5240, validity=1.0000, eval_time=0.1684, combined_score=0.5240
+2026-07-13 22:07:02,091 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 2}
+2026-07-13 22:07:07,485 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:50,034 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:07:50,034 - WARNING - Iteration 27: no valid program in LLM response (attempt 1)
+2026-07-13 22:07:52,527 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:08:43,398 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:08:43,398 - WARNING - Iteration 28: no valid program in LLM response (attempt 1)
+2026-07-13 22:08:44,743 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:01,428 - INFO - Evaluated program it000029 in 0.23s: sum_radii=1.7874, target_ratio=0.6783, validity=1.0000, eval_time=0.2262, combined_score=0.6783
+2026-07-13 22:09:01,433 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 2, 'diversity': 4}
+2026-07-13 22:09:01,460 - INFO - Saved database with 22 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_29
+2026-07-13 22:09:01,465 - INFO - Saved checkpoint at iteration 29 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_29
+2026-07-13 22:09:01,493 - INFO - Saved database with 22 programs to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_29
+2026-07-13 22:09:01,498 - INFO - Saved checkpoint at iteration 29 to runs/0085/null-islands-stock-r1-take3/checkpoints/checkpoint_29

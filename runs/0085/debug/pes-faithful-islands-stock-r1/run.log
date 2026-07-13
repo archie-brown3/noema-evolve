@@ -1,0 +1,42 @@
+2026-07-13 22:02:13,887 - INFO - Froze run config to runs/0085/pes-faithful-islands-stock-r1/config.yaml (sha256=5c2eaa88aef0050aed147ae7a77e97f0b5f6155461ac3e6252719dcb12035690)
+2026-07-13 22:02:13,888 - INFO - Initialized program database with 0 programs
+2026-07-13 22:02:13,890 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 22:02:13,890 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 22:02:13,896 - INFO - Initialized prompt sampler
+2026-07-13 22:02:14,002 - INFO - Evaluating and adding initial program
+2026-07-13 22:02:14,163 - INFO - Evaluated program initial in 0.16s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.1542, combined_score=0.3642
+2026-07-13 22:02:14,163 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-13 22:02:16,254 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:02:55,825 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:03:40,828 - INFO - Evaluated program it000000 in 0.16s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 22:03:40,829 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-13 22:03:41,611 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:05:17,634 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:06:32,252 - INFO - Evaluated program it000001 in 0.15s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 22:06:32,253 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 5}
+2026-07-13 22:06:33,651 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:08,402 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:38,676 - INFO - Evaluated program it000002 in 0.28s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 22:07:38,677 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 9}
+2026-07-13 22:07:40,351 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:08:13,150 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:08:46,895 - INFO - Evaluated program it000003 in 0.28s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.0000, combined_score=0.0000
+2026-07-13 22:08:46,896 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 0, 'diversity': 9}
+2026-07-13 22:08:48,670 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:15,544 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:28,412 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:43,587 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:10:04,053 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:12:24,760 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:13:05,596 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:13:05,608 - WARNING - Iteration 4: no valid program in LLM response (attempt 1)
+2026-07-13 22:13:05,626 - INFO - Saved database with 5 programs to runs/0085/pes-faithful-islands-stock-r1/checkpoints/checkpoint_4
+2026-07-13 22:13:05,630 - INFO - Saved checkpoint at iteration 4 to runs/0085/pes-faithful-islands-stock-r1/checkpoints/checkpoint_4
+2026-07-13 22:13:08,708 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:13:55,733 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:15:31,497 - WARNING - Iteration 5: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-13 22:15:34,445 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:16:22,309 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:17:03,944 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:17:03,945 - WARNING - Iteration 6: no valid program in LLM response (attempt 1)
+2026-07-13 22:17:13,114 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"

@@ -1,0 +1,82 @@
+2026-07-13 22:02:08,232 - INFO - Froze run config to runs/0085/null-tree-uct-r1/config.yaml (sha256=4a3169ef584366e23a51bc3f58569743fd193ea07e0340631a32dd8b6b5d547f)
+2026-07-13 22:02:08,235 - INFO - Successfully loaded evaluation function from /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 22:02:08,235 - INFO - Initialized evaluator with /root/noema-evolve/examples/circle_packing/evaluator.py
+2026-07-13 22:02:08,245 - INFO - Initialized prompt sampler
+2026-07-13 22:02:08,387 - INFO - Evaluating and adding initial program
+2026-07-13 22:02:09,103 - INFO - Evaluated program initial in 0.72s: sum_radii=0.9598, target_ratio=0.3642, validity=1.0000, eval_time=0.6928, combined_score=0.3642
+2026-07-13 22:02:12,577 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:02:31,142 - INFO - Evaluated program it000000 in 0.15s: sum_radii=0.7659, target_ratio=0.2907, validity=1.0000, eval_time=0.1452, combined_score=0.2907
+2026-07-13 22:02:40,586 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:03:01,276 - INFO - Evaluated program it000001 in 0.20s: sum_radii=1.0547, target_ratio=0.4003, validity=1.0000, eval_time=0.1964, combined_score=0.4003
+2026-07-13 22:03:02,808 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:03:45,081 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:03:45,081 - WARNING - Iteration 2: no valid program in LLM response (attempt 1)
+2026-07-13 22:03:46,398 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:04:09,914 - INFO - Evaluated program it000003 in 0.31s: sum_radii=0.0000, target_ratio=0.0000, validity=0.0000, eval_time=0.3058, combined_score=0.0000
+2026-07-13 22:04:12,561 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:06:27,142 - INFO - Evaluated program it000004 in 0.17s: sum_radii=1.4427, target_ratio=0.5475, validity=1.0000, eval_time=0.1696, combined_score=0.5475
+2026-07-13 22:06:27,147 - INFO - Saved checkpoint at iteration 4 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_4
+2026-07-13 22:06:28,214 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:07,114 - INFO - Evaluated program it000005 in 0.16s: sum_radii=1.6675, target_ratio=0.6328, validity=1.0000, eval_time=0.1605, combined_score=0.6328
+2026-07-13 22:07:08,654 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:07:53,186 - WARNING - Iteration 6: no valid program in LLM response (attempt 1)
+2026-07-13 22:07:53,759 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:08:19,216 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:08:19,216 - WARNING - Iteration 7: no valid program in LLM response (attempt 1)
+2026-07-13 22:08:20,471 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:04,047 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:09:04,047 - WARNING - Iteration 8: no valid program in LLM response (attempt 1)
+2026-07-13 22:09:05,114 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:36,711 - INFO - Evaluated program it000009 in 0.22s: sum_radii=1.3207, target_ratio=0.5012, validity=1.0000, eval_time=0.1903, combined_score=0.5012
+2026-07-13 22:09:36,730 - INFO - Saved checkpoint at iteration 9 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_9
+2026-07-13 22:09:38,734 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:09:50,518 - INFO - Evaluated program it000010 in 0.14s: sum_radii=1.6675, target_ratio=0.6328, validity=1.0000, eval_time=0.1347, combined_score=0.6328
+2026-07-13 22:09:51,284 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:10:26,021 - WARNING - Iteration 11: no valid program in LLM response (attempt 1)
+2026-07-13 22:10:27,640 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:10:42,682 - INFO - Evaluated program it000012 in 0.19s: sum_radii=1.6675, target_ratio=0.6328, validity=1.0000, eval_time=0.1901, combined_score=0.6328
+2026-07-13 22:10:44,691 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:11:05,940 - INFO - Evaluated program it000013 in 0.17s: sum_radii=1.1764, target_ratio=0.4464, validity=1.0000, eval_time=0.1666, combined_score=0.4464
+2026-07-13 22:11:06,641 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:11:42,276 - WARNING - Iteration 14: no valid program in LLM response (attempt 1)
+2026-07-13 22:11:42,283 - INFO - Saved checkpoint at iteration 14 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_14
+2026-07-13 22:11:45,400 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:12:37,942 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:12:37,943 - WARNING - Iteration 15: no valid program in LLM response (attempt 1)
+2026-07-13 22:12:38,684 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:12:48,124 - INFO - Evaluated program it000016 in 0.20s: sum_radii=0.9508, target_ratio=0.3608, validity=1.0000, eval_time=0.2001, combined_score=0.3608
+2026-07-13 22:12:48,336 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:13:07,115 - INFO - Evaluated program it000017 in 0.16s: sum_radii=1.2686, target_ratio=0.4815, validity=1.0000, eval_time=0.1601, combined_score=0.4815
+2026-07-13 22:13:07,433 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:13:33,489 - INFO - Evaluated program it000018 in 0.15s: sum_radii=1.2296, target_ratio=0.4667, validity=1.0000, eval_time=0.1511, combined_score=0.4667
+2026-07-13 22:13:34,497 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:13:49,708 - INFO - Evaluated program it000019 in 0.19s: sum_radii=1.4727, target_ratio=0.5589, validity=1.0000, eval_time=0.1885, combined_score=0.5589
+2026-07-13 22:13:49,716 - INFO - Saved checkpoint at iteration 19 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_19
+2026-07-13 22:13:50,359 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:14:02,908 - INFO - Evaluated program it000020 in 0.26s: sum_radii=1.6675, target_ratio=0.6328, validity=1.0000, eval_time=0.2588, combined_score=0.6328
+2026-07-13 22:14:03,789 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:14:16,967 - INFO - Evaluated program it000021 in 0.63s: sum_radii=1.4325, target_ratio=0.5436, validity=1.0000, eval_time=0.6294, combined_score=0.5436
+2026-07-13 22:14:19,083 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:15:03,905 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:15:03,906 - WARNING - Iteration 22: no valid program in LLM response (attempt 1)
+2026-07-13 22:15:04,569 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:15:44,995 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:15:44,996 - WARNING - Iteration 23: no valid program in LLM response (attempt 1)
+2026-07-13 22:15:47,426 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:16:28,734 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:16:28,734 - WARNING - Iteration 24: no valid program in LLM response (attempt 1)
+2026-07-13 22:16:28,761 - INFO - Saved checkpoint at iteration 24 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_24
+2026-07-13 22:16:29,436 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:17:09,165 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:17:09,165 - WARNING - Iteration 25: no valid program in LLM response (attempt 1)
+2026-07-13 22:17:09,950 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:17:45,150 - INFO - Evaluated program it000026 in 0.26s: sum_radii=1.6675, target_ratio=0.6328, validity=1.0000, eval_time=0.2042, combined_score=0.6328
+2026-07-13 22:17:46,316 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:18:04,678 - INFO - Evaluated program it000027 in 0.17s: sum_radii=1.0905, target_ratio=0.4138, validity=1.0000, eval_time=0.1622, combined_score=0.4138
+2026-07-13 22:18:05,661 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:18:33,354 - INFO - Evaluated program it000028 in 0.48s: sum_radii=1.3761, target_ratio=0.5223, validity=1.0000, eval_time=0.4748, combined_score=0.5223
+2026-07-13 22:18:34,049 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-13 22:19:13,464 - WARNING - LLM returned no content for mutation/mutate (finish_reason='length'); treating as empty response.
+2026-07-13 22:19:13,465 - WARNING - Iteration 29: no valid program in LLM response (attempt 1)
+2026-07-13 22:19:13,476 - INFO - Saved checkpoint at iteration 29 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_29
+2026-07-13 22:19:13,484 - INFO - Saved checkpoint at iteration 29 to runs/0085/null-tree-uct-r1/checkpoints/checkpoint_29
