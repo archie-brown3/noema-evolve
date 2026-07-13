@@ -141,6 +141,27 @@ class TestBudgetedLLM(unittest.TestCase):
         messages = client.calls[0]["messages"]
         self.assertEqual(messages, [{"role": "user", "content": "just a prompt"}])
 
+    def test_null_content_returns_empty_string_and_still_charges(self):
+        # Task 0085 shakedown crash: OpenRouter returned HTTP 200 with
+        # message.content=None and the None reached extract_diffs. The
+        # boundary must hand parsers a string and still meter the call.
+        response = fake_response(content=None)
+        client = FakeClient([response])
+        llm, ledger = self._llm(client)
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+        self.assertEqual(result, "")
+        self.assertEqual(ledger.spent(), 140)  # usage was real; the call cost tokens
+        self.assertFalse(ledger.records[0].estimated)
+
+    def test_empty_choices_returns_empty_string(self):
+        response = fake_response()
+        response.choices = []
+        client = FakeClient([response])
+        llm, ledger = self._llm(client)
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+        self.assertEqual(result, "")
+        self.assertEqual(len(ledger.records), 1)
+
     def test_missing_usage_charged_as_zero(self):
         response = fake_response()
         response.usage = None

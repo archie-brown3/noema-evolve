@@ -20,6 +20,8 @@ from noema.config import (
     CoordinationConfig,
     LLMClientConfig,
     NoemaConfig,
+    SelectionConfig,
+    SubstrateConfig,
 )
 from noema.controller import NoemaController
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
@@ -47,16 +49,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--arm",
-        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes", "bandit"],
+        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes"],
         required=True,
         help="'pes' is a deprecated alias for pes-custom (task 0066)",
     )
-    # The EoH operator menu (task 0027) is substrate: in a matrix cell it is ON
-    # identically for every arm. The bandit REQUIRES it (it routes over the menu),
-    # so it is auto-enabled for --arm bandit; pass this flag to also turn it on
-    # for the other arms in a bandit-containing cell (they then draw operators at
-    # random while the bandit steers them — the one controlled difference).
-    ap.add_argument("--operator-menu", action="store_true", default=False)
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
@@ -74,25 +70,50 @@ def main():
     ap.add_argument("--num-inspirations", type=int, default=0)
     ap.add_argument("--num-top-programs", type=int, default=1)
     ap.add_argument("--include-artifacts", action="store_true", default=False)
+    ap.add_argument(
+        "--evaluation-file",
+        default=None,
+        help="Override the evaluate() module (default: evaluator.py). "
+        "evaluator_with_artifacts.py wraps it to capture failure tracebacks "
+        "into the artifacts channel without editing the shared evaluator.",
+    )
+    ap.add_argument("--substrate", choices=["islands", "tree"], default="islands")
+    ap.add_argument(
+        "--selection-policy",
+        choices=["substrate_default", "stock_openevolve", "boltzmann", "uct"],
+        default="substrate_default",
+    )
+    ap.add_argument("--temperature", type=float, default=0.7)
+    # Name of an env var holding the API key (cloud runs, task 0085). Unset =
+    # the local-cluster literal "none".
+    ap.add_argument("--api-key-env", default=None)
+    # Kill-and-resume (task 0087): path to a checkpoint dir written by a prior,
+    # killed invocation with the same --output-dir. Loads that state instead of
+    # starting fresh, then runs only the remaining iterations up to --iterations.
+    ap.add_argument("--resume-from", default=None)
     args = ap.parse_args()
+
+    api_key = "none"
+    if args.api_key_env:
+        api_key = os.environ.get(args.api_key_env) or ""
+        if not api_key:
+            raise SystemExit(f"--api-key-env {args.api_key_env}: variable is empty or unset")
+
+    # Mirror all logging (and any crash) into the run dir — console-only logs
+    # were lost when the 0085 shakedown's first run crashed.
+    os.makedirs(args.output_dir, exist_ok=True)
+    file_handler = logging.FileHandler(os.path.join(args.output_dir, "run.log"))
+    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logging.getLogger().addHandler(file_handler)
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
-
-    # Menu ON for the bandit (mandatory) or when explicitly requested for a
-    # matched cell; otherwise None = the legacy diff-only path (unchanged).
-    mutation_operators = (
-        ["e1", "e2", "m1", "m2", "m3"]
-        if (args.arm == "bandit" or args.operator_menu)
-        else None
-    )
 
     config = NoemaConfig(
         max_iterations=args.iterations,
         checkpoint_interval=5,
         random_seed=args.seed,
         diff_based_evolution=True,
-        mutation_operators=mutation_operators,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
         retry_on=args.retry_on,
@@ -117,8 +138,8 @@ def main():
         llm=LLMClientConfig(
             model=args.model,
             api_base=args.api_base,
-            api_key="none",
-            temperature=0.7,
+            api_key=api_key,
+            temperature=args.temperature,
             top_p=0.95,
             max_tokens=4096,
             timeout=300,
@@ -127,15 +148,26 @@ def main():
             module=args.arm,
             params={"context_window_tokens": args.context_window_tokens},
         ),
+        substrate=SubstrateConfig(kind=args.substrate),
+        selection=SelectionConfig(policy=args.selection_policy),
     )
 
     controller = NoemaController(
         config=config,
-        evaluation_file=f"{EXAMPLE_DIR}/evaluator.py",
+        evaluation_file=args.evaluation_file or f"{EXAMPLE_DIR}/evaluator.py",
         initial_program_code=initial_program_code,
         output_dir=args.output_dir,
     )
-    best = asyncio.run(controller.run())
+    try:
+        if args.resume_from:
+            controller.load_checkpoint(args.resume_from)
+            remaining = args.iterations - controller.start_iteration
+            best = asyncio.run(controller.run(iterations=remaining))
+        else:
+            best = asyncio.run(controller.run())
+    except Exception:
+        logging.getLogger(__name__).exception("run crashed")
+        raise
     print("BEST:", best.metrics if best else None)
 
 

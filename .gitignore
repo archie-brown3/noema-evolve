@@ -39,3 +39,6 @@ build/
 # Secrets — never commit
 .env
 .env.*
+
+# Run artefacts (top-level runs/ tree)
+runs/

@@ -158,9 +158,14 @@ class BudgetedLLM(LLMInterface):
                 raise
 
             usage = getattr(response, "usage", None)
-            content = response.choices[0].message.content
-
-            finish_reason = getattr(response.choices[0], "finish_reason", "") or ""
+            # OpenRouter/proxies can return HTTP 200 with no choices or a null
+            # message.content (provider/moderation hiccups). Downstream parsers
+            # expect a string; None crashed the 0085 shakedown at extract_diffs.
+            choice = response.choices[0] if getattr(response, "choices", None) else None
+            content = choice.message.content if choice is not None else None
+            finish_reason = (
+                (getattr(choice, "finish_reason", "") or "") if choice is not None else ""
+            )
 
             reasoning_tokens = 0
             if usage is not None:
@@ -208,6 +213,12 @@ class BudgetedLLM(LLMInterface):
                     cost=cost,
                 )
             )
+            if content is None:
+                logger.warning(
+                    f"LLM returned no content for {self.account}/{tag} "
+                    f"(finish_reason={finish_reason!r}); treating as empty response."
+                )
+                content = ""
             return content
 
         raise last_exception  # unreachable, kept for type-checkers
