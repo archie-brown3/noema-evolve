@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Dict
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.planner import Planner
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
     from noema.coordination.pes.module import PESPlannerModule

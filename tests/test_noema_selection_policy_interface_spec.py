@@ -36,7 +36,7 @@ def public_names(cls):
 class TestSelectionPolicyContract(unittest.TestCase):
     def test_selection_policy_is_a_runtime_protocol_or_abstract_base(self):
         SelectionPolicy = require_symbol(
-            self, "noema.substrate.base", "SelectionPolicy"
+            self, "noema.base", "SelectionPolicy"
         )
         runtime_protocol = bool(
             getattr(SelectionPolicy, "_is_protocol", False)
@@ -49,7 +49,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_policy_contract_owns_selection_lifecycle_and_state(self):
         SelectionPolicy = require_symbol(
-            self, "noema.substrate.base", "SelectionPolicy"
+            self, "noema.base", "SelectionPolicy"
         )
         required = {
             "select",
@@ -63,7 +63,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_policy_public_contract_contains_no_concrete_store_names(self):
         SelectionPolicy = require_symbol(
-            self, "noema.substrate.base", "SelectionPolicy"
+            self, "noema.base", "SelectionPolicy"
         )
         source = inspect.getsource(SelectionPolicy).casefold()
         self.assertNotIn("islandsstore", source)
@@ -71,7 +71,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_interface_runtime_composes_peer_store_and_policy(self):
         SubstrateRuntime = require_symbol(
-            self, "noema.substrate.base", "SubstrateRuntime"
+            self, "noema.base", "SubstrateRuntime"
         )
         names = public_names(SubstrateRuntime)
         self.assertTrue({"store", "policy", "select"}.issubset(names))
@@ -92,7 +92,7 @@ class TestIndependentConfiguration(unittest.TestCase):
     def test_omitted_configuration_resolves_native_islands_default(self):
         NoemaConfig = require_symbol(self, "noema.config", "NoemaConfig")
         resolve = require_symbol(
-            self, "noema.substrate.registry", "resolve_selection_policy"
+            self, "noema.registry", "resolve_selection_policy"
         )
         config = NoemaConfig.from_dict({})
 
@@ -104,12 +104,12 @@ class TestIndependentConfiguration(unittest.TestCase):
 
     def test_boltzmann_has_no_concrete_store_import(self):
         try:
-            module = importlib.import_module("noema.substrate.selection.boltzmann")
+            module = importlib.import_module("noema.selection.boltzmann")
         except ImportError as exc:
             self.fail(f"missing planned Boltzmann policy module: {exc}")
         source = inspect.getsource(module)
-        self.assertNotIn("noema.substrate.islands", source)
-        self.assertNotIn("noema.substrate.tree", source)
+        self.assertNotIn("noema.islands", source)
+        self.assertNotIn("noema.tree", source)
 
 
 if __name__ == "__main__":

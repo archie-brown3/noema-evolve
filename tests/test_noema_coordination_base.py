@@ -7,7 +7,7 @@ import json
 import unittest
 
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext, NullCoordination
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 
 def make_ctx(**overrides) -> GenerationContext:

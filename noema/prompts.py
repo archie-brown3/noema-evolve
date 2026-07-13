@@ -18,7 +18,7 @@ from openevolve.config import PromptConfig
 from openevolve.database import Program
 from openevolve.prompt.sampler import PromptSampler
 
-from noema.substrate.operators import OPERATOR_TEMPLATES
+from noema.operators import OPERATOR_TEMPLATES
 
 # Delimits the coordination block in the user prompt. The header is part of the
 # controlled variable: the coordination-OFF arm has no block and no header.

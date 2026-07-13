@@ -20,7 +20,7 @@ from typing import List, Tuple
 
 from openevolve.utils.code_utils import apply_diff
 
-from noema.substrate.diff import apply_diff_lenient
+from noema.diff import apply_diff_lenient
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 

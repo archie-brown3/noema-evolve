@@ -1,5 +1,5 @@
 """
-Tests for noema.substrate adapters (database, evaluator, views)
+Tests for noema adapters (database, evaluator, views)
 """
 
 import asyncio
@@ -11,9 +11,9 @@ import uuid
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 from openevolve.database import Program
 
-from noema.substrate.database import SubstrateDatabase
-from noema.substrate.evaluator import make_evaluator
-from noema.substrate.views import ProgramView
+from noema.database import SubstrateDatabase
+from noema.evaluator import make_evaluator
+from noema.views import ProgramView
 
 
 def make_db(**overrides) -> SubstrateDatabase:

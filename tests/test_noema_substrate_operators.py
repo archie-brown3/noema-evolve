@@ -1,5 +1,5 @@
 """
-Tests for noema.substrate.operators — the EoH-derived mutation operator menu
+Tests for noema.operators — the EoH-derived mutation operator menu
 (Tree Substrate Plan / task 0027). Structural tests only here; prompt-
 rendering and thought-extraction coverage lives in test_noema_prompts.py and
 test_noema_controller.py once those pieces are wired (S3/S4).
@@ -8,7 +8,7 @@ test_noema_controller.py once those pieces are wired (S3/S4).
 import unittest
 from dataclasses import FrozenInstanceError
 
-from noema.substrate.operators import OPERATOR_MENU, OPERATOR_TEMPLATES, OperatorSpec
+from noema.operators import OPERATOR_MENU, OPERATOR_TEMPLATES, OperatorSpec
 
 
 class TestOperatorMenu(unittest.TestCase):

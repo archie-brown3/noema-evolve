@@ -29,7 +29,7 @@ from openevolve.utils.metrics_utils import get_fitness_score
 # Indentation-aware SEARCH/REPLACE application: openevolve's apply_diff requires
 # a byte-exact match on the SEARCH block, so an LLM that re-indents the snippet
 # silently produces a no-op diff. apply_diff_lenient tolerates that.
-from noema.substrate.diff import apply_diff_lenient as apply_diff
+from noema.diff import apply_diff_lenient as apply_diff
 
 from noema.budget.ledger import (
     COORDINATION_ACCOUNT,
@@ -45,11 +45,11 @@ from noema.coordination import (
     SelectionContext,
     build_coordination_module,
 )
-from noema.substrate.boundary import enforce_immutable_boundary
-from noema.substrate.registry import build_substrate_runtime
-from noema.substrate.operators import OPERATOR_MENU, OperatorSpec
-from noema.substrate.evaluator import make_evaluator
-from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
+from noema.boundary import enforce_immutable_boundary
+from noema.registry import build_substrate_runtime
+from noema.operators import OPERATOR_MENU, OperatorSpec
+from noema.evaluator import make_evaluator
+from noema.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
 
 logger = logging.getLogger(__name__)
 

@@ -27,8 +27,8 @@ from noema.controller import NoemaController
 from noema.coordination import build_coordination_module
 from noema.coordination.base import GenerationContext, NullCoordination
 from noema.coordination.pes.module import PESPlannerModule
-from noema.substrate.database import SubstrateDatabase
-from noema.substrate.views import ProgramView
+from noema.database import SubstrateDatabase
+from noema.views import ProgramView
 
 INITIAL_PROGRAM = "def f():\n    return 1\n"
 

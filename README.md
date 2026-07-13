@@ -13,7 +13,7 @@ noema uses OpenEvolve as an installed **library dependency**, not as vendored co
 or a local submodule in this repository.
 
 - Borrowed from OpenEvolve: evaluator, program database, prompt sampler, and related
-  utility modules accessed through `noema/substrate/` adapters.
+  utility modules accessed through `noema/` adapters.
 - Not borrowed: OpenEvolve's top-level iteration orchestration. noema runs its own
   controller loop in `noema/controller.py`.
 - Dependency pin: `openevolve @ git+https://github.com/codelion/openevolve@80945ed`

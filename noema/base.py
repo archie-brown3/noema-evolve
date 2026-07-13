@@ -21,7 +21,7 @@ from typing import (
 
 from openevolve.database import Program
 
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 
 ScopeId = Any

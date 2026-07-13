@@ -7,8 +7,8 @@ from typing import Any, Dict, Mapping, Optional, Sequence
 from openevolve.config import DatabaseConfig
 from openevolve.database import Program
 
-from noema.substrate.base import PopulationSnapshot, RegionSummary, Selection
-from noema.substrate.database import SubstrateDatabase
+from noema.base import PopulationSnapshot, RegionSummary, Selection
+from noema.database import SubstrateDatabase
 
 
 class IslandsStore(SubstrateDatabase):

@@ -18,7 +18,7 @@ import numpy as np
 
 def _module(testcase):
     try:
-        return importlib.import_module("noema.substrate.selection.boltzmann")
+        return importlib.import_module("noema.selection.boltzmann")
     except ImportError as exc:
         testcase.fail(f"missing planned Boltzmann policy module: {exc}")
 

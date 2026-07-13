@@ -19,7 +19,7 @@ from noema.coordination.base import GenerationContext
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
 from noema.coordination.hifo.module import HiFoPromptModule, INSIGHTS_PREFIX
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 
 def make_view(fitness=0.5, code="def f():\n    return 1\n", desc="") -> ProgramView:

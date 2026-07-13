@@ -17,7 +17,7 @@ import unittest
 
 def _module(testcase):
     try:
-        return importlib.import_module("noema.substrate.tree")
+        return importlib.import_module("noema.tree")
     except ImportError as exc:
         testcase.fail(f"missing planned TreeStore module: {exc}")
 
@@ -70,7 +70,7 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
 class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
     def make_runtime(self, seed=7):
         module = _module(self)
-        base = importlib.import_module("noema.substrate.base")
+        base = importlib.import_module("noema.base")
         store = module.TreeStore(steps_per_generation=4)
         policy = module.UCTSelectionPolicy(
             token_budget=10_000,
@@ -102,7 +102,7 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_runtime_selection_uses_neutral_selection_value(self):
-        base = importlib.import_module("noema.substrate.base")
+        base = importlib.import_module("noema.base")
         runtime = self.make_runtime()
         store = runtime.store
         store.add({"id": "p0", "fitness": 1.0, "parent_id": None})

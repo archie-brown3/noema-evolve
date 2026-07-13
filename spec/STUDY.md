@@ -33,7 +33,7 @@ is the documented next candidate if an arm is added later — see
 
 ### Held constant across every run (the substrate)
 
-- OpenEvolve pinned at `80945ed` (v0.2.27), adapters in `noema/substrate/` only.
+- OpenEvolve pinned at `80945ed` (v0.2.27), adapters in `noema/` only.
 - Mutation menu: **diff/rewrite only** on the headline path. The EoH 5-operator
   menu (task 0027) lands opt-in and stays OFF in headline configs.
 - Model: **Qwen2.5-Coder-14B-Instruct-Q4_K_M**, single llama.cpp node per arm,

@@ -32,8 +32,8 @@ from noema.coordination import (
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.arms import PESCustomModule
 from noema.coordination.pes.module import PESPlannerModule
-from noema.substrate.prompts import COORDINATION_HEADER
-from noema.substrate.views import ProgramView
+from noema.prompts import COORDINATION_HEADER
+from noema.views import ProgramView
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 from openevolve.database import Program

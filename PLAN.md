@@ -19,7 +19,7 @@ commit `80945ed` (tag `v0.2.27`).
 Diff **application** is no longer borrowed. `openevolve.apply_diff` requires a
 byte-exact match on the SEARCH block, so an LLM that re-indents the snippet
 produces a silent no-op — the child is byte-identical to its parent and the
-iteration is wasted with no error. `noema/substrate/diff.py::apply_diff_lenient`
+iteration is wasted with no error. `noema/diff.py::apply_diff_lenient`
 is indentation-aware and replaces it at the single call site in
 `controller.py`.
 
@@ -29,14 +29,14 @@ is a fully independent reimplementation in `noema/controller.py`.
 
 ### 1.2 Database — generation bookkeeping
 
-`SubstrateDatabase` (`noema/substrate/database.py`) wraps OpenEvolve's program
+`SubstrateDatabase` (`noema/database.py`) wraps OpenEvolve's program
 database. The external controller must drive generation ticks —
 `end_generation()` increments the generation counter, triggers migration when
 due, and the DB itself owns no timer or epoch concept.
 
 ### 1.3 Evaluator
 
-`noema/substrate/evaluator.py` configures the evaluator: LLM feedback is
+`noema/evaluator.py` configures the evaluator: LLM feedback is
 rejected (site #3 is structurally dead, not just configured off), cascade
 evaluation is off, novelty features are rejected.
 
@@ -47,14 +47,14 @@ is **superseded**. Task 0074 decoupled parent selection and population structure
 from the islands model so further substrates (tree/UCT, CVT) can be added without
 touching the loop:
 
-- `noema/substrate/base.py` — the store-neutral interface: `select(...)`,
+- `noema/base.py` — the store-neutral interface: `select(...)`,
   `PopulationSnapshot`, scopes instead of islands.
-- `noema/substrate/islands.py` — the islands + MAP-Elites store (the incumbent).
-- `noema/substrate/registry.py` — substrate selection by config.
-- `noema/substrate/selection/` — selection policies (`stock_openevolve`,
+- `noema/islands.py` — the islands + MAP-Elites store (the incumbent).
+- `noema/registry.py` — substrate selection by config.
+- `noema/selection/` — selection policies (`stock_openevolve`,
   `boltzmann`), separable from the store itself.
 
-`SubstrateDatabase` (`noema/substrate/database.py`) remains the openevolve adapter
+`SubstrateDatabase` (`noema/database.py`) remains the openevolve adapter
 underneath. Generation bookkeeping is still driven by the controller (§1.2).
 
 **TreeStore is not built** (task 0037). Its fidelity spec exists as intentionally

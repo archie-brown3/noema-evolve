@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from noema.config import SelectionConfig, SubstrateConfig
-from noema.substrate.base import SubstrateRuntime
-from noema.substrate.islands import IslandsStore
-from noema.substrate.selection.stock_openevolve import StockOpenEvolveSelection
+from noema.base import SubstrateRuntime
+from noema.islands import IslandsStore
+from noema.selection.stock_openevolve import StockOpenEvolveSelection
 
 if TYPE_CHECKING:
     from noema.config import NoemaConfig
@@ -34,7 +34,7 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
     if policy_name == "stock_openevolve":
         policy = StockOpenEvolveSelection()
     elif policy_name == "boltzmann":
-        from noema.substrate.selection.boltzmann import BoltzmannSelectionPolicy
+        from noema.selection.boltzmann import BoltzmannSelectionPolicy
 
         policy = BoltzmannSelectionPolicy.from_config(config.selection)
     else:
