@@ -881,6 +881,21 @@ class TestFaithfulSummaryPath(unittest.TestCase):
         self.assertEqual(len(rows), 5)  # but only 5 rows rendered
         self.assertIn("child-000", block)  # the current child is always shown
 
+    def test_zero_sibling_cap_still_stays_bounded_and_shows_current(self):
+        # Guard the edge case where cap=0: Python's ranked[:cap-1] would become
+        # ranked[:-1] and re-expand the table unless handled explicitly.
+        module, _ = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful", max_siblings_rendered=0
+        )
+        parent = self._family(module, 40)
+        block = module._summarizer._sibling_block(
+            {"child_id": "child-000", "parent_id": parent.id}
+        )
+        rows = [ln for ln in block.splitlines() if ln.startswith("| child-")]
+        self.assertEqual(len(rows), 1)
+        self.assertIn("| child-000 (current) |", rows[0])
+        self.assertIn("Showing the top 1 of 40 children by score", block)
+
     def test_genuinely_oversized_prompt_still_fails_loud_after_the_cap(self):
         # The guard is NOT weakened by the cap. Capping the sibling table bounds
         # the one unbounded field; it must not become a licence to truncate the

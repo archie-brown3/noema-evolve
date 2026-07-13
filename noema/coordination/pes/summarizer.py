@@ -503,11 +503,15 @@ class Summarizer:
         cap = m.max_siblings_rendered
         shown = ranked
         if cap is not None and total > cap:
-            shown = ranked[:cap]
-            if not any(cid == child_id for cid, _ in shown):
+            if cap <= 0:
                 own = next((kv for kv in ranked if kv[0] == child_id), None)
-                if own is not None:
-                    shown = ranked[: cap - 1] + [own]
+                shown = [own] if own is not None else []
+            else:
+                shown = ranked[:cap]
+                if not any(cid == child_id for cid, _ in shown):
+                    own = next((kv for kv in ranked if kv[0] == child_id), None)
+                    if own is not None:
+                        shown = ranked[: cap - 1] + [own]
             lines.append(
                 f"Showing the top {len(shown)} of {total} children by score; the "
                 "current solution is always included. Y and X above are the TRUE "
