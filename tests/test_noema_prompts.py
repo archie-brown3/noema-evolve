@@ -15,6 +15,7 @@ from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
+from noema.base import PopulationSnapshot, RegionSummary
 from noema.prompts import (
     COORDINATION_HEADER,
     build_mutation_prompt,
@@ -223,16 +224,15 @@ class TestFaithfulPlannerConstants(unittest.TestCase):
         self.assertIn("1 + 1 > 2", FAITHFUL_PLANNER_SYSTEM)
         self.assertIn("Multi-Start Mandate", FAITHFUL_PLANNER_USER_TEMPLATE)
         self.assertIn("CRITICAL THOUGHT PROCESS", FAITHFUL_PLANNER_USER_TEMPLATE)
-        # Template variables the host fills (island block is the conditional
-        # slot from task 0061).
-        for var in (
-            "{task_info}",
-            "{parent_solution}",
-            "{island_num}",
-            "{parent_island}",
-            "{island_status_block}",
-        ):
+        # Template variables the host fills. Task 0080 collapsed the three
+        # island-named slots ({island_num}/{parent_island}/{island_status_block})
+        # into one {database_block} the planner renders from the neutral region
+        # snapshot. The islands rendering is unchanged on the wire — pinned by
+        # test_faithful_rendered_prompt_byte_pinned below.
+        for var in ("{task_info}", "{parent_solution}", "{database_block}"):
             self.assertIn(var, FAITHFUL_PLANNER_USER_TEMPLATE)
+        for gone in ("{island_num}", "{parent_island}", "{island_status_block}"):
+            self.assertNotIn(gone, FAITHFUL_PLANNER_USER_TEMPLATE)
         # Sizing floor for the single-call recast (design note §1.4).
         self.assertGreaterEqual(FAITHFUL_PLANNER_MIN_TOKENS, 2048)
 
@@ -269,7 +269,15 @@ FAITHFUL_COMPLETION = (
 )
 
 
-def make_pes_ctx(parent=None) -> GenerationContext:
+def make_regions(bests, topology="islands", prefix="island"):
+    """Neutral regional summaries as a substrate supplies them (task 0080)."""
+    return tuple(
+        RegionSummary(scope=i, label=f"{prefix}_{i}", best_fitness=b, size=1)
+        for i, b in enumerate(bests)
+    )
+
+
+def make_pes_ctx(parent=None, regions=(), topology="islands") -> GenerationContext:
     parent = parent or ProgramView(
         id="parent-1",
         code="def f():\n    return 1\n",
@@ -279,8 +287,11 @@ def make_pes_ctx(parent=None) -> GenerationContext:
     return GenerationContext(
         iteration=0,
         generation=0,
-        island=0,
+        scope_id=0,
         parent=parent,
+        global_population=PopulationSnapshot(
+            scope=None, topology=topology, regions=tuple(regions)
+        ),
         best_fitness_history=[0.1, 0.2],
         avg_fitness_history=[0.05, 0.1],
     )
@@ -366,17 +377,18 @@ class TestFaithfulPlannerPath(unittest.TestCase):
             "e54eaca3fd4401209063fb82fe8fb235c0f951072b890c936dec982161ab48a9",
         )
 
-    def test_faithful_prompt_at_advise_time_with_provider(self):
+    def test_faithful_prompt_at_advise_time_with_regions(self):
         # Deferred 0061 verifier condition: the island status block appears in
-        # the FAITHFUL planning prompt at advise() time with the provider's
-        # values; and the advice carries only the extracted final-plan slice.
+        # the FAITHFUL planning prompt at advise() time with the substrate's
+        # region values; and the advice carries only the extracted final-plan
+        # slice. Task 0080: the data now arrives on the neutral snapshot rather
+        # than through the `island_bests_provider` callable.
         from noema.coordination.pes.planner import FAITHFUL_PLANNER_SYSTEM
 
-        module, calls = make_pes_module(
-            prompt_variant="faithful",
-            island_bests_provider=lambda: [0.5, 0.9812],
+        module, calls = make_pes_module(prompt_variant="faithful")
+        advice = asyncio.run(
+            module.advise(make_pes_ctx(regions=make_regions([0.5, 0.9812])))
         )
-        advice = asyncio.run(module.advise(make_pes_ctx()))
         system, user = calls[0]["messages"][0], calls[0]["messages"][1]
         self.assertEqual(system["content"], FAITHFUL_PLANNER_SYSTEM)
         self.assertIn(
@@ -385,13 +397,16 @@ class TestFaithfulPlannerPath(unittest.TestCase):
         )
         self.assertIn("The current database includes 2 islands", user["content"])
         self.assertNotIn("Recently Attempted Elsewhere", user["content"])
+        # Native substrate: no adaptation is declared.
+        self.assertNotIn("topology_adaptation", advice.attribution)
         # Executor sees the final plan slice only — never the three outlines.
         self.assertIn("apply `scipy.optimize.minimize`", advice.prompt_block)
         self.assertNotIn("## Plan Outline", advice.prompt_block)
 
-    def test_faithful_prompt_block_absent_without_provider(self):
-        # Deferred 0061 verifier condition, second half: no provider -> the
-        # block renders "" (absent), strategies stay verbatim but inert.
+    def test_faithful_prompt_block_absent_without_regions(self):
+        # Deferred 0061 verifier condition, second half: a store that publishes
+        # no regions -> the status line is absent, strategies stay verbatim but
+        # inert. Same degraded rendering as the pre-0080 no-provider path.
         module, calls = make_pes_module(prompt_variant="faithful")
         asyncio.run(module.advise(make_pes_ctx()))
         user = calls[0]["messages"][1]["content"]
@@ -420,18 +435,33 @@ class TestFaithfulPlannerPath(unittest.TestCase):
             asyncio.run(module.advise(make_pes_ctx()))
             self.assertEqual(calls[0].get("max_tokens"), expected)
 
-    def test_raising_provider_propagates_out_of_advise(self):
-        # Fail-loud posture (0061 verifier finding 9, decided in 0063): a
-        # broken provider is a host bug; silently dropping the block would
-        # silently change the treatment mid-run.
-        def broken_provider():
-            raise RuntimeError("db exploded")
-
-        module, _ = make_pes_module(
-            prompt_variant="faithful", island_bests_provider=broken_provider
+    def test_non_island_topology_is_declared_never_relabelled(self):
+        # Successor to the 0061 fail-loud posture (verifier finding 9). There is
+        # no provider left to raise, but the invariant it protected — the
+        # treatment never changes silently — now bites here: on a non-island
+        # substrate the planner must use the substrate's own region labels and
+        # declare the deviation, rather than quietly dressing tree branches or
+        # CVT regions up as islands.
+        module, calls = make_pes_module(prompt_variant="faithful")
+        advice = asyncio.run(
+            module.advise(
+                make_pes_ctx(
+                    regions=make_regions([0.5, 0.9812], prefix="region"),
+                    topology="cvt_regions",
+                )
+            )
         )
-        with self.assertRaises(RuntimeError):
-            asyncio.run(module.advise(make_pes_ctx()))
+        user = calls[0]["messages"][1]["content"]
+        self.assertIn("The current database includes 2 regions", user)
+        self.assertIn(
+            "Region status (best score per region): region_0: 0.5000, region_1: 0.9812",
+            user,
+        )
+        self.assertNotIn("island", user)
+        self.assertEqual(
+            advice.attribution["topology_adaptation"],
+            "region_worded_database_block:cvt_regions",
+        )
 
     def test_missing_heading_falls_back_with_logged_warning(self):
         module, _ = make_pes_module(
@@ -813,8 +843,13 @@ class TestFaithfulSummaryPath(unittest.TestCase):
             FAITHFUL_PLANNER_SYSTEM: (
                 "e163b2371d1203832ff982a0147275286def177e2c371b128e88152d38378693"
             ),
+            # Re-pinned once, by task 0080: the three island-named slots became
+            # one {database_block} the planner renders from the neutral region
+            # snapshot. The KEEP lines are untouched and the RENDERED islands
+            # prompt is byte-identical to the pre-0080 output — which is the
+            # fidelity claim, and is what the next test pins.
             FAITHFUL_PLANNER_USER_TEMPLATE: (
-                "cb1c0356e194a4c4936ed129cc247940012edc26ea1a028b9a59a05e07193b0e"
+                "27ddd835a894e5fc2fe415e03cb728f6240d06827a700f453d27542f9ff37358"
             ),
             FAITHFUL_REFLECTION_SYSTEM: (
                 "727f904b7f089f687a6d7121e803ebbfd335ab98c459e9728975123ce99c49ae"
@@ -825,6 +860,34 @@ class TestFaithfulSummaryPath(unittest.TestCase):
         }
         for constant, sha in expected.items():
             self.assertEqual(hashlib.sha256(constant.encode()).hexdigest(), sha)
+
+    def test_faithful_rendered_prompt_byte_pinned_on_islands(self):
+        # The constant hashes above pin the source text; THIS pins what actually
+        # goes on the wire, which is where the LoongFlow fidelity claim lives.
+        # Both hashes were computed from the pre-0080 code path (template with
+        # {island_num}/{parent_island}/{island_status_block} + the
+        # island_bests_provider callable). They must survive every future
+        # refactor of how the planner obtains its region data.
+        import hashlib
+        import random
+
+        module = PESPlannerModule(
+            config={"prompt_variant": "faithful"}, llm=None, rng=random.Random(0)
+        )
+        rendered = {
+            "with_regions": module._planner._build_faithful_prompt(
+                make_pes_ctx(regions=make_regions([0.5, 0.9812]))
+            ),
+            "no_regions": module._planner._build_faithful_prompt(make_pes_ctx()),
+        }
+        self.assertEqual(
+            hashlib.sha256(rendered["with_regions"].encode()).hexdigest(),
+            "b5392a5fa7953c6cc7cd3724c85e32898cd42f7b1d5c9fce7b7bf25a867dd8d9",
+        )
+        self.assertEqual(
+            hashlib.sha256(rendered["no_regions"].encode()).hexdigest(),
+            "51ca832bba65c065bc03eacc09b3fae7d6372b258951fe78d05df9aaf6d46196",
+        )
 
 
 class TestExtractFinalPlan(unittest.TestCase):

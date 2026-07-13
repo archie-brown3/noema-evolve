@@ -146,7 +146,13 @@ class PESPlannerModule(CoordinationModule):
         plan = await self._planner.plan(ctx)
         if not plan:
             return Advice()
-        return self._executor.build_advice(plan, ctx)
+        advice = self._executor.build_advice(plan, ctx)
+        # Declared prompt deviation on a non-island substrate (task 0080). None
+        # on islands, so the fidelity anchor's attribution is unchanged.
+        adaptation = self._planner.topology_adaptation(ctx)
+        if adaptation:
+            advice.attribution["topology_adaptation"] = adaptation
+        return advice
 
     async def retry_advice(self, ctx: GenerationContext, error_text: str, attempt: int) -> str:
         """Reflection-seeded retries (Design 4) — see Executor.retry_block.

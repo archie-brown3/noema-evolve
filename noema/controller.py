@@ -164,13 +164,10 @@ class NoemaController:
             # ignore it, like any other mechanism-specific coordination param.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
-            # Cross-island best scores (task 0061): injected into the LOCAL
-            # params copy only — a callable must never reach the frozen config
-            # (not YAML-serializable, would perturb the run-config sha256).
-            # All modules receive it; only PES reads it.
-            coordination_params.setdefault(
-                "island_bests_provider", lambda: self.db.per_scope_bests()
-            )
+            # Task 0080 removed the `island_bests_provider` callable that used to
+            # be injected here. Cross-region best scores (task 0061) now reach a
+            # module through `GenerationContext.global_population.regions` — a
+            # neutral snapshot, not a live callback into a concrete store.
             self.coordination = build_coordination_module(
                 config.coordination.module,
                 coordination_params,
