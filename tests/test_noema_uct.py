@@ -255,6 +255,18 @@ class TestUCTComposition(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "tree_topology"):
             build_substrate_runtime(config)
 
+    def test_boltzmann_with_tree_fails_at_capability_boundary(self):
+        # Task 0086: tree x boltzmann must fail at composition, not run
+        # degraded — Boltzmann needs sampling weights TreeStore does not
+        # declare (Decision #33: incompatibility surfaces at the runtime
+        # boundary, never inside a policy or coordinator).
+        config = NoemaConfig(
+            substrate=SubstrateConfig(kind="tree"),
+            selection=SelectionConfig(policy="boltzmann"),
+        )
+        with self.assertRaisesRegex(ValueError, "sampling_weights"):
+            build_substrate_runtime(config)
+
     def test_legacy_islands_default_is_unchanged(self):
         runtime = build_substrate_runtime(NoemaConfig())
         self.assertIsInstance(runtime.store, IslandsStore)

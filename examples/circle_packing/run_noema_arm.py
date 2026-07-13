@@ -20,6 +20,8 @@ from noema.config import (
     CoordinationConfig,
     LLMClientConfig,
     NoemaConfig,
+    SelectionConfig,
+    SubstrateConfig,
 )
 from noema.controller import NoemaController
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
@@ -68,7 +70,23 @@ def main():
     ap.add_argument("--num-inspirations", type=int, default=0)
     ap.add_argument("--num-top-programs", type=int, default=1)
     ap.add_argument("--include-artifacts", action="store_true", default=False)
+    ap.add_argument("--substrate", choices=["islands", "tree"], default="islands")
+    ap.add_argument(
+        "--selection-policy",
+        choices=["substrate_default", "stock_openevolve", "boltzmann", "uct"],
+        default="substrate_default",
+    )
+    ap.add_argument("--temperature", type=float, default=0.7)
+    # Name of an env var holding the API key (cloud runs, task 0085). Unset =
+    # the local-cluster literal "none".
+    ap.add_argument("--api-key-env", default=None)
     args = ap.parse_args()
+
+    api_key = "none"
+    if args.api_key_env:
+        api_key = os.environ.get(args.api_key_env) or ""
+        if not api_key:
+            raise SystemExit(f"--api-key-env {args.api_key_env}: variable is empty or unset")
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
@@ -102,8 +120,8 @@ def main():
         llm=LLMClientConfig(
             model=args.model,
             api_base=args.api_base,
-            api_key="none",
-            temperature=0.7,
+            api_key=api_key,
+            temperature=args.temperature,
             top_p=0.95,
             max_tokens=4096,
             timeout=300,
@@ -112,6 +130,8 @@ def main():
             module=args.arm,
             params={"context_window_tokens": args.context_window_tokens},
         ),
+        substrate=SubstrateConfig(kind=args.substrate),
+        selection=SelectionConfig(policy=args.selection_policy),
     )
 
     controller = NoemaController(
