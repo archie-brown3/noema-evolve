@@ -495,10 +495,33 @@ class Summarizer:
                 "This solution is an only child: its rank is 1 out of 1 and there are "
                 "no siblings to compare against. State this plainly."
             )
+
+        # Bound the TABLE (task 0067). X/Y/Z above are already computed over the
+        # whole family and stay true; only the rendered rows are limited, so a
+        # parent with many children cannot grow this prompt without bound. The
+        # current solution is always shown — it is the one being reflected on.
+        cap = m.max_siblings_rendered
+        shown = ranked
+        if cap is not None and total > cap:
+            if cap <= 0:
+                own = next((kv for kv in ranked if kv[0] == child_id), None)
+                shown = [own] if own is not None else []
+            else:
+                shown = ranked[:cap]
+                if not any(cid == child_id for cid, _ in shown):
+                    own = next((kv for kv in ranked if kv[0] == child_id), None)
+                    if own is not None:
+                        shown = ranked[: cap - 1] + [own]
+            lines.append(
+                f"Showing the top {len(shown)} of {total} children by score; the "
+                "current solution is always included. Y and X above are the TRUE "
+                "family totals — use them, not the row count."
+            )
+
         lines.append("")
         lines.append("| solution_id | score | outcome | strategy |")
         lines.append("| --- | --- | --- | --- |")
-        for cid, e in ranked:
+        for cid, e in shown:
             marker = " (current)" if cid == child_id else ""
             lines.append(
                 f"| {cid}{marker} | {e.get('child_fitness', 0.0):.4f} | "

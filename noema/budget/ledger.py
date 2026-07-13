@@ -25,13 +25,32 @@ COORDINATION_ACCOUNT = "coordination"
 
 
 class BudgetExhausted(Exception):
-    """Raised on pre-flight check when the token budget is used up"""
+    """Raised on pre-flight check when the token budget is used up.
 
-    def __init__(self, account: str, spent: int, cap: int):
+    `shared_pool` distinguishes the two exhaustion modes, which the message used
+    to conflate (task 0067). Without a per-account cap the accounts draw on one
+    shared total, so what runs out is the POOL — but the old message named the
+    account that merely happened to make the next call, and reported the pool's
+    total spend against it. The 2026-07-13 run therefore logged "Budget exhausted
+    for account 'coordination': spent 1013477 of cap 1000000" when coordination
+    itself had spent a small fraction of that. The attributes are unchanged; only
+    the wording distinguishes the cases.
+    """
+
+    def __init__(self, account: str, spent: int, cap: int, shared_pool: bool = False):
         self.account = account
         self.spent = spent
         self.cap = cap
-        super().__init__(f"Budget exhausted for account '{account}': spent {spent} of cap {cap}")
+        self.shared_pool = shared_pool
+        if shared_pool:
+            msg = (
+                f"Total token budget exhausted (shared pool): spent {spent} of cap {cap}. "
+                f"The next call was for account '{account}' — that account is not itself "
+                f"capped; the shared pool is what ran out."
+            )
+        else:
+            msg = f"Budget exhausted for account '{account}': spent {spent} of cap {cap}"
+        super().__init__(msg)
 
 
 @dataclass
@@ -110,7 +129,10 @@ class TokenLedger:
                 and self.account_caps[account] - self.spent(account) <= 0
             ):
                 raise BudgetExhausted(account, self.spent(account), self.account_caps[account])
-            raise BudgetExhausted(account, self.spent(), self.total_budget_tokens)
+            # No per-account cap: the SHARED POOL is what ran out, not this account.
+            raise BudgetExhausted(
+                account, self.spent(), self.total_budget_tokens, shared_pool=True
+            )
 
     def charge(self, record: CallRecord) -> int:
         """

@@ -59,6 +59,11 @@ def main():
     ap.add_argument("--budget-tokens", type=int, default=2_000_000)
     ap.add_argument("--retry-enabled", action="store_true", default=False)
     ap.add_argument("--retry-cap", type=int, default=2)
+    # The server's real context window. pes-faithful's reflection prompt is
+    # pre-flight-checked against this; if it is smaller than the server's actual
+    # n_ctx the guard refuses prompts that would in fact have fitted, which is
+    # what killed the 2026-07-13 run (task 0067). Must match the served n_ctx.
+    ap.add_argument("--context-window-tokens", type=int, default=16384)
     ap.add_argument("--retry-on", choices=["failure", "non_improvement"], default="failure")
     ap.add_argument("--num-inspirations", type=int, default=0)
     ap.add_argument("--num-top-programs", type=int, default=1)
@@ -103,7 +108,10 @@ def main():
             max_tokens=4096,
             timeout=300,
         ),
-        coordination=CoordinationConfig(module=args.arm),
+        coordination=CoordinationConfig(
+            module=args.arm,
+            params={"context_window_tokens": args.context_window_tokens},
+        ),
     )
 
     controller = NoemaController(
