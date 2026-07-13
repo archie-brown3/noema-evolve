@@ -29,7 +29,7 @@ from openevolve.utils.metrics_utils import get_fitness_score
 # Indentation-aware SEARCH/REPLACE application: openevolve's apply_diff requires
 # a byte-exact match on the SEARCH block, so an LLM that re-indents the snippet
 # silently produces a no-op diff. apply_diff_lenient tolerates that.
-from noema.substrate.diff import apply_diff_lenient as apply_diff
+from noema.diff import apply_diff_lenient as apply_diff
 
 from noema.budget.ledger import (
     COORDINATION_ACCOUNT,
@@ -45,11 +45,11 @@ from noema.coordination import (
     SelectionContext,
     build_coordination_module,
 )
-from noema.substrate.boundary import enforce_immutable_boundary
-from noema.substrate.registry import build_substrate_runtime
-from noema.substrate.operators import OPERATOR_MENU, OperatorSpec
-from noema.substrate.evaluator import make_evaluator
-from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
+from noema.boundary import enforce_immutable_boundary
+from noema.registry import build_substrate_runtime
+from noema.operators import OPERATOR_MENU, OperatorSpec
+from noema.evaluator import make_evaluator
+from noema.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
 
 logger = logging.getLogger(__name__)
 
@@ -164,13 +164,10 @@ class NoemaController:
             # ignore it, like any other mechanism-specific coordination param.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
-            # Cross-island best scores (task 0061): injected into the LOCAL
-            # params copy only — a callable must never reach the frozen config
-            # (not YAML-serializable, would perturb the run-config sha256).
-            # All modules receive it; only PES reads it.
-            coordination_params.setdefault(
-                "island_bests_provider", lambda: self.db.per_scope_bests()
-            )
+            # Task 0080 removed the `island_bests_provider` callable that used to
+            # be injected here. Cross-region best scores (task 0061) now reach a
+            # module through `GenerationContext.global_population.regions` — a
+            # neutral snapshot, not a live callback into a concrete store.
             self.coordination = build_coordination_module(
                 config.coordination.module,
                 coordination_params,
@@ -289,6 +286,7 @@ class NoemaController:
             ),
         )
         request = self.coordination.sampling_request(selection_ctx)
+        self.substrate.set_tokens_spent(self.ledger.spent())
         selection = self.substrate.select(
             target_scope=island,
             num_inspirations=self.config.num_inspirations,
@@ -472,6 +470,10 @@ class NoemaController:
             artifacts = best_attempt["artifacts"]
             response = best_attempt["response"]
             current_prompt = best_attempt["prompt"]
+
+        # Keep optional budget-aware selection policies checkpoint-exact even
+        # when the final attempt is rejected or no subsequent selection occurs.
+        self.substrate.set_tokens_spent(self.ledger.spent())
 
         if child_code is None:
             self.substrate.on_child_rejected(
@@ -666,6 +668,7 @@ class NoemaController:
         path = os.path.join(self.output_dir, "checkpoints", f"checkpoint_{iteration}")
         os.makedirs(path, exist_ok=True)
         self.db.save(path, iteration)
+        self.substrate.set_tokens_spent(self.ledger.spent())
         state = {
             "next_iteration": iteration + 1,
             "generation": self.generation,

@@ -168,7 +168,7 @@ OPERATOR_MENU: Dict[str, OperatorSpec] = {
     "m3": OperatorSpec("m3", "eoh_m3_user", "diff", 1, False),
 }
 
-# Registered into TemplateManager by make_prompt_sampler() (noema/substrate/prompts.py).
+# Registered into TemplateManager by make_prompt_sampler() (noema/prompts.py).
 OPERATOR_TEMPLATES: Dict[str, str] = {
     "eoh_e1_user": EOH_E1_USER_TEMPLATE,
     "eoh_e2_user": EOH_E2_USER_TEMPLATE,

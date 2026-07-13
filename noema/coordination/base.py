@@ -21,8 +21,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, Mapping, Optional
 
-from noema.substrate.base import PopulationSnapshot
-from noema.substrate.views import ProgramView
+from noema.base import PopulationSnapshot
+from noema.views import ProgramView
 
 
 @dataclass(frozen=True, init=False)

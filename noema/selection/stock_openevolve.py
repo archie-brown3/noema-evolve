@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, Mapping, Optional
 
-from noema.substrate.base import PopulationStore, Selection
+from noema.base import PopulationStore, Selection
 
 
 class StockOpenEvolveSelection:

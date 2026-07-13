@@ -7,6 +7,7 @@ differ from openevolve where the plan requires it (PLAN.md section 3.4 risk 3):
 prompt stochasticity off, evaluator cascade off.
 """
 
+import math
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -15,7 +16,7 @@ import dacite
 import yaml
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
-from noema.substrate.operators import OPERATOR_MENU
+from noema.operators import OPERATOR_MENU
 
 
 def _default_prompt_config() -> PromptConfig:
@@ -82,6 +83,8 @@ class SelectionConfig:
     boltzmann_exploration_rate: float = 0.2
     stagnation_detection_enabled: bool = False
     stagnation_mode: str = "released"
+    initial_exploration: float = 0.1
+    widening_alpha: float = 0.5
 
 
 @dataclass
@@ -150,6 +153,11 @@ class NoemaConfig:
             self.selection.seed = self.random_seed + 3
         if self.substrate.kind not in ("islands", "tree"):
             raise ValueError(f"unknown substrate kind {self.substrate.kind!r}")
+        if (
+            self.substrate.steps_per_generation is not None
+            and self.substrate.steps_per_generation <= 0
+        ):
+            raise ValueError("substrate.steps_per_generation must be positive")
         if self.selection.policy not in (
             "substrate_default",
             "stock_openevolve",
@@ -162,6 +170,20 @@ class NoemaConfig:
         if not 0 <= self.selection.boltzmann_exploration_rate <= 1:
             raise ValueError(
                 "selection.boltzmann_exploration_rate must be between 0 and 1"
+            )
+        if (
+            not math.isfinite(self.selection.initial_exploration)
+            or self.selection.initial_exploration < 0
+        ):
+            raise ValueError(
+                "selection.initial_exploration must be finite and non-negative"
+            )
+        if (
+            not math.isfinite(self.selection.widening_alpha)
+            or not 0 < self.selection.widening_alpha <= 1
+        ):
+            raise ValueError(
+                "selection.widening_alpha must be finite and in (0, 1]"
             )
         if self.mutation_operator_seed is None:
             self.mutation_operator_seed = self.random_seed + 2

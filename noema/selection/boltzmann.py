@@ -13,7 +13,7 @@ from typing import Any, Dict, Mapping, Optional, Sequence
 
 import numpy as np
 
-from noema.substrate.base import PopulationStore, Selection
+from noema.base import PopulationStore, Selection
 
 
 def _rng(rng=None):

@@ -11,7 +11,7 @@ import unittest
 
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import IMPROVED, PESPlannerModule
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 
 def make_view(pid="p", fitness=0.5, code="def f():\n    return 1\n") -> ProgramView:

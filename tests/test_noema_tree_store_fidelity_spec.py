@@ -1,11 +1,9 @@
-"""Behavioural specification for MCTS-AHD tree topology + UCT selection.
+"""Deferred UCT behaviour contracts for task 0037.
 
-The population-store seam is task 0074; the concrete tree is task 0037.  These
-tests pin the scientific behavior before either implementation lands.  TreeStore
-owns topology/storage; UCTSelectionPolicy owns selection and visit state; callers
-compose them through SubstrateRuntime and see only neutral Selection and
-PopulationSnapshot values.  The kernel helpers keep the borrowed equations
-directly auditable.
+TreeStore storage and topology are ordinary green tests in
+``tests.test_noema_tree_store``.  This file now owns selection behaviour only:
+the published kernel equations, neutral runtime selection, and split
+store/policy checkpoint continuation.
 """
 
 from __future__ import annotations
@@ -14,20 +12,29 @@ import importlib
 import json
 import unittest
 
+from openevolve.database import Program
 
-def _module(testcase):
+
+def _uct_module(testcase):
     try:
-        return importlib.import_module("noema.substrate.tree")
+        return importlib.import_module("noema.selection.uct")
     except ImportError as exc:
-        testcase.fail(f"missing planned TreeStore module: {exc}")
+        testcase.fail(f"missing planned UCT policy module: {exc}")
+
+
+def _program(program_id, fitness, parent_id=None):
+    return Program(
+        id=program_id,
+        code=f"def {program_id}():\n    return {fitness}\n",
+        language="python",
+        metrics={"combined_score": fitness},
+        parent_id=parent_id,
+    )
 
 
 class TestMctsAhdKernelSpec(unittest.TestCase):
-    @unittest.expectedFailure
     def test_min_max_normalized_uct_matches_equation_five(self):
-        module = _module(self)
-        # Q=4 in a sibling range [2, 6], N(parent)=15, N(child)=3, lambda=.1.
-        # Spell the published expression independently of the implementation.
+        module = _uct_module(self)
         import math
 
         expected = 0.5 + 0.1 * math.sqrt(math.log(15 + 1) / 3)
@@ -43,16 +50,13 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
             expected,
         )
 
-    @unittest.expectedFailure
     def test_progressive_widening_matches_equation_four(self):
-        module = _module(self)
-        # floor(sqrt(8))=2 and floor(sqrt(9))=3.
+        module = _uct_module(self)
         self.assertFalse(module.should_widen(visits=8, child_count=3, alpha=0.5))
         self.assertTrue(module.should_widen(visits=9, child_count=3, alpha=0.5))
 
-    @unittest.expectedFailure
     def test_exploration_decay_uses_tokens_not_evaluation_count(self):
-        module = _module(self)
+        module = _uct_module(self)
         self.assertAlmostEqual(
             module.budget_exploration(
                 initial=0.1, tokens_spent=250, token_budget=1000
@@ -67,11 +71,12 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
         )
 
 
-class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
+class TestUCTPolicyHostAdaptationSpec(unittest.TestCase):
     def make_runtime(self, seed=7):
-        module = _module(self)
-        base = importlib.import_module("noema.substrate.base")
-        store = module.TreeStore(steps_per_generation=4)
+        module = _uct_module(self)
+        base = importlib.import_module("noema.base")
+        tree = importlib.import_module("noema.tree")
+        store = tree.TreeStore(steps_per_generation=4)
         policy = module.UCTSelectionPolicy(
             token_budget=10_000,
             initial_exploration=0.1,
@@ -79,61 +84,41 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
         )
         return base.SubstrateRuntime(store, policy)
 
-    @unittest.expectedFailure
-    def test_virtual_root_is_not_exposed_as_a_program(self):
-        store = self.make_runtime().store
-        snapshot = store.snapshot(scope=None)
-        self.assertEqual(snapshot.top_programs, ())
-        self.assertIsNone(snapshot.best_program)
-
-    @unittest.expectedFailure
-    def test_one_accepted_child_is_inserted_per_host_iteration(self):
-        store = self.make_runtime().store
-        root_child = {"id": "p0", "fitness": 1.0, "parent_id": None}
-        store.add(root_child, target_scope=None)
-        before = store.snapshot(scope=None)
-
-        child = {"id": "p1", "fitness": 1.2, "parent_id": "p0"}
-        store.add(child, target_scope=None)
-        after = store.snapshot(scope=None)
-
-        self.assertEqual(len(after.top_programs), len(before.top_programs) + 1)
-        self.assertEqual(after.best_program, child)
-
-    @unittest.expectedFailure
     def test_runtime_selection_uses_neutral_selection_value(self):
-        base = importlib.import_module("noema.substrate.base")
+        base = importlib.import_module("noema.base")
         runtime = self.make_runtime()
-        store = runtime.store
-        store.add({"id": "p0", "fitness": 1.0, "parent_id": None})
+        runtime.store.add(_program("p0", 1.0))
 
         selected = runtime.select(target_scope=None, num_inspirations=0)
 
         self.assertIsInstance(selected, base.Selection)
-        self.assertEqual(selected.parent["id"], "p0")
+        self.assertEqual(selected.parent.id, "p0")
         self.assertIsNone(selected.source_scope)
         self.assertIsNone(selected.target_scope)
 
-    @unittest.expectedFailure
     def test_checkpoint_resume_preserves_the_selection_trace(self):
         runtime = self.make_runtime(seed=123)
-        store = runtime.store
         for index, fitness in enumerate((1.0, 0.5, 1.3, 0.9)):
-            store.add(
-                {
-                    "id": f"p{index}",
-                    "fitness": fitness,
-                    "parent_id": None if index == 0 else "p0",
-                }
+            runtime.store.add(
+                _program(
+                    f"p{index}",
+                    fitness,
+                    None if index == 0 else "p0",
+                )
             )
 
         for _ in range(3):
             runtime.select(target_scope=None, num_inspirations=0)
         state = json.loads(
-            json.dumps({"store": store.state_dict(), "runtime": runtime.state_dict()})
+            json.dumps(
+                {
+                    "store": runtime.store.state_dict(),
+                    "runtime": runtime.state_dict(),
+                }
+            )
         )
         expected = [
-            runtime.select(target_scope=None, num_inspirations=0).parent["id"]
+            runtime.select(target_scope=None, num_inspirations=0).parent.id
             for _ in range(8)
         ]
 
@@ -141,7 +126,7 @@ class TestTreeStoreHostAdaptationSpec(unittest.TestCase):
         resumed.store.load_state_dict(state["store"])
         resumed.load_state_dict(state["runtime"])
         actual = [
-            resumed.select(target_scope=None, num_inspirations=0).parent["id"]
+            resumed.select(target_scope=None, num_inspirations=0).parent.id
             for _ in range(8)
         ]
         self.assertEqual(actual, expected)

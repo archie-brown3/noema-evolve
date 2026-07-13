@@ -1,6 +1,6 @@
 """Executable fidelity specification for the future islands store.
 
-These tests deliberately fail until ``noema.substrate.islands`` exists.  Imports
+These tests deliberately fail until ``noema.islands`` exists.  Imports
 of that future module stay inside the test fixture so unittest can discover and
 report each missing contract without failing while this module itself imports.
 
@@ -105,7 +105,7 @@ class IslandsStockFidelitySpec(unittest.TestCase):
         # Lazy by design: the future module must not break test discovery before
         # its implementation lands.
         try:
-            from noema.substrate.islands import IslandsStore
+            from noema.islands import IslandsStore
         except ImportError as exc:
             self.fail(f"missing planned IslandsStore module: {exc}")
         return IslandsStore
@@ -176,8 +176,8 @@ class IslandsStockFidelitySpec(unittest.TestCase):
                 self.assertEqual(actual_state, expected_state)
 
     def test_interface_runtime_and_snapshots_do_not_perturb_stock_rng_trace(self):
-        from noema.substrate.base import SubstrateRuntime
-        from noema.substrate.selection.stock_openevolve import (
+        from noema.base import SubstrateRuntime
+        from noema.selection.stock_openevolve import (
             StockOpenEvolveSelection,
         )
 
@@ -271,9 +271,9 @@ class IslandsStockFidelitySpec(unittest.TestCase):
 
     def test_omitted_selection_and_old_database_config_mean_stock(self):
         from noema.config import NoemaConfig
-        from noema.substrate.base import SubstrateRuntime
-        from noema.substrate.registry import build_substrate_runtime
-        from noema.substrate.selection.stock_openevolve import StockOpenEvolveSelection
+        from noema.base import SubstrateRuntime
+        from noema.registry import build_substrate_runtime
+        from noema.selection.stock_openevolve import StockOpenEvolveSelection
 
         IslandsStore = self._store_class()
 

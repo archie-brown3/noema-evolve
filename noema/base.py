@@ -21,7 +21,7 @@ from typing import (
 
 from openevolve.database import Program
 
-from noema.substrate.views import ProgramView
+from noema.views import ProgramView
 
 
 ScopeId = Any
@@ -36,11 +36,34 @@ class Selection:
 
 
 @dataclass(frozen=True)
+class RegionSummary:
+    """One meaningful sub-population, named by the substrate that owns it.
+
+    A region is the neutral unit of "somewhere else in the population that a
+    coordinator may reason about".  Islands map one region per island; a CVT
+    store maps a *group* of cells (a single cell holds one elite, so cell-per-
+    region would make ``fitnesses`` degenerate); a tree maps a branch.  The
+    substrate supplies ``label`` — coordination renders it, never invents it.
+    """
+
+    scope: ScopeId
+    label: str
+    best_fitness: float
+    size: int = 0
+
+
+@dataclass(frozen=True)
 class PopulationSnapshot:
     scope: ScopeId
     top_programs: Tuple[ProgramView, ...] = ()
     fitnesses: Tuple[float, ...] = ()
     best_program: Optional[ProgramView] = None
+    # Substrate-declared topology name ("islands", "cvt_regions", "tree_branches").
+    # A coordinator may branch on it, but that adaptation is then part of the arm
+    # definition and must be declared (see the decoupling design note).
+    topology: str = "unstructured"
+    # Populated on the global snapshot only; empty on a local cohort snapshot.
+    regions: Tuple[RegionSummary, ...] = ()
 
 
 @runtime_checkable
@@ -49,6 +72,7 @@ class PopulationStore(Protocol):
     capabilities: frozenset[str]
     feature_dimensions: Sequence[str]
     num_programs: int
+    topology: str
 
     def target_scope(self, iteration: int) -> ScopeId: ...
     def population(self, scope: ScopeId = None) -> Sequence[Program]: ...
@@ -68,6 +92,7 @@ class PopulationStore(Protocol):
     def fitness(self, program: Program) -> float: ...
     def all_fitnesses(self) -> Sequence[float]: ...
     def per_scope_bests(self) -> Sequence[float]: ...
+    def regions(self) -> Sequence[RegionSummary]: ...
     def view(self, program: Program) -> ProgramView: ...
     def views(self, programs: Sequence[Program]) -> Sequence[ProgramView]: ...
     def store_artifacts(self, program_id: str, artifacts: Mapping[str, Any]) -> None: ...
@@ -76,6 +101,21 @@ class PopulationStore(Protocol):
     def load(self, path: str) -> None: ...
     def state_dict(self) -> Dict[str, Any]: ...
     def load_state_dict(self, state: Mapping[str, Any]) -> None: ...
+
+
+@runtime_checkable
+class TreeTopology(Protocol):
+    """Small read-only topology capability consumed by tree policies."""
+
+    def tree_root_id(self) -> Optional[str]: ...
+    def tree_children(self, program_id: str) -> Sequence[str]: ...
+
+
+@runtime_checkable
+class TokenClockObserver(Protocol):
+    """Optional policy capability for the host's cumulative token clock."""
+
+    def set_tokens_spent(self, tokens_spent: int) -> None: ...
 
 
 @runtime_checkable
@@ -159,6 +199,10 @@ class SubstrateRuntime:
         self, *, parent: Any, child: Any = None, eval_failed: bool
     ) -> None:
         self.policy.on_child_rejected(parent=parent, child=child, eval_failed=eval_failed)
+
+    def set_tokens_spent(self, tokens_spent: int) -> None:
+        if isinstance(self.policy, TokenClockObserver):
+            self.policy.set_tokens_spent(tokens_spent)
 
     def state_dict(self) -> Dict[str, Any]:
         return {

@@ -1,11 +1,11 @@
 """
-Tests for noema.substrate.boundary — the F_imm / F_mut evolve-block boundary
+Tests for noema.boundary — the F_imm / F_mut evolve-block boundary
 enforced on parsed mutation output (Tree Substrate Plan Phase A).
 """
 
 import unittest
 
-from noema.substrate.boundary import enforce_immutable_boundary
+from noema.boundary import enforce_immutable_boundary
 
 PARENT_CODE = (
     "def entry_point():\n"

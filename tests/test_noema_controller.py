@@ -11,6 +11,7 @@ import asyncio
 import json
 import os
 import random
+import re
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -19,7 +20,13 @@ import yaml
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig, SelectionConfig
+from noema.config import (
+    BudgetConfig,
+    CoordinationConfig,
+    NoemaConfig,
+    SelectionConfig,
+    SubstrateConfig,
+)
 from noema.controller import NoemaController
 from noema.coordination import (
     DEPRECATED_ALIASES,
@@ -32,8 +39,8 @@ from noema.coordination import (
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.arms import PESCustomModule
 from noema.coordination.pes.module import PESPlannerModule
-from noema.substrate.prompts import COORDINATION_HEADER
-from noema.substrate.views import ProgramView
+from noema.prompts import COORDINATION_HEADER
+from noema.views import ProgramView
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 from openevolve.database import Program
@@ -390,6 +397,65 @@ class TestNoemaConfig(unittest.TestCase):
 
 
 class TestSubstrateRuntimeControllerContract(unittest.TestCase):
+    def test_tree_uct_runs_offline_with_deep_lineage_and_checkpoint_resume(self):
+        from noema.selection.uct import UCTSelectionPolicy
+        from noema.tree import TreeStore
+
+        config = make_config(
+            max_iterations=5,
+            substrate=SubstrateConfig(kind="tree", steps_per_generation=2),
+            selection=SelectionConfig(
+                policy="uct",
+                seed=123,
+                initial_exploration=0.1,
+                widening_alpha=0.5,
+            ),
+        )
+
+        class InlineEvaluator:
+            async def evaluate_program(self, code, program_id):
+                match = re.search(r"return (\d+(?:\.\d+)?)", code)
+                value = float(match.group(1)) if match else 0.0
+                return {"combined_score": min(1.0, value / 10.0)}
+
+            def get_pending_artifacts(self, program_id):
+                return {}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = make_controller(tmp, config=config)
+            controller.evaluator = InlineEvaluator()
+            best = asyncio.run(controller.run(iterations=5))
+
+            self.assertIsInstance(controller.db, TreeStore)
+            self.assertIsInstance(controller.substrate.policy, UCTSelectionPolicy)
+            self.assertEqual(controller.db.num_programs, 6)
+            self.assertEqual(len(client.calls), 5)
+            self.assertIsNotNone(best)
+            self.assertGreaterEqual(
+                max(item.generation for item in controller.db.population()), 2
+            )
+            self.assertEqual(controller.generation, 2)
+            self.assertEqual(controller.substrate.policy.tokens_spent, ledger.spent())
+
+            checkpoint = os.path.join(
+                tmp, "output", "checkpoints", "checkpoint_4"
+            )
+            resumed, resumed_ledger, _ = make_controller(tmp, config=config)
+            resumed.load_checkpoint(checkpoint)
+            expected = controller.substrate.select(
+                target_scope=None, num_inspirations=2
+            )
+            actual = resumed.substrate.select(
+                target_scope=None, num_inspirations=2
+            )
+
+        self.assertEqual(actual.parent.id, expected.parent.id)
+        self.assertEqual(
+            [item.id for item in actual.inspirations],
+            [item.id for item in expected.inspirations],
+        )
+        self.assertEqual(resumed_ledger.spent(), ledger.spent())
+
     def test_boltzmann_runs_end_to_end_and_targets_each_island(self):
         config = make_config(selection=SelectionConfig(policy="boltzmann", seed=123))
         with tempfile.TemporaryDirectory() as tmp:

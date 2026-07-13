@@ -8,10 +8,11 @@ config knobs, llm) and hands itself to the phase object by reference.
 
 import json
 import logging
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import GenerationContext
+from noema.base import RegionSummary
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
     from noema.coordination.pes.module import PESPlannerModule
@@ -148,8 +149,7 @@ FAITHFUL_PLANNER_USER_TEMPLATE = """You are currently using Evolux to solve the 
 - summary: A summary of the current parent solution; it includes the Guidance for this generation.
 
 # Database
-The current database includes {island_num} islands. The parent_solution is located in island_{parent_island}, so the child solution will also be located in island_{parent_island}.
-{island_status_block}
+{database_block}
 **CRITICAL THOUGHT PROCESS:**
 Do NOT rely on manual heuristics or hard-coded rules (e.g., manually calculating coordinates, manually swapping items). These are prone to errors. Instead, adopt a **Mathematical Modeling & Solver-based Approach**:
 1.  **Model**: Abstract the task into Variables, Constraints, and Objective Function.
@@ -392,14 +392,10 @@ class Planner:
             "score": parent.fitness,
             "summary": prior.get("reflection") if prior else None,
         }
-        provider = m.config.get("island_bests_provider")
-        bests = provider() if provider is not None else []
         return FAITHFUL_PLANNER_USER_TEMPLATE.format(
             task_info=m.domain_context or "None provided.",
             parent_solution=json.dumps(parent_solution, indent=2),
-            island_num=len(bests) if bests else int(ctx.scope_id or 0) + 1,
-            parent_island=ctx.scope_id,
-            island_status_block=self._island_status_block(bests),
+            database_block=self._database_block(ctx),
         )
 
     def _faithful_max_tokens(self) -> int:
@@ -412,31 +408,83 @@ class Planner:
         configured = getattr(self._m.llm, "max_tokens", None)
         return max(configured or 0, FAITHFUL_PLANNER_MIN_TOKENS)
 
-    # ---------------------------------------------- cross-island status (0061)
+    # --------------------------------- global-perspective regions (0061/0080)
 
-    def _island_status_block(self, bests: Optional[List[float]] = None) -> str:
-        """Cross-island best-score levels for the faithful planner's Global
-        Perspective strategies (LoongFlow served these via Get_Memory_Status /
-        Get_Best_Solutions; recast = pre-injection, task 0061).
+    def _database_block(self, ctx: GenerationContext) -> str:
+        """The faithful planner's `# Database` section: how many regions exist,
+        which one the parent sits in, and the best score in each.
 
-        Data comes ONLY from the host-injected `island_bests_provider`
-        callable — never synthesized from _plans. Returns "" when the provider
-        is absent or returns no islands, leaving the strategies verbatim but
-        inert. An empty-but-islanded database renders 0.0000 per island (in a
-        live run the seed program exists before the first advise call). Not
-        rendered by the custom prompt variant (the faithful template, task
-        0063, consumes it). `bests` may be passed pre-fetched (the faithful
-        prompt builder already called the provider); None means fetch here.
+        LoongFlow served this via Get_Memory_Status / Get_Best_Solutions; noema
+        pre-injects it (task 0061). Task 0080 moved the data source from a
+        host-injected `island_bests_provider` callable to the neutral
+        `global_population.regions` snapshot, so PES no longer holds a callback
+        into a concrete store.
+
+        On islands the rendering is byte-identical to the verbatim LoongFlow
+        text — that arm is the fidelity anchor. On any other topology the
+        substrate's own region labels are used and the deviation is declared in
+        `topology_adaptation` (never silently relabelled as islands). Regions
+        are absent (a store that declares no `regions` capability, or an
+        old-shaped fixture) → the section degrades to the parent's scope alone
+        and the Global Perspective strategies stay verbatim but inert, which is
+        the pre-0080 no-provider behavior.
         """
-        if bests is None:
-            provider = self._m.config.get("island_bests_provider")
-            if provider is None:
-                return ""
-            bests = provider()
-        if not bests:
-            return ""
-        scores = ", ".join(f"island_{i}: {b:.4f}" for i, b in enumerate(bests))
-        return f"Island status (best score per island): {scores}"
+        snapshot = ctx.global_population
+        regions = tuple(snapshot.regions) if snapshot else ()
+        parent_scope = ctx.scope_id
+        count = len(regions) if regions else int(parent_scope or 0) + 1
+
+        if snapshot and snapshot.topology != "islands" and regions:
+            # Declared adaptation: the substrate is not islands, so the noun and
+            # the labels come from the substrate, not from LoongFlow's wording.
+            here = self._region_label(regions, parent_scope)
+            if here is None:
+                # Global-scope substrate (tree): target_scope() is None, so no
+                # region matches scope_id and the parent's location cannot be
+                # named. State only what is true — descent — rather than a
+                # location claim; richer wording is task 0082's decision.
+                location = (
+                    "The child solution will be generated directly from the "
+                    "parent_solution."
+                )
+            else:
+                location = (
+                    f"The parent_solution is located in {here}, so the child "
+                    f"solution will also be located in {here}."
+                )
+            lines = [f"The current database includes {count} regions. {location}"]
+            scores = ", ".join(f"{r.label}: {r.best_fitness:.4f}" for r in regions)
+            lines.append(f"Region status (best score per region): {scores}")
+            return "\n".join(lines)
+
+        # Islands (and the degraded no-regions path): LoongFlow verbatim.
+        block = (
+            f"The current database includes {count} islands. The parent_solution "
+            f"is located in island_{parent_scope}, so the child solution will also "
+            f"be located in island_{parent_scope}."
+        )
+        if not regions:
+            return f"{block}\n"
+        scores = ", ".join(f"{r.label}: {r.best_fitness:.4f}" for r in regions)
+        return f"{block}\nIsland status (best score per island): {scores}"
+
+    @staticmethod
+    def _region_label(regions: Sequence["RegionSummary"], scope: Any) -> Optional[str]:
+        """The label of the region whose scope matches, or None — never a
+        synthesized name (str(None) rendered "located in None" on the tree)."""
+        for region in regions:
+            if region.scope == scope:
+                return region.label
+        return None
+
+    def topology_adaptation(self, ctx: GenerationContext) -> Optional[str]:
+        """The declared prompt deviation for this context, or None on the native
+        islands substrate. Recorded in `Advice.attribution` so a run's evidence
+        shows which cells rendered an adapted prompt."""
+        snapshot = ctx.global_population
+        if not snapshot or not snapshot.regions or snapshot.topology == "islands":
+            return None
+        return f"region_worded_database_block:{snapshot.topology}"
 
     # -------------------------------------------- cross-lineage diversity (D2)
 
