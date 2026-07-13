@@ -397,8 +397,8 @@ class Planner:
         return FAITHFUL_PLANNER_USER_TEMPLATE.format(
             task_info=m.domain_context or "None provided.",
             parent_solution=json.dumps(parent_solution, indent=2),
-            island_num=len(bests) if bests else ctx.island + 1,
-            parent_island=ctx.island,
+            island_num=len(bests) if bests else int(ctx.scope_id or 0) + 1,
+            parent_island=ctx.scope_id,
             island_status_block=self._island_status_block(bests),
         )
 

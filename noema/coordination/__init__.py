@@ -9,6 +9,8 @@ from noema.coordination.base import (
     CoordinationModule,
     GenerationContext,
     NullCoordination,
+    SamplingRequest,
+    SelectionContext,
 )
 
 from noema.coordination.hifo.module import HiFoPromptModule
@@ -60,6 +62,8 @@ __all__ = [
     "CoordinationModule",
     "GenerationContext",
     "NullCoordination",
+    "SelectionContext",
+    "SamplingRequest",
     "MODULE_REGISTRY",
     "DEPRECATED_ALIASES",
     "build_coordination_module",

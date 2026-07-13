@@ -19,13 +19,14 @@ import yaml
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig
+from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig, SelectionConfig
 from noema.controller import NoemaController
 from noema.coordination import (
     DEPRECATED_ALIASES,
     MODULE_REGISTRY,
     Advice,
     NullCoordination,
+    SamplingRequest,
     build_coordination_module,
 )
 from noema.coordination.base import GenerationContext
@@ -35,6 +36,7 @@ from noema.substrate.prompts import COORDINATION_HEADER
 from noema.substrate.views import ProgramView
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
+from openevolve.database import Program
 
 INITIAL_PROGRAM = "def f():\n    return 1\n"
 
@@ -379,6 +381,115 @@ class TestNoemaConfig(unittest.TestCase):
         self.assertEqual(restored.retry_on, "non_improvement")
         self.assertTrue(restored.retry_enabled)
 
+    def test_selection_policy_defaults_and_validation(self):
+        config = NoemaConfig()
+        self.assertEqual(config.substrate.kind, "islands")
+        self.assertEqual(config.selection.policy, "substrate_default")
+        with self.assertRaises(ValueError):
+            NoemaConfig(selection=SelectionConfig(policy="not-a-policy"))
+
+
+class TestSubstrateRuntimeControllerContract(unittest.TestCase):
+    def test_boltzmann_runs_end_to_end_and_targets_each_island(self):
+        config = make_config(selection=SelectionConfig(policy="boltzmann", seed=123))
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, client = make_controller(tmp, config=config)
+            best = asyncio.run(controller.run(iterations=6))
+
+        children = [
+            program
+            for program in controller.db._db.programs.values()
+            if program.parent_id is not None
+        ]
+        self.assertEqual(len(client.calls), 6)
+        self.assertIsNotNone(best)
+        self.assertEqual({child.metadata["island"] for child in children}, {0, 1})
+        self.assertTrue(
+            all(child.metadata.get("sample_weight", 0.0) >= 0.05 for child in children)
+        )
+
+    def test_sampling_request_precedes_selection_advice(self):
+        events = []
+
+        class RecordingCoordination(NullCoordination):
+            def sampling_request(self, ctx):
+                events.append("request")
+                return SamplingRequest({"future_hint": "value"})
+
+            async def advise(self, ctx):
+                events.append("advise")
+                return Advice()
+
+        class FakeEvaluator:
+            async def evaluate_program(self, code, program_id):
+                return {"combined_score": 0.5}
+
+            def get_pending_artifacts(self, program_id):
+                return {}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            controller.coordination = RecordingCoordination()
+            controller.evaluator = FakeEvaluator()
+            controller.db.add(
+                Program(
+                    id="initial",
+                    code=INITIAL_PROGRAM,
+                    language="python",
+                    metrics={"combined_score": 0.1},
+                ),
+                iteration=0,
+                target_scope=0,
+            )
+            asyncio.run(controller._run_iteration(0))
+
+        self.assertEqual(events[:2], ["request", "advise"])
+        self.assertEqual(
+            controller.substrate.log_snapshot()["ignored"],
+            {"future_hint": "value"},
+        )
+
+    def test_boltzmann_policy_state_survives_controller_checkpoint(self):
+        config = make_config(
+            selection=SelectionConfig(policy="boltzmann", seed=123),
+            database=DatabaseConfig(
+                in_memory=True,
+                num_islands=1,
+                population_size=50,
+                random_seed=42,
+                migration_interval=1000,
+            ),
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp, config=config)
+            for index in range(8):
+                controller.db.add(
+                    Program(
+                        id=f"p{index}",
+                        code=f"def f():\n    return {index}\n",
+                        language="python",
+                        metrics={"combined_score": index / 10},
+                        metadata={"sample_weight": index + 1},
+                    ),
+                    target_scope=0,
+                )
+            for _ in range(4):
+                controller.substrate.select(target_scope=0, num_inspirations=2)
+            checkpoint = controller.save_checkpoint(0)
+            expected = [
+                controller.substrate.select(target_scope=0, num_inspirations=2).parent.id
+                for _ in range(8)
+            ]
+
+            resumed, _, _ = make_controller(tmp, config=config)
+            resumed.load_checkpoint(checkpoint)
+            actual = [
+                resumed.substrate.select(target_scope=0, num_inspirations=2).parent.id
+                for _ in range(8)
+            ]
+
+        self.assertEqual(actual, expected)
+
     def test_mutation_operator_seed_defaults_to_random_seed_plus_two(self):
         config = NoemaConfig(random_seed=10)
         self.assertEqual(config.mutation_operator_seed, 12)
@@ -553,6 +664,21 @@ class TestNonImprovementRetry(unittest.TestCase):
 
 
 class TestRetryLoop(unittest.TestCase):
+    def test_overlength_response_is_rejected_without_crashing_run(self):
+        config = make_config(
+            max_code_length=10,
+            retry_enabled=False,
+            max_iterations=1,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, client = make_controller(tmp, config=config)
+            asyncio.run(controller.run(iterations=1))
+
+        self.assertEqual(len(client.calls), 1)
+        self.assertGreater(ledger.spent("mutation"), 0)
+        self.assertEqual(controller.db.num_programs, 1)
+        self.assertEqual(controller.start_iteration, 1)
+
     def test_parse_failure_retries_and_succeeds(self):
         with tempfile.TemporaryDirectory() as tmp:
             eval_path = os.path.join(tmp, "evaluator.py")

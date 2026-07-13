@@ -913,9 +913,8 @@ class TestPromptIdentityDecision25Exemption(unittest.TestCase):
     exact scope is checked: only that one arm, only in directive mode, and
     no other arm can trip the same attribution flag.
 
-    (s1 is named in Decision #25 but is not yet a registered coordination
-    arm — MODULE_REGISTRY currently holds null/hifo/pes only; this test
-    covers every arm that exists.)
+    (s1 is named in Decision #25 but is not a registered coordination arm;
+    this test covers the prompt-producing arms relevant to the exemption.)
     """
 
     def _shared_prefix_prompt(self, advice):

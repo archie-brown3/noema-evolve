@@ -181,11 +181,19 @@ class PESPlannerModule(CoordinationModule):
         eval_failed: bool,
     ) -> None:
         plan = attribution.get("plan")
-        if not plan or ctx.parent is None:
+        if ctx.parent is None:
             return
         if child is None:
             return  # no program produced: no lineage node to attach the plan to
-        self._summarizer.record(ctx, child, plan, eval_failed)
+        # A failed PLANNING call degrades advise() to a no-op Advice() (empty
+        # plan) — but the mutation itself may still have produced a real,
+        # evaluated child. Record it anyway (task 0042): dropping it here made
+        # the child permanently invisible to _plans, so its whole lineage kept
+        # reporting "None — first plan for this lineage" and the cross-lineage
+        # diversity digest never saw it. The gaps correlate with cluster
+        # transients, i.e. exactly the mechanism this arm is meant to measure.
+        # No plan means nothing to reflect on, so reflection stays unqueued.
+        self._summarizer.record(ctx, child, plan or "", eval_failed)
 
     # ------------------------------------------------ reflection (Phase 2)
 

@@ -177,6 +177,31 @@ class TestPESPlannerModule(unittest.TestCase):
         self.assertEqual(advice.prompt_block, "")
         self.assertEqual(advice.attribution, {})
 
+    def test_planning_failure_still_records_lineage_for_a_real_child(self):
+        # Task 0042. A failed PLANNING call degrades advise() to a no-op
+        # Advice() (empty attribution), but the MUTATION may still succeed and
+        # produce a real, evaluated child. That child must stay visible to PES's
+        # own lineage memory: dropping it made every future descendant report
+        # "None — first plan for this lineage" despite real history existing,
+        # and the failures correlate with cluster transients — i.e. they
+        # silently degrade exactly the mechanism this arm is measuring.
+        module, _, client = self.make_module(fail_with=RuntimeError("boom"))
+        ctx = make_ctx()
+        advice = asyncio.run(module.advise(ctx))
+        self.assertEqual(advice.attribution, {})  # planning really did fail
+
+        child = make_view(pid="child-1", fitness=0.7)
+        module.report_result(ctx, child, advice.attribution, eval_failed=False)
+
+        # The child is in lineage memory, with its outcome, despite no plan
+        self.assertIn("child-1", module._plans)
+        entry = module._plans["child-1"]
+        self.assertEqual(entry["plan"], "")
+        self.assertEqual(entry["parent_id"], ctx.parent.id)
+        self.assertEqual(entry["child_fitness"], 0.7)
+        # ...but nothing was enqueued for reflection: there is no plan to reflect on
+        self.assertEqual(len(module._pending_reflections), 0)
+
     def test_budget_exhaustion_propagates(self):
         # First call crosses the 1-token cap and is still served (ledger
         # contract); the next pre-flight ensure() must raise through advise()

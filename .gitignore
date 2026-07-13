@@ -4,7 +4,9 @@ loop/memory/state-archive/
 loop/memory/cron.log
 loop/work-order.json
 
-# Experiment output
+# Experiment output — run dirs are the study's raw data, they live on the
+# artefact branch, never on main.
+examples/**/runs/
 examples/**/openevolve_output*/
 examples/**/noema_*output*/
 examples/**/best_program.py
@@ -21,8 +23,8 @@ examples/**/*.log
 loop/
 work-order.json
 
-# Test fixture logs
-tests/**/*.log
+# NOTE: tests/**/*.log is deliberately NOT ignored — verify_run fixtures are
+# real log files the test suite reads (tests/test_verify_run.sh).
 
 *.swp
 __pycache__/
