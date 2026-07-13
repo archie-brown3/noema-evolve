@@ -76,6 +76,41 @@ class TestTokenLedger(unittest.TestCase):
         # Other account unaffected
         ledger.ensure("mutation")
 
+    def test_shared_pool_exhaustion_does_not_blame_the_asking_account(self):
+        # Task 0067. With NO per-account cap the accounts draw on one shared pool,
+        # so what runs out is the POOL. The old message named whichever account
+        # happened to make the next call and reported the pool's TOTAL spend
+        # against it: the 2026-07-13 run logged "Budget exhausted for account
+        # 'coordination': spent 1013477 of cap 1000000" while coordination itself
+        # had spent a small fraction of that. Mislabelled metering is a triad
+        # concern, not cosmetics — it misattributes which account overran.
+        ledger = TokenLedger(total_budget_tokens=100)  # no account_caps
+        ledger.charge(record("mutation", prompt=95, completion=0))  # mutation burned it
+        ledger.charge(record("coordination", prompt=10, completion=0))
+        with self.assertRaises(BudgetExhausted) as ctx:
+            ledger.ensure("coordination")  # coordination merely asks next
+
+        e = ctx.exception
+        self.assertTrue(e.shared_pool)
+        self.assertEqual(e.spent, 105)  # the POOL total, not coordination's 10
+        self.assertEqual(e.cap, 100)
+        msg = str(e)
+        self.assertIn("Total token budget exhausted (shared pool)", msg)
+        self.assertIn("that account is not itself capped", msg)
+        # It must NOT read as though the coordination account overran its own cap
+        self.assertNotIn("Budget exhausted for account 'coordination'", msg)
+
+    def test_per_account_cap_message_still_names_the_account(self):
+        # The other branch is unchanged: a real per-account overrun still says so.
+        ledger = TokenLedger(total_budget_tokens=10_000, account_caps={"coordination": 50})
+        ledger.charge(record("coordination", prompt=50, completion=0))
+        with self.assertRaises(BudgetExhausted) as ctx:
+            ledger.ensure("coordination")
+        e = ctx.exception
+        self.assertFalse(e.shared_pool)
+        self.assertIn("Budget exhausted for account 'coordination'", str(e))
+        self.assertEqual(e.spent, 50)  # the ACCOUNT's spend, not the pool's
+
     def test_charge_never_raises_and_can_go_negative(self):
         # The call that crosses the cap is still recorded; the next ensure() raises
         ledger = TokenLedger(total_budget_tokens=100)

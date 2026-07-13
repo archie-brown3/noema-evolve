@@ -794,6 +794,131 @@ class TestFaithfulSummaryPath(unittest.TestCase):
         self.assertIn("overflow the context window", str(cm.exception))
         self.assertEqual(calls, [])  # nothing was dispatched
 
+    # ----------------------------------------- task 0067: context-fit regression
+
+    def _family(self, module, n, parent=None):
+        """Record n children of ONE parent, so they are siblings of each other.
+
+        Uses REALISTIC content sizes — the live run's programs were real circle-
+        packing constructors, not toy stubs. Code and stderr are stored at the
+        max_code_chars cap (the worst case the host itself permits), because that
+        is the condition the arm has to survive: every bounded field at its bound.
+        """
+        parent = parent or ProgramView(
+            id="parent-1",
+            code="# parent\n" + "x = 1\n" * 400,  # ~2.4k chars, capped to 2000
+            fitness=0.5,
+            metrics={"score": 0.5},
+        )
+        for i in range(n):
+            child = ProgramView(
+                id=f"child-{i:03d}",
+                code=f"# child {i}\n" + "y = 2\n" * 400,
+                fitness=0.5 + i / 1000.0,
+                metrics={"score": 0.5 + i / 1000.0},
+                metadata={"stderr": "Traceback:\n" + "  frame\n" * 200},
+            )
+            ctx = GenerationContext(
+                iteration=i, generation=0, island=0, parent=parent,
+                best_fitness_history=[], avg_fitness_history=[],
+            )
+            module.report_result(
+                ctx, child, {"plan": f"plan {i}: " + "detail " * 60,
+                             "parent_id": parent.id}, eval_failed=False,
+            )
+        return parent
+
+    def test_sibling_table_growth_overflows_the_window(self):
+        # Task 0067. The 2026-07-13 live run died at 9% of budget with
+        # "~6268 prompt tokens + 4096 reserved > 10240". This reproduces the
+        # cause: EVERY component of the faithful reflection prompt is bounded
+        # (code and stderr by max_code_chars, the parent's brief by the 300-token
+        # downstream slice) EXCEPT the sibling table, which renders one row per
+        # child of the parent with no cap. The prompt therefore grows without
+        # limit as a parent accumulates children, and a run that fits early
+        # fails later — the arm is a time bomb, not merely mis-pinned.
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF,
+            prompt_variant="faithful",
+            llm_max_tokens=4096,  # the live run's LLMClientConfig.max_tokens
+            context_window_tokens=10240,  # the value the failed run actually ran with
+            max_siblings_rendered=None,  # unbounded: the pre-0067 behaviour
+        )
+        parent = self._family(module, 60)
+        with self.assertRaises(ValueError) as cm:
+            asyncio.run(module.on_generation_end(make_pes_ctx(parent=parent)))
+        self.assertIn("overflow the context window", str(cm.exception))
+        self.assertEqual(calls, [])  # fail-loud, nothing dispatched
+
+    def test_sibling_table_is_capped_so_a_large_family_still_fits(self):
+        # The fix: the sibling TABLE is capped (a host-added field, not donor
+        # text). The same 60-child family now fits and the call is dispatched.
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF,
+            prompt_variant="faithful",
+            llm_max_tokens=4096,
+            context_window_tokens=10240,
+        )
+        parent = self._family(module, 60)
+        asyncio.run(module.on_generation_end(make_pes_ctx(parent=parent)))
+        self.assertTrue(calls, "reflection should have been dispatched")
+
+    def test_capped_table_still_reports_the_TRUE_family_size_and_rank(self):
+        # The cap must not corrupt the treatment. X/Y/Z (rank, total, top score)
+        # are computed over the WHOLE family and are what the model is told to
+        # copy into its checklist; only the rendered ROWS are limited. Reporting
+        # a truncated Y would silently change what the mechanism tells the model.
+        module, _ = make_pes_module(
+            response_text=FAITHFUL_BRIEF, prompt_variant="faithful", max_siblings_rendered=5
+        )
+        parent = self._family(module, 40)
+        block = module._summarizer._sibling_block(
+            {"child_id": "child-000", "parent_id": parent.id}
+        )
+        self.assertIn("Total children of this parent (Y): 40", block)
+        self.assertIn("out of 40", block)  # rank is over the true family
+        rows = [ln for ln in block.splitlines() if ln.startswith("| child-")]
+        self.assertEqual(len(rows), 5)  # but only 5 rows rendered
+        self.assertIn("child-000", block)  # the current child is always shown
+
+    def test_genuinely_oversized_prompt_still_fails_loud_after_the_cap(self):
+        # The guard is NOT weakened by the cap. Capping the sibling table bounds
+        # the one unbounded field; it must not become a licence to truncate the
+        # rest. A single child whose *bounded* fields are configured huge
+        # (max_code_chars far above the study value) still overflows the real
+        # 16384 window, and must still fail loudly rather than be silently cut.
+        module, calls = make_pes_module(
+            response_text=FAITHFUL_BRIEF,
+            prompt_variant="faithful",
+            llm_max_tokens=4096,
+            context_window_tokens=16384,  # the REAL server window
+            max_code_chars=60_000,  # ~15k tokens of code alone
+        )
+        parent = ProgramView(
+            id="parent-1",
+            code="# huge\n" + "x = 1\n" * 12_000,
+            fitness=0.5,
+            metrics={"score": 0.5},
+        )
+        child = ProgramView(
+            id="child-a",
+            code="# huge\n" + "y = 2\n" * 12_000,
+            fitness=0.6,
+            metrics={"score": 0.6},
+            metadata={"stderr": ""},
+        )
+        ctx = GenerationContext(
+            iteration=0, generation=0, island=0, parent=parent,
+            best_fitness_history=[], avg_fitness_history=[],
+        )
+        module.report_result(
+            ctx, child, {"plan": "plan text", "parent_id": parent.id}, eval_failed=False
+        )
+        with self.assertRaises(ValueError) as cm:
+            asyncio.run(module.on_generation_end(make_pes_ctx(parent=parent)))
+        self.assertIn("overflow the context window", str(cm.exception))
+        self.assertEqual(calls, [])  # fail-loud, nothing dispatched
+
     def test_faithful_constants_byte_pinned(self):
         # The KEEP lines ARE the fidelity claim (a recorded verbatim diff is
         # not machine-checked); pin all four faithful constants by hash so an

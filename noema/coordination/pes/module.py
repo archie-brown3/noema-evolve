@@ -125,7 +125,27 @@ class PESPlannerModule(CoordinationModule):
         self.reflection_slice_max_tokens: int = self.config.get(
             "reflection_slice_max_tokens", 300
         )
-        self.context_window_tokens: int = self.config.get("context_window_tokens", 10240)
+        # The substrate's context window, in tokens. MUST match the server the run
+        # actually talks to. The old 10240 default was a 14B-era pin that outlived
+        # its server: the 2026-07-13 run served a 16384-token window while this
+        # value still said 10240, and the guard below correctly refused a prompt
+        # that would in fact have fitted (task 0067). Runners pass the real n_ctx.
+        self.context_window_tokens: int = self.config.get("context_window_tokens", 16384)
+        # Cap on sibling TABLE ROWS in the faithful reflection prompt (task 0067).
+        # Every other component of that prompt is bounded — code and stderr by
+        # max_code_chars, the parent's brief by the downstream slice — but the
+        # sibling table rendered one row per child of the parent with no limit, so
+        # the prompt grew without bound as a parent accumulated children and a run
+        # that fitted early failed later. The table is a HOST-ADDED field (noema's
+        # precomputed recast of LoongFlow's get_childs_by_parent_id tool fetch, which
+        # in the donor is an agent-controlled query, not a full dump), so bounding it
+        # is a host-side compaction, not an edit to donor prompt text.
+        # The reported statistics (rank X, total Y, top score Z) are still computed
+        # over the WHOLE family — only the rendered rows are limited, and the
+        # truncation is disclosed in the block. None = unbounded (pre-0067).
+        self.max_siblings_rendered: Optional[int] = self.config.get(
+            "max_siblings_rendered", 20
+        )
         # Cross-lineage diversity signal (Phase 2 Stage 0, Design 2). D4 knobs.
         self.recent_strategies_k: int = self.config.get("recent_strategies_k", 3)
         self.strategy_digest_chars: int = self.config.get("strategy_digest_chars", 150)
