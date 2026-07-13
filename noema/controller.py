@@ -35,9 +35,14 @@ from noema.budget.ledger import (
 )
 from noema.budget.llm import BudgetedLLM
 from noema.config import NoemaConfig
-from noema.coordination import CoordinationModule, GenerationContext, build_coordination_module
+from noema.coordination import (
+    CoordinationModule,
+    GenerationContext,
+    SelectionContext,
+    build_coordination_module,
+)
 from noema.substrate.boundary import enforce_immutable_boundary
-from noema.substrate.database import SubstrateDatabase
+from noema.substrate.registry import build_substrate_runtime
 from noema.substrate.operators import OPERATOR_MENU, OperatorSpec
 from noema.substrate.evaluator import make_evaluator
 from noema.substrate.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
@@ -96,7 +101,10 @@ class NoemaController:
         # Note: SubstrateDatabase construction seeds the GLOBAL random module
         # from config.database.random_seed (openevolve behavior); we re-seed
         # explicitly below so the policy is visible here.
-        self.db = SubstrateDatabase(config.database)
+        self.substrate = build_substrate_runtime(config)
+        # Compatibility alias for existing diagnostics and adapter tests. New
+        # controller behavior routes selection/lifecycle through self.substrate.
+        self.db = self.substrate.store
         self.evaluator = make_evaluator(
             config.evaluator, evaluation_file, suffix=config.file_suffix
         )
@@ -149,7 +157,7 @@ class NoemaController:
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
             # coordination module to see. Modules that don't look for this key
-            # ignore it, same convention as Advice.sampling_hint.
+            # ignore it, like any other mechanism-specific coordination param.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
             # Cross-island best scores (task 0061): injected into the LOCAL
@@ -157,7 +165,7 @@ class NoemaController:
             # (not YAML-serializable, would perturb the run-config sha256).
             # All modules receive it; only PES reads it.
             coordination_params.setdefault(
-                "island_bests_provider", lambda: self.db.per_island_bests()
+                "island_bests_provider", lambda: self.db.per_scope_bests()
             )
             self.coordination = build_coordination_module(
                 config.coordination.module,
@@ -211,7 +219,7 @@ class NoemaController:
 
                 # Coordination LLM calls in the generation tick may also
                 # exhaust the (shared) budget — stop cleanly either way
-                if next_iteration % self.db.num_islands == 0:
+                if next_iteration % self.substrate.steps_per_generation == 0:
                     await self._generation_tick(iteration)
             except BudgetExhausted as e:
                 logger.info(f"Stopping at iteration {iteration}: {e}")
@@ -264,9 +272,27 @@ class NoemaController:
         return OPERATOR_MENU[name]
 
     async def _run_iteration(self, iteration: int) -> None:
-        island = iteration % self.db.num_islands
-        parent, inspirations = self.db.sample_from_island(island, self.config.num_inspirations)
-        parent_island = parent.metadata.get("island", island)
+        island = self.substrate.target_scope(iteration)
+        selection_ctx = SelectionContext(
+            iteration=iteration,
+            generation=self.generation,
+            scope_id=island,
+            local_population=self.db.snapshot(
+                island, limit=self.config.num_top_programs
+            ),
+            global_population=self.db.snapshot(
+                None, limit=self.config.num_top_programs
+            ),
+        )
+        request = self.coordination.sampling_request(selection_ctx)
+        selection = self.substrate.select(
+            target_scope=island,
+            num_inspirations=self.config.num_inspirations,
+            hints=request.hints,
+        )
+        parent = selection.parent
+        inspirations = list(selection.inspirations)
+        parent_island = selection.source_scope
 
         operator = self._choose_operator()
         parent2: Optional[Program] = None
@@ -281,9 +307,11 @@ class NoemaController:
                     "parent but inspirations is empty; falling back to arity-1"
                 )
 
-        top_programs = self.db.top_programs(self.config.num_top_programs, island=parent_island)
+        top_programs = self.db.top_programs(
+            self.config.num_top_programs, scope=parent_island
+        )
         previous_programs = self.db.top_programs(
-            self.config.num_previous_programs, island=parent_island
+            self.config.num_previous_programs, scope=parent_island
         )
 
         ctx = self._make_context(iteration, parent_island, parent, inspirations)
@@ -440,6 +468,9 @@ class NoemaController:
             current_prompt = best_attempt["prompt"]
 
         if child_code is None:
+            self.substrate.on_child_rejected(
+                parent=parent, child=None, eval_failed=True
+            )
             self.coordination.report_result(
                 ctx, child=None, attribution=advice.attribution, eval_failed=True
             )
@@ -474,7 +505,12 @@ class NoemaController:
                 else None
             ),
         )
-        self.db.add(child, iteration=iteration, target_island=island)
+        self.substrate.on_child_accepted(
+            parent=parent,
+            child=child,
+            step_size=min(1.0, (iteration + 1) / max(1, self.config.max_iterations)),
+        )
+        self.db.add(child, iteration=iteration, target_scope=island)
         if artifacts:
             self.db.store_artifacts(child_id, artifacts)
 
@@ -552,7 +588,7 @@ class NoemaController:
         # and population, not one (possibly still empty) island
         ctx = self._make_context(
             iteration,
-            island=iteration % self.db.num_islands,
+            island=self.substrate.target_scope(iteration),
             parent=None,
             inspirations=[],
             global_scope=True,
@@ -570,6 +606,7 @@ class NoemaController:
                 "diversity": self.diversity_history[-1],
                 "tokens_spent": self.ledger.spent(),
                 "coordination": self.coordination.log_snapshot(),
+                "selection": self.substrate.log_snapshot(),
             }
         )
 
@@ -597,18 +634,21 @@ class NoemaController:
         inspirations: List[Program],
         global_scope: bool = False,
     ) -> GenerationContext:
-        top_island = None if global_scope else island
-        fitnesses = self.db.all_fitnesses() if global_scope else self.db.island_fitnesses(island)
+        local_scope = None if global_scope else island
+        local_population = self.db.snapshot(
+            local_scope, limit=self.config.num_top_programs
+        )
+        global_population = self.db.snapshot(
+            None, limit=self.config.num_top_programs
+        )
         return GenerationContext(
             iteration=iteration,
             generation=self.generation,
-            island=island,
+            scope_id=island,
             parent=self.db.view(parent) if parent else None,
             inspirations=self.db.views(inspirations),
-            top_programs=self.db.views(
-                self.db.top_programs(self.config.num_top_programs, island=top_island)
-            ),
-            island_fitnesses=fitnesses,
+            local_population=local_population,
+            global_population=global_population,
             best_fitness_history=list(self.best_fitness_history),
             avg_fitness_history=list(self.avg_fitness_history),
             diversity_history=list(self.diversity_history),
@@ -629,6 +669,7 @@ class NoemaController:
             "generation_log": self.generation_log,
             "ledger": self.ledger.snapshot(),
             "coordination": self.coordination.state_dict(),
+            "substrate_runtime": self.substrate.state_dict(),
             "global_rng_state": _encode_rng_state(random.getstate()),
             "coordination_rng_state": _encode_rng_state(self.coordination_rng.getstate()),
             "mutation_operator_rng_state": _encode_rng_state(
@@ -652,6 +693,7 @@ class NoemaController:
         self.generation_log = state.get("generation_log", [])
         self.ledger.restore(state["ledger"])
         self.coordination.load_state_dict(state["coordination"])
+        self.substrate.load_state_dict(state.get("substrate_runtime", {}))
         random.setstate(_decode_rng_state(state["global_rng_state"]))
         self.coordination_rng.setstate(_decode_rng_state(state["coordination_rng_state"]))
         if "mutation_operator_rng_state" in state:

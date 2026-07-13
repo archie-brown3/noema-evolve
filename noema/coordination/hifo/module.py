@@ -156,7 +156,7 @@ class HiFoPromptModule(CoordinationModule):
         if not insights:
             return
         effectiveness = self._calculate_insight_effectiveness(
-            child, ctx.island_fitnesses, eval_failed
+            child, ctx.local_population.fitnesses, eval_failed
         )
         for tip in insights:
             self.insight_pool.update_tip_stats(tip, effectiveness)
@@ -213,9 +213,10 @@ class HiFoPromptModule(CoordinationModule):
         # Original: extraction runs with probability 0.8 per generation step
         if self.rng.random() >= self.extraction_probability:
             return
-        if self.llm is None or not ctx.top_programs:
+        top_programs = ctx.local_population.top_programs
+        if self.llm is None or not top_programs:
             return
-        await self._extract_insights(ctx.top_programs)
+        await self._extract_insights(top_programs)
 
     async def _extract_insights(self, top_programs: List[ProgramView]) -> None:
         # BORROWED logic — adapted from HiFo-Prompt

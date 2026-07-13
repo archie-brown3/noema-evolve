@@ -27,7 +27,7 @@ class TestAdvice(unittest.TestCase):
         self.assertEqual(advice.prompt_block, "")
         self.assertEqual(advice.system_block, "")
         self.assertEqual(advice.attribution, {})
-        self.assertIsNone(advice.sampling_hint)
+        self.assertFalse(hasattr(advice, "sampling_hint"))
 
 
 class TestNullCoordination(unittest.TestCase):

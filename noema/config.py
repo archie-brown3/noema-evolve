@@ -65,6 +65,26 @@ class CoordinationConfig:
 
 
 @dataclass
+class SubstrateConfig:
+    """Population topology/storage implementation."""
+
+    kind: str = "islands"
+    steps_per_generation: Optional[int] = None
+
+
+@dataclass
+class SelectionConfig:
+    """Parent-selection policy, configured independently of population topology."""
+
+    policy: str = "substrate_default"
+    seed: Optional[int] = None
+    boltzmann_temperature: float = 1.0
+    boltzmann_exploration_rate: float = 0.2
+    stagnation_detection_enabled: bool = False
+    stagnation_mode: str = "released"
+
+
+@dataclass
 class NoemaConfig:
     """Master configuration for a noema run"""
 
@@ -111,6 +131,8 @@ class NoemaConfig:
     budget: BudgetConfig = field(default_factory=BudgetConfig)
     llm: LLMClientConfig = field(default_factory=LLMClientConfig)
     coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
+    substrate: SubstrateConfig = field(default_factory=SubstrateConfig)
+    selection: SelectionConfig = field(default_factory=SelectionConfig)
 
     def __post_init__(self):
         if self.retry_on not in ("failure", "non_improvement"):
@@ -124,6 +146,23 @@ class NoemaConfig:
             )
         if self.coordination.seed is None:
             self.coordination.seed = self.random_seed + 1
+        if self.selection.seed is None:
+            self.selection.seed = self.random_seed + 3
+        if self.substrate.kind not in ("islands", "tree"):
+            raise ValueError(f"unknown substrate kind {self.substrate.kind!r}")
+        if self.selection.policy not in (
+            "substrate_default",
+            "stock_openevolve",
+            "boltzmann",
+            "uct",
+        ):
+            raise ValueError(f"unknown selection policy {self.selection.policy!r}")
+        if self.selection.boltzmann_temperature <= 0:
+            raise ValueError("selection.boltzmann_temperature must be positive")
+        if not 0 <= self.selection.boltzmann_exploration_rate <= 1:
+            raise ValueError(
+                "selection.boltzmann_exploration_rate must be between 0 and 1"
+            )
         if self.mutation_operator_seed is None:
             self.mutation_operator_seed = self.random_seed + 2
         if self.mutation_operators is not None:
