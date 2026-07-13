@@ -9,6 +9,7 @@ contained here.
 from noema.substrate.base import (
     PopulationSnapshot,
     PopulationStore,
+    RegionSummary,
     Selection,
     SelectionPolicy,
     SubstrateRuntime,
@@ -27,6 +28,7 @@ __all__ = [
     "SubstrateRuntime",
     "Selection",
     "PopulationSnapshot",
+    "RegionSummary",
     "make_evaluator",
     "make_prompt_sampler",
     "build_mutation_prompt",

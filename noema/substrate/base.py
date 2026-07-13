@@ -36,11 +36,34 @@ class Selection:
 
 
 @dataclass(frozen=True)
+class RegionSummary:
+    """One meaningful sub-population, named by the substrate that owns it.
+
+    A region is the neutral unit of "somewhere else in the population that a
+    coordinator may reason about".  Islands map one region per island; a CVT
+    store maps a *group* of cells (a single cell holds one elite, so cell-per-
+    region would make ``fitnesses`` degenerate); a tree maps a branch.  The
+    substrate supplies ``label`` — coordination renders it, never invents it.
+    """
+
+    scope: ScopeId
+    label: str
+    best_fitness: float
+    size: int = 0
+
+
+@dataclass(frozen=True)
 class PopulationSnapshot:
     scope: ScopeId
     top_programs: Tuple[ProgramView, ...] = ()
     fitnesses: Tuple[float, ...] = ()
     best_program: Optional[ProgramView] = None
+    # Substrate-declared topology name ("islands", "cvt_regions", "tree_branches").
+    # A coordinator may branch on it, but that adaptation is then part of the arm
+    # definition and must be declared (see the decoupling design note).
+    topology: str = "unstructured"
+    # Populated on the global snapshot only; empty on a local cohort snapshot.
+    regions: Tuple[RegionSummary, ...] = ()
 
 
 @runtime_checkable
@@ -49,6 +72,7 @@ class PopulationStore(Protocol):
     capabilities: frozenset[str]
     feature_dimensions: Sequence[str]
     num_programs: int
+    topology: str
 
     def target_scope(self, iteration: int) -> ScopeId: ...
     def population(self, scope: ScopeId = None) -> Sequence[Program]: ...
@@ -68,6 +92,7 @@ class PopulationStore(Protocol):
     def fitness(self, program: Program) -> float: ...
     def all_fitnesses(self) -> Sequence[float]: ...
     def per_scope_bests(self) -> Sequence[float]: ...
+    def regions(self) -> Sequence[RegionSummary]: ...
     def view(self, program: Program) -> ProgramView: ...
     def views(self, programs: Sequence[Program]) -> Sequence[ProgramView]: ...
     def store_artifacts(self, program_id: str, artifacts: Mapping[str, Any]) -> None: ...

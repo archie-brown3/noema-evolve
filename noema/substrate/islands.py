@@ -7,11 +7,12 @@ from typing import Any, Dict, Mapping, Optional, Sequence
 from openevolve.config import DatabaseConfig
 from openevolve.database import Program
 
-from noema.substrate.base import PopulationSnapshot, Selection
+from noema.substrate.base import PopulationSnapshot, RegionSummary, Selection
 from noema.substrate.database import SubstrateDatabase
 
 
 class IslandsStore(SubstrateDatabase):
+    topology = "islands"
     capabilities = frozenset(
         {
             "population",
@@ -19,6 +20,7 @@ class IslandsStore(SubstrateDatabase):
             "fitness",
             "code",
             "sampling_weights",
+            "regions",
             "native_stock_selection",
         }
     )
@@ -55,6 +57,20 @@ class IslandsStore(SubstrateDatabase):
     def per_scope_bests(self) -> Sequence[float]:
         return self.per_island_bests()
 
+    def regions(self) -> Sequence[RegionSummary]:
+        """One region per island. `label` carries the native island naming the
+        PES faithful prompt renders verbatim — it is supplied here, by the
+        substrate that owns the topology, not synthesized by a coordinator."""
+        return tuple(
+            RegionSummary(
+                scope=index,
+                label=f"island_{index}",
+                best_fitness=max(self.island_fitnesses(index), default=0.0),
+                size=len(self._db.islands[index]),
+            )
+            for index in range(self.num_islands)
+        )
+
     def native_select(self, target_scope, num_inspirations: int) -> Selection:
         target = int(target_scope) % self.num_islands
         parent, inspirations = self._db.sample_from_island(
@@ -84,6 +100,10 @@ class IslandsStore(SubstrateDatabase):
             top_programs=views,
             fitnesses=tuple(self.fitness(program) for program in self.population(scope)),
             best_program=views[0] if views else None,
+            topology=self.topology,
+            # Regional summaries are a global-perspective view: a local cohort
+            # snapshot describes one region and does not enumerate its peers.
+            regions=tuple(self.regions()) if scope is None else (),
         )
 
     def state_dict(self) -> Dict[str, Any]:
