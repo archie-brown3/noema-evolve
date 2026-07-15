@@ -18,6 +18,12 @@ import random
 import math
 from collections import deque
 
+# Tips with fewer than this many uses are on "probation": immune from eviction,
+# and counted as probation tips in the stats summary. One source of truth so the
+# eviction rule and the log agree (task 0056 item 3 — the summary previously hard-
+# coded 5 while eviction used 3, an inherited upstream-HiFo inconsistency).
+PROBATION_USAGE_COUNT = 3
+
 
 class InsightPool:
 
@@ -68,8 +74,6 @@ class InsightPool:
         return True
 
     def _calculate_eviction_score(self, tip_stats):
-
-        PROBATION_USAGE_COUNT = 3  # probation usage count
 
         if tip_stats["used_count"] < PROBATION_USAGE_COUNT:
             return float("inf")  # grant "probation immunity"
@@ -211,7 +215,11 @@ class InsightPool:
         effectiveness_values = [self.tip_stats[tip]["effectiveness"] for tip in self.tips]
         usage_counts = [self.tip_stats[tip]["used_count"] for tip in self.tips]
 
-        probation_count = sum(1 for tip in self.tips if self.tip_stats[tip]["used_count"] < 5)
+        probation_count = sum(
+            1
+            for tip in self.tips
+            if self.tip_stats[tip]["used_count"] < PROBATION_USAGE_COUNT
+        )
         mature_count = len(self.tips) - probation_count
 
         return {

@@ -35,3 +35,7 @@ __pycache__/
 dist/
 build/
 .pytest_cache/
+
+# Secrets — never commit
+.env
+.env.*

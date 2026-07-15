@@ -73,6 +73,13 @@ class BudgetedLLM(LLMInterface):
         self.max_tokens = max_tokens
         self.seed = seed
         self.timeout = timeout
+        # Guard against retries < 0 (task 0056 item 2): the retry loop is
+        # `range(retries + 1)`, so retries == -1 makes it empty — the call is
+        # never issued and the method would fall through to `raise
+        # last_exception` with last_exception still None (TypeError). Fail loud
+        # at construction instead.
+        if retries < 0:
+            raise ValueError(f"retries must be >= 0, got {retries}")
         self.retries = retries
         self.retry_delay = retry_delay
 

@@ -418,6 +418,12 @@ class NoemaController:
 
             metrics = await self.evaluator.evaluate_program(child_code, child_id)
             artifacts = self.evaluator.get_pending_artifacts(child_id)
+            # "error" is a RESERVED key in the evaluator metrics contract: an
+            # evaluator signals failure by returning {"error": ...} (openevolve
+            # convention). A benchmark must not name a genuine score metric
+            # "error", or it would be misread as a failed evaluation (task 0056
+            # item 4 — documented rather than narrowed, since the convention is
+            # what every evaluator already relies on).
             eval_failed = (not metrics) or ("error" in metrics)
             if eval_failed:
                 error_text = (artifacts or {}).get("stderr",
