@@ -274,6 +274,54 @@ class TestNavigatorCadenceRegression(unittest.TestCase):
         )
 
 
+class TestRegimeOperatorSteering(unittest.TestCase):
+    """F3 (task 0072, Decision #45): hifo's regime soft-biases operator choice
+    through the pre-selection route, but only when the menu is configured."""
+
+    MENU = ["e1", "e2", "m1", "m2", "m3"]
+
+    def _request(self, module):
+        from noema.coordination.base import SelectionContext
+
+        return module.sampling_request(
+            SelectionContext(iteration=0, generation=0, global_population=None)
+        )
+
+    def test_no_menu_means_no_operator_request(self):
+        # Byte-identical to pre-F3 behaviour: a hifo run without the menu never
+        # touches operator selection.
+        module = HiFoPromptModule(rng=random.Random(0))
+        self.assertEqual(dict(self._request(module).hints), {})
+
+    def test_regime_biases_the_operator_family(self):
+        from collections import Counter
+
+        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(1))
+
+        module._last_regime = "exploration"
+        picks = [self._request(module).hints["operator"] for _ in range(600)]
+        c = Counter(picks)
+        self.assertGreater(c["e1"] + c["e2"], c["m1"] + c["m2"] + c["m3"])
+
+        module._last_regime = "exploitation"
+        picks = [self._request(module).hints["operator"] for _ in range(600)]
+        c = Counter(picks)
+        self.assertGreater(c["m1"] + c["m2"] + c["m3"], c["e1"] + c["e2"])
+
+    def test_every_requested_operator_is_from_the_menu(self):
+        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(2))
+        for regime in ("exploration", "exploitation", "balanced"):
+            module._last_regime = regime
+            self.assertIn(self._request(module).hints["operator"], self.MENU)
+
+    def test_last_regime_survives_checkpoint(self):
+        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(0))
+        module._last_regime = "exploitation"
+        restored = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(0))
+        restored.load_state_dict(module.state_dict())
+        self.assertEqual(restored._last_regime, "exploitation")
+
+
 class TestHiFoPromptModule(unittest.TestCase):
     def make_module(self, extraction_response="- Nothing", **params):
         ledger = TokenLedger(total_budget_tokens=100_000)
