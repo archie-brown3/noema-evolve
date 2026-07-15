@@ -1466,7 +1466,8 @@ class TestArmRegistryCapabilityTable(unittest.TestCase):
 
     def test_registry_keys_and_no_pes_full(self):
         self.assertEqual(
-            sorted(MODULE_REGISTRY), ["hifo", "null", "pes-custom", "pes-faithful"]
+            sorted(MODULE_REGISTRY),
+            ["bandit", "hifo", "null", "pes-custom", "pes-faithful"],
         )
         # Decision #26: "pes-full" is a prose alias only, never a config key.
         self.assertNotIn("pes-full", MODULE_REGISTRY)
