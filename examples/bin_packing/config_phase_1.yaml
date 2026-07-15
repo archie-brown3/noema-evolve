@@ -17,20 +17,18 @@ llm:
 
 # Prompt configuration
 prompt:
+  # NOTE: this legacy openevolve-native config is not loaded by noema's
+  # run_noema_arm.py (which builds NoemaConfig inline); its SYSTEM_MESSAGE there
+  # is authoritative. Kept in sync for anyone using the openevolve path directly.
   system_message: |
-    You are an expert in bin packing algorithms and optimization. Your task is to improve a bin packing function that packs 100 items with sizes following a mixture distribution (60% small [0-0.3], 30% medium [0.3-0.7], 10% large [0.7-1.0]) into bins of capacity 1.0, minimizing the number of bins used.
-
-    Key algorithmic insights:
-    - The optimal solution lower bound is ceil(sum(items)/1.0)
-    - First-Fit Decreasing is a strong baseline (2/3 optimal guarantee)
-    - For mixture distributions, hybrid approaches often work best
-    - Online algorithms consider items in arrival order
-    - Offline algorithms can sort items first for better packing
-    - Well-known heuristics: First-Fit, Best-Fit, Worst-Fit, Next-Fit
-    - Advanced: Harmonic algorithms, Sum-of-Squares, refined first-fit
-    
-    Focus on improving the pack_items() function while maintaining the I/O contract.
-    The goal is to achieve as close to optimal as possible (score = 1/(1+optimality_gap)).
+    You are an expert in ONLINE bin packing heuristics. Integer-sized items arrive
+    one at a time into bins of capacity 100 and must be placed immediately — no
+    reordering, no lookahead. Improve only the `priority(item, bins)` heuristic:
+    given the arriving item and the remaining capacities of the bins that can hold
+    it, return a score per bin; the item goes to the highest-scoring bin. The
+    baseline is best-fit (`-(bins - item)`); a better non-linear heuristic packs
+    into fewer bins. Score = 1 / (1 + mean excess over the lower bound). Only the
+    `priority` function (inside the EVOLVE-BLOCK) may change.
   num_top_programs: 3
   use_template_stochasticity: true
 
