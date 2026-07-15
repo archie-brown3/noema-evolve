@@ -493,6 +493,14 @@ class NoemaController:
             generation=parent.generation + 1,
             metrics=metrics,
             iteration_found=iteration,
+            # F1 fix (task 0072): populate changes_description from the change
+            # summary noema already computes. HiFo's insight extraction reads
+            # changes_description; nothing wrote it, so extraction always fell
+            # back to truncated raw code. This is a *change* note, not EoH's
+            # natural-language *algorithm* description (thoughts are OFF), so it is
+            # a partial analog — the thoughts probe (Decision #20) tests the deeper
+            # thought-bearing-substrate dependence.
+            changes_description=changes_summary or "",
             metadata={
                 "changes": changes_summary,
                 "parent_metrics": parent.metrics,

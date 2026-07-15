@@ -110,6 +110,15 @@ class HiFoPromptModule(CoordinationModule):
             rng=self.rng,
         )
         self.navigator = EvolutionaryNavigator(maximize=True, rng=self.rng)
+        # F2 cadence fix (task 0072): the navigator's own rolling best-fitness
+        # history, advanced once per advise() (i.e. per offspring). The host's
+        # ctx.best_fitness_history only advances at the generation tick, so
+        # reading it per mutation made improvement==0 on every intra-generation
+        # call and the exploitation counter unreachable. Observing the global
+        # best per offspring restores the source's read/write coupling and makes
+        # the 3/2 thresholds a substrate-independent per-offspring unit (F4).
+        self._nav_best_history: List[float] = []
+        self._nav_history_cap: int = cfg.get("nav_history_cap", 50)
 
     # ------------------------------------------------------------- advise
 
@@ -117,8 +126,17 @@ class HiFoPromptModule(CoordinationModule):
         # Same cadence as the original: guidance recomputed per offspring
         # (InterfaceEC._get_alg), tips drawn per offspring
         self.insight_pool.update_generation(ctx.generation)
+        # F2 fix (task 0072): feed the navigator a per-offspring best-fitness
+        # signal from the current global best, not the tick-cadenced host history.
+        # avg/diversity remain the host histories (secondary regime modifiers;
+        # per-offspring diversity is ill-defined and not the F2 defect).
+        best = ctx.global_population.best_program if ctx.global_population else None
+        if best is not None:
+            self._nav_best_history.append(best.fitness)
+            if len(self._nav_best_history) > self._nav_history_cap:
+                self._nav_best_history = self._nav_best_history[-self._nav_history_cap:]
         regime, directive = self.navigator.get_guidance(
-            best_fitness_history=ctx.best_fitness_history,
+            best_fitness_history=self._nav_best_history,
             avg_fitness_history=ctx.avg_fitness_history,
             diversity_history=ctx.diversity_history,
         )
@@ -271,11 +289,13 @@ class HiFoPromptModule(CoordinationModule):
         return {
             "insight_pool": self.insight_pool.state_dict(),
             "navigator": self.navigator.state_dict(),
+            "nav_best_history": list(self._nav_best_history),
         }
 
     def load_state_dict(self, state: Dict[str, Any]) -> None:
         self.insight_pool.load_state_dict(state["insight_pool"])
         self.navigator.load_state_dict(state["navigator"])
+        self._nav_best_history = [float(x) for x in state.get("nav_best_history", [])]
 
     def log_snapshot(self) -> Dict[str, Any]:
         # Mirrors the per-generation hifo_prompt_log written by the original

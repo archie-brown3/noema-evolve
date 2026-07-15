@@ -200,6 +200,80 @@ def make_extraction_client(response_text):
     return client
 
 
+class TestNavigatorCadenceRegression(unittest.TestCase):
+    """F2 (task 0072): the navigator must reach exploitation under steady
+    improvement. Before the cadence fix it could not — advise() ran per mutation
+    but read the host `best_fitness_history`, which only advances at the
+    generation tick, so every intra-generation call saw improvement==0 and the
+    counter never reached its >=2 exploitation threshold.
+
+    This test drives advise() with a steadily-improving GLOBAL best while holding
+    the host history stale (as the real controller does within a generation). It
+    FAILS on the pre-fix module and PASSES once advise observes the per-offspring
+    global best. Ported semantics from the source audit
+    [[HiFo Navigator Fidelity — Source Audit 2026-07-15]].
+    """
+
+    def _drive(self, module, n=8):
+        # Host history is held STALE (constant) — the controller only appends to
+        # it at the generation tick. The real signal is the improving global best.
+        # Record the navigator's improvement_count, the INTENDED exploitation
+        # trigger (>=2); the 25% stochastic fallback cannot move this counter, so
+        # it isolates the intended logic from the random regime leak.
+        from noema.base import PopulationSnapshot
+
+        stale_history = (0.10, 0.10)
+        peak_improvement = 0
+        for i in range(n):
+            best = make_view(fitness=0.10 + 0.05 * (i + 1))  # improves every call
+            ctx = GenerationContext(
+                iteration=i,
+                generation=0,
+                scope_id=0,
+                parent=make_view(fitness=0.10),
+                global_population=PopulationSnapshot(scope=None, best_program=best),
+                best_fitness_history=stale_history,
+            )
+            asyncio.run(module.advise(ctx))
+            peak_improvement = max(peak_improvement, module.navigator.improvement_count)
+        return peak_improvement
+
+    def test_exploitation_trigger_is_reachable_under_steady_improvement(self):
+        module = HiFoPromptModule(rng=random.Random(0))
+        peak = self._drive(module)
+        # >=2 is the navigator's exploitation threshold. On the pre-fix module the
+        # navigator reads the stale host history, improvement is always 0, and this
+        # peak is stuck at 0 (F2). The fix makes advise observe the improving
+        # global best, so the counter climbs past the threshold.
+        self.assertGreaterEqual(
+            peak, 2,
+            "navigator improvement_count never reached the exploitation threshold "
+            "under steady improvement (F2 cadence bug)",
+        )
+
+    def test_nav_best_history_survives_checkpoint(self):
+        # The F2 fix adds per-offspring navigator history; it must round-trip
+        # through the checkpoint so a resumed run measures improvement from where
+        # it left off. (The module's own RNG is not part of the checkpoint — a
+        # pre-existing property — so this asserts the restored STATE, not a
+        # byte-identical stochastic directive.)
+        module = HiFoPromptModule(rng=random.Random(0))
+        self._drive(module, n=4)
+        self.assertTrue(module._nav_best_history)  # the fix populated it
+
+        restored = HiFoPromptModule(rng=random.Random(0))
+        restored.load_state_dict(module.state_dict())
+        self.assertEqual(restored._nav_best_history, module._nav_best_history)
+        self.assertEqual(
+            restored.navigator.state_dict(), module.navigator.state_dict()
+        )
+        # state_dict is JSON-safe (it rides in noema_state.json).
+        self.assertEqual(
+            json.loads(json.dumps(module.state_dict()))["nav_best_history"],
+            module._nav_best_history,
+        )
+
+
 class TestHiFoPromptModule(unittest.TestCase):
     def make_module(self, extraction_response="- Nothing", **params):
         ledger = TokenLedger(total_budget_tokens=100_000)
