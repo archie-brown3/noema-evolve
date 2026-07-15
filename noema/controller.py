@@ -42,6 +42,7 @@ from noema.config import NoemaConfig
 from noema.coordination import (
     CoordinationModule,
     GenerationContext,
+    Outcome,
     SelectionContext,
     build_coordination_module,
 )
@@ -361,12 +362,19 @@ class NoemaController:
         artifacts = None
         eval_failed = True
         error_text = None
+        # Which failure category the LAST attempt hit, if the iteration produces
+        # no accepted child (task 0090). Defaults to NO_PROGRAM; the eval-error
+        # branch upgrades it. Only read when child_code is None below.
+        failure_outcome = Outcome.NO_PROGRAM
         retry_cap = self.config.retry_cap if self.config.retry_enabled else 0
         # Best valid attempt across rounds (retry_on="non_improvement" only)
         best_attempt: Optional[Dict[str, Any]] = None
         parent_fitness = ctx.parent.fitness if ctx.parent is not None else 0.0
 
         for attempt in range(retry_cap + 1):
+            # Reset per attempt so the LAST attempt's failure category is the one
+            # reported (task 0090); the eval-error branch below upgrades it.
+            failure_outcome = Outcome.NO_PROGRAM
             if attempt > 0:
                 current_prompt = await self._build_retry_prompt(
                     base_prompt, advice, error_text, attempt, ctx
@@ -420,6 +428,9 @@ class NoemaController:
             artifacts = self.evaluator.get_pending_artifacts(child_id)
             eval_failed = (not metrics) or ("error" in metrics)
             if eval_failed:
+                # Applyable code that failed AT evaluation — distinct from a
+                # non-program failure for outcome-driven credit assignment (0090).
+                failure_outcome = Outcome.EVAL_ERROR
                 error_text = (artifacts or {}).get("stderr",
                                                      "evaluation failed: unknown error")
                 logger.warning(
@@ -480,7 +491,11 @@ class NoemaController:
                 parent=parent, child=None, eval_failed=True
             )
             self.coordination.report_result(
-                ctx, child=None, attribution=advice.attribution, eval_failed=True
+                ctx,
+                child=None,
+                attribution=advice.attribution,
+                eval_failed=True,
+                outcome=failure_outcome,
             )
             return
 
@@ -527,6 +542,7 @@ class NoemaController:
             child=self.db.view(child),
             attribution=advice.attribution,
             eval_failed=False,
+            outcome=Outcome.ACCEPTED,
         )
 
     def _build_retry_suffix(self, error_text: str, attempt: int) -> str:

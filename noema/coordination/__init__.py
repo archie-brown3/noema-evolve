@@ -9,6 +9,7 @@ from noema.coordination.base import (
     CoordinationModule,
     GenerationContext,
     NullCoordination,
+    Outcome,
     SamplingRequest,
     SelectionContext,
 )
@@ -62,6 +63,7 @@ __all__ = [
     "CoordinationModule",
     "GenerationContext",
     "NullCoordination",
+    "Outcome",
     "SelectionContext",
     "SamplingRequest",
     "MODULE_REGISTRY",

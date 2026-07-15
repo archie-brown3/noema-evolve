@@ -26,7 +26,7 @@ Documented deviations from the released code (PLAN.md section 2.2):
 import logging
 from typing import Any, Dict, List, Optional
 
-from noema.coordination.base import Advice, CoordinationModule, GenerationContext
+from noema.coordination.base import Advice, CoordinationModule, GenerationContext, Outcome
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
 from noema.views import ProgramView
@@ -151,7 +151,12 @@ class HiFoPromptModule(CoordinationModule):
         child: Optional[ProgramView],
         attribution: Dict[str, Any],
         eval_failed: bool,
+        *,
+        outcome: Outcome = Outcome.ACCEPTED,
     ) -> None:
+        # `outcome` (task 0090) is accepted for contract conformance but not read:
+        # HiFo's credit assignment already collapses every failed outcome to the
+        # same effectiveness, so this arm is behaviour-identical with or without it.
         insights = attribution.get("insights") or []
         if not insights:
             return

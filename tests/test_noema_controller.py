@@ -33,6 +33,7 @@ from noema.coordination import (
     MODULE_REGISTRY,
     Advice,
     NullCoordination,
+    Outcome,
     SamplingRequest,
     build_coordination_module,
 )
@@ -269,8 +270,10 @@ class TestControllerEndToEnd(unittest.TestCase):
                 super().__init__()
                 self.reports = []
 
-            def report_result(self, ctx, child, attribution, eval_failed):
-                self.reports.append((child, eval_failed))
+            def report_result(
+                self, ctx, child, attribution, eval_failed, *, outcome=Outcome.ACCEPTED
+            ):
+                self.reports.append((child, eval_failed, outcome))
 
         with tempfile.TemporaryDirectory() as tmp:
             config = make_config(diff_based_evolution=True)
@@ -282,11 +285,112 @@ class TestControllerEndToEnd(unittest.TestCase):
             # Failed parses are still metered and still reported to coordination
             self.assertEqual(ledger.spent(), 2 * 15)
             self.assertEqual(len(module.reports), 2)
-            for child, eval_failed in module.reports:
+            for child, eval_failed, outcome in module.reports:
                 self.assertIsNone(child)
                 self.assertTrue(eval_failed)
+                # Unparseable response -> NO_PROGRAM, not EVAL_ERROR (task 0090)
+                self.assertEqual(outcome, Outcome.NO_PROGRAM)
             # No children were added
             self.assertEqual(controller.db.num_programs, 1)
+
+
+class TestReportResultOutcome(unittest.TestCase):
+    """report_result's outcome discriminator (task 0090).
+
+    The controller must classify each iteration's credit-assignment call:
+    ACCEPTED for a real evaluated child, NO_PROGRAM for unparseable/over-length,
+    EVAL_ERROR for applyable code that failed at evaluation. NO_PROGRAM is
+    covered by TestFailedMutationsAreReported above.
+    """
+
+    class _Recorder(NullCoordination):
+        def __init__(self):
+            super().__init__()
+            self.outcomes = []
+
+        def report_result(
+            self, ctx, child, attribution, eval_failed, *, outcome=Outcome.ACCEPTED
+        ):
+            self.outcomes.append(outcome)
+
+    def _run(self, evaluator=None, config=None, client=None):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, _ = make_controller(
+                tmp, config=config or make_config(max_iterations=2), client=client
+            )
+            if evaluator is not None:
+                controller.evaluator = evaluator
+            module = self._Recorder()
+            controller.coordination = module
+            asyncio.run(controller.run(iterations=2))
+            return module.outcomes, controller
+
+    def test_successful_iteration_reports_accepted(self):
+        # CyclingFakeClient emits parseable rewrites the default evaluator scores.
+        outcomes, controller = self._run()
+        self.assertEqual(outcomes, [Outcome.ACCEPTED, Outcome.ACCEPTED])
+        self.assertGreater(controller.db.num_programs, 1)
+
+    def test_applyable_code_that_fails_evaluation_reports_eval_error(self):
+        class ErroringEvaluator:
+            async def evaluate_program(self, code, program_id):
+                return {"error": "evaluation blew up"}
+
+            def get_pending_artifacts(self, program_id):
+                return {"stderr": "Traceback: boom"}
+
+        # Parseable rewrites (so NOT no_program) that then error at evaluation.
+        outcomes, controller = self._run(evaluator=ErroringEvaluator())
+        self.assertEqual(outcomes, [Outcome.EVAL_ERROR, Outcome.EVAL_ERROR])
+        # eval_error children are not added to the population
+        self.assertEqual(controller.db.num_programs, 1)
+
+    def test_outcome_is_json_safe_and_matches_its_value(self):
+        # str-enum: it serializes verbatim into the run log / attribution.
+        self.assertEqual(Outcome.EVAL_ERROR, "eval_error")
+        self.assertEqual(json.dumps(Outcome.ACCEPTED), '"accepted"')
+
+
+class TestExistingArmsIgnoreOutcome(unittest.TestCase):
+    """Behaviour-identity: passing outcome must not change null/hifo/pes.
+
+    The whole safety argument for touching base.py is that outcome is additive
+    and keyword-only, so an arm that does not read it is byte-for-byte unchanged.
+    This asserts that directly, per arm, rather than trusting it.
+    """
+
+    def _make_ctx(self, child_present):
+        from noema.coordination.base import GenerationContext
+        parent = ProgramView(id="p", code="def f():\n    return 1\n", fitness=0.5,
+                             metrics={"combined_score": 0.5})
+        child = (
+            ProgramView(id="c", code="def f():\n    return 2\n", fitness=0.4,
+                       metrics={"combined_score": 0.4})
+            if child_present else None
+        )
+        return GenerationContext(iteration=1, generation=0, scope_id=0, parent=parent,
+                                 local_population=None, global_population=None), child
+
+    def test_each_arm_unchanged_across_every_outcome_value(self):
+        for key in ("null", "hifo", "pes-custom"):
+            for outcome in Outcome:
+                child_present = outcome == Outcome.ACCEPTED
+                # A module built fresh for each call so state is comparable.
+                base_mod = build_coordination_module(key, {}, llm=None)
+                test_mod = build_coordination_module(key, {}, llm=None)
+                ctx_a, child_a = self._make_ctx(child_present)
+                ctx_b, child_b = self._make_ctx(child_present)
+                attribution = {"insights": [], "plan": None}
+                # Default call (as if outcome had never been added)...
+                base_mod.report_result(ctx_a, child_a, dict(attribution),
+                                       eval_failed=not child_present)
+                # ...vs an explicit outcome. State must be identical.
+                test_mod.report_result(ctx_b, child_b, dict(attribution),
+                                       eval_failed=not child_present, outcome=outcome)
+                self.assertEqual(
+                    base_mod.state_dict(), test_mod.state_dict(),
+                    f"{key} changed when outcome={outcome} was passed",
+                )
 
 
 class TestFrozenConfig(unittest.TestCase):
