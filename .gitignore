@@ -39,3 +39,7 @@ build/
 # Secrets — never commit
 .env
 .env.*
+
+# Secrets — never commit
+.env
+.env.*

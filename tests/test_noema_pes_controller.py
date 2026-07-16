@@ -22,6 +22,7 @@ so prefix identity does not apply to it.
 
 import asyncio
 import os
+import random
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -120,7 +121,9 @@ def _build(tmp, arm, iterations, coordination_client=None, evaluator=None, **par
         cc = coordination_client or pes_coordination_client()
         coordination_llm = BudgetedLLM(model="fake", ledger=ledger, account="coordination",
                                        tag="pes.coordination", client=cc, retries=0, retry_delay=0.0)
-        coordination = build_coordination_module(arm, params, llm=coordination_llm, rng=None)
+        coordination = build_coordination_module(
+            arm, params, llm=coordination_llm, rng=random.Random(0)
+        )
         coordination._cc = cc  # expose for assertions
     controller = NoemaController(
         config=_config(iterations, evaluator=evaluator),

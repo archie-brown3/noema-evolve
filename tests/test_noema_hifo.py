@@ -595,5 +595,90 @@ class TestTwoArmPilot(unittest.TestCase):
             self.assertIn("current_insight_count", snapshot)
 
 
+class TestHiFoOperatorSteeringEndToEnd(unittest.TestCase):
+    """F3 regression gate (task 0092): HiFo's regime→operator request must be
+    HONORED by the controller end-to-end.
+
+    This is the assertion the module-level F3 tests cannot make: on a branch
+    without the operator partition (task 0073's), HiFo emits the request but the
+    controller drops it and mis-logs it as an *ignored selection* hint — the
+    feature is silently inert. This drives the real loop with the menu on and
+    asserts the honored operator is the one HiFo requested, and that it is never
+    ignored. It FAILS if the partition regresses.
+    """
+
+    MENU = ["e1", "e2", "m1", "m2", "m3"]
+
+    EVAL_SCRIPT = (
+        "import re\n"
+        "def evaluate(program_path):\n"
+        "    with open(program_path) as f:\n"
+        "        code = f.read()\n"
+        "    m = re.search(r'return (\\d+)', code)\n"
+        "    return {'combined_score': min(1.0, (float(m.group(1)) if m else 0.0) / 10.0)}\n"
+    )
+
+    def _client(self):
+        counter = [0]
+
+        async def create(**params):
+            counter[0] += 1
+            content = f"```python\ndef f():\n    return {counter[0] + 1}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(prompt_tokens=50, completion_tokens=20),
+            )
+
+        return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+
+    def test_controller_honors_hifos_operator_request(self):
+        import os
+        import tempfile
+
+        from openevolve.config import DatabaseConfig, EvaluatorConfig
+
+        from noema.config import CoordinationConfig, NoemaConfig
+        from noema.controller import NoemaController
+
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(self.EVAL_SCRIPT)
+            ledger = TokenLedger(total_budget_tokens=10**9)
+            hifo = build_coordination_module(
+                "hifo", {"operators": self.MENU},
+                llm=BudgetedLLM(model="x", ledger=ledger, account="coordination",
+                                tag="h", client=self._client(), retries=0, retry_delay=0.0),
+                rng=random.Random(0),
+            )
+            config = NoemaConfig(
+                max_iterations=8, checkpoint_interval=100, diff_based_evolution=False,
+                mutation_operators=self.MENU,
+                database=DatabaseConfig(in_memory=True, num_islands=1, random_seed=42,
+                                        migration_interval=1000),
+                evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30),
+                coordination=CoordinationConfig(module="hifo"),
+            )
+            controller = NoemaController(
+                config=config, evaluation_file=eval_path,
+                initial_program_code="def f():\n    return 1\n",
+                output_dir=os.path.join(tmp, "out"),
+                mutation_llm=BudgetedLLM(model="x", ledger=ledger, account="mutation",
+                                         tag="m", client=self._client(), retries=0, retry_delay=0.0),
+                coordination=hifo, ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=8))
+
+            traces = [g["operator_selection"] for g in controller.generation_log]
+            self.assertTrue(traces)
+            for tr in traces:
+                # HiFo actually requested an operator...
+                self.assertIn(tr["requested"], self.MENU)
+                # ...the controller honored exactly that request...
+                self.assertEqual(tr["honored"], tr["requested"])
+                # ...and never dropped it / mis-logged it as an ignored hint.
+                self.assertIsNone(tr["ignored"])
+
+
 if __name__ == "__main__":
     unittest.main()
