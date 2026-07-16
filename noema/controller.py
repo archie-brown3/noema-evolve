@@ -190,6 +190,12 @@ class NoemaController:
         self.generation = 0
         self.start_iteration = 0
         self.generation_log: List[Dict[str, Any]] = []
+        # Last operator requested/honored/ignored (task 0073); logged per tick.
+        self._last_operator_trace: Dict[str, Any] = {
+            "requested": None,
+            "honored": None,
+            "ignored": None,
+        }
 
     @staticmethod
     def _freeze_config(output_dir: str, config: NoemaConfig) -> None:
@@ -256,11 +262,25 @@ class NoemaController:
 
     # ------------------------------------------------------------ iteration
 
-    def _choose_operator(self) -> OperatorSpec:
+    def _choose_operator(self, requested: Optional[str] = None) -> OperatorSpec:
         """Choose this iteration's mutation operator once (reused across every
         retry attempt, never redrawn per attempt). None config = legacy path,
-        byte-identical to today's diff_based_evolution toggle (task 0027)."""
+        byte-identical to today's diff_based_evolution toggle (task 0027).
+
+        `requested` is a coordination pre-selection hint (the bandit arm, task
+        0073). It is honored only when the menu is on and the name is one of the
+        configured operators; otherwise it is ignored and the incumbent RNG draw
+        runs. **When `requested is None` the RNG draw is byte-identical to before
+        this parameter existed** — that is the invariant that keeps every other
+        arm unchanged. A honored request draws NO operator RNG (only the bandit
+        takes this path). The requested/honored/ignored trace is recorded for the
+        run log beside the substrate's own selection trace."""
         if self.config.mutation_operators is None:
+            self._last_operator_trace = {
+                "requested": requested,
+                "honored": "legacy",
+                "ignored": requested,  # menu off: a request cannot be honored
+            }
             return OperatorSpec(
                 name="legacy",
                 template_key=(
@@ -270,7 +290,19 @@ class NoemaController:
                 arity=1,
                 has_thought=False,
             )
+        if requested is not None and requested in self.config.mutation_operators:
+            self._last_operator_trace = {
+                "requested": requested,
+                "honored": requested,
+                "ignored": None,
+            }
+            return OPERATOR_MENU[requested]
         name = self.mutation_operator_rng.choice(self.config.mutation_operators)
+        self._last_operator_trace = {
+            "requested": requested,
+            "honored": name,
+            "ignored": requested,  # None when there was no request
+        }
         return OPERATOR_MENU[name]
 
     async def _run_iteration(self, iteration: int) -> None:
@@ -287,17 +319,23 @@ class NoemaController:
             ),
         )
         request = self.coordination.sampling_request(selection_ctx)
+        # Partition the pre-selection request (task 0073): the "operator" key
+        # steers the mutation operator and must NOT reach the parent-selection
+        # policy (else it would log as an ignored selection hint); every other
+        # key is a selection-policy hint owned by the runtime.
+        operator_hint = request.hints.get("operator")
+        policy_hints = {k: v for k, v in request.hints.items() if k != "operator"}
         self.substrate.set_tokens_spent(self.ledger.spent())
         selection = self.substrate.select(
             target_scope=island,
             num_inspirations=self.config.num_inspirations,
-            hints=request.hints,
+            hints=policy_hints,
         )
         parent = selection.parent
         inspirations = list(selection.inspirations)
         parent_island = selection.source_scope
 
-        operator = self._choose_operator()
+        operator = self._choose_operator(requested=operator_hint)
         parent2: Optional[Program] = None
         if operator.arity == 2:
             if inspirations:
@@ -631,6 +669,7 @@ class NoemaController:
                 "tokens_spent": self.ledger.spent(),
                 "coordination": self.coordination.log_snapshot(),
                 "selection": self.substrate.log_snapshot(),
+                "operator_selection": dict(self._last_operator_trace),
             }
         )
 
