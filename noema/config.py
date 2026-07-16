@@ -217,8 +217,53 @@ class NoemaConfig:
             data = yaml.safe_load(f) or {}
         return cls.from_dict(data)
 
+    # noema-owned config sections whose keys are validated for typos (task 0056).
+    # The borrowed openevolve sections (database/evaluator/prompt) are left lenient
+    # — matching openevolve's own non-strict from_dict, and because their key set
+    # is openevolve's contract, not noema's to police.
+    _VALIDATED_SECTIONS = {
+        "budget": BudgetConfig,
+        "llm": LLMClientConfig,
+        "coordination": CoordinationConfig,
+        "substrate": SubstrateConfig,
+        "selection": SelectionConfig,
+    }
+
+    @classmethod
+    def _reject_unknown_keys(cls, data: Dict[str, Any]) -> None:
+        """Fail loud on a misspelled config key (task 0056 item 1).
+
+        dacite runs non-strict (so borrowed openevolve sections may carry extra
+        keys), which means a typo like `diff_based_evoluton:` or `coordination:
+        {modul: hifo}` is otherwise SILENTLY dropped and the default used —
+        quietly reverting an arm's setting. In a study where arms differ in
+        exactly one config field, that can invalidate a comparison. Validate the
+        top level and noema's own sections before the freeze; leave the borrowed
+        openevolve sections lenient.
+        """
+        import dataclasses
+
+        known_top = {f.name for f in dataclasses.fields(cls)}
+        unknown = set(data) - known_top
+        if unknown:
+            raise ValueError(
+                f"unknown top-level config key(s): {sorted(unknown)}. "
+                f"Known keys: {sorted(known_top)}"
+            )
+        for name, section_cls in cls._VALIDATED_SECTIONS.items():
+            section = data.get(name)
+            if isinstance(section, dict):
+                known = {f.name for f in dataclasses.fields(section_cls)}
+                bad = set(section) - known
+                if bad:
+                    raise ValueError(
+                        f"unknown key(s) in config section '{name}': {sorted(bad)}. "
+                        f"Known keys: {sorted(known)}"
+                    )
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "NoemaConfig":
+        cls._reject_unknown_keys(data)
         return dacite.from_dict(
             data_class=cls,
             data=data,
