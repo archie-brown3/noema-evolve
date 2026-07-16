@@ -125,7 +125,13 @@ def main():
         ),
         coordination=CoordinationConfig(
             module=args.arm,
-            params={"context_window_tokens": args.context_window_tokens},
+            params={
+                "context_window_tokens": args.context_window_tokens,
+                # F3 (task 0072): when the menu is on, hifo steers the operator by
+                # regime. Passing the configured operators is what turns that on;
+                # without them hifo emits no operator request (byte-identical).
+                **({"operators": mutation_operators} if mutation_operators else {}),
+            },
         ),
     )
 

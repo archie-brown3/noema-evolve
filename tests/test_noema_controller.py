@@ -193,6 +193,22 @@ class TestControllerEndToEnd(unittest.TestCase):
             for child in children:
                 self.assertIn("full_rewrite_user", child.prompts)
 
+    def test_children_carry_changes_description_for_hifo_extraction(self):
+        # F1 (task 0072): HiFo's insight extraction reads program.changes_description;
+        # nothing populated it, so extraction always fell back to truncated raw code.
+        # The controller now plumbs the change summary it already computes.
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            asyncio.run(controller.run(iterations=2))
+            children = [
+                p for p in controller.db._db.programs.values() if p.parent_id is not None
+            ]
+            self.assertTrue(children)
+            for child in children:
+                # Non-empty, and consistent with the summary stored in metadata.
+                self.assertTrue(child.changes_description)
+                self.assertEqual(child.changes_description, child.metadata["changes"])
+
     def test_advice_reaches_prompt_and_attribution_reaches_metadata(self):
         class StaticAdviceModule(NullCoordination):
             async def advise(self, ctx):
