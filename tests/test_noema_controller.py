@@ -157,6 +157,30 @@ class TestControllerEndToEnd(unittest.TestCase):
             checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_5")
             self.assertTrue(os.path.exists(os.path.join(checkpoint, "noema_state.json")))
 
+    def test_evolution_trace_includes_iteration_ledger_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, _ = make_controller(tmp)
+            asyncio.run(controller.run(iterations=2))
+
+            trace_path = os.path.join(tmp, "output", "evolution_trace.jsonl")
+            self.assertTrue(os.path.exists(trace_path))
+            with open(trace_path) as f:
+                traces = [json.loads(line) for line in f]
+
+            self.assertEqual(len(traces), 2)
+            first = traces[0]
+            self.assertEqual(first["iteration"], 0)
+            self.assertEqual(first["metadata"]["changes"], "Full rewrite")
+            self.assertEqual(first["metadata"]["operator"], "legacy")
+            token_ledger = first["metadata"]["token_ledger"]
+            self.assertEqual(token_ledger["spent_total"], 140)
+            self.assertEqual(token_ledger["spent_by_account"]["mutation"], 140)
+            self.assertEqual(token_ledger["calls"][0]["iteration"], 0)
+            self.assertEqual(token_ledger["calls"][0]["prompt_tokens"], 100)
+            self.assertEqual(token_ledger["calls"][0]["completion_tokens"], 40)
+            self.assertEqual(token_ledger["calls"][0]["tag"], "mutate")
+            self.assertEqual(ledger.records[0].iteration, 0)
+
     def test_children_are_distributed_across_islands_not_all_island_zero(self):
         # Regression test: db.add() was never told which island a child
         # belongs to, so every child fell back to island 0 regardless of
