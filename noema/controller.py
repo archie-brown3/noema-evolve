@@ -15,10 +15,12 @@ import os
 import random
 import re
 import time
+from dataclasses import asdict
 from dataclasses import replace as dataclass_replace
 from typing import Any, Dict, List, Optional, Tuple
 
 from openevolve.database import Program
+from openevolve.evolution_trace import EvolutionTracer
 from openevolve.utils.code_utils import (
     extract_diffs,
     format_diff_summary,
@@ -99,6 +101,14 @@ class NoemaController:
             total_budget_tokens=config.budget.total_tokens,
             account_caps=config.budget.account_caps,
             log_path=config.budget.log_path or os.path.join(output_dir, "llm_calls.jsonl"),
+        )
+        self.evolution_tracer = EvolutionTracer(
+            output_path=os.path.join(output_dir, "evolution_trace.jsonl"),
+            format="jsonl",
+            include_code=False,
+            include_prompts=True,
+            enabled=True,
+            buffer_size=1,
         )
 
         # Substrate (borrowed OpenEvolve components behind adapters).
@@ -207,33 +217,36 @@ class NoemaController:
 
     async def run(self, iterations: Optional[int] = None) -> Optional[Program]:
         """Run the evolution loop; returns the best program found"""
-        await self._ensure_initial_program()
+        try:
+            await self._ensure_initial_program()
 
-        max_iterations = iterations if iterations is not None else self.config.max_iterations
-        end_iteration = self.start_iteration + max_iterations
+            max_iterations = iterations if iterations is not None else self.config.max_iterations
+            end_iteration = self.start_iteration + max_iterations
 
-        next_iteration = self.start_iteration
-        for iteration in range(self.start_iteration, end_iteration):
-            try:
-                await self._run_iteration(iteration)
-                next_iteration = iteration + 1
+            next_iteration = self.start_iteration
+            for iteration in range(self.start_iteration, end_iteration):
+                try:
+                    await self._run_iteration(iteration)
+                    next_iteration = iteration + 1
 
-                # Coordination LLM calls in the generation tick may also
-                # exhaust the (shared) budget — stop cleanly either way
-                if next_iteration % self.substrate.steps_per_generation == 0:
-                    await self._generation_tick(iteration)
-            except BudgetExhausted as e:
-                logger.info(f"Stopping at iteration {iteration}: {e}")
-                break
+                    # Coordination LLM calls in the generation tick may also
+                    # exhaust the (shared) budget — stop cleanly either way
+                    if next_iteration % self.substrate.steps_per_generation == 0:
+                        await self._generation_tick(iteration)
+                except BudgetExhausted as e:
+                    logger.info(f"Stopping at iteration {iteration}: {e}")
+                    break
 
-            if next_iteration % self.config.checkpoint_interval == 0:
-                self.save_checkpoint(iteration)
+                if next_iteration % self.config.checkpoint_interval == 0:
+                    self.save_checkpoint(iteration)
 
-        completed_any = next_iteration > self.start_iteration
-        self.start_iteration = next_iteration
-        if completed_any:
-            self.save_checkpoint(next_iteration - 1)
-        return self.db.best_program()
+            completed_any = next_iteration > self.start_iteration
+            self.start_iteration = next_iteration
+            if completed_any:
+                self.save_checkpoint(next_iteration - 1)
+            return self.db.best_program()
+        finally:
+            self.evolution_tracer.close()
 
     async def _ensure_initial_program(self) -> None:
         if self.db.num_programs > 0:
@@ -528,6 +541,33 @@ class NoemaController:
             attribution=advice.attribution,
             eval_failed=False,
         )
+        self.evolution_tracer.log_trace(
+            iteration=iteration,
+            parent_program=parent,
+            child_program=child,
+            prompt=current_prompt,
+            llm_response=response,
+            artifacts=artifacts,
+            island_id=island,
+            metadata={
+                "changes": changes_summary,
+                "operator": operator.name,
+                "token_ledger": self._iteration_ledger_metadata(iteration),
+            },
+        )
+
+    def _iteration_ledger_metadata(self, iteration: int) -> Dict[str, Any]:
+        records = [r for r in self.ledger.records if r.iteration == iteration]
+        spent_by_account: Dict[str, int] = {}
+        for record in records:
+            spent_by_account[record.account] = (
+                spent_by_account.get(record.account, 0) + record.total_tokens
+            )
+        return {
+            "spent_by_account": spent_by_account,
+            "spent_total": sum(spent_by_account.values()),
+            "calls": [asdict(r) for r in records],
+        }
 
     def _build_retry_suffix(self, error_text: str, attempt: int) -> str:
         return (
