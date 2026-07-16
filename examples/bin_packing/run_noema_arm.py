@@ -24,17 +24,14 @@ from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-SYSTEM_MESSAGE = """You are an expert optimization specialist specializing in online bin packing problems. Your task is to improve a packing algorithm that assigns items of varying sizes (0-1) to bins of capacity 1.0, minimizing the number of bins used.
+SYSTEM_MESSAGE = """You are an expert in online bin packing heuristics. Items of integer size arrive ONE AT A TIME and must be placed immediately into a bin of capacity 100 — you cannot see future items or reorder past ones. Your only job is to improve the `priority(item, bins)` heuristic: given the arriving item size and a numpy array of the remaining capacities of the bins that can still hold it, return a score per bin. The item is placed in the highest-scoring bin (or a new bin if none fits). The goal is to pack all items into as few bins as possible, beating the best-fit baseline.
 
-Key algorithmic insights:
-- First-Fit Decreasing (FFD) and Best-Fit Decreasing (BFD) often outperform online heuristics
-- Sorting items in decreasing order is critical for good performance
-- Lookahead strategies can anticipate future items
-- Bin utilization (total packed size / (bins * capacity)) should be maximized
-- The optimal lower bound is ceil(total_size / 1.0)
+Key facts about THIS problem:
+- It is ONLINE. You cannot sort items or look ahead — the harness feeds items in arrival order and only calls your `priority` function. Any strategy that assumes offline access is impossible here.
+- The baseline is best-fit: `priority = -(bins - item)` (prefer the tightest fit). Good heuristics are subtle non-linear functions of the item size and each bin's remaining capacity.
+- Score = 1 / (1 + mean excess bins over the lower bound), averaged over the instances. Fewer bins → higher score.
 
-Focus on designing an explicit packing function that processes items in a specific order with a clear placement strategy.
-IMPORTANT: Make sure that the evaluation functions (generate_instance, evaluate_packing) are kept mathematically correct or left unmodified. The algorithm must assign each item to exactly one bin, and no bin may exceed capacity 1.0. Any violations will result in a 0 validity score.
+Only the `priority` function (inside the EVOLVE-BLOCK) may change. The instance generator and the online placement loop are fixed and must not be touched.
 CONCISENESS REQUIREMENT: You must be extremely concise. Explain your proposed mutation in at most one short sentence, then output the SEARCH/REPLACE block immediately. Do not write any other conversational filler or explanations."""
 
 EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +39,12 @@ EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", choices=["null", "pes", "hifo"], required=True)
+    ap.add_argument(
+        "--arm",
+        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes", "bandit"],
+        required=True,
+        help="'pes' is a deprecated alias for pes-custom (task 0066)",
+    )
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
