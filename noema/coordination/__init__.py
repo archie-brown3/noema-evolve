@@ -9,10 +9,12 @@ from noema.coordination.base import (
     CoordinationModule,
     GenerationContext,
     NullCoordination,
+    Outcome,
     SamplingRequest,
     SelectionContext,
 )
 
+from noema.coordination.bandit.module import BanditModule
 from noema.coordination.hifo.module import HiFoPromptModule
 from noema.coordination.pes.arms import PESCustomModule, PESFaithfulModule
 
@@ -27,6 +29,7 @@ MODULE_REGISTRY: Dict[str, type] = {
     "hifo": HiFoPromptModule,
     "pes-custom": PESCustomModule,
     "pes-faithful": PESFaithfulModule,
+    "bandit": BanditModule,
 }
 
 # Deprecated alias -> canonical key. "pes" predates the split (task 0066) and
@@ -62,6 +65,7 @@ __all__ = [
     "CoordinationModule",
     "GenerationContext",
     "NullCoordination",
+    "Outcome",
     "SelectionContext",
     "SamplingRequest",
     "MODULE_REGISTRY",

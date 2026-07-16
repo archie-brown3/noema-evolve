@@ -19,10 +19,29 @@ Design constraints:
 import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional
 
 from noema.base import PopulationSnapshot
 from noema.views import ProgramView
+
+
+class Outcome(str, Enum):
+    """Why report_result was called — the credit-assignment category (task 0090).
+
+    A `str` enum so it JSON-serializes verbatim and compares equal to its value.
+
+    `child is None` alone conflated two outcomes that are opposite evidence about
+    a mutation operator: the model produced no applyable program at all, versus it
+    produced runnable code that then failed at evaluation. An outcome-driven
+    mechanism (the AsymmetricUCB bandit, task 0073) must tell them apart. This is
+    additive and keyword-only: an arm that ignores it is byte-for-byte unchanged,
+    which is why null/hifo/pes are unaffected.
+    """
+
+    ACCEPTED = "accepted"        # a real evaluated child (may still have scored worse)
+    NO_PROGRAM = "no_program"    # unparseable response or over-length code — never evaluated
+    EVAL_ERROR = "eval_error"    # applyable code that errored/produced no metrics at evaluation
 
 
 @dataclass(frozen=True, init=False)
@@ -136,12 +155,24 @@ class CoordinationModule(ABC):
         child: Optional[ProgramView],
         attribution: Dict[str, Any],
         eval_failed: bool,
+        *,
+        outcome: Outcome = Outcome.ACCEPTED,
     ) -> None:
         """
-        Called once per mutation attempt, after evaluation (credit assignment).
+        Called once per iteration, after the retry loop (credit assignment).
 
-        child is None when no evaluable program was produced (unparseable LLM
-        response, over-length code); eval_failed also covers evaluation errors.
+        child is the evaluated ProgramView on success, or None when no evaluable
+        program survived the iteration. `eval_failed` is True whenever child is
+        None. `outcome` (task 0090) refines that None:
+        - ACCEPTED   — a real evaluated child (child is not None; it may still
+                       have scored worse than the parent — that is a normal
+                       accepted result, visible via its metrics)
+        - NO_PROGRAM — the model produced nothing applyable (unparseable, over-length)
+        - EVAL_ERROR — applyable code that errored or yielded no metrics at evaluation
+
+        `outcome` is keyword-only with a default: a module that ignores it behaves
+        exactly as before its introduction. Only outcome-driven mechanisms (the
+        bandit) need it; null/hifo/pes do not read it.
         """
 
     @abstractmethod
@@ -182,7 +213,9 @@ class NullCoordination(CoordinationModule):
     async def advise(self, ctx: GenerationContext) -> Advice:
         return Advice()
 
-    def report_result(self, ctx, child, attribution, eval_failed) -> None:
+    def report_result(
+        self, ctx, child, attribution, eval_failed, *, outcome=Outcome.ACCEPTED
+    ) -> None:
         return None
 
     async def on_generation_end(self, ctx: GenerationContext) -> None:

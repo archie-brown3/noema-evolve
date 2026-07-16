@@ -51,7 +51,7 @@ Documented deviations from the released code (PLAN.md section 2.2 discipline):
 import logging
 from typing import Any, Dict, List, Optional
 
-from noema.coordination.base import Advice, CoordinationModule, GenerationContext
+from noema.coordination.base import Advice, CoordinationModule, GenerationContext, Outcome
 from noema.coordination.pes.executor import Executor
 from noema.coordination.pes.planner import (  # noqa: F401  (re-exported)
     _HISTORY_TAIL,
@@ -205,7 +205,11 @@ class PESPlannerModule(CoordinationModule):
         child: Optional[ProgramView],
         attribution: Dict[str, Any],
         eval_failed: bool,
+        *,
+        outcome: Outcome = Outcome.ACCEPTED,
     ) -> None:
+        # `outcome` (task 0090) is accepted for contract conformance but not read:
+        # PES keys purely off `child is None` / eval_failed and is unchanged by it.
         plan = attribution.get("plan")
         if ctx.parent is None:
             return
