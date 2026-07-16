@@ -442,6 +442,22 @@ class TestTwoArmPilot(unittest.TestCase):
             self.assertGreater(ledger_on.spent("coordination"), 0)
             self.assertEqual(ledger_off.spent("mutation"), ledger_on.spent("mutation"))
 
+    def test_hifo_children_distributed_across_islands(self):
+        # Task 0040: the island-stamping regression (task 0032) was only tested
+        # for Null. Assert it through the loop for HiFo too — with num_islands=2
+        # (see _run_arm) children must land on both islands, not all island 0.
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = self._run_arm(tmp, "hifo")
+            children = [
+                p for p in controller.db._db.programs.values() if p.parent_id is not None
+            ]
+            self.assertTrue(children)
+            self.assertEqual({c.metadata["island"] for c in children}, {0, 1})
+            self.assertTrue(controller.db.island_fitnesses(0))
+            self.assertTrue(controller.db.island_fitnesses(1))
+
     def test_hifo_arm_learns_extracted_tip(self):
         import tempfile
 
