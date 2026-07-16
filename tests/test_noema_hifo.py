@@ -274,9 +274,14 @@ class TestNavigatorCadenceRegression(unittest.TestCase):
         )
 
 
-class TestRegimeOperatorSteering(unittest.TestCase):
-    """F3 (task 0072, Decision #45): hifo's regime soft-biases operator choice
-    through the pre-selection route, but only when the menu is configured."""
+class TestHiFoUsesDefaultSamplingRequest(unittest.TestCase):
+    """Fidelity regression gate (task 0097): hifo must not override
+    `sampling_request` — task 0072's F3 ("regime soft-biases operator choice")
+    is reverted because it has no basis in the source paper (HiFo-Prompt's
+    navigator only ever injects prompt text; operator scheduling is independent
+    of regime in the release). hifo now relies entirely on
+    `CoordinationModule.sampling_request`'s inherited no-op, for every regime
+    and with or without an operator menu configured."""
 
     MENU = ["e1", "e2", "m1", "m2", "m3"]
 
@@ -287,39 +292,13 @@ class TestRegimeOperatorSteering(unittest.TestCase):
             SelectionContext(iteration=0, generation=0, global_population=None)
         )
 
-    def test_no_menu_means_no_operator_request(self):
-        # Byte-identical to pre-F3 behaviour: a hifo run without the menu never
-        # touches operator selection.
-        module = HiFoPromptModule(rng=random.Random(0))
-        self.assertEqual(dict(self._request(module).hints), {})
-
-    def test_regime_biases_the_operator_family(self):
-        from collections import Counter
-
-        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(1))
-
-        module._last_regime = "exploration"
-        picks = [self._request(module).hints["operator"] for _ in range(600)]
-        c = Counter(picks)
-        self.assertGreater(c["e1"] + c["e2"], c["m1"] + c["m2"] + c["m3"])
-
-        module._last_regime = "exploitation"
-        picks = [self._request(module).hints["operator"] for _ in range(600)]
-        c = Counter(picks)
-        self.assertGreater(c["m1"] + c["m2"] + c["m3"], c["e1"] + c["e2"])
-
-    def test_every_requested_operator_is_from_the_menu(self):
-        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(2))
-        for regime in ("exploration", "exploitation", "balanced"):
-            module._last_regime = regime
-            self.assertIn(self._request(module).hints["operator"], self.MENU)
-
-    def test_last_regime_survives_checkpoint(self):
-        module = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(0))
-        module._last_regime = "exploitation"
-        restored = HiFoPromptModule(config={"operators": self.MENU}, rng=random.Random(0))
-        restored.load_state_dict(module.state_dict())
-        self.assertEqual(restored._last_regime, "exploitation")
+    def test_no_operator_request_regardless_of_menu_or_regime(self):
+        for config in ({}, {"operators": self.MENU}):
+            module = HiFoPromptModule(config=config, rng=random.Random(0))
+            for regime in ("exploration", "exploitation", "balanced"):
+                # HiFo no longer tracks a regime-driven operator bias at all;
+                # this loop only documents that no such state can leak in.
+                self.assertEqual(dict(self._request(module).hints), {})
 
 
 class TestHiFoPromptModule(unittest.TestCase):
@@ -595,16 +574,18 @@ class TestTwoArmPilot(unittest.TestCase):
             self.assertIn("current_insight_count", snapshot)
 
 
-class TestHiFoOperatorSteeringEndToEnd(unittest.TestCase):
-    """F3 regression gate (task 0092): HiFo's regime→operator request must be
-    HONORED by the controller end-to-end.
+class TestHiFoDoesNotSteerOperatorSelection(unittest.TestCase):
+    """Fidelity regression gate (task 0097): HiFo must NEVER request an operator.
 
-    This is the assertion the module-level F3 tests cannot make: on a branch
-    without the operator partition (task 0073's), HiFo emits the request but the
-    controller drops it and mis-logs it as an *ignored selection* hint — the
-    feature is silently inert. This drives the real loop with the menu on and
-    asserts the honored operator is the one HiFo requested, and that it is never
-    ignored. It FAILS if the partition regresses.
+    Superseded task 0072's F3 ("regime→operator soft-bias steering") turned out
+    to have no basis in the source paper — HiFo-Prompt's navigator only ever
+    injects a text directive into the prompt; the paper's own operator loop
+    applies every operator every generation via a fixed weight, independent of
+    regime (`hifo.py:110-122`; see [[tasks/0097-hifo-f3-operator-steering-not-faithful]]).
+    This drives the real controller loop with the operator menu on and asserts
+    HiFo never emits a `sampling_request` hint — operator choice must come
+    entirely from the controller's own (regime-blind) draw. It FAILS if
+    regime→operator coupling is reintroduced.
     """
 
     MENU = ["e1", "e2", "m1", "m2", "m3"]
@@ -631,7 +612,7 @@ class TestHiFoOperatorSteeringEndToEnd(unittest.TestCase):
 
         return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
 
-    def test_controller_honors_hifos_operator_request(self):
+    def test_hifo_never_requests_an_operator(self):
         import os
         import tempfile
 
@@ -646,7 +627,7 @@ class TestHiFoOperatorSteeringEndToEnd(unittest.TestCase):
                 f.write(self.EVAL_SCRIPT)
             ledger = TokenLedger(total_budget_tokens=10**9)
             hifo = build_coordination_module(
-                "hifo", {"operators": self.MENU},
+                "hifo", {},
                 llm=BudgetedLLM(model="x", ledger=ledger, account="coordination",
                                 tag="h", client=self._client(), retries=0, retry_delay=0.0),
                 rng=random.Random(0),
@@ -672,11 +653,12 @@ class TestHiFoOperatorSteeringEndToEnd(unittest.TestCase):
             traces = [g["operator_selection"] for g in controller.generation_log]
             self.assertTrue(traces)
             for tr in traces:
-                # HiFo actually requested an operator...
-                self.assertIn(tr["requested"], self.MENU)
-                # ...the controller honored exactly that request...
-                self.assertEqual(tr["honored"], tr["requested"])
-                # ...and never dropped it / mis-logged it as an ignored hint.
+                # HiFo never expresses an operator preference — the request slot
+                # stays empty every iteration, regardless of the navigator's regime.
+                self.assertIsNone(tr["requested"])
+                # The controller's own (regime-blind) draw picks the operator, and
+                # nothing was ever honored/dropped as a hint.
+                self.assertIn(tr["honored"], self.MENU)
                 self.assertIsNone(tr["ignored"])
 
 

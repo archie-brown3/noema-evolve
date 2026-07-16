@@ -31,18 +31,10 @@ from noema.coordination.base import (
     CoordinationModule,
     GenerationContext,
     Outcome,
-    SamplingRequest,
-    SelectionContext,
 )
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
 from noema.views import ProgramView
-
-# EoH operator taxonomy for regime steering (task 0072 F3): e-operators produce
-# divergent/new forms (exploration); m-operators refine/tune existing ones
-# (exploitation). HiFo's coarse regime biases the draw toward the matching family.
-EXPLORATION_OPERATORS = ("e1", "e2")
-EXPLOITATION_OPERATORS = ("m1", "m2", "m3")
 
 logger = logging.getLogger(__name__)
 
@@ -132,43 +124,6 @@ class HiFoPromptModule(CoordinationModule):
         # the 3/2 thresholds a substrate-independent per-offspring unit (F4).
         self._nav_best_history: List[float] = []
         self._nav_history_cap: int = cfg.get("nav_history_cap", 50)
-        # F3 regime→operator steering (task 0072, Decision #45). HiFo emits an
-        # operator request ONLY when told the menu is on (`operators` non-empty),
-        # so a hifo run without the menu is byte-identical to before. The regime
-        # from the previous advise() biases the draw (sampling_request runs before
-        # advise in the loop, so the current regime isn't computed yet — a one-step
-        # lag that is invisible in practice because regimes are sticky).
-        self.operators: List[str] = list(cfg.get("operators", []))
-        self.regime_bias: float = cfg.get("regime_bias", 3.0)
-        self._exploration_ops = tuple(cfg.get("exploration_operators", EXPLORATION_OPERATORS))
-        self._exploitation_ops = tuple(cfg.get("exploitation_operators", EXPLOITATION_OPERATORS))
-        self._last_regime: str = "balanced"
-
-    # -------------------------------------------------- pre-selection (F3)
-
-    def sampling_request(self, ctx: SelectionContext) -> SamplingRequest:
-        """Bias the mutation operator toward the current regime (task 0072 F3).
-
-        Emits a request ONLY when the menu is on (`operators` configured); without
-        it this is the inherited no-op and a hifo run is byte-identical to before.
-        The regime is a soft bias realized as a weighted draw over the configured
-        operators (exploration favors the divergent e-family; exploitation the
-        refining m-family; balanced is uniform), using the module RNG so it stays
-        deterministic. The controller honors the single `operator` key exactly as
-        it does for the bandit and records requested/honored/ignored.
-        """
-        if not self.operators:
-            return SamplingRequest()
-        weights = [self._operator_weight(op) for op in self.operators]
-        chosen = self.rng.choices(self.operators, weights=weights, k=1)[0]
-        return SamplingRequest(hints={"operator": chosen})
-
-    def _operator_weight(self, operator: str) -> float:
-        if self._last_regime == "exploration":
-            return self.regime_bias if operator in self._exploration_ops else 1.0
-        if self._last_regime == "exploitation":
-            return self.regime_bias if operator in self._exploitation_ops else 1.0
-        return 1.0  # balanced → uniform
 
     # ------------------------------------------------------------- advise
 
@@ -190,9 +145,6 @@ class HiFoPromptModule(CoordinationModule):
             avg_fitness_history=ctx.avg_fitness_history,
             diversity_history=ctx.diversity_history,
         )
-        # Remember the regime so the NEXT iteration's sampling_request can bias the
-        # operator toward it (F3). advise runs after sampling_request in the loop.
-        self._last_regime = regime
         insights = self.insight_pool.get_tips(k=self.tips_per_prompt, strategy=self.tip_strategy)
 
         # Assemble the three suffix blocks exactly as hifo_evolution.py appends
@@ -348,14 +300,12 @@ class HiFoPromptModule(CoordinationModule):
             "insight_pool": self.insight_pool.state_dict(),
             "navigator": self.navigator.state_dict(),
             "nav_best_history": list(self._nav_best_history),
-            "last_regime": self._last_regime,
         }
 
     def load_state_dict(self, state: Dict[str, Any]) -> None:
         self.insight_pool.load_state_dict(state["insight_pool"])
         self.navigator.load_state_dict(state["navigator"])
         self._nav_best_history = [float(x) for x in state.get("nav_best_history", [])]
-        self._last_regime = state.get("last_regime", "balanced")
 
     def log_snapshot(self) -> Dict[str, Any]:
         # Mirrors the per-generation hifo_prompt_log written by the original
