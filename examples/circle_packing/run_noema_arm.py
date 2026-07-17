@@ -49,10 +49,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--arm",
-        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes"],
+        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes", "bandit"],
         required=True,
         help="'pes' is a deprecated alias for pes-custom (task 0066)",
     )
+    # The EoH operator menu is substrate-side; the bandit REQUIRES it (it routes
+    # over the menu), so it is auto-enabled for --arm bandit. Other arms draw
+    # from the menu at random only when this flag is passed.
+    ap.add_argument("--operator-menu", action="store_true", default=False)
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
@@ -109,11 +113,20 @@ def main():
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
 
+    # Menu ON for the bandit (mandatory — it routes over the menu) or when
+    # explicitly requested; otherwise None = the legacy diff-only path.
+    mutation_operators = (
+        ["e1", "e2", "m1", "m2", "m3"]
+        if (args.arm == "bandit" or args.operator_menu)
+        else None
+    )
+
     config = NoemaConfig(
         max_iterations=args.iterations,
         checkpoint_interval=5,
         random_seed=args.seed,
         diff_based_evolution=True,
+        mutation_operators=mutation_operators,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
         retry_on=args.retry_on,
@@ -146,7 +159,11 @@ def main():
         ),
         coordination=CoordinationConfig(
             module=args.arm,
-            params={"context_window_tokens": args.context_window_tokens},
+            params={
+                "context_window_tokens": args.context_window_tokens,
+                # Keep the module's menu identical to the controller's when on.
+                **({"operators": mutation_operators} if mutation_operators else {}),
+            },
         ),
         substrate=SubstrateConfig(kind=args.substrate),
         selection=SelectionConfig(policy=args.selection_policy),
