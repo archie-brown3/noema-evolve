@@ -336,11 +336,17 @@ class TestHiFoPromptModule(unittest.TestCase):
             "- Cache intermediate scoring results across neighborhood evaluations\n"
         )
         module, ledger, client = self.make_module(
-            extraction_response=response, extraction_probability=1.0
+            extraction_response=response,
+            extraction_probability=1.0,
+            extraction_interval_offspring=None,  # legacy per-tick roll for a direct call
         )
         ctx = make_ctx(
             generation=2,
-            top_programs=[make_view(fitness=0.9, desc="greedy with lookahead scoring")],
+            top_programs=[
+                make_view(fitness=0.9, desc="greedy with lookahead scoring"),
+                make_view(fitness=0.5),
+                make_view(fitness=0.2),
+            ],
         )
         asyncio.run(module.on_generation_end(ctx))
 
@@ -361,8 +367,12 @@ class TestHiFoPromptModule(unittest.TestCase):
         self.assertIn("greedy with lookahead scoring", prompt_text)
 
     def test_extraction_probability_zero_never_calls_llm(self):
-        module, ledger, client = self.make_module(extraction_probability=0.0)
-        ctx = make_ctx(generation=1, top_programs=[make_view()])
+        module, ledger, client = self.make_module(
+            extraction_probability=0.0, extraction_interval_offspring=None
+        )
+        ctx = make_ctx(
+            generation=1, top_programs=[make_view(), make_view(), make_view()]
+        )
         asyncio.run(module.on_generation_end(ctx))
         self.assertEqual(len(client.calls), 0)
         self.assertEqual(ledger.spent(), 0)
@@ -388,6 +398,101 @@ class TestHiFoPromptModule(unittest.TestCase):
         module = build_coordination_module("hifo", params={"tips_per_prompt": 2})
         self.assertIsInstance(module, HiFoPromptModule)
         self.assertEqual(module.tips_per_prompt, 2)
+
+
+class TestExtractionCadenceAndBasis(unittest.TestCase):
+    """Decisions #52/#54 + the source's population gates: window-counted rolls
+    (one per extraction_interval_offspring), >=3-individual gate, top-30% slice,
+    and the thoughts / thoughts+code input modes."""
+
+    def _module(self, **params):
+        ledger = TokenLedger(total_budget_tokens=100_000)
+        client = make_extraction_client("- Nothing meaningful but long enough")
+        llm = BudgetedLLM(
+            model="fake-model", ledger=ledger, account="coordination",
+            tag="hifo.coordination", client=client, retries=0, retry_delay=0.0,
+        )
+        return HiFoPromptModule(config=params, llm=llm, rng=random.Random(0)), client
+
+    def _tick_ctx(self, n=5, desc=""):
+        views = [make_view(fitness=1.0 - i * 0.1, desc=desc) for i in range(n)]
+        return make_ctx(
+            generation=1,
+            top_programs=views,
+            island_fitnesses=[v.fitness for v in views],
+        )
+
+    def test_window_cadence_rolls_per_completed_interval(self):
+        module, client = self._module(
+            extraction_probability=1.0, extraction_interval_offspring=2
+        )
+        ctx = self._tick_ctx()
+        for _ in range(5):  # 5 offspring seen -> 2 completed windows of 2
+            asyncio.run(module.advise(ctx))
+        asyncio.run(module.on_generation_end(ctx))
+        self.assertEqual(len(client.calls), 2)
+        # The leftover offspring carries into the next window: one more advise
+        # completes window 3.
+        asyncio.run(module.advise(ctx))
+        asyncio.run(module.on_generation_end(ctx))
+        self.assertEqual(len(client.calls), 3)
+        # No offspring since -> no roll, no call.
+        asyncio.run(module.on_generation_end(ctx))
+        self.assertEqual(len(client.calls), 3)
+
+    def test_min_population_gate(self):
+        module, client = self._module(
+            extraction_probability=1.0, extraction_interval_offspring=None
+        )
+        asyncio.run(module.on_generation_end(self._tick_ctx(n=2)))
+        self.assertEqual(len(client.calls), 0)  # source: len(pop) < 3 -> skip
+
+    def test_top_30_percent_slice(self):
+        module, client = self._module(
+            extraction_probability=1.0, extraction_interval_offspring=None
+        )
+        views = [
+            make_view(fitness=1.0 - i * 0.05, desc=f"distinct description {i}")
+            for i in range(10)
+        ]
+        ctx = make_ctx(
+            generation=1, top_programs=views,
+            island_fitnesses=[v.fitness for v in views],
+        )
+        asyncio.run(module.on_generation_end(ctx))
+        prompt = client.calls[0]["messages"][-1]["content"]
+        # ceil(0.3 * 10) = 3: the top three appear, the fourth does not.
+        for i in range(3):
+            self.assertIn(f"distinct description {i}", prompt)
+        self.assertNotIn("distinct description 3", prompt)
+
+    def test_thoughts_plus_code_sends_both(self):
+        module, client = self._module(
+            extraction_probability=1.0,
+            extraction_interval_offspring=None,
+            extraction_input="thoughts+code",
+        )
+        asyncio.run(
+            module.on_generation_end(self._tick_ctx(desc="hexagonal corner packing"))
+        )
+        prompt = client.calls[0]["messages"][-1]["content"]
+        self.assertIn("hexagonal corner packing", prompt)  # the thought...
+        self.assertIn("def f():", prompt)  # ...AND the code
+
+    def test_offspring_counter_survives_checkpoint(self):
+        module, _ = self._module(extraction_interval_offspring=3)
+        ctx = self._tick_ctx()
+        for _ in range(4):
+            asyncio.run(module.advise(ctx))
+        state = json.loads(json.dumps(module.state_dict()))
+        restored, client = self._module(
+            extraction_probability=1.0, extraction_interval_offspring=3
+        )
+        restored.load_state_dict(state)
+        self.assertEqual(restored._offspring_seen, 4)
+        # Resume completes the pending window without double-counting.
+        asyncio.run(restored.on_generation_end(ctx))
+        self.assertEqual(len(client.calls), 1)  # one completed window of 3
 
 
 class TestTwoArmPilot(unittest.TestCase):
@@ -479,7 +584,10 @@ class TestTwoArmPilot(unittest.TestCase):
                 retry_delay=0.0,
             )
             coordination = HiFoPromptModule(
-                config={"extraction_probability": 1.0},
+                # Legacy per-tick roll: the pilot asserts extraction *content*
+                # (tip learned), not the Decision #52 cadence, which has its
+                # own window tests.
+                config={"extraction_probability": 1.0, "extraction_interval_offspring": None},
                 llm=coordination_llm,
                 rng=random.Random(43),
             )
@@ -548,6 +656,22 @@ class TestTwoArmPilot(unittest.TestCase):
             self.assertTrue(controller.generation_log)
             snapshot = controller.generation_log[-1]["coordination"]
             self.assertIn("current_insight_count", snapshot)
+
+    def test_children_carry_changes_description(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = self._run_arm(tmp, "null")
+            children = [
+                p for p in controller.db.top_programs(50) if p.parent_id is not None
+            ]
+            self.assertTrue(children)
+            for child in children:
+                # Decision #54: the change summary is stamped as the program's
+                # description ("Full rewrite" for the stubbed rewrite path), so
+                # hifo's extraction reads descriptions rather than living
+                # permanently on the truncated-code fallback.
+                self.assertEqual(child.changes_description, "Full rewrite")
 
 
 class TestHiFoDoesNotSteerOperatorSelection(unittest.TestCase):
