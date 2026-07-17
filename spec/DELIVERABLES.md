@@ -69,7 +69,7 @@ Every vault task names one of these in `serves:`, or is a `chore`.
 | level | shape | token price |
 |---|---|---|
 | `null` | nothing | 0 |
-| `hifo` | population-level hindsight pool + foresight regime | amortized (~1 extraction/tick) |
+| `hifo` | population-level hindsight pool + foresight regime | amortized (p=0.8 roll per 5 offspring — source-faithful cadence, Decision #52; was ~1/tick) |
 | `pes-faithful` | LoongFlow-faithful: plan-led prompt, paper constants — **reference arm / validity anchor, explicitly not the contribution** | high (per-mutation plan + reflect) |
 | `bandit` | AsymmetricUCB over the operator menu, cost-blind first | 0 (no coordination calls) |
 
