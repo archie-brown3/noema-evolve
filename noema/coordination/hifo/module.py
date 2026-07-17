@@ -10,17 +10,26 @@ Mapping from the released HiFo-Prompt code (hifo_interface_EC.InterfaceEC glue):
 - on_generation_end() <- InterfaceEC.extract_insights_from_population (the
                          mechanism's only LLM call) + generation bookkeeping
 
-Documented deviations from the released code (PLAN.md section 2.2):
+Documented deviations from the released code (PLAN.md section 2.2; authorities in
+the vault's HiFo Fidelity Contract — 2026-07, Decisions #50-#54):
 1. Credit assignment actually works here. The original ran offspring generation
    in joblib subprocesses, so tip-stat updates mutated worker-local copies of
    the pool and were lost; noema runs the mechanism in-process.
 2. Fitness is MAXIMIZED (openevolve convention); the original minimized. The
    navigator takes maximize=True and the effectiveness formula is mirrored.
 3. The original's exception-path penalty (-0.8) was dead code (the offspring
-   dict it inspected had no metadata); the live failure semantics — evaluation
-   failure scores effectiveness -0.5 — are what report_result implements.
+   dict it inspected had no metadata). Its LIVE failure semantics were: an
+   exception anywhere in generate/evaluate -> tips receive no update at all;
+   an evaluated-but-None objective -> -0.5. report_result mirrors that via the
+   Outcome discriminator (Decision #53): NO_PROGRAM / EVAL_ERROR -> no update,
+   remaining failure classes -> failure_effectiveness.
 4. All magic numbers (pool size, k tips, extraction probability, ...) are
    config fields with the original values as defaults.
+5. The navigator reads a module-internal best-fitness history advanced once per
+   advise() from the global best (Decision #50, repairing the source's broken
+   read/write cadence — its shipped regime detection never functions: counters
+   are lost to joblib copies when parallel and fed an unchanged snapshot when
+   sequential). The source defect is documented as a finding, not reproduced.
 """
 
 import logging
@@ -87,11 +96,15 @@ class HiFoPromptModule(CoordinationModule):
         tips_per_prompt:          k tips injected per mutation (3)
         tip_strategy:             pool selection strategy ("adaptive")
         initial_tips:             seed tips (None = HiFo's defaults)
-        extraction_probability:   chance per generation tick of running the
+        extraction_probability:   chance per extraction roll of running the
                                   insight-extraction LLM call (0.8)
-        failure_effectiveness:    effectiveness for failed offspring (-0.5)
+        failure_effectiveness:    effectiveness for failed-but-evaluated
+                                  offspring (-0.5); infrastructure failures
+                                  (NO_PROGRAM/EVAL_ERROR) skip credit entirely
         max_code_chars:           code truncation for extraction prompts (1000/800)
         min_tip_length:           minimum accepted extracted-tip length (10)
+        nav_history_cap:          module-internal navigator best-history cap (50,
+                                  the source's history cap)
     """
 
     def __init__(self, config=None, llm=None, rng=None):
@@ -110,6 +123,14 @@ class HiFoPromptModule(CoordinationModule):
             rng=self.rng,
         )
         self.navigator = EvolutionaryNavigator(maximize=True, rng=self.rng)
+        # Decision #50: the navigator's own best-fitness history, advanced once
+        # per advise() (= per offspring) from the global best. The host's
+        # ctx.best_fitness_history only advances at the generation tick, so
+        # feeding it per-mutation made improvement==0 on every intra-tick call
+        # and the exploitation trigger unreachable — the same degeneracy the
+        # source exhibits (see docstring deviation 5). Cap = the source's 50.
+        self._nav_best_history: List[float] = []
+        self._nav_history_cap: int = cfg.get("nav_history_cap", 50)
 
     # ------------------------------------------------------------- advise
 
@@ -117,8 +138,17 @@ class HiFoPromptModule(CoordinationModule):
         # Same cadence as the original: guidance recomputed per offspring
         # (InterfaceEC._get_alg), tips drawn per offspring
         self.insight_pool.update_generation(ctx.generation)
+        # Decision #50: observe the global best per offspring so the navigator's
+        # read cadence matches its write cadence (avg/diversity remain the host
+        # tick histories — secondary regime modifiers; per-offspring diversity
+        # is ill-defined and was not part of the source defect).
+        best = ctx.global_population.best_program if ctx.global_population else None
+        if best is not None:
+            self._nav_best_history.append(best.fitness)
+            if len(self._nav_best_history) > self._nav_history_cap:
+                self._nav_best_history = self._nav_best_history[-self._nav_history_cap :]
         regime, directive = self.navigator.get_guidance(
-            best_fitness_history=ctx.best_fitness_history,
+            best_fitness_history=self._nav_best_history,
             avg_fitness_history=ctx.avg_fitness_history,
             diversity_history=ctx.diversity_history,
         )
@@ -154,9 +184,15 @@ class HiFoPromptModule(CoordinationModule):
         *,
         outcome: Outcome = Outcome.ACCEPTED,
     ) -> None:
-        # `outcome` (task 0090) is accepted for contract conformance but not read:
-        # HiFo's credit assignment already collapses every failed outcome to the
-        # same effectiveness, so this arm is behaviour-identical with or without it.
+        # Decision #53: mirror the source's LIVE failure semantics. In the
+        # original, an exception anywhere in generate/evaluate meant tips got no
+        # credit update at all (the -0.8 penalty on that path was dead code);
+        # only an evaluated offspring — including one whose objective came back
+        # None — reached the effectiveness formula. NO_PROGRAM / EVAL_ERROR are
+        # exactly that exception class, so they skip credit entirely rather than
+        # punishing tips for infrastructure failures they did not cause.
+        if outcome in (Outcome.NO_PROGRAM, Outcome.EVAL_ERROR):
+            return
         insights = attribution.get("insights") or []
         if not insights:
             return
@@ -276,11 +312,13 @@ class HiFoPromptModule(CoordinationModule):
         return {
             "insight_pool": self.insight_pool.state_dict(),
             "navigator": self.navigator.state_dict(),
+            "nav_best_history": list(self._nav_best_history),
         }
 
     def load_state_dict(self, state: Dict[str, Any]) -> None:
         self.insight_pool.load_state_dict(state["insight_pool"])
         self.navigator.load_state_dict(state["navigator"])
+        self._nav_best_history = [float(x) for x in state.get("nav_best_history", [])]
 
     def log_snapshot(self) -> Dict[str, Any]:
         # Mirrors the per-generation hifo_prompt_log written by the original

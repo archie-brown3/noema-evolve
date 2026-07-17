@@ -15,7 +15,7 @@ from types import SimpleNamespace
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.coordination import build_coordination_module
-from noema.coordination.base import GenerationContext
+from noema.coordination.base import GenerationContext, Outcome, PopulationSnapshot
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
 from noema.coordination.hifo.module import HiFoPromptModule, INSIGHTS_PREFIX
@@ -181,6 +181,83 @@ class TestEffectiveness(unittest.TestCase):
     def test_below_average_scores_low(self):
         # child 0.3: norm=(0.3-0.2)/0.6=0.1667; eff = -0.3 + 0.5*0.1667 = -0.2167
         self.assertAlmostEqual(self.effectiveness(0.3, [0.2, 0.5, 0.8]), -0.21666, places=4)
+
+
+class TestNavigatorCadenceRegression(unittest.TestCase):
+    """Decision #50 gate: the navigator must observe per-offspring best-fitness
+    movement. The pre-repair wiring fed the tick-cadenced HOST history to every
+    intra-tick advise() call, so under steady improvement the navigator compared
+    an unchanged snapshot to itself — improvement_count stuck at 0 and the
+    exploitation trigger unreachable (the source's own sequential-mode
+    degeneracy). This drives advise() with a rising global best while the host
+    history stays flat; it FAILS on the pre-repair code."""
+
+    def _ctx(self, best):
+        view = make_view(fitness=best)
+        return make_ctx(
+            global_population=PopulationSnapshot(
+                scope=None, top_programs=(view,), fitnesses=(best,), best_program=view
+            ),
+            best_fitness_history=[0.1, 0.1],  # flat tick-cadenced host history
+            diversity_history=[0.9],
+        )
+
+    def test_exploitation_trigger_reachable_under_steady_improvement(self):
+        module = HiFoPromptModule(rng=random.Random(0))
+        regimes = []
+        for best in (0.1, 0.2, 0.3, 0.4, 0.5):
+            advice = asyncio.run(module.advise(self._ctx(best)))
+            regimes.append(advice.attribution["regime"])
+        # Steady improvement must reach the >=2 exploitation trigger — not the
+        # stagnation counter the flat host history would have driven.
+        self.assertGreaterEqual(module.navigator.improvement_count, 2)
+        self.assertEqual(regimes[-1], "exploitation")
+        self.assertEqual(module.navigator.stagnation_count, 0)
+
+    def test_nav_best_history_survives_checkpoint(self):
+        module = HiFoPromptModule(rng=random.Random(0))
+        for best in (0.1, 0.2, 0.3):
+            asyncio.run(module.advise(self._ctx(best)))
+        self.assertEqual(module._nav_best_history, [0.1, 0.2, 0.3])
+        restored = HiFoPromptModule(rng=random.Random(0))
+        restored.load_state_dict(json.loads(json.dumps(module.state_dict())))
+        self.assertEqual(restored._nav_best_history, [0.1, 0.2, 0.3])
+
+    def test_history_respects_cap(self):
+        module = HiFoPromptModule(config={"nav_history_cap": 3}, rng=random.Random(0))
+        for best in (0.1, 0.2, 0.3, 0.4, 0.5):
+            asyncio.run(module.advise(self._ctx(best)))
+        self.assertEqual(module._nav_best_history, [0.3, 0.4, 0.5])
+
+
+class TestOutcomeAwareCredit(unittest.TestCase):
+    """Decision #53: infrastructure failures (the source's exception path, where
+    tips received no update at all) skip credit; -0.5 remains for a failure that
+    reached evaluation."""
+
+    def _advised(self):
+        module = HiFoPromptModule(rng=random.Random(0))
+        ctx = make_ctx(island_fitnesses=[0.2, 0.8])
+        advice = asyncio.run(module.advise(ctx))
+        return module, ctx, advice
+
+    def test_infrastructure_failures_skip_credit(self):
+        module, ctx, advice = self._advised()
+        for outcome in (Outcome.NO_PROGRAM, Outcome.EVAL_ERROR):
+            module.report_result(
+                ctx, None, advice.attribution, eval_failed=True, outcome=outcome
+            )
+        for tip in advice.attribution["insights"]:
+            self.assertEqual(module.insight_pool.tip_stats[tip]["effectiveness"], 0.0)
+            self.assertEqual(module.insight_pool.tip_stats[tip]["total_effectiveness"], 0.0)
+
+    def test_evaluated_failure_still_scores_minus_half(self):
+        module, ctx, advice = self._advised()
+        module.report_result(ctx, None, advice.attribution, eval_failed=True)
+        for tip in advice.attribution["insights"]:
+            self.assertAlmostEqual(
+                module.insight_pool.tip_stats[tip]["effectiveness"], 0.3 * -0.5
+            )
 
 
 def make_extraction_client(response_text):
@@ -471,6 +548,88 @@ class TestTwoArmPilot(unittest.TestCase):
             self.assertTrue(controller.generation_log)
             snapshot = controller.generation_log[-1]["coordination"]
             self.assertIn("current_insight_count", snapshot)
+
+
+class TestHiFoDoesNotSteerOperatorSelection(unittest.TestCase):
+    """Decision #49 gate: HiFo must NEVER request an operator. The source's
+    navigator only ever injects prompt text; its operator loop applies every
+    operator at fixed weights, independent of regime (HiFo-Prompt hifo.py:110-122).
+    This drives the real controller loop with the operator menu ON and asserts
+    hifo never emits a `sampling_request` hint — operator choice comes entirely
+    from the controller's own regime-blind draw. It FAILS if regime→operator
+    coupling is (re)introduced."""
+
+    MENU = ["e1", "e2", "m1", "m2", "m3"]
+
+    EVAL_SCRIPT = (
+        "import re\n"
+        "def evaluate(program_path):\n"
+        "    with open(program_path) as f:\n"
+        "        code = f.read()\n"
+        "    m = re.search(r'return (\\d+)', code)\n"
+        "    return {'combined_score': min(1.0, (float(m.group(1)) if m else 0.0) / 10.0)}\n"
+    )
+
+    def _client(self):
+        counter = [0]
+
+        async def create(**params):
+            counter[0] += 1
+            content = f"```python\ndef f():\n    return {counter[0] + 1}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(prompt_tokens=50, completion_tokens=20),
+            )
+
+        return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+
+    def test_hifo_never_requests_an_operator(self):
+        import os
+        import tempfile
+
+        from openevolve.config import DatabaseConfig, EvaluatorConfig
+
+        from noema.config import CoordinationConfig, NoemaConfig
+        from noema.controller import NoemaController
+
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(self.EVAL_SCRIPT)
+            ledger = TokenLedger(total_budget_tokens=10**9)
+            hifo = build_coordination_module(
+                "hifo", {},
+                llm=BudgetedLLM(model="x", ledger=ledger, account="coordination",
+                                tag="h", client=self._client(), retries=0, retry_delay=0.0),
+                rng=random.Random(0),
+            )
+            config = NoemaConfig(
+                max_iterations=8, checkpoint_interval=100, diff_based_evolution=False,
+                mutation_operators=self.MENU,
+                database=DatabaseConfig(in_memory=True, num_islands=1, random_seed=42,
+                                        migration_interval=1000),
+                evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30),
+                coordination=CoordinationConfig(module="hifo"),
+            )
+            controller = NoemaController(
+                config=config, evaluation_file=eval_path,
+                initial_program_code="def f():\n    return 1\n",
+                output_dir=os.path.join(tmp, "out"),
+                mutation_llm=BudgetedLLM(model="x", ledger=ledger, account="mutation",
+                                         tag="m", client=self._client(), retries=0, retry_delay=0.0),
+                coordination=hifo, ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=8))
+
+            traces = [g["operator_selection"] for g in controller.generation_log]
+            self.assertTrue(traces)
+            for tr in traces:
+                # HiFo never expresses an operator preference...
+                self.assertIsNone(tr["requested"])
+                # ...the controller's own draw picks from the menu...
+                self.assertIn(tr["honored"], self.MENU)
+                # ...and nothing was ever dropped as an ignored hint.
+                self.assertIsNone(tr["ignored"])
 
 
 if __name__ == "__main__":
