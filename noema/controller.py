@@ -368,7 +368,16 @@ class NoemaController:
             self.config.num_previous_programs, scope=parent_island
         )
 
-        ctx = self._make_context(iteration, parent_island, parent, inspirations)
+        ctx = self._make_context(
+            iteration,
+            parent_island,
+            parent,
+            inspirations,
+            # Decision #51: the drawn operator's name rides the context so a
+            # module can pick operator-specific prompt wording. The legacy
+            # no-menu path stays None (there is no EoH operator to name).
+            operator=operator.name if self.config.mutation_operators is not None else None,
+        )
         advice = await self.coordination.advise(ctx)  # coordination hook 1
 
         if advice.attribution.get("full_executor_prompt"):
@@ -747,6 +756,7 @@ class NoemaController:
         parent: Optional[Program],
         inspirations: List[Program],
         global_scope: bool = False,
+        operator: Optional[str] = None,
     ) -> GenerationContext:
         local_scope = None if global_scope else island
         # The generation tick is a population-scale event: modules that
@@ -768,6 +778,7 @@ class NoemaController:
             best_fitness_history=list(self.best_fitness_history),
             avg_fitness_history=list(self.avg_fitness_history),
             diversity_history=list(self.diversity_history),
+            operator=operator,
         )
 
     # ---------------------------------------------------------- checkpoints

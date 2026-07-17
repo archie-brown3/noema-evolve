@@ -495,6 +495,112 @@ class TestExtractionCadenceAndBasis(unittest.TestCase):
         self.assertEqual(len(client.calls), 1)  # one completed window of 3
 
 
+class TestPerOperatorSuffixWording(unittest.TestCase):
+    """Decision #51: the suffix uses the drawn operator's own verbatim wording
+    (HiFo-Prompt hifo_evolution.py get_prompt_* variants); None/unknown falls
+    back to i1's task-generic set — the declared analog for the legacy path."""
+
+    # Byte-fidelity locks: literal spot values from the source inventory
+    # (vault map §4.2-4.3) — drift in the constants fails loudly here.
+    SPOT_CHECKS = {
+        "e1": "For this exploration, please pay special attention to: ",
+        "e2": "For this recombination, please pay special attention to: ",
+        "m1": "For this mutation, please pay special attention to: ",
+        "m2": "When adjusting parameters, please pay special attention to: ",
+        "m3": "When simplifying, please pay special attention to: ",
+        "i1": "For this task, please pay special attention to: ",
+    }
+    BALANCED_LINES = {
+        "i1": "Strike a balance between novel ideas and proven effective techniques.",
+        "e1": "Create a balanced algorithm that introduces some novel ideas while building on proven patterns from the examples.",
+        "e2": "Balance between preserving the effective aspects of the backbone while introducing some novel improvements.",
+        "m1": "Modify key components of the algorithm while preserving its effective aspects.",
+        "m2": "Modify some parameters substantially while making minor adjustments to others.",
+        "m3": "Find a balance between simplification and preserving the algorithm's proven strengths.",
+    }
+
+    def _advice(self, operator):
+        module = HiFoPromptModule(rng=random.Random(0))
+        # No history -> the navigator deterministically answers "balanced"
+        return asyncio.run(module.advise(make_ctx(operator=operator)))
+
+    def test_each_operator_gets_its_own_verbatim_wording(self):
+        for op, leadin in self.SPOT_CHECKS.items():
+            with self.subTest(operator=op):
+                block = self._advice(op).prompt_block
+                self.assertIn(leadin, block)
+                self.assertIn(self.BALANCED_LINES[op], block)
+
+    def test_none_and_unknown_operators_use_the_i1_set(self):
+        for op in (None, "legacy", "not-a-real-operator"):
+            with self.subTest(operator=op):
+                block = self._advice(op).prompt_block
+                self.assertIn(self.SPOT_CHECKS["i1"], block)
+                self.assertIn(self.BALANCED_LINES["i1"], block)
+
+    def test_controller_stamps_the_drawn_operator(self):
+        import os
+        import tempfile
+
+        from openevolve.config import DatabaseConfig, EvaluatorConfig
+
+        from noema.config import CoordinationConfig, NoemaConfig
+        from noema.controller import NoemaController
+
+        recorded = []
+
+        class RecordingHiFo(HiFoPromptModule):
+            async def advise(self, ctx):
+                recorded.append(ctx.operator)
+                return await super().advise(ctx)
+
+        menu = ["e1", "e2", "m1", "m2", "m3"]
+        counter = [0]
+
+        async def create(**params):
+            counter[0] += 1
+            content = f"```python\ndef f():\n    return {counter[0] + 1}\n```"
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                usage=SimpleNamespace(prompt_tokens=50, completion_tokens=20),
+            )
+
+        client = SimpleNamespace(
+            chat=SimpleNamespace(completions=SimpleNamespace(create=create))
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(
+                    "def evaluate(program_path):\n"
+                    "    return {'combined_score': 0.5}\n"
+                )
+            ledger = TokenLedger(total_budget_tokens=10**9)
+            config = NoemaConfig(
+                max_iterations=6, checkpoint_interval=100, diff_based_evolution=False,
+                mutation_operators=menu,
+                database=DatabaseConfig(in_memory=True, num_islands=1, random_seed=42,
+                                        migration_interval=1000),
+                evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30),
+                coordination=CoordinationConfig(module="hifo"),
+            )
+            controller = NoemaController(
+                config=config, evaluation_file=eval_path,
+                initial_program_code="def f():\n    return 1\n",
+                output_dir=os.path.join(tmp, "out"),
+                mutation_llm=BudgetedLLM(model="x", ledger=ledger, account="mutation",
+                                         tag="m", client=client, retries=0, retry_delay=0.0),
+                coordination=RecordingHiFo(rng=random.Random(0)), ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=6))
+
+        self.assertTrue(recorded)
+        # Menu on: every advise saw the drawn operator's name, never None.
+        for name in recorded:
+            self.assertIn(name, menu)
+
+
 class TestTwoArmPilot(unittest.TestCase):
     """
     Plan task B11: run the OFF arm and the HiFo arm through the controller with

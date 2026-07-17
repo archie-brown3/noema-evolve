@@ -45,18 +45,52 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # BORROWED prompt phrasing — copied from HiFo-Prompt
-# (hifo/src/hifo/methods/hifo/hifo_evolution.py, get_prompt_* suffix blocks)
+# (hifo/src/hifo/methods/hifo/hifo_evolution.py, get_prompt_* suffix blocks).
+# The source varies the directive lead-in and regime line PER OPERATOR
+# (get_prompt_i1/e1/e2/m1/m2/m3); the host stamps the drawn operator on the
+# context (Decision #51) and i1's task-generic set is the declared analog for
+# the legacy no-menu path, where none of the six operators exists.
 # ---------------------------------------------------------------------------
 INSIGHTS_PREFIX = "Consider these successful design principles I've observed recently:"
-DIRECTIVE_TEMPLATE = "For this task, please pay special attention to: {directive}"
+DIRECTIVE_TEMPLATES = {
+    "i1": "For this task, please pay special attention to: {directive}",
+    "e1": "For this exploration, please pay special attention to: {directive}",
+    "e2": "For this recombination, please pay special attention to: {directive}",
+    "m1": "For this mutation, please pay special attention to: {directive}",
+    "m2": "When adjusting parameters, please pay special attention to: {directive}",
+    "m3": "When simplifying, please pay special attention to: {directive}",
+}
 REGIME_LINES = {
-    "exploration": (
-        "Try to explore a significantly different approach compared to conventional solutions."
-    ),
-    "exploitation": (
-        "Focus on refining and optimizing the most effective patterns in optimization algorithms."
-    ),
-    "balanced": "Strike a balance between novel ideas and proven effective techniques.",
+    "i1": {
+        "exploration": "Try to explore a significantly different approach compared to conventional solutions.",
+        "exploitation": "Focus on refining and optimizing the most effective patterns in optimization algorithms.",
+        "balanced": "Strike a balance between novel ideas and proven effective techniques.",
+    },
+    "e1": {
+        "exploration": "Try to explore a significantly different approach from both the provided algorithms and conventional solutions.",
+        "exploitation": "Focus on combining the strengths from the provided algorithms while addressing their limitations.",
+        "balanced": "Create a balanced algorithm that introduces some novel ideas while building on proven patterns from the examples.",
+    },
+    "e2": {
+        "exploration": "Extend the backbone idea in a novel direction that differs from the provided algorithms.",
+        "exploitation": "Refine and optimize the backbone idea to create a more effective implementation.",
+        "balanced": "Balance between preserving the effective aspects of the backbone while introducing some novel improvements.",
+    },
+    "m1": {
+        "exploration": "Introduce significant modifications to create a distinctly different variant.",
+        "exploitation": "Focus on refining and optimizing the algorithm while preserving its core structure.",
+        "balanced": "Modify key components of the algorithm while preserving its effective aspects.",
+    },
+    "m2": {
+        "exploration": "Try significantly different parameter values or even a completely different parameterization scheme.",
+        "exploitation": "Fine-tune the parameters to optimize performance while keeping the same general structure.",
+        "balanced": "Modify some parameters substantially while making minor adjustments to others.",
+    },
+    "m3": {
+        "exploration": "Consider more radical simplifications that may lead to novel but robust approaches.",
+        "exploitation": "Focus on precise, targeted simplifications of components that are likely overfit.",
+        "balanced": "Find a balance between simplification and preserving the algorithm's proven strengths.",
+    },
 }
 
 # ---------------------------------------------------------------------------
@@ -176,14 +210,17 @@ class HiFoPromptModule(CoordinationModule):
         insights = self.insight_pool.get_tips(k=self.tips_per_prompt, strategy=self.tip_strategy)
 
         # Assemble the three suffix blocks exactly as hifo_evolution.py appends
-        # them to its operator prompts (insights, directive, regime line)
+        # them to its operator prompts (insights, directive, regime line), using
+        # the drawn operator's own wording (Decision #51; i1 = legacy analog).
+        op_key = ctx.operator if ctx.operator in DIRECTIVE_TEMPLATES else "i1"
         parts: List[str] = []
         if insights:
             parts.append(INSIGHTS_PREFIX + "\n" + "\n".join(f"- {tip}" for tip in insights))
         if directive:
-            parts.append(DIRECTIVE_TEMPLATE.format(directive=directive))
-        if regime in REGIME_LINES:
-            parts.append(REGIME_LINES[regime])
+            parts.append(DIRECTIVE_TEMPLATES[op_key].format(directive=directive))
+        regime_lines = REGIME_LINES[op_key]
+        if regime in regime_lines:
+            parts.append(regime_lines[regime])
 
         return Advice(
             prompt_block="\n".join(parts),
