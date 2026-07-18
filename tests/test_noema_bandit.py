@@ -25,6 +25,7 @@ from noema.config import (
     BudgetConfig,
     CoordinationConfig,
     LLMClientConfig,
+    LLMRolesConfig,
     NoemaConfig,
 )
 from noema.coordination import build_coordination_module
@@ -81,7 +82,10 @@ def make_bandit_config(**overrides):
         evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30, max_retries=0),
         budget=BudgetConfig(total_tokens=1_000_000),
         coordination=CoordinationConfig(module="bandit"),
-        llm=LLMClientConfig(api_key="none"),
+        llm=LLMRolesConfig(
+            mutation=LLMClientConfig(api_key="none"),
+            coordination=LLMClientConfig(api_key="none"),
+        ),
     )
     defaults.update(overrides)
     return NoemaConfig(**defaults)
