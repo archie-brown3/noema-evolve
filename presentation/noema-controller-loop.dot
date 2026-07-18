@@ -1,0 +1,470 @@
+digraph NoemaControllerLoop {
+  graph [
+    layout=neato,
+    bgcolor="#FFFFFF",
+    fontname="DejaVu Sans",
+    outputorder=edgesfirst,
+    splines=true,
+    overlap=true,
+    notranslate=true,
+    margin=0,
+    pad=0.12
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fixedsize=true,
+    pin=true,
+    fontname="DejaVu Sans",
+    fontsize=10,
+    color="#CBD5E1",
+    fillcolor="#FFFFFF",
+    fontcolor="#0F172A",
+    penwidth=1.4,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    fontname="DejaVu Sans",
+    fontsize=8.5,
+    color="#334155",
+    fontcolor="#334155",
+    arrowsize=0.72,
+    penwidth=1.5
+  ];
+
+  title [
+    pos="576,660!",
+    shape=plain,
+    width=13.5,
+    height=0.45,
+    label=<
+      <FONT POINT-SIZE="22"><B>Noema: coordination around a fixed evolutionary loop</B></FONT><BR/>
+      <FONT POINT-SIZE="10" COLOR="#475569">The controller owns the process. Coordination and substrate behaviour enter through explicit interfaces.</FONT>
+    >
+  ];
+
+  modules_frame [
+    pos="576,555!",
+    shape=box,
+    width=15.35,
+    height=1.52,
+    color="#E8B64F",
+    fillcolor="#FFFFFF",
+    style="rounded",
+    penwidth=1.4,
+    label=""
+  ];
+
+  modules_heading [
+    pos="576,602!",
+    shape=plain,
+    width=8.0,
+    height=0.25,
+    label=<
+      <FONT POINT-SIZE="11"><B>COORDINATION ARMS</B> — one implementation is selected per run</FONT>
+    >
+  ];
+
+  null_arm [
+    pos="145,550!",
+    width=2.35,
+    height=0.82,
+    color="#94A3B8",
+    fillcolor="#F8FAFC",
+    label=<
+      <FONT POINT-SIZE="14"><B>Null</B></FONT><BR/>
+      <FONT POINT-SIZE="9" COLOR="#64748B">ACTIVE HOOKS: none</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">same loop · no intervention</FONT>
+    >
+  ];
+
+  hifo_arm [
+    pos="420,550!",
+    width=2.95,
+    height=0.82,
+    color="#3B82F6",
+    fillcolor="#EFF6FF",
+    label=<
+      <FONT POINT-SIZE="14"><B>HiFo</B></FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#1D4ED8">ADVISE · RESULT · PERIODIC</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">prompt insights · tip credit · extraction</FONT>
+    >
+  ];
+
+  pes_arm [
+    pos="715,550!",
+    width=3.25,
+    height=0.82,
+    color="#8B5CF6",
+    fillcolor="#F5F3FF",
+    label=<
+      <FONT POINT-SIZE="14"><B>PES</B></FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#6D28D9">ADVISE · RETRY · RESULT · PERIODIC</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">plan/direct prompt · guided retry · reflection</FONT>
+    >
+  ];
+
+  bandit_arm [
+    pos="1010,550!",
+    width=3.05,
+    height=0.82,
+    color="#D97706",
+    fillcolor="#FFF7ED",
+    label=<
+      <FONT POINT-SIZE="14"><B>Bandit</B></FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#B45309">PRE-REQUEST · RESULT</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">operator request · UCB update · zero coord LLM calls</FONT>
+    >
+  ];
+
+  coordination [
+    pos="576,450!",
+    shape=Mrecord,
+    width=14.45,
+    height=0.88,
+    color="#D97706",
+    fillcolor="#FFF7ED",
+    fontcolor="#7C2D12",
+    penwidth=1.8,
+    fontsize=9,
+    label="{CoordinationModule interface — immutable contexts in; inactive hooks are no-ops; no mutable store access|{<pre> sampling_request()|<advice> advise()|<retry> retry_advice()|<tick> on_generation_end()|<result> report_result()}}"
+  ];
+
+  null_arm:s -> coordination:n [
+    color="#CBD5E1",
+    style=dashed,
+    arrowhead=none,
+    penwidth=1.1
+  ];
+  hifo_arm:s -> coordination:n [
+    color="#93C5FD",
+    style=dashed,
+    arrowhead=none,
+    penwidth=1.1
+  ];
+  pes_arm:s -> coordination:n [
+    color="#C4B5FD",
+    style=dashed,
+    arrowhead=none,
+    penwidth=1.1
+  ];
+  bandit_arm:s -> coordination:n [
+    color="#FDBA74",
+    style=dashed,
+    arrowhead=none,
+    penwidth=1.1
+  ];
+
+  controller_frame [
+    pos="576,294!",
+    shape=box,
+    width=15.35,
+    height=2.34,
+    color="#94A3B8",
+    fillcolor="#FFFFFF",
+    style="rounded",
+    penwidth=1.5,
+    label=""
+  ];
+
+  controller_heading [
+    pos="576,365!",
+    shape=plain,
+    width=7.0,
+    height=0.25,
+    label=<
+      <FONT POINT-SIZE="11"><B>NoemaController</B> — fixed sequential loop</FONT>
+    >
+  ];
+
+  select_stage [
+    pos="145,305!",
+    width=2.35,
+    height=1.06,
+    color="#315B8A",
+    fillcolor="#FFFFFF",
+    penwidth=1.8,
+    label=<
+      <FONT POINT-SIZE="8" COLOR="#64748B">1</FONT><BR/>
+      <FONT POINT-SIZE="12"><B>SELECT</B></FONT><BR/>
+      <FONT POINT-SIZE="9">parent + inspirations</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#0F766E">substrate performs selection</FONT>
+    >
+  ];
+
+  prompt_stage [
+    pos="420,305!",
+    width=2.55,
+    height=1.06,
+    color="#315B8A",
+    fillcolor="#FFFFFF",
+    penwidth=1.8,
+    label=<
+      <FONT POINT-SIZE="8" COLOR="#64748B">2</FONT><BR/>
+      <FONT POINT-SIZE="12"><B>BUILD PROMPT</B></FONT><BR/>
+      <FONT POINT-SIZE="9">shared template + Advice</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#64748B">PES directive mode may replace it</FONT>
+    >
+  ];
+
+  evolve_stage [
+    pos="705,305!",
+    width=2.85,
+    height=1.06,
+    color="#315B8A",
+    fillcolor="#FFFFFF",
+    penwidth=1.8,
+    label=<
+      <FONT POINT-SIZE="8" COLOR="#64748B">3</FONT><BR/>
+      <FONT POINT-SIZE="12"><B>GENERATE + EVALUATE</B></FONT><BR/>
+      <FONT POINT-SIZE="9">metered mutation · parse · evaluate</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#64748B">retry on configured failure condition</FONT>
+    >
+  ];
+
+  update_stage [
+    pos="1005,305!",
+    width=2.70,
+    height=1.06,
+    color="#315B8A",
+    fillcolor="#FFFFFF",
+    penwidth=1.8,
+    label=<
+      <FONT POINT-SIZE="8" COLOR="#64748B">4</FONT><BR/>
+      <FONT POINT-SIZE="12"><B>UPDATE STATE</B></FONT><BR/>
+      <FONT POINT-SIZE="9">policy feedback · store accepted child</FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#64748B">report one final Outcome</FONT>
+    >
+  ];
+
+  select_stage:e -> prompt_stage:w [
+    color="#315B8A",
+    penwidth=2.5,
+    arrowsize=0.82
+  ];
+  prompt_stage:e -> evolve_stage:w [
+    color="#315B8A",
+    penwidth=2.5,
+    arrowsize=0.82
+  ];
+  evolve_stage:e -> update_stage:w [
+    color="#315B8A",
+    penwidth=2.5,
+    arrowsize=0.82
+  ];
+
+  retry_point [
+    pos="815,255!",
+    shape=point,
+    width=0.01,
+    height=0.01,
+    style=invis,
+    label=""
+  ];
+  evolve_stage:s -> retry_point [
+    color="#64748B",
+    arrowhead=none,
+    penwidth=1.2
+  ];
+  retry_point -> evolve_stage:e [
+    color="#64748B",
+    fontcolor="#64748B",
+    label="failure → retry",
+    penwidth=1.2
+  ];
+
+  loop_right [
+    pos="1005,220!",
+    shape=point,
+    width=0.01,
+    height=0.01,
+    style=invis,
+    label=""
+  ];
+  loop_tick [
+    pos="845,220!",
+    shape=plain,
+    width=2.65,
+    height=0.34,
+    label=<
+      <FONT POINT-SIZE="9" COLOR="#315B8A"><B>↺ NEXT ITERATION</B></FONT><BR/>
+      <FONT POINT-SIZE="7.5" COLOR="#64748B">periodic boundary</FONT>
+    >
+  ];
+  loop_left [
+    pos="145,220!",
+    shape=point,
+    width=0.01,
+    height=0.01,
+    style=invis,
+    label=""
+  ];
+
+  update_stage:s -> loop_right [
+    color="#315B8A",
+    arrowhead=none,
+    penwidth=2.1
+  ];
+  loop_right -> loop_tick:e [
+    color="#315B8A",
+    arrowhead=none,
+    penwidth=2.1
+  ];
+  loop_tick:w -> loop_left [
+    color="#315B8A",
+    arrowhead=none,
+    penwidth=2.1
+  ];
+  loop_left -> select_stage:s [
+    color="#315B8A",
+    penwidth=2.1,
+    arrowsize=0.8
+  ];
+
+  coordination:pre:s -> select_stage:n [
+    color="#D97706",
+    fontcolor="#9A3412",
+    style=dashed,
+    penwidth=1.9,
+    label="before selection"
+  ];
+  coordination:advice:s -> prompt_stage:n [
+    color="#D97706",
+    fontcolor="#9A3412",
+    style=dashed,
+    penwidth=1.9,
+    label="Advice"
+  ];
+  coordination:retry:s -> evolve_stage:n [
+    color="#D97706",
+    fontcolor="#9A3412",
+    style=dashed,
+    penwidth=1.9,
+    label="retry guidance"
+  ];
+  update_stage:n -> coordination:result:s [
+    color="#D97706",
+    fontcolor="#9A3412",
+    style=dashed,
+    penwidth=1.9,
+    label="child + Outcome"
+  ];
+  loop_tick:n -> coordination:tick:s [
+    color="#D97706",
+    fontcolor="#9A3412",
+    style=dashed,
+    penwidth=1.9,
+    label="periodic callback"
+  ];
+
+  substrate_frame [
+    pos="576,112!",
+    shape=box,
+    width=15.35,
+    height=1.56,
+    color="#5FB8AD",
+    fillcolor="#FFFFFF",
+    style="rounded",
+    penwidth=1.5,
+    label=""
+  ];
+
+  substrate_heading [
+    pos="576,160!",
+    shape=plain,
+    width=8.0,
+    height=0.25,
+    label=<
+      <FONT POINT-SIZE="11"><B>Search substrate</B> — candidate selection and population state</FONT>
+    >
+  ];
+
+  runtime [
+    pos="576,132!",
+    shape=Mrecord,
+    width=13.55,
+    height=0.46,
+    color="#0F766E",
+    fillcolor="#CCFBF1",
+    fontcolor="#115E59",
+    penwidth=1.5,
+    fontsize=8.5,
+    label="{<select> select(hints)|SubstrateRuntime — composes policy + store|<lifecycle> accepted / rejected}"
+  ];
+
+  policy [
+    pos="400,83!",
+    width=3.00,
+    height=0.62,
+    color="#0F766E",
+    fillcolor="#F0FDFA",
+    label=<
+      <FONT POINT-SIZE="11"><B>SelectionPolicy</B></FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">chooses parent + inspirations · owns policy state</FONT>
+    >
+  ];
+
+  store [
+    pos="780,83!",
+    width=3.00,
+    height=0.62,
+    color="#0F766E",
+    fillcolor="#F0FDFA",
+    label=<
+      <FONT POINT-SIZE="11"><B>PopulationStore</B></FONT><BR/>
+      <FONT POINT-SIZE="8" COLOR="#475569">topology · snapshots · insertion · cadence · persistence</FONT>
+    >
+  ];
+
+  select_stage:s -> runtime:select:n [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.8,
+    label="select(policy hints)"
+  ];
+  update_stage:s -> runtime:lifecycle:n [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.8,
+    label="policy feedback"
+  ];
+  update_stage:s -> store:n [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.6,
+    label="add accepted child"
+  ];
+  runtime:s -> policy:n [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.4,
+    label="delegates"
+  ];
+  runtime:s -> store:n [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.4,
+    label="configured store"
+  ];
+  policy:e -> store:w [
+    color="#0F766E",
+    fontcolor="#0F766E",
+    penwidth=1.3,
+    label="queries candidates"
+  ];
+
+  sampling_note [
+    pos="576,24!",
+    width=15.0,
+    height=0.48,
+    color="#E8B64F",
+    fillcolor="#FFFBEB",
+    penwidth=1.2,
+    label=<
+      <FONT POINT-SIZE="9"><B>sampling_request() does not sample candidates.</B></FONT>
+      <FONT POINT-SIZE="8" COLOR="#475569"> The controller routes <B>operator</B> to its operator path and forwards other hints to the runtime. Current Bandit emits operator only; Null, HiFo and PES emit an empty request. Parent selection remains SelectionPolicy's job.</FONT>
+    >
+  ];
+}

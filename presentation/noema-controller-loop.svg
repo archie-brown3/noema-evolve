@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Noema coordination interfaces around the fixed controller loop</title>
+  <desc id="desc">A process diagram showing four coordination arms, five CoordinationModule entry points, the four-stage NoemaController loop, and the SubstrateRuntime composition of SelectionPolicy and PopulationStore.</desc>
+
+  <defs>
+    <marker id="arrow-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#315B8A"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97706"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0F766E"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "DejaVu Sans", Arial, sans-serif; fill: #0F172A; }
+      .muted { fill: #64748B; }
+      .navy { fill: #315B8A; }
+      .orange { fill: #9A3412; }
+      .teal { fill: #0F766E; }
+      .small { font-size: 15px; }
+      .body { font-size: 17px; }
+      .label { font-size: 18px; font-weight: 650; }
+      .stage { font-size: 23px; font-weight: 750; letter-spacing: 0.3px; }
+      .arm { font-size: 27px; font-weight: 760; }
+      .section { font-size: 19px; font-weight: 750; letter-spacing: 0.6px; }
+      .coord-line { fill: none; stroke: #D97706; stroke-width: 3; stroke-dasharray: 10 9; }
+      .nav-line { fill: none; stroke: #315B8A; stroke-width: 5; }
+      .substrate-line { fill: none; stroke: #0F766E; stroke-width: 3.5; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="960" y="53" text-anchor="middle" font-size="35" font-weight="780">Noema: coordination around a fixed evolutionary loop</text>
+  <text x="960" y="84" text-anchor="middle" font-size="17" class="muted">The controller owns the process; coordination and substrate behaviour enter through explicit interfaces.</text>
+
+  <!-- Coordination arms -->
+  <rect x="70" y="112" width="1780" height="176" rx="26" fill="#FFFBF2" stroke="#E8B64F" stroke-width="2.5"/>
+  <text x="960" y="143" text-anchor="middle" class="section">COORDINATION ARMS <tspan font-weight="400">— one implementation is selected per run</tspan></text>
+
+  <rect x="105" y="163" width="350" height="102" rx="20" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="280" y="199" text-anchor="middle" class="arm">Null</text>
+  <text x="280" y="226" text-anchor="middle" font-size="15" class="muted">ACTIVE HOOKS: none</text>
+  <text x="280" y="249" text-anchor="middle" class="small muted">same loop · no intervention</text>
+
+  <rect x="505" y="163" width="365" height="102" rx="20" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2.5"/>
+  <text x="687.5" y="199" text-anchor="middle" class="arm">HiFo</text>
+  <text x="687.5" y="226" text-anchor="middle" font-size="14.5" fill="#1D4ED8">ADVISE · RESULT · PERIODIC</text>
+  <text x="687.5" y="249" text-anchor="middle" class="small muted">prompt insights · tip credit · extraction</text>
+
+  <rect x="920" y="163" width="410" height="102" rx="20" fill="#F5F3FF" stroke="#8B5CF6" stroke-width="2.5"/>
+  <text x="1125" y="199" text-anchor="middle" class="arm">PES</text>
+  <text x="1125" y="226" text-anchor="middle" font-size="14.5" fill="#6D28D9">ADVISE · RETRY · RESULT · PERIODIC</text>
+  <text x="1125" y="249" text-anchor="middle" class="small muted">plan/direct prompt · guided retry · reflection</text>
+
+  <rect x="1380" y="163" width="435" height="102" rx="20" fill="#FFF7ED" stroke="#D97706" stroke-width="2.5"/>
+  <text x="1597.5" y="199" text-anchor="middle" class="arm">Bandit</text>
+  <text x="1597.5" y="226" text-anchor="middle" font-size="14.5" fill="#B45309">PRE-REQUEST · RESULT</text>
+  <text x="1597.5" y="249" text-anchor="middle" class="small muted">operator request · UCB update · zero coordination LLM calls</text>
+
+  <!-- Arm-to-interface connections -->
+  <path d="M280 265 L300 315" stroke="#CBD5E1" stroke-width="2.5" stroke-dasharray="8 8" fill="none"/>
+  <path d="M687.5 265 L660 315" stroke="#93C5FD" stroke-width="2.5" stroke-dasharray="8 8" fill="none"/>
+  <path d="M1125 265 L1050 315" stroke="#C4B5FD" stroke-width="2.5" stroke-dasharray="8 8" fill="none"/>
+  <path d="M1597.5 265 L1595 315" stroke="#FDBA74" stroke-width="2.5" stroke-dasharray="8 8" fill="none"/>
+
+  <!-- CoordinationModule interface rail -->
+  <rect x="120" y="315" width="1680" height="105" rx="20" fill="#FFF7ED" stroke="#D97706" stroke-width="3"/>
+  <line x1="120" y1="363" x2="1800" y2="363" stroke="#D97706" stroke-width="2.5"/>
+  <line x1="480" y1="363" x2="480" y2="420" stroke="#D97706" stroke-width="2"/>
+  <line x1="840" y1="363" x2="840" y2="420" stroke="#D97706" stroke-width="2"/>
+  <line x1="1260" y1="363" x2="1260" y2="420" stroke="#D97706" stroke-width="2"/>
+  <line x1="1390" y1="363" x2="1390" y2="420" stroke="#D97706" stroke-width="2"/>
+  <text x="960" y="346" text-anchor="middle" font-size="18" fill="#7C2D12">
+    <tspan font-weight="750">CoordinationModule interface</tspan>
+    <tspan font-weight="400"> — immutable contexts in · inactive hooks are no-ops · no mutable store access</tspan>
+  </text>
+
+  <text x="300" y="388" text-anchor="middle" class="label orange">sampling_request()</text>
+  <text x="300" y="408" text-anchor="middle" font-size="13" class="orange">optional pre-selection request</text>
+  <text x="660" y="388" text-anchor="middle" class="label orange">advise()</text>
+  <text x="660" y="408" text-anchor="middle" font-size="13" class="orange">prompt / system guidance</text>
+  <text x="1050" y="388" text-anchor="middle" class="label orange">retry_advice()</text>
+  <text x="1050" y="408" text-anchor="middle" font-size="13" class="orange">optional retry guidance</text>
+  <text x="1325" y="388" text-anchor="middle" font-size="16" font-weight="650" class="orange">on_generation_end()</text>
+  <text x="1325" y="408" text-anchor="middle" font-size="13" class="orange">periodic callback</text>
+  <text x="1595" y="388" text-anchor="middle" class="label orange">report_result()</text>
+  <text x="1595" y="408" text-anchor="middle" font-size="13" class="orange">credit assignment</text>
+
+  <!-- Controller frame -->
+  <rect x="70" y="445" width="1780" height="450" rx="28" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2.5"/>
+  <text x="960" y="479" text-anchor="middle" class="section">NoemaController <tspan font-weight="400">— fixed sequential loop</tspan></text>
+
+  <!-- Coordination entry points mapped onto stages -->
+  <path d="M300 420 L300 520" class="coord-line" marker-end="url(#arrow-orange)"/>
+  <text x="315" y="473" class="small orange">before selection</text>
+  <path d="M660 420 L660 520" class="coord-line" marker-end="url(#arrow-orange)"/>
+  <text x="675" y="473" class="small orange">Advice</text>
+  <path d="M1050 420 L1050 520" class="coord-line" marker-end="url(#arrow-orange)"/>
+  <text x="1065" y="473" class="small orange">retry guidance</text>
+  <path d="M1565 520 L1595 420" class="coord-line" marker-end="url(#arrow-orange)"/>
+  <text x="1460" y="473" class="small orange">child + Outcome</text>
+
+  <!-- Main process boxes -->
+  <rect x="160" y="520" width="280" height="130" rx="22" fill="#FFFFFF" stroke="#315B8A" stroke-width="3"/>
+  <text x="300" y="548" text-anchor="middle" font-size="14" class="muted">1</text>
+  <text x="300" y="580" text-anchor="middle" class="stage">SELECT</text>
+  <text x="300" y="608" text-anchor="middle" class="body">parent + inspirations</text>
+  <text x="300" y="632" text-anchor="middle" class="small teal">substrate performs selection</text>
+
+  <rect x="520" y="520" width="280" height="130" rx="22" fill="#FFFFFF" stroke="#315B8A" stroke-width="3"/>
+  <text x="660" y="548" text-anchor="middle" font-size="14" class="muted">2</text>
+  <text x="660" y="580" text-anchor="middle" class="stage">BUILD PROMPT</text>
+  <text x="660" y="608" text-anchor="middle" class="body">shared template + Advice</text>
+  <text x="660" y="632" text-anchor="middle" class="small muted">PES directive mode may replace it</text>
+
+  <rect x="880" y="520" width="340" height="130" rx="22" fill="#FFFFFF" stroke="#315B8A" stroke-width="3"/>
+  <text x="1050" y="548" text-anchor="middle" font-size="14" class="muted">3</text>
+  <text x="1050" y="580" text-anchor="middle" class="stage">GENERATE + EVALUATE</text>
+  <text x="1050" y="608" text-anchor="middle" class="body">metered mutation · parse · evaluate</text>
+  <text x="1050" y="632" text-anchor="middle" class="small muted">retry on configured failure condition</text>
+
+  <rect x="1400" y="520" width="330" height="130" rx="22" fill="#FFFFFF" stroke="#315B8A" stroke-width="3"/>
+  <text x="1565" y="548" text-anchor="middle" font-size="14" class="muted">4</text>
+  <text x="1565" y="580" text-anchor="middle" class="stage">UPDATE STATE</text>
+  <text x="1565" y="608" text-anchor="middle" class="body">policy feedback · store accepted child</text>
+  <text x="1565" y="632" text-anchor="middle" class="small muted">report one final Outcome</text>
+
+  <!-- Main process arrows -->
+  <path d="M440 585 L520 585" class="nav-line" marker-end="url(#arrow-navy)"/>
+  <path d="M800 585 L880 585" class="nav-line" marker-end="url(#arrow-navy)"/>
+  <path d="M1220 585 L1400 585" class="nav-line" marker-end="url(#arrow-navy)"/>
+
+  <!-- Retry loop -->
+  <path d="M1085 650 C1085 686 1232 686 1232 610 C1232 594 1226 585 1220 585" fill="none" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow-navy)"/>
+  <text x="1110" y="682" font-size="14" class="muted">failure → retry</text>
+
+  <!-- Substrate inset -->
+  <rect x="180" y="700" width="1560" height="145" rx="22" fill="#F0FDFA" stroke="#5FB8AD" stroke-width="2.5"/>
+  <text x="960" y="727" text-anchor="middle" class="section">Search substrate <tspan font-weight="400">— candidate selection and population state</tspan></text>
+
+  <rect x="230" y="740" width="1460" height="40" rx="12" fill="#CCFBF1" stroke="#0F766E" stroke-width="2.5"/>
+  <line x1="480" y1="740" x2="480" y2="780" stroke="#0F766E" stroke-width="2"/>
+  <line x1="1440" y1="740" x2="1440" y2="780" stroke="#0F766E" stroke-width="2"/>
+  <text x="355" y="766" text-anchor="middle" font-size="15" class="teal">select(hints)</text>
+  <text x="960" y="766" text-anchor="middle" font-size="17" font-weight="700" class="teal">SubstrateRuntime — composes policy + store</text>
+  <text x="1565" y="766" text-anchor="middle" font-size="15" class="teal">accepted / rejected</text>
+
+  <rect x="390" y="795" width="460" height="38" rx="12" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.2"/>
+  <text x="620" y="820" text-anchor="middle" font-size="17" font-weight="700">SelectionPolicy <tspan font-size="14" font-weight="400" class="muted">— chooses candidates</tspan></text>
+
+  <rect x="1100" y="795" width="480" height="38" rx="12" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.2"/>
+  <text x="1340" y="820" text-anchor="middle" font-size="17" font-weight="700">PopulationStore <tspan font-size="14" font-weight="400" class="muted">— topology + snapshots + insertion</tspan></text>
+
+  <!-- Controller-to-substrate interactions -->
+  <path d="M300 650 L355 740" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <text x="315" y="690" class="small teal">select(policy hints)</text>
+  <path d="M1565 650 L1565 740" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <text x="1580" y="695" class="small teal">policy feedback</text>
+  <path d="M1660 650 L1760 650 L1760 814 L1580 814" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <text x="1595" y="790" class="small teal">add accepted child</text>
+
+  <!-- Runtime composition -->
+  <path d="M760 780 L690 795" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <path d="M1160 780 L1270 795" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <path d="M850 814 L1100 814" class="substrate-line" marker-end="url(#arrow-teal)"/>
+  <text x="975" y="805" text-anchor="middle" font-size="13" class="teal">queries population</text>
+
+  <!-- Iteration return path around the process and substrate -->
+  <path d="M1730 585 L1790 585 L1790 870 L130 870 L130 585 L160 585" class="nav-line" marker-end="url(#arrow-navy)"/>
+  <rect x="810" y="851" width="300" height="36" rx="16" fill="#F8FAFC"/>
+  <text x="960" y="875" text-anchor="middle" font-size="17" font-weight="750" class="navy">↺ NEXT ITERATION</text>
+
+  <!-- Periodic hook mapped to the return boundary -->
+  <path d="M1790 760 L1760 675 L1325 675 L1325 420" class="coord-line" marker-end="url(#arrow-orange)"/>
+  <text x="1470" y="668" class="small orange">periodic callback every steps_per_generation</text>
+
+  <!-- Accuracy callout -->
+  <rect x="120" y="925" width="1680" height="95" rx="22" fill="#FFFBEB" stroke="#E8B64F" stroke-width="2.2"/>
+  <text x="960" y="958" text-anchor="middle" font-size="18">
+    <tspan font-weight="760">sampling_request() does not sample candidates.</tspan>
+    <tspan class="muted"> The controller partitions its hints:</tspan>
+  </text>
+  <text x="960" y="987" text-anchor="middle" font-size="16" class="muted">
+    <tspan font-weight="700">operator</tspan><tspan> → controller operator path; other hints → SubstrateRuntime. Current Bandit emits operator only; Null, HiFo and PES emit empty requests.</tspan>
+  </text>
+  <text x="960" y="1011" text-anchor="middle" font-size="16" font-weight="650" class="teal">Parent and inspiration selection always remains SelectionPolicy’s responsibility.</text>
+</svg>

@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title description">
+  <title id="title">Noema controller loop and CoordinationModule entry points</title>
+  <desc id="description">A sparse process diagram. The controller has one dominant evolutionary loop. A CoordinationModule connects at five exact points. Within the controller, a configured search substrate contains SubstrateRuntime, SelectionPolicy, and PopulationStore.</desc>
+
+  <defs>
+    <marker id="navy-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#284F7D"/>
+    </marker>
+    <marker id="orange-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#D97706"/>
+    </marker>
+    <marker id="teal-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0F766E"/>
+    </marker>
+    <style>
+      text { font-family: Aptos, Inter, "Segoe UI", Arial, sans-serif; fill: #10243E; }
+      .muted { fill: #64748B; }
+      .navy { fill: #284F7D; }
+      .orange { fill: #A94B08; }
+      .teal { fill: #0F766E; }
+      .title { font-size: 40px; font-weight: 800; }
+      .subtitle { font-size: 21px; }
+      .section { font-size: 23px; font-weight: 800; letter-spacing: .4px; }
+      .hook { font-size: 20px; font-weight: 780; }
+      .hook-detail { font-size: 18px; }
+      .stage { font-size: 23px; font-weight: 800; letter-spacing: .2px; }
+      .body { font-size: 20px; font-weight: 600; }
+      .detail { font-size: 18px; }
+      .label { font-size: 18px; font-weight: 760; }
+      .controller-line { fill: none; stroke: #284F7D; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      .coord-line { fill: none; stroke: #D97706; stroke-width: 3.5; stroke-dasharray: 10 9; stroke-linecap: round; stroke-linejoin: round; }
+      .substrate-line { fill: none; stroke: #0F766E; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#FFFFFF"/>
+
+  <!-- Heading -->
+  <text x="960" y="58" text-anchor="middle" class="title">Noema controller loop: coordination entry points</text>
+  <text x="960" y="90" text-anchor="middle" class="subtitle muted">The controller owns one fixed evolutionary loop; coordination enters only through explicit interface hooks.</text>
+
+  <!-- Single coordination interface, deliberately thin so it does not compete with the loop. -->
+  <rect x="100" y="120" width="1720" height="145" rx="25" fill="#FFFBF3" stroke="#E5A33A" stroke-width="2.5"/>
+  <text x="960" y="158" text-anchor="middle" class="section orange">CoordinationModule</text>
+  <text x="960" y="185" text-anchor="middle" class="detail muted">A run plugs in one implementation; each hook may be active or a no-op.</text>
+
+  <g>
+    <rect x="180" y="204" width="240" height="43" rx="14" fill="#FFF7ED" stroke="#D97706" stroke-width="2.3"/>
+    <text x="300" y="224" text-anchor="middle" class="hook orange">sampling_request()</text>
+    <text x="300" y="243" text-anchor="middle" class="hook-detail orange">pre-selection hints</text>
+
+    <rect x="570" y="204" width="240" height="43" rx="14" fill="#FFF7ED" stroke="#D97706" stroke-width="2.3"/>
+    <text x="690" y="224" text-anchor="middle" class="hook orange">advise()</text>
+    <text x="690" y="243" text-anchor="middle" class="hook-detail orange">prompt guidance</text>
+
+    <rect x="980" y="204" width="240" height="43" rx="14" fill="#FFF7ED" stroke="#D97706" stroke-width="2.3"/>
+    <text x="1100" y="224" text-anchor="middle" class="hook orange">retry_advice()</text>
+    <text x="1100" y="243" text-anchor="middle" class="hook-detail orange">only after failure</text>
+
+    <rect x="1365" y="204" width="240" height="43" rx="14" fill="#FFF7ED" stroke="#D97706" stroke-width="2.3"/>
+    <text x="1485" y="224" text-anchor="middle" class="hook orange">report_result()</text>
+    <text x="1485" y="243" text-anchor="middle" class="hook-detail orange">child + Outcome</text>
+
+    <rect x="1635" y="204" width="180" height="43" rx="14" fill="#FFF7ED" stroke="#D97706" stroke-width="2.3"/>
+    <text x="1725" y="224" text-anchor="middle" textLength="160" lengthAdjust="spacingAndGlyphs" font-size="18" font-weight="780" class="orange">on_generation_end()</text>
+    <text x="1725" y="243" text-anchor="middle" class="hook-detail orange">generation tick</text>
+  </g>
+
+  <!-- Hook entry points. Down arrows return a request/guidance; up arrows are controller callbacks. -->
+  <path d="M300 247 V397" class="coord-line" marker-end="url(#orange-arrow)"/>
+  <text x="320" y="370" class="label orange">before selection</text>
+  <path d="M690 247 V397" class="coord-line" marker-end="url(#orange-arrow)"/>
+  <text x="710" y="370" class="label orange">Advice</text>
+  <path d="M1100 247 V397" class="coord-line" marker-end="url(#orange-arrow)"/>
+  <text x="1120" y="370" class="label orange">retry path</text>
+  <path d="M1510 405 L1485 247" class="coord-line" marker-end="url(#orange-arrow)"/>
+  <text x="1530" y="370" class="label orange">final result</text>
+
+  <!-- A clear label plate prevents hook connectors from running through the controller title. -->
+  <rect x="620" y="313" width="680" height="40" rx="20" fill="#FFFFFF"/>
+  <text x="960" y="340" text-anchor="middle" class="section navy">NoemaController <tspan font-weight="500">— fixed sequential evolutionary loop</tspan></text>
+
+  <!-- Main iteration: reading order is left-to-right. -->
+  <g>
+    <rect x="160" y="405" width="280" height="130" rx="22" fill="#FFFFFF" stroke="#284F7D" stroke-width="3"/>
+    <text x="300" y="455" text-anchor="middle" class="stage">SELECT</text>
+    <text x="300" y="490" text-anchor="middle" class="body">parent + inspirations</text>
+    <text x="300" y="518" text-anchor="middle" class="detail teal">runtime.select(hints)</text>
+
+    <rect x="540" y="405" width="300" height="130" rx="22" fill="#FFFFFF" stroke="#284F7D" stroke-width="3"/>
+    <text x="690" y="455" text-anchor="middle" class="stage">BUILD PROMPT</text>
+    <text x="690" y="490" text-anchor="middle" class="body">shared prompt + Advice</text>
+    <text x="690" y="518" text-anchor="middle" class="detail muted">prompt identity is fixed</text>
+
+    <rect x="930" y="405" width="340" height="130" rx="22" fill="#FFFFFF" stroke="#284F7D" stroke-width="3"/>
+    <text x="1100" y="455" text-anchor="middle" class="stage">GENERATE + EVALUATE</text>
+    <text x="1100" y="490" text-anchor="middle" class="body">mutation LLM</text>
+    <text x="1100" y="518" text-anchor="middle" class="detail muted">parse → evaluate</text>
+
+    <rect x="1360" y="405" width="300" height="130" rx="22" fill="#FFFFFF" stroke="#284F7D" stroke-width="3"/>
+    <text x="1510" y="455" text-anchor="middle" class="stage">UPDATE STATE</text>
+    <text x="1510" y="490" text-anchor="middle" class="body">policy feedback</text>
+    <text x="1510" y="518" text-anchor="middle" class="detail muted">accepted child</text>
+  </g>
+
+  <path d="M440 470 H540" class="controller-line" marker-end="url(#navy-arrow)"/>
+  <path d="M840 470 H930" class="controller-line" marker-end="url(#navy-arrow)"/>
+  <path d="M1270 470 H1360" class="controller-line" marker-end="url(#navy-arrow)"/>
+
+  <!-- The one dominant cycle encloses the substrate; it is visibly separate from every teal relationship. -->
+  <path d="M1660 470 H1700 C1716 470 1725 482 1725 498 V900 C1725 920 1715 930 1695 930 H180 C160 930 150 920 150 900 V500 C150 482 151 474 151 470" class="controller-line" marker-end="url(#navy-arrow)"/>
+  <text x="930" y="962" text-anchor="middle" class="label navy">↺ next iteration</text>
+
+  <!-- on_generation_end is a callback at the marked point on the return leg, never a terminal node. -->
+  <rect x="1470" y="550" width="200" height="54" rx="18" fill="#FFFFFF" stroke="#E5A33A" stroke-width="2.2"/>
+  <text x="1570" y="573" text-anchor="middle" class="label orange">generation boundary</text>
+  <text x="1570" y="594" text-anchor="middle" class="detail orange">per substrate cadence</text>
+  <path d="M1670 578 H1725 V253" class="coord-line" marker-end="url(#orange-arrow)"/>
+
+  <!-- The substrate is a contained implementation detail: compact, centred, and clearly distinct from coordination. -->
+  <rect x="260" y="630" width="1400" height="270" rx="25" fill="#F0FDFA" stroke="#55AFA5" stroke-width="2.5"/>
+  <text x="960" y="667" text-anchor="middle" class="section teal">Configured search substrate</text>
+  <text x="960" y="693" text-anchor="middle" class="detail muted">configured independently of the coordination module</text>
+
+  <!-- Short controller/substrate calls: all run inside the controller boundary and do not cross the primary loop. -->
+  <path d="M780 710 V610 H300 V535" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <text x="585" y="590" text-anchor="middle" class="label teal">Selection returned</text>
+
+  <path d="M1442 535 V610 H1140 V710" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <text x="1285" y="590" text-anchor="middle" class="label teal">accepted / rejected</text>
+
+  <path d="M1660 535 H1685 V755 H1460 V800" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <text x="1540" y="738" text-anchor="middle" class="label teal">add accepted child</text>
+  <circle cx="780" cy="630" r="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="3"/>
+  <circle cx="1140" cy="630" r="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="3"/>
+  <circle cx="1660" cy="755" r="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="3"/>
+
+  <!-- Runtime composition. -->
+  <rect x="750" y="710" width="420" height="70" rx="20" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.8"/>
+  <text x="960" y="743" text-anchor="middle" class="stage teal">SubstrateRuntime</text>
+  <text x="960" y="767" text-anchor="middle" class="detail muted">routes selection + lifecycle feedback</text>
+
+  <rect x="400" y="800" width="340" height="70" rx="20" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.8"/>
+  <text x="570" y="833" text-anchor="middle" class="stage teal">SelectionPolicy</text>
+  <text x="570" y="857" text-anchor="middle" class="detail muted">chooses parent + inspirations</text>
+
+  <rect x="1220" y="800" width="340" height="70" rx="20" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.8"/>
+  <text x="1390" y="833" text-anchor="middle" class="stage teal">PopulationStore</text>
+  <text x="1390" y="857" text-anchor="middle" class="detail muted">topology + persistence</text>
+
+  <path d="M820 780 L720 800" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <path d="M1100 780 L1220 800" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <path d="M740 835 H1220" class="substrate-line" marker-end="url(#teal-arrow)"/>
+  <text x="980" y="892" text-anchor="middle" class="detail teal">candidate query</text>
+</svg>
