@@ -13,10 +13,13 @@ import asyncio
 import logging
 import os
 
+from dataclasses import replace
+
 from noema.config import (
     BudgetConfig,
     CoordinationConfig,
     LLMClientConfig,
+    LLMRolesConfig,
     NoemaConfig,
 )
 from noema.controller import NoemaController
@@ -48,6 +51,8 @@ def main():
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
+    # Defaults to --model, i.e. one model for both seats, as before.
+    ap.add_argument("--coordination-model", default=None)
     ap.add_argument("--iterations", type=int, default=50)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--budget-tokens", type=int, default=1_000_000)  # From STUDY.md
@@ -57,6 +62,16 @@ def main():
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
+
+    mutation_llm = LLMClientConfig(
+        model=args.model,
+        api_base=args.api_base,
+        api_key="none",
+        temperature=0.7,
+        top_p=0.95,
+        max_tokens=4096,
+        timeout=300,
+    )
 
     config = NoemaConfig(
         max_iterations=args.iterations,
@@ -83,14 +98,11 @@ def main():
             system_message=SYSTEM_MESSAGE,
         ),
         budget=BudgetConfig(total_tokens=args.budget_tokens),
-        llm=LLMClientConfig(
-            model=args.model,
-            api_base=args.api_base,
-            api_key="none",
-            temperature=0.7,
-            top_p=0.95,
-            max_tokens=4096,
-            timeout=300,
+        llm=LLMRolesConfig(
+            mutation=mutation_llm,
+            coordination=replace(
+                mutation_llm, model=args.coordination_model or args.model
+            ),
         ),
         coordination=CoordinationConfig(module=args.arm),
     )

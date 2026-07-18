@@ -136,38 +136,38 @@ class NoemaController:
         self.mutation_operator_rng = random.Random(config.mutation_operator_seed)
 
         self.mutation_llm = mutation_llm or BudgetedLLM(
-            model=config.llm.model,
+            model=config.llm.mutation.model,
             ledger=self.ledger,
             account=MUTATION_ACCOUNT,
             tag="mutate",
-            api_base=config.llm.api_base,
-            api_key=config.llm.api_key,
-            temperature=config.llm.temperature,
-            top_p=config.llm.top_p,
-            max_tokens=config.llm.max_tokens,
-            seed=config.llm.seed,
-            timeout=config.llm.timeout,
-            retries=config.llm.retries,
-            retry_delay=config.llm.retry_delay,
+            api_base=config.llm.mutation.api_base,
+            api_key=config.llm.mutation.api_key,
+            temperature=config.llm.mutation.temperature,
+            top_p=config.llm.mutation.top_p,
+            max_tokens=config.llm.mutation.max_tokens,
+            seed=config.llm.mutation.seed,
+            timeout=config.llm.mutation.timeout,
+            retries=config.llm.mutation.retries,
+            retry_delay=config.llm.mutation.retry_delay,
         )
 
         if coordination is not None:
             self.coordination = coordination
         else:
             coordination_llm = BudgetedLLM(
-                model=config.llm.model,
+                model=config.llm.coordination.model,
                 ledger=self.ledger,
                 account=COORDINATION_ACCOUNT,
                 tag=f"{config.coordination.module}.coordination",
-                api_base=config.llm.api_base,
-                api_key=config.llm.api_key,
-                temperature=config.llm.temperature,
-                top_p=config.llm.top_p,
-                max_tokens=config.llm.max_tokens,
-                seed=config.llm.seed,
-                timeout=config.llm.timeout,
-                retries=config.llm.retries,
-                retry_delay=config.llm.retry_delay,
+                api_base=config.llm.coordination.api_base,
+                api_key=config.llm.coordination.api_key,
+                temperature=config.llm.coordination.temperature,
+                top_p=config.llm.coordination.top_p,
+                max_tokens=config.llm.coordination.max_tokens,
+                seed=config.llm.coordination.seed,
+                timeout=config.llm.coordination.timeout,
+                retries=config.llm.coordination.retries,
+                retry_delay=config.llm.coordination.retry_delay,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a

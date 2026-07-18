@@ -57,6 +57,21 @@ class LLMClientConfig:
 
 
 @dataclass
+class LLMRolesConfig:
+    """Per-seat model selection.
+
+    The two seats are budgeted separately already (MUTATION_ACCOUNT /
+    COORDINATION_ACCOUNT); this lets them differ in model too, so a run can
+    spend its fixed token pool asymmetrically — cheap high-volume mutation,
+    expensive low-volume coordination. Both roles default to the same settings,
+    so a single-model config behaves exactly as it did before the split.
+    """
+
+    mutation: LLMClientConfig = field(default_factory=LLMClientConfig)
+    coordination: LLMClientConfig = field(default_factory=LLMClientConfig)
+
+
+@dataclass
 class CoordinationConfig:
     """Which coordination module runs, and its mechanism-specific parameters"""
 
@@ -132,7 +147,7 @@ class NoemaConfig:
 
     # noema-owned configs
     budget: BudgetConfig = field(default_factory=BudgetConfig)
-    llm: LLMClientConfig = field(default_factory=LLMClientConfig)
+    llm: LLMRolesConfig = field(default_factory=LLMRolesConfig)
     coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
     substrate: SubstrateConfig = field(default_factory=SubstrateConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
@@ -223,7 +238,7 @@ class NoemaConfig:
     # is openevolve's contract, not noema's to police.
     _VALIDATED_SECTIONS = {
         "budget": BudgetConfig,
-        "llm": LLMClientConfig,
+        "llm": LLMRolesConfig,
         "coordination": CoordinationConfig,
         "substrate": SubstrateConfig,
         "selection": SelectionConfig,
@@ -260,9 +275,52 @@ class NoemaConfig:
                         f"unknown key(s) in config section '{name}': {sorted(bad)}. "
                         f"Known keys: {sorted(known)}"
                     )
+        # `llm` nests a whole LLMClientConfig per role, so the loop above only
+        # checks the role names. Typos inside a role would otherwise slip past
+        # the very check this method exists for. _normalise_llm_section has
+        # already run, so both roles are present as dicts.
+        llm = data.get("llm")
+        if isinstance(llm, dict):
+            known = {f.name for f in dataclasses.fields(LLMClientConfig)}
+            for role in ("mutation", "coordination"):
+                bad = set(llm.get(role) or {}) - known
+                if bad:
+                    raise ValueError(
+                        f"unknown key(s) in config section 'llm.{role}': "
+                        f"{sorted(bad)}. Known keys: {sorted(known)}"
+                    )
+
+    @staticmethod
+    def _normalise_llm_section(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Accept both LLM config shapes, lifting the flat one to per-role.
+
+        Flat (`llm: {model: X, ...}`) gives both roles X — the pre-split
+        behaviour, kept working indefinitely so existing configs and the frozen
+        run configs under runs/ stay loadable for checkpoint resume.
+        Per-role (`llm: {mutation: {...}, coordination: {...}}`) passes through.
+        """
+        llm = data.get("llm")
+        if not isinstance(llm, dict):
+            return data
+        roles = {"mutation", "coordination"}
+        named = roles & llm.keys()
+        if not named:
+            # Two independent copies: dacite must build two LLMClientConfigs,
+            # not one object aliased into both seats.
+            return {**data, "llm": {"mutation": llm, "coordination": dict(llm)}}
+        if len(named) == 1:
+            missing = (roles - named).pop()
+            raise ValueError(
+                f"config section 'llm' names {named.pop()!r} but not {missing!r}; "
+                f"a per-role llm config must set both. Otherwise {missing!r} "
+                f"silently falls back to the default model, which in a study "
+                f"where arms differ in one setting invalidates the comparison."
+            )
+        return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "NoemaConfig":
+        data = cls._normalise_llm_section(data)
         cls._reject_unknown_keys(data)
         return dacite.from_dict(
             data_class=cls,
