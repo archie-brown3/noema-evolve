@@ -251,6 +251,45 @@ class TestControllerEndToEnd(unittest.TestCase):
             self.assertIsNotNone(best)  # run ended cleanly with a result
             self.assertEqual(controller.start_iteration, 2)
 
+    def test_fatal_provider_error_stops_cleanly_with_checkpoint(self):
+        # 0103 scope addition: the 2026-07-17 temp-0.7 sweep died on OpenRouter
+        # 402s as raw unhandled tracebacks between checkpoints, discarding
+        # progress. A fatal status must stop run() cleanly instead, same as
+        # BudgetExhausted does.
+        class FatalAfterTwoClient:
+            def __init__(self):
+                self.calls = []
+                self._counter = 0
+
+                async def create(**params):
+                    self.calls.append(params)
+                    self._counter += 1
+                    if self._counter == 3:
+                        err = RuntimeError("insufficient credits")
+                        err.status_code = 402
+                        raise err
+                    content = f"```python\ndef f():\n    return {self._counter + 1}\n```"
+                    return SimpleNamespace(
+                        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                        usage=SimpleNamespace(prompt_tokens=100, completion_tokens=40),
+                    )
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client = FatalAfterTwoClient()
+            controller, ledger, _ = make_controller(
+                tmp, config=make_config(checkpoint_interval=1), client=client
+            )
+
+            best = asyncio.run(controller.run())  # must NOT raise
+
+            self.assertEqual(len(client.calls), 3)
+            self.assertEqual(controller.start_iteration, 2)  # stopped before iteration 2
+            self.assertIsNotNone(best)  # the two prior children are still there
+            checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_1")
+            self.assertTrue(os.path.exists(checkpoint))
+
     def test_checkpoint_resume_continues(self):
         with tempfile.TemporaryDirectory() as tmp:
             controller, ledger, client = make_controller(tmp)
