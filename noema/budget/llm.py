@@ -23,6 +23,24 @@ from noema.budget.ledger import CallRecord, TokenLedger
 
 logger = logging.getLogger(__name__)
 
+# task 0103: provider status codes that retrying cannot fix (auth/quota, not a
+# transient failure) — burning the full retry budget on a 402 just delays the
+# same outcome. Fail fast so the controller can stop the run cleanly instead
+# of retrying into a wall and then raising an unhandled traceback mid-loop.
+FATAL_STATUS_CODES = frozenset({401, 402, 403})
+
+
+class FatalProviderError(Exception):
+    """A provider error retrying cannot fix (401/402/403). Not retried."""
+
+    def __init__(self, status_code: int, tag: str, original: Exception):
+        self.status_code = status_code
+        self.tag = tag
+        self.original = original
+        super().__init__(
+            f"Fatal provider error (status {status_code}) on '{tag}': {original}"
+        )
+
 
 class BudgetedLLM(LLMInterface):
     """
@@ -43,6 +61,9 @@ class BudgetedLLM(LLMInterface):
         temperature / top_p / max_tokens / seed: Default generation parameters,
             overridable per call via kwargs.
         retries / retry_delay: noema-level retry policy.
+        total_deadline_s: Wall-clock cap on generate_with_context's WHOLE retry
+            loop (all attempts combined). On expiry: warn, charge nothing, return
+            "" (existing NO_PROGRAM path) — never estimate (task 0055).
         client: Injectable pre-built client (used by tests); must expose
             `chat.completions.create(**params)` as an awaitable.
     """
@@ -62,6 +83,7 @@ class BudgetedLLM(LLMInterface):
         timeout: Optional[float] = 60.0,
         retries: int = 3,
         retry_delay: float = 5.0,
+        total_deadline_s: float = 600.0,
         client=None,
     ):
         self.model = model
@@ -73,6 +95,7 @@ class BudgetedLLM(LLMInterface):
         self.max_tokens = max_tokens
         self.seed = seed
         self.timeout = timeout
+        self.total_deadline_s = total_deadline_s
         # Guard against retries < 0 (task 0056 item 2): the retry loop is
         # `range(retries + 1)`, so retries == -1 makes it empty — the call is
         # never issued and the method would fall through to `raise
@@ -111,12 +134,33 @@ class BudgetedLLM(LLMInterface):
         self, system_message: str, messages: List[Dict[str, str]], **kwargs
     ) -> str:
         """
-        Make a metered chat-completions call.
+        Make a metered chat-completions call, bounded by total_deadline_s.
 
         Raises BudgetExhausted (from ledger.ensure) before issuing a request once
         the account's budget is used up. The response that crosses the cap is still
-        returned and charged; the next call raises.
+        returned and charged; the next call raises. Raises FatalProviderError on a
+        401/402/403 (not retried). On total-deadline expiry: warns, charges
+        nothing, returns "" (existing NO_PROGRAM path) — never estimates (0055).
         """
+        total_deadline = kwargs.get("total_deadline_s", self.total_deadline_s)
+        start = time.time()
+        try:
+            return await asyncio.wait_for(
+                self._generate_with_context_inner(system_message, messages, **kwargs),
+                timeout=total_deadline,
+            )
+        except asyncio.TimeoutError:
+            tag = kwargs.get("tag", self.tag)
+            logger.warning(
+                f"Total deadline ({total_deadline}s) exceeded for {self.account}/{tag} "
+                f"after {time.time() - start:.1f}s elapsed. Charging nothing; treating "
+                "as no-program (task 0103)."
+            )
+            return ""
+
+    async def _generate_with_context_inner(
+        self, system_message: str, messages: List[Dict[str, str]], **kwargs
+    ) -> str:
         formatted_messages = []
         if system_message:
             formatted_messages.append({"role": "system", "content": system_message})
@@ -148,6 +192,12 @@ class BudgetedLLM(LLMInterface):
             try:
                 response = await self.client.chat.completions.create(**params)
             except Exception as e:
+                status_code = getattr(e, "status_code", None)
+                if status_code in FATAL_STATUS_CODES:
+                    # Not retryable — a 401/402/403 on attempt 1 is still a
+                    # 401/402/403 on attempt N. Fail immediately rather than
+                    # burn the whole retry budget before raising anyway.
+                    raise FatalProviderError(status_code, tag, e) from e
                 last_exception = e
                 if attempt < retries:
                     logger.warning(
