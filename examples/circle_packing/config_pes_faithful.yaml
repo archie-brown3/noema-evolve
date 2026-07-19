@@ -6,10 +6,16 @@
 # (live runs are launched by the user, see spec/LIVE-RUNS.md).
 #
 # Pair this against config_pes_custom.yaml: the ONLY field that may differ
-# between the two is coordination.module (verify-run invariant) — with the
-# exception of the retry_on/retry_cap pair below, which is this arm's declared
-# substrate default (Decision #28) and is recorded in the ticket rather than
-# treated as an incidental config delta.
+# between the two is coordination.module (verify-run invariant) — with two
+# declared exceptions, both recorded in their tickets rather than treated as
+# incidental config deltas:
+#   1. retry_on/retry_cap below — this arm's declared substrate default
+#      (Decision #28), mirroring LoongFlow's max_rounds=3.
+#   2. evaluator.timeout below (task 0105) — directive mode is a full-program
+#      rewrite; a faithful plan may legitimately propose a heavier numerical
+#      approach than a SEARCH/REPLACE diff would, and 60s isn't enough
+#      headroom (a manually-reconstructed program from the fidelity
+#      investigation needed 84s even with hand-reduced optimizer parameters).
 
 max_iterations: 50
 checkpoint_interval: 5
@@ -58,7 +64,9 @@ database:
 
 evaluator:
   cascade_evaluation: false
-  timeout: 60
+  # task 0105, declared exception #2 above. 3x headroom over the one proof
+  # point on record (84s); revisit with real shakedown data.
+  timeout: 180
 
 prompt:
   use_template_stochasticity: false
