@@ -13,12 +13,29 @@ keeping only the evolve-block interior from the child, or rejects the
 mutation outright if the block structure itself was destroyed.
 """
 
-from typing import Optional
+import re
+from typing import List, Optional
 
 from openevolve.utils.code_utils import parse_evolve_blocks
 
+_IMPORT_LINE = re.compile(r"^\s*(?:import\s+\S|from\s+\S+\s+import\s+)")
 
-def enforce_immutable_boundary(parent_code: str, child_code: str) -> Optional[str]:
+
+def _new_import_lines(parent_head: List[str], child_head: List[str]) -> List[str]:
+    """Top-level import lines present in child_head but not parent_head, in
+    child order, deduplicated. Line-based (not ast-based): matches this
+    module's existing text-splicing style and needs no new dependency."""
+    parent_imports = {line for line in parent_head if _IMPORT_LINE.match(line)}
+    new_imports: List[str] = []
+    for line in child_head:
+        if _IMPORT_LINE.match(line) and line not in parent_imports and line not in new_imports:
+            new_imports.append(line)
+    return new_imports
+
+
+def enforce_immutable_boundary(
+    parent_code: str, child_code: str, *, merge_new_imports: bool = False
+) -> Optional[str]:
     """
     Return child_code with F_imm (everything outside the evolve block)
     restored to be byte-identical to parent_code. A no-op if parent_code
@@ -26,6 +43,16 @@ def enforce_immutable_boundary(parent_code: str, child_code: str) -> Optional[st
     opt-in per program). Returns None if the parent declares exactly one
     evolve block but the child doesn't match it, since F_mut can't be
     safely isolated in that case (the mutation is rejected).
+
+    merge_new_imports: when True, top-level import lines the child added to
+    its preamble (before EVOLVE-BLOCK-START) that aren't already in the
+    parent's preamble are kept, prepended to the restored F_imm head. For
+    full-program rewrites (PES-faithful directive mode), the child's evolve-
+    block strategy code may depend on a library the parent's F_imm never
+    imported; without this, the import is silently stripped and the evolve
+    block crashes with NameError at evaluation time. Entry point and helper
+    functions are still restored byte-identical to the parent — only new
+    import lines pass through.
     """
     parent_blocks = parse_evolve_blocks(parent_code)
     if not parent_blocks:
@@ -38,11 +65,11 @@ def enforce_immutable_boundary(parent_code: str, child_code: str) -> Optional[st
     parent_lines = parent_code.split("\n")
     child_lines = child_code.split("\n")
     p_start, p_end, _ = parent_blocks[0]
-    _, _, child_block_content = child_blocks[0]
+    c_start, _, child_block_content = child_blocks[0]
 
-    restored_lines = (
-        parent_lines[: p_start + 1]
-        + child_block_content.split("\n")
-        + parent_lines[p_end:]
-    )
+    head = parent_lines[: p_start + 1]
+    if merge_new_imports:
+        head = _new_import_lines(head, child_lines[: c_start + 1]) + head
+
+    restored_lines = head + child_block_content.split("\n") + parent_lines[p_end:]
     return "\n".join(restored_lines)
