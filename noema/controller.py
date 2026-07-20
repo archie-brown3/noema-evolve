@@ -39,7 +39,7 @@ from noema.budget.ledger import (
     BudgetExhausted,
     TokenLedger,
 )
-from noema.budget.llm import BudgetedLLM
+from noema.budget.llm import BudgetedLLM, FatalProviderError
 from noema.config import NoemaConfig
 from noema.coordination import (
     CoordinationModule,
@@ -149,6 +149,7 @@ class NoemaController:
             timeout=config.llm.mutation.timeout,
             retries=config.llm.mutation.retries,
             retry_delay=config.llm.mutation.retry_delay,
+            total_deadline_s=config.llm.mutation.total_deadline_s,
         )
 
         if coordination is not None:
@@ -168,6 +169,7 @@ class NoemaController:
                 timeout=config.llm.coordination.timeout,
                 retries=config.llm.coordination.retries,
                 retry_delay=config.llm.coordination.retry_delay,
+                total_deadline_s=config.llm.coordination.total_deadline_s,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
@@ -242,6 +244,14 @@ class NoemaController:
                         await self._generation_tick(iteration)
                 except BudgetExhausted as e:
                     logger.info(f"Stopping at iteration {iteration}: {e}")
+                    break
+                except FatalProviderError as e:
+                    # 0103 scope addition: the 2026-07-17 temp-0.7 sweep died on
+                    # OpenRouter 402s as raw unhandled tracebacks between
+                    # checkpoints, discarding up to checkpoint_interval-1
+                    # iterations of progress each time. Stop cleanly instead —
+                    # the checkpoint below preserves everything up to here.
+                    logger.error(f"Stopping at iteration {iteration}: {e}")
                     break
 
                 if next_iteration % self.config.checkpoint_interval == 0:
