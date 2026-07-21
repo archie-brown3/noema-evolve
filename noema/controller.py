@@ -715,7 +715,9 @@ class NoemaController:
             inspirations=[],
             global_scope=True,
         )
-        await self.coordination.on_generation_end(ctx)  # coordination hook 3
+        intervention = await self.coordination.on_generation_end(ctx)  # coordination hook 3
+        if intervention is not None and intervention.proposals:
+            await self._apply_intervention(intervention, iteration)
         self.db.end_generation()
 
         self.generation_log.append(
@@ -732,6 +734,42 @@ class NoemaController:
                 "operator_selection": dict(self._last_operator_trace),
             }
         )
+
+    async def _apply_intervention(self, intervention, iteration: int) -> None:
+        """Evaluate and insert a coordination module's proposed programs (task 0109).
+
+        The module authored these via its own coordination-account LLM calls
+        (already metered); the host evaluates and inserts them through the same
+        path as ordinary children, so nothing bypasses metering or the store.
+        Evaluation runs the code and costs no tokens, so the equal-token basis is
+        unchanged. A proposal that fails evaluation is dropped, not inserted.
+        """
+        for i, proposal in enumerate(intervention.proposals):
+            child_id = f"it{iteration:06d}-pe{i:03d}"
+            metrics = await self.evaluator.evaluate_program(proposal.code, child_id)
+            artifacts = self.evaluator.get_pending_artifacts(child_id)
+            if (not metrics) or ("error" in metrics):
+                logger.warning(
+                    f"Iteration {iteration}: coordination proposal {child_id} "
+                    f"({proposal.origin}) failed evaluation; dropped"
+                )
+                continue
+            child = Program(
+                id=child_id,
+                code=proposal.code,
+                language=self.config.language,
+                parent_id=proposal.parent_id,
+                generation=self.generation,
+                metrics=metrics,
+                iteration_found=iteration,
+                metadata={
+                    "origin": proposal.origin,
+                    "coordination_proposed": True,
+                },
+            )
+            self.db.add(child, iteration=iteration)
+            if artifacts:
+                self.db.store_artifacts(child_id, artifacts)
 
     def _update_histories(self) -> None:
         best = self.db.best_program()
