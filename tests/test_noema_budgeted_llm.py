@@ -134,6 +134,31 @@ class TestBudgetedLLM(unittest.TestCase):
         self.assertEqual(params["seed"], 42)
         self.assertNotIn("top_p", params)  # unset params are omitted
 
+    def test_model_kwarg_overrides_call_and_charged_record(self):
+        # Task 0107: per-call model override (e.g. coordination-driven
+        # escalation). The client sees the override; the ledger's CallRecord
+        # reflects the model actually called, not the client's configured one.
+        client = FakeClient([fake_response()])
+        llm, ledger = self._llm(client)
+        asyncio.run(
+            llm.generate_with_context(
+                "s", [{"role": "user", "content": "u"}], model="strong-model"
+            )
+        )
+        self.assertEqual(client.calls[0]["model"], "strong-model")
+        self.assertEqual(ledger.records[0].model, "strong-model")
+
+    def test_model_kwarg_none_is_unchanged_behaviour(self):
+        # A module that never escalates (or explicitly passes model=None) must
+        # be byte-for-byte identical to today's behaviour.
+        client = FakeClient([fake_response()])
+        llm, ledger = self._llm(client)
+        asyncio.run(
+            llm.generate_with_context("s", [{"role": "user", "content": "u"}], model=None)
+        )
+        self.assertEqual(client.calls[0]["model"], "test-model")
+        self.assertEqual(ledger.records[0].model, "test-model")
+
     def test_generate_wraps_prompt_as_user_message(self):
         client = FakeClient([fake_response()])
         llm, _ = self._llm(client)

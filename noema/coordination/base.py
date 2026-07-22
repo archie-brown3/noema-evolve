@@ -134,6 +134,16 @@ class Advice:
     # Opaque payload the host stores on the child program's metadata and hands
     # back in report_result (e.g. which insights were injected)
     attribution: Dict[str, Any] = field(default_factory=dict)
+    # Sanctioned addition #4 (signed off 2026-07-22, task 0107): the model name
+    # for THIS mutation call, or None to use the configured mutation model. The
+    # host passes it straight to BudgetedLLM as a per-call override — the module
+    # never talks to a client directly (metering stays host-owned). A module
+    # that never sets this is byte-for-byte unaffected (None = today's
+    # behaviour). The controller bootstraps `escalation_model` (today:
+    # `config.llm.coordination.model`, PR #46's frontier seat) into every
+    # module's construction params, so a module needs no separate config
+    # surface to know what "the strong model" is.
+    model: Optional[str] = None
 
 
 class CoordinationModule(ABC):
