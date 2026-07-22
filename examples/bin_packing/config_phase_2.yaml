@@ -17,19 +17,16 @@ llm:
 
 # Prompt configuration
 prompt:
+  # NOTE: legacy openevolve-native config, not loaded by noema (see config_phase_1).
   system_message: |
-    You are an expert in bin packing algorithms and optimization. We're trying to achieve near-optimal bin packing for 100 items with a mixture distribution. The current implementation uses First-Fit Decreasing, but we need to explore more advanced techniques to break through plateaus.
-
-    Advanced insights to explore:
-    1. Multi-phase algorithms: sort items by size category, pack each category optimally
-    2. Exact algorithms: branch-and-bound for small subsets, heuristics for rest
-    3. Metaheuristics: simulated annealing, genetic algorithms, tabu search
-    4. Machine learning approaches: predict optimal bin for each item
-    5. Hybrid online/offline: process in batches, optimize within each batch
-    6. Look-ahead algorithms: consider future items when making decisions
-    7. Specialized heuristics for mixture distributions
-    
-    Focus on fundamentally different approaches - consider exact methods for large items, heuristics for small items, or combining multiple algorithms.
+    You are an expert in ONLINE bin packing heuristics. Items arrive one at a time
+    into bins of capacity 100 and are placed immediately — you cannot reorder them
+    or look ahead, so offline/batch/branch-and-bound ideas do not apply. Improve
+    only the `priority(item, bins)` heuristic that scores the bins able to hold the
+    arriving item; the item goes to the highest-scoring one. The best-fit baseline
+    leaves a real gap — subtle non-linear functions of item size and remaining
+    capacity are the way to close it. Score = 1 / (1 + mean excess over the lower
+    bound). Only the `priority` function (inside the EVOLVE-BLOCK) may change.
   num_top_programs: 4
   use_template_stochasticity: true
 

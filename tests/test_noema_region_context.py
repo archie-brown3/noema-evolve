@@ -28,7 +28,7 @@ from openevolve.database import Program
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
-from noema.config import BudgetConfig, LLMClientConfig, NoemaConfig
+from noema.config import BudgetConfig, LLMClientConfig, LLMRolesConfig, NoemaConfig
 from noema.controller import NoemaController
 from noema.coordination import build_coordination_module
 from noema.coordination.base import GenerationContext, NullCoordination
@@ -237,7 +237,10 @@ class TestNoConcreteStoreCallbackReachesCoordination(unittest.TestCase):
                 f.write(EVAL_SCRIPT)
             config = NoemaConfig(
                 # the else-branch builds a real client object (no calls made)
-                llm=LLMClientConfig(api_key="test-key"),
+                llm=LLMRolesConfig(
+                    mutation=LLMClientConfig(api_key="test-key"),
+                    coordination=LLMClientConfig(api_key="test-key"),
+                ),
                 database=DatabaseConfig(
                     in_memory=True,
                     num_islands=2,

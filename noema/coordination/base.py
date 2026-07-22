@@ -60,6 +60,13 @@ class GenerationContext:
     best_fitness_history: tuple[float, ...]
     avg_fitness_history: tuple[float, ...]
     diversity_history: tuple[float, ...]
+    # The mutation operator the host drew for this offspring (a menu name like
+    # "e1"/"m2"), or None on the legacy no-menu path and at generation ticks.
+    # Sanctioned addition #2 (Decision #51): read-only metadata flowing
+    # selection -> prompt so a module can apply operator-specific prompt
+    # wording (HiFo's per-operator suffix variants). The REVERSE direction —
+    # a module steering operator selection — remains banned (Decision #49).
+    operator: Optional[str]
 
     def __init__(
         self,
@@ -73,6 +80,7 @@ class GenerationContext:
         best_fitness_history: Iterable[float] = (),
         avg_fitness_history: Iterable[float] = (),
         diversity_history: Iterable[float] = (),
+        operator: Optional[str] = None,
         # Compatibility inputs for pre-task-0074 fixtures. They are translated
         # immediately and are intentionally absent from dataclass fields.
         island: Any = None,
@@ -101,6 +109,7 @@ class GenerationContext:
         object.__setattr__(self, "best_fitness_history", tuple(best_fitness_history))
         object.__setattr__(self, "avg_fitness_history", tuple(avg_fitness_history))
         object.__setattr__(self, "diversity_history", tuple(diversity_history))
+        object.__setattr__(self, "operator", operator)
 
 @dataclass(frozen=True)
 class SelectionContext:

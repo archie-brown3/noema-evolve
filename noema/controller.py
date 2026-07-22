@@ -15,10 +15,12 @@ import os
 import random
 import re
 import time
+from dataclasses import asdict
 from dataclasses import replace as dataclass_replace
 from typing import Any, Dict, List, Optional, Tuple
 
 from openevolve.database import Program
+from openevolve.evolution_trace import EvolutionTracer
 from openevolve.utils.code_utils import (
     extract_diffs,
     format_diff_summary,
@@ -101,6 +103,14 @@ class NoemaController:
             account_caps=config.budget.account_caps,
             log_path=config.budget.log_path or os.path.join(output_dir, "llm_calls.jsonl"),
         )
+        self.evolution_tracer = EvolutionTracer(
+            output_path=os.path.join(output_dir, "evolution_trace.jsonl"),
+            format="jsonl",
+            include_code=False,
+            include_prompts=True,
+            enabled=True,
+            buffer_size=1,
+        )
 
         # Substrate (borrowed OpenEvolve components behind adapters).
         # Note: SubstrateDatabase construction seeds the GLOBAL random module
@@ -126,38 +136,38 @@ class NoemaController:
         self.mutation_operator_rng = random.Random(config.mutation_operator_seed)
 
         self.mutation_llm = mutation_llm or BudgetedLLM(
-            model=config.llm.model,
+            model=config.llm.mutation.model,
             ledger=self.ledger,
             account=MUTATION_ACCOUNT,
             tag="mutate",
-            api_base=config.llm.api_base,
-            api_key=config.llm.api_key,
-            temperature=config.llm.temperature,
-            top_p=config.llm.top_p,
-            max_tokens=config.llm.max_tokens,
-            seed=config.llm.seed,
-            timeout=config.llm.timeout,
-            retries=config.llm.retries,
-            retry_delay=config.llm.retry_delay,
+            api_base=config.llm.mutation.api_base,
+            api_key=config.llm.mutation.api_key,
+            temperature=config.llm.mutation.temperature,
+            top_p=config.llm.mutation.top_p,
+            max_tokens=config.llm.mutation.max_tokens,
+            seed=config.llm.mutation.seed,
+            timeout=config.llm.mutation.timeout,
+            retries=config.llm.mutation.retries,
+            retry_delay=config.llm.mutation.retry_delay,
         )
 
         if coordination is not None:
             self.coordination = coordination
         else:
             coordination_llm = BudgetedLLM(
-                model=config.llm.model,
+                model=config.llm.coordination.model,
                 ledger=self.ledger,
                 account=COORDINATION_ACCOUNT,
                 tag=f"{config.coordination.module}.coordination",
-                api_base=config.llm.api_base,
-                api_key=config.llm.api_key,
-                temperature=config.llm.temperature,
-                top_p=config.llm.top_p,
-                max_tokens=config.llm.max_tokens,
-                seed=config.llm.seed,
-                timeout=config.llm.timeout,
-                retries=config.llm.retries,
-                retry_delay=config.llm.retry_delay,
+                api_base=config.llm.coordination.api_base,
+                api_key=config.llm.coordination.api_key,
+                temperature=config.llm.coordination.temperature,
+                top_p=config.llm.coordination.top_p,
+                max_tokens=config.llm.coordination.max_tokens,
+                seed=config.llm.coordination.seed,
+                timeout=config.llm.coordination.timeout,
+                retries=config.llm.coordination.retries,
+                retry_delay=config.llm.coordination.retry_delay,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
@@ -214,33 +224,36 @@ class NoemaController:
 
     async def run(self, iterations: Optional[int] = None) -> Optional[Program]:
         """Run the evolution loop; returns the best program found"""
-        await self._ensure_initial_program()
+        try:
+            await self._ensure_initial_program()
 
-        max_iterations = iterations if iterations is not None else self.config.max_iterations
-        end_iteration = self.start_iteration + max_iterations
+            max_iterations = iterations if iterations is not None else self.config.max_iterations
+            end_iteration = self.start_iteration + max_iterations
 
-        next_iteration = self.start_iteration
-        for iteration in range(self.start_iteration, end_iteration):
-            try:
-                await self._run_iteration(iteration)
-                next_iteration = iteration + 1
+            next_iteration = self.start_iteration
+            for iteration in range(self.start_iteration, end_iteration):
+                try:
+                    await self._run_iteration(iteration)
+                    next_iteration = iteration + 1
 
-                # Coordination LLM calls in the generation tick may also
-                # exhaust the (shared) budget — stop cleanly either way
-                if next_iteration % self.substrate.steps_per_generation == 0:
-                    await self._generation_tick(iteration)
-            except BudgetExhausted as e:
-                logger.info(f"Stopping at iteration {iteration}: {e}")
-                break
+                    # Coordination LLM calls in the generation tick may also
+                    # exhaust the (shared) budget — stop cleanly either way
+                    if next_iteration % self.substrate.steps_per_generation == 0:
+                        await self._generation_tick(iteration)
+                except BudgetExhausted as e:
+                    logger.info(f"Stopping at iteration {iteration}: {e}")
+                    break
 
-            if next_iteration % self.config.checkpoint_interval == 0:
-                self.save_checkpoint(iteration)
+                if next_iteration % self.config.checkpoint_interval == 0:
+                    self.save_checkpoint(iteration)
 
-        completed_any = next_iteration > self.start_iteration
-        self.start_iteration = next_iteration
-        if completed_any:
-            self.save_checkpoint(next_iteration - 1)
-        return self.db.best_program()
+            completed_any = next_iteration > self.start_iteration
+            self.start_iteration = next_iteration
+            if completed_any:
+                self.save_checkpoint(next_iteration - 1)
+            return self.db.best_program()
+        finally:
+            self.evolution_tracer.close()
 
     async def _ensure_initial_program(self) -> None:
         if self.db.num_programs > 0:
@@ -355,7 +368,16 @@ class NoemaController:
             self.config.num_previous_programs, scope=parent_island
         )
 
-        ctx = self._make_context(iteration, parent_island, parent, inspirations)
+        ctx = self._make_context(
+            iteration,
+            parent_island,
+            parent,
+            inspirations,
+            # Decision #51: the drawn operator's name rides the context so a
+            # module can pick operator-specific prompt wording. The legacy
+            # no-menu path stays None (there is no EoH operator to name).
+            operator=operator.name if self.config.mutation_operators is not None else None,
+        )
         advice = await self.coordination.advise(ctx)  # coordination hook 1
 
         if advice.attribution.get("full_executor_prompt"):
@@ -464,6 +486,12 @@ class NoemaController:
 
             metrics = await self.evaluator.evaluate_program(child_code, child_id)
             artifacts = self.evaluator.get_pending_artifacts(child_id)
+            # "error" is a RESERVED key in the evaluator metrics contract: an
+            # evaluator signals failure by returning {"error": ...} (openevolve
+            # convention). A benchmark must not name a genuine score metric
+            # "error", or it would be misread as a failed evaluation (task 0056
+            # item 4 — documented rather than narrowed, since the convention is
+            # what every evaluator already relies on).
             eval_failed = (not metrics) or ("error" in metrics)
             if eval_failed:
                 # Applyable code that failed AT evaluation — distinct from a
@@ -546,6 +574,11 @@ class NoemaController:
             generation=parent.generation + 1,
             metrics=metrics,
             iteration_found=iteration,
+            # Decision #54 (hifo F1 class): the change summary is the program's
+            # one-sentence description — hifo's extraction prefers it over the
+            # truncated-code fallback, and openevolve's evolution-history
+            # rendering picks it up identically for every arm.
+            changes_description=changes_summary or "",
             metadata={
                 "changes": changes_summary,
                 "parent_metrics": parent.metrics,
@@ -582,6 +615,33 @@ class NoemaController:
             eval_failed=False,
             outcome=Outcome.ACCEPTED,
         )
+        self.evolution_tracer.log_trace(
+            iteration=iteration,
+            parent_program=parent,
+            child_program=child,
+            prompt=current_prompt,
+            llm_response=response,
+            artifacts=artifacts,
+            island_id=island,
+            metadata={
+                "changes": changes_summary,
+                "operator": operator.name,
+                "token_ledger": self._iteration_ledger_metadata(iteration),
+            },
+        )
+
+    def _iteration_ledger_metadata(self, iteration: int) -> Dict[str, Any]:
+        records = [r for r in self.ledger.records if r.iteration == iteration]
+        spent_by_account: Dict[str, int] = {}
+        for record in records:
+            spent_by_account[record.account] = (
+                spent_by_account.get(record.account, 0) + record.total_tokens
+            )
+        return {
+            "spent_by_account": spent_by_account,
+            "spent_total": sum(spent_by_account.values()),
+            "calls": [asdict(r) for r in records],
+        }
 
     def _build_retry_suffix(self, error_text: str, attempt: int) -> str:
         return (
@@ -696,14 +756,17 @@ class NoemaController:
         parent: Optional[Program],
         inspirations: List[Program],
         global_scope: bool = False,
+        operator: Optional[str] = None,
     ) -> GenerationContext:
         local_scope = None if global_scope else island
-        local_population = self.db.snapshot(
-            local_scope, limit=self.config.num_top_programs
-        )
-        global_population = self.db.snapshot(
-            None, limit=self.config.num_top_programs
-        )
+        # The generation tick is a population-scale event: modules that
+        # summarize the population (hifo's top-30% extraction slice, Decision
+        # #52 contract) need more than the prompt-sized num_top_programs view.
+        # Per-mutation contexts keep the narrow limit so mutation prompts are
+        # byte-unchanged.
+        limit = None if global_scope else self.config.num_top_programs
+        local_population = self.db.snapshot(local_scope, limit=limit)
+        global_population = self.db.snapshot(None, limit=limit)
         return GenerationContext(
             iteration=iteration,
             generation=self.generation,
@@ -715,6 +778,7 @@ class NoemaController:
             best_fitness_history=list(self.best_fitness_history),
             avg_fitness_history=list(self.avg_fitness_history),
             diversity_history=list(self.diversity_history),
+            operator=operator,
         )
 
     # ---------------------------------------------------------- checkpoints

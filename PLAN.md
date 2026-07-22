@@ -79,13 +79,14 @@ Pluggable behind `CoordinationModule` (`noema/coordination/base.py`). Four hooks
 
 Arms (registry keys, `noema/coordination/__init__.py`):
 - `null` — coordination-OFF, the control.
-- `hifo` — HiFo-Prompt's insight pool + navigator. **Implemented but NOT valid**
-  (task 0072): three fidelity defects — insight extraction is fed truncated code
-  because `changes_description` is never populated; the navigator cannot reach its
-  exploitation regime (fitness history updates per generation tick, but the
-  navigator is consulted per offspring, so its stagnation counter saturates even
-  under steady improvement); and its regime has no operator scheduler to govern.
-  **Excluded from results pending remediation.**
+- `hifo` — HiFo-Prompt's insight pool + navigator. **Faithful re-port complete**
+  (task 0101, Decisions #50-#54): the navigator keeps a per-offspring best-fitness
+  history (repairing the source's structurally non-functional regime detection —
+  documented as a finding, Decision #44/#50); extraction reads stamped
+  `changes_description` summaries at the source's cadence (p=0.8 per 5 offspring,
+  top-30% slice, >=3 gate) with per-operator suffix wording; regime is prompt
+  text ONLY (Decision #49 gate test). Deviations declared in the module
+  docstring against the vault's HiFo Fidelity Contract — 2026-07.
 - `pes-custom` — the LoongFlow-derived planner, noema's refinement (the
   contribution).
 - `pes-faithful` — the near-verbatim LoongFlow recast (reference arm / validity
@@ -99,8 +100,12 @@ Arms (registry keys, `noema/coordination/__init__.py`):
 
 Both modules carry a deviations list in their `module.py` docstrings:
 - HiFo: in-process credit assignment (released code lost feedback to joblib
-  subprocess copies), maximized-fitness convention. See the fidelity defects above
-  — the transplant is documented, but not currently faithful.
+  subprocess copies); maximized-fitness convention (mirrored formulas); repaired
+  navigator cadence (Decision #50); outcome-aware failure credit — infrastructure
+  failures skip tip updates, mirroring the source's live exception-path semantics
+  (Decision #53); per-tick->per-offspring extraction windows (Decision #52);
+  per-operator prompt-suffix variants via GenerationContext.operator (Decision
+  #51). Full element-by-element contract: HiFo Fidelity Contract — 2026-07 (vault).
 - PES: adapted from LoongFlow (Apache-2.0), async advise + delayed reflection.
 
 ## 3. Implementation
@@ -111,7 +116,13 @@ Both modules carry a deviations list in their `module.py` docstrings:
 `SamplingRequest`, `CoordinationModule` (ABC), `build_coordination_module(module_name)`.
 **Never modify without asking.**
 
-Task 0074 is the one sanctioned exception to date: it redesigned `GenerationContext`
+Sanctioned exceptions to date: task 0074, task 0090 (the `Outcome`
+discriminator), and Decision #51 (2026-07-17: optional read-only
+`GenerationContext.operator`, stamped by the host when the operator menu is on, so
+modules can apply operator-specific prompt wording; the reverse direction — modules
+steering operator selection — remains banned per Decision #49).
+
+Task 0074 was the first: it redesigned `GenerationContext`
 (`island` → `scope_id`, `island_fitnesses` → local/global `PopulationSnapshot`,
 lists → tuples) and removed `Advice.sampling_hint` in favour of the pre-selection
 `sampling_request` seam. Approved by the user; the law stands for everything else.

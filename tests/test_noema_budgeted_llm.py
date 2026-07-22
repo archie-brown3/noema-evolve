@@ -52,6 +52,13 @@ class TestBudgetedLLM(unittest.TestCase):
         )
         return llm, ledger
 
+    def test_negative_retries_rejected_at_construction(self):
+        # Task 0056 item 2: retries=-1 makes the retry loop empty, so the call
+        # would never issue and the method would `raise last_exception` with it
+        # still None (TypeError). Fail loud at construction instead.
+        with self.assertRaises(ValueError):
+            self._llm(FakeClient([]), retries=-1)
+
     def test_successful_call_charges_exact_usage(self):
         client = FakeClient([fake_response(prompt_tokens=123, completion_tokens=45)])
         llm, ledger = self._llm(client)

@@ -10,20 +10,30 @@ Mapping from the released HiFo-Prompt code (hifo_interface_EC.InterfaceEC glue):
 - on_generation_end() <- InterfaceEC.extract_insights_from_population (the
                          mechanism's only LLM call) + generation bookkeeping
 
-Documented deviations from the released code (PLAN.md section 2.2):
+Documented deviations from the released code (PLAN.md section 2.2; authorities in
+the vault's HiFo Fidelity Contract — 2026-07, Decisions #50-#54):
 1. Credit assignment actually works here. The original ran offspring generation
    in joblib subprocesses, so tip-stat updates mutated worker-local copies of
    the pool and were lost; noema runs the mechanism in-process.
 2. Fitness is MAXIMIZED (openevolve convention); the original minimized. The
    navigator takes maximize=True and the effectiveness formula is mirrored.
 3. The original's exception-path penalty (-0.8) was dead code (the offspring
-   dict it inspected had no metadata); the live failure semantics — evaluation
-   failure scores effectiveness -0.5 — are what report_result implements.
+   dict it inspected had no metadata). Its LIVE failure semantics were: an
+   exception anywhere in generate/evaluate -> tips receive no update at all;
+   an evaluated-but-None objective -> -0.5. report_result mirrors that via the
+   Outcome discriminator (Decision #53): NO_PROGRAM / EVAL_ERROR -> no update,
+   remaining failure classes -> failure_effectiveness.
 4. All magic numbers (pool size, k tips, extraction probability, ...) are
    config fields with the original values as defaults.
+5. The navigator reads a module-internal best-fitness history advanced once per
+   advise() from the global best (Decision #50, repairing the source's broken
+   read/write cadence — its shipped regime detection never functions: counters
+   are lost to joblib copies when parallel and fed an unchanged snapshot when
+   sequential). The source defect is documented as a finding, not reproduced.
 """
 
 import logging
+import math
 from typing import Any, Dict, List, Optional
 
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext, Outcome
@@ -35,18 +45,52 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # BORROWED prompt phrasing — copied from HiFo-Prompt
-# (hifo/src/hifo/methods/hifo/hifo_evolution.py, get_prompt_* suffix blocks)
+# (hifo/src/hifo/methods/hifo/hifo_evolution.py, get_prompt_* suffix blocks).
+# The source varies the directive lead-in and regime line PER OPERATOR
+# (get_prompt_i1/e1/e2/m1/m2/m3); the host stamps the drawn operator on the
+# context (Decision #51) and i1's task-generic set is the declared analog for
+# the legacy no-menu path, where none of the six operators exists.
 # ---------------------------------------------------------------------------
 INSIGHTS_PREFIX = "Consider these successful design principles I've observed recently:"
-DIRECTIVE_TEMPLATE = "For this task, please pay special attention to: {directive}"
+DIRECTIVE_TEMPLATES = {
+    "i1": "For this task, please pay special attention to: {directive}",
+    "e1": "For this exploration, please pay special attention to: {directive}",
+    "e2": "For this recombination, please pay special attention to: {directive}",
+    "m1": "For this mutation, please pay special attention to: {directive}",
+    "m2": "When adjusting parameters, please pay special attention to: {directive}",
+    "m3": "When simplifying, please pay special attention to: {directive}",
+}
 REGIME_LINES = {
-    "exploration": (
-        "Try to explore a significantly different approach compared to conventional solutions."
-    ),
-    "exploitation": (
-        "Focus on refining and optimizing the most effective patterns in optimization algorithms."
-    ),
-    "balanced": "Strike a balance between novel ideas and proven effective techniques.",
+    "i1": {
+        "exploration": "Try to explore a significantly different approach compared to conventional solutions.",
+        "exploitation": "Focus on refining and optimizing the most effective patterns in optimization algorithms.",
+        "balanced": "Strike a balance between novel ideas and proven effective techniques.",
+    },
+    "e1": {
+        "exploration": "Try to explore a significantly different approach from both the provided algorithms and conventional solutions.",
+        "exploitation": "Focus on combining the strengths from the provided algorithms while addressing their limitations.",
+        "balanced": "Create a balanced algorithm that introduces some novel ideas while building on proven patterns from the examples.",
+    },
+    "e2": {
+        "exploration": "Extend the backbone idea in a novel direction that differs from the provided algorithms.",
+        "exploitation": "Refine and optimize the backbone idea to create a more effective implementation.",
+        "balanced": "Balance between preserving the effective aspects of the backbone while introducing some novel improvements.",
+    },
+    "m1": {
+        "exploration": "Introduce significant modifications to create a distinctly different variant.",
+        "exploitation": "Focus on refining and optimizing the algorithm while preserving its core structure.",
+        "balanced": "Modify key components of the algorithm while preserving its effective aspects.",
+    },
+    "m2": {
+        "exploration": "Try significantly different parameter values or even a completely different parameterization scheme.",
+        "exploitation": "Fine-tune the parameters to optimize performance while keeping the same general structure.",
+        "balanced": "Modify some parameters substantially while making minor adjustments to others.",
+    },
+    "m3": {
+        "exploration": "Consider more radical simplifications that may lead to novel but robust approaches.",
+        "exploitation": "Focus on precise, targeted simplifications of components that are likely overfit.",
+        "balanced": "Find a balance between simplification and preserving the algorithm's proven strengths.",
+    },
 }
 
 # ---------------------------------------------------------------------------
@@ -87,11 +131,22 @@ class HiFoPromptModule(CoordinationModule):
         tips_per_prompt:          k tips injected per mutation (3)
         tip_strategy:             pool selection strategy ("adaptive")
         initial_tips:             seed tips (None = HiFo's defaults)
-        extraction_probability:   chance per generation tick of running the
+        extraction_probability:   chance per extraction roll of running the
                                   insight-extraction LLM call (0.8)
-        failure_effectiveness:    effectiveness for failed offspring (-0.5)
+        failure_effectiveness:    effectiveness for failed-but-evaluated
+                                  offspring (-0.5); infrastructure failures
+                                  (NO_PROGRAM/EVAL_ERROR) skip credit entirely
         max_code_chars:           code truncation for extraction prompts (1000/800)
         min_tip_length:           minimum accepted extracted-tip length (10)
+        nav_history_cap:          module-internal navigator best-history cap (50,
+                                  the source's history cap)
+        extraction_interval_offspring: offspring per extraction roll (5, the
+                                  source's per-operator-application cadence
+                                  translated per-offspring; None = per-tick)
+        extraction_min_population: minimum scope size for extraction (3)
+        extraction_top_fraction:  summarized slice of the scope (0.3)
+        extraction_input:         "thoughts" (source-faithful) or "thoughts+code"
+                                  (labeled variant, Decision #54)
     """
 
     def __init__(self, config=None, llm=None, rng=None):
@@ -103,6 +158,18 @@ class HiFoPromptModule(CoordinationModule):
         self.failure_effectiveness: float = cfg.get("failure_effectiveness", -0.5)
         self.max_code_chars: int = cfg.get("max_code_chars", 1000)
         self.min_tip_length: int = cfg.get("min_tip_length", 10)
+        # Decision #52: the source rolled p=0.8 once per operator-application
+        # (= once per pop_size offspring, default 5). Translated per-offspring so
+        # the cadence is substrate-independent. None = legacy per-tick single roll.
+        self.extraction_interval: Optional[int] = cfg.get("extraction_interval_offspring", 5)
+        # Source gates (hifo_interface_EC.py:298-303): >=3 individuals, top 30%.
+        self.extraction_min_population: int = cfg.get("extraction_min_population", 3)
+        self.extraction_top_fraction: float = cfg.get("extraction_top_fraction", 0.3)
+        # Decision #54: "thoughts" = source-faithful (description preferred, code
+        # fallback); "thoughts+code" = labeled variant sending both.
+        self.extraction_input: str = cfg.get("extraction_input", "thoughts")
+        self._offspring_seen: int = 0
+        self._extraction_cursor: int = 0
 
         self.insight_pool = InsightPool(
             max_size=cfg.get("pool_max_size", 30),
@@ -110,29 +177,50 @@ class HiFoPromptModule(CoordinationModule):
             rng=self.rng,
         )
         self.navigator = EvolutionaryNavigator(maximize=True, rng=self.rng)
+        # Decision #50: the navigator's own best-fitness history, advanced once
+        # per advise() (= per offspring) from the global best. The host's
+        # ctx.best_fitness_history only advances at the generation tick, so
+        # feeding it per-mutation made improvement==0 on every intra-tick call
+        # and the exploitation trigger unreachable — the same degeneracy the
+        # source exhibits (see docstring deviation 5). Cap = the source's 50.
+        self._nav_best_history: List[float] = []
+        self._nav_history_cap: int = cfg.get("nav_history_cap", 50)
 
     # ------------------------------------------------------------- advise
 
     async def advise(self, ctx: GenerationContext) -> Advice:
         # Same cadence as the original: guidance recomputed per offspring
         # (InterfaceEC._get_alg), tips drawn per offspring
+        self._offspring_seen += 1  # drives the Decision #52 extraction windows
         self.insight_pool.update_generation(ctx.generation)
+        # Decision #50: observe the global best per offspring so the navigator's
+        # read cadence matches its write cadence (avg/diversity remain the host
+        # tick histories — secondary regime modifiers; per-offspring diversity
+        # is ill-defined and was not part of the source defect).
+        best = ctx.global_population.best_program if ctx.global_population else None
+        if best is not None:
+            self._nav_best_history.append(best.fitness)
+            if len(self._nav_best_history) > self._nav_history_cap:
+                self._nav_best_history = self._nav_best_history[-self._nav_history_cap :]
         regime, directive = self.navigator.get_guidance(
-            best_fitness_history=ctx.best_fitness_history,
+            best_fitness_history=self._nav_best_history,
             avg_fitness_history=ctx.avg_fitness_history,
             diversity_history=ctx.diversity_history,
         )
         insights = self.insight_pool.get_tips(k=self.tips_per_prompt, strategy=self.tip_strategy)
 
         # Assemble the three suffix blocks exactly as hifo_evolution.py appends
-        # them to its operator prompts (insights, directive, regime line)
+        # them to its operator prompts (insights, directive, regime line), using
+        # the drawn operator's own wording (Decision #51; i1 = legacy analog).
+        op_key = ctx.operator if ctx.operator in DIRECTIVE_TEMPLATES else "i1"
         parts: List[str] = []
         if insights:
             parts.append(INSIGHTS_PREFIX + "\n" + "\n".join(f"- {tip}" for tip in insights))
         if directive:
-            parts.append(DIRECTIVE_TEMPLATE.format(directive=directive))
-        if regime in REGIME_LINES:
-            parts.append(REGIME_LINES[regime])
+            parts.append(DIRECTIVE_TEMPLATES[op_key].format(directive=directive))
+        regime_lines = REGIME_LINES[op_key]
+        if regime in regime_lines:
+            parts.append(regime_lines[regime])
 
         return Advice(
             prompt_block="\n".join(parts),
@@ -154,9 +242,15 @@ class HiFoPromptModule(CoordinationModule):
         *,
         outcome: Outcome = Outcome.ACCEPTED,
     ) -> None:
-        # `outcome` (task 0090) is accepted for contract conformance but not read:
-        # HiFo's credit assignment already collapses every failed outcome to the
-        # same effectiveness, so this arm is behaviour-identical with or without it.
+        # Decision #53: mirror the source's LIVE failure semantics. In the
+        # original, an exception anywhere in generate/evaluate meant tips got no
+        # credit update at all (the -0.8 penalty on that path was dead code);
+        # only an evaluated offspring — including one whose objective came back
+        # None — reached the effectiveness formula. NO_PROGRAM / EVAL_ERROR are
+        # exactly that exception class, so they skip credit entirely rather than
+        # punishing tips for infrastructure failures they did not cause.
+        if outcome in (Outcome.NO_PROGRAM, Outcome.EVAL_ERROR):
+            return
         insights = attribution.get("insights") or []
         if not insights:
             return
@@ -215,13 +309,37 @@ class HiFoPromptModule(CoordinationModule):
 
     async def on_generation_end(self, ctx: GenerationContext) -> None:
         self.insight_pool.update_generation(ctx.generation)
-        # Original: extraction runs with probability 0.8 per generation step
-        if self.rng.random() >= self.extraction_probability:
+        # Decision #52 cadence: one p=0.8 roll per completed
+        # extraction_interval_offspring window since the last tick (the source
+        # rolled once per operator-application, hifo_interface_EC.py:264). The
+        # LLM call itself stays confined to this hook — a tick may therefore
+        # run several extractions, matching the source's up-to-n_op per
+        # generation. None = legacy single roll per tick.
+        if self.extraction_interval is None:
+            rolls = 1
+        else:
+            windows = (
+                self._offspring_seen - self._extraction_cursor
+            ) // self.extraction_interval
+            self._extraction_cursor += windows * self.extraction_interval
+            rolls = windows
+        hits = sum(1 for _ in range(rolls) if self.rng.random() < self.extraction_probability)
+        if hits == 0 or self.llm is None:
             return
-        top_programs = ctx.local_population.top_programs
-        if self.llm is None or not top_programs:
+        # Source gates (hifo_interface_EC.py:298-303): the scope needs >= 3
+        # individuals; the summarized slice is its top 30% (min 1).
+        scope_size = max(
+            len(ctx.local_population.fitnesses), len(ctx.local_population.top_programs)
+        )
+        if scope_size < self.extraction_min_population:
             return
-        await self._extract_insights(top_programs)
+        top_programs = list(ctx.local_population.top_programs)
+        if not top_programs:
+            return
+        slice_n = max(1, math.ceil(self.extraction_top_fraction * scope_size))
+        top_slice = top_programs[:slice_n]
+        for _ in range(hits):
+            await self._extract_insights(top_slice)
 
     async def _extract_insights(self, top_programs: List[ProgramView]) -> None:
         # BORROWED logic — adapted from HiFo-Prompt
@@ -232,16 +350,24 @@ class HiFoPromptModule(CoordinationModule):
         prompt = EXTRACTION_PROMPT_HEADER
         for i, program in enumerate(top_programs):
             description = (program.changes_description or "").strip()
-            if description and len(description) > 8:
-                content_to_analyze = f"{description}"
-            else:
-                code_to_analyze = program.code
-                if len(code_to_analyze) > self.max_code_chars:
-                    code_to_analyze = (
-                        code_to_analyze[: int(self.max_code_chars * 0.8)]
+            has_description = bool(description) and len(description) > 8
+            code_snippet = None
+            if not has_description or self.extraction_input == "thoughts+code":
+                code_snippet = program.code
+                if len(code_snippet) > self.max_code_chars:
+                    code_snippet = (
+                        code_snippet[: int(self.max_code_chars * 0.8)]
                         + "...\n# (truncated for brevity)"
                     )
-                content_to_analyze = f"{code_to_analyze}"
+            if has_description and code_snippet is not None:
+                # "thoughts+code" (Decision #54): the one mode that makes the
+                # footer's both-inputs claim true — the source only ever sent
+                # one of the two per individual.
+                content_to_analyze = f"{description}\n{code_snippet}"
+            elif has_description:
+                content_to_analyze = description
+            else:
+                content_to_analyze = code_snippet
             prompt += f"{i+1}. Algorithm: {content_to_analyze}\n"
         prompt += EXTRACTION_PROMPT_FOOTER
 
@@ -276,11 +402,17 @@ class HiFoPromptModule(CoordinationModule):
         return {
             "insight_pool": self.insight_pool.state_dict(),
             "navigator": self.navigator.state_dict(),
+            "nav_best_history": list(self._nav_best_history),
+            "offspring_seen": self._offspring_seen,
+            "extraction_cursor": self._extraction_cursor,
         }
 
     def load_state_dict(self, state: Dict[str, Any]) -> None:
         self.insight_pool.load_state_dict(state["insight_pool"])
         self.navigator.load_state_dict(state["navigator"])
+        self._nav_best_history = [float(x) for x in state.get("nav_best_history", [])]
+        self._offspring_seen = int(state.get("offspring_seen", 0))
+        self._extraction_cursor = int(state.get("extraction_cursor", 0))
 
     def log_snapshot(self) -> Dict[str, Any]:
         # Mirrors the per-generation hifo_prompt_log written by the original

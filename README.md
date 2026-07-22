@@ -110,6 +110,8 @@ any policy can be paired with any store.
 
 - Checkpoints: `output_dir/checkpoints/`
 - LLM call log: `output_dir/llm_calls.jsonl`
+- Evolution trace: `output_dir/evolution_trace.jsonl` (includes per-mutation
+  prompt/response/metrics metadata plus iteration token-ledger breakdown)
 
 Resume by loading a checkpoint before running:
 
