@@ -105,13 +105,16 @@ def _config(iterations, num_islands=2, evaluator=None):
     )
 
 
-def _build(tmp, arm, iterations, coordination_client=None, evaluator=None, **params):
+def _build(
+    tmp, arm, iterations, coordination_client=None, evaluator=None,
+    initial_code=None, mutation=None, **params
+):
     eval_path = os.path.join(tmp, "evaluator.py")
     if not os.path.exists(eval_path):
         with open(eval_path, "w") as f:
             f.write(EVAL_SCRIPT)
     ledger = TokenLedger(total_budget_tokens=1_000_000)
-    mut = mutation_client()
+    mut = mutation or mutation_client()
     mutation_llm = BudgetedLLM(model="fake", ledger=ledger, account="mutation",
                               tag="mutate", client=mut, retries=0, retry_delay=0.0)
     if arm == "null":
@@ -125,7 +128,7 @@ def _build(tmp, arm, iterations, coordination_client=None, evaluator=None, **par
     controller = NoemaController(
         config=_config(iterations, evaluator=evaluator),
         evaluation_file=eval_path,
-        initial_program_code=INITIAL,
+        initial_program_code=initial_code or INITIAL,
         output_dir=os.path.join(tmp, f"out_{arm}"),
         mutation_llm=mutation_llm,
         coordination=coordination,
@@ -226,6 +229,94 @@ class TestPESReflectionThroughController(unittest.TestCase):
             self.assertTrue(
                 any("WARN-MARKER-42" in c["messages"][-1]["content"] for c in reflection_calls),
                 "controller-stamped stderr never reached a reflection prompt",
+            )
+
+
+DIRECTIVE_INITIAL = (
+    "def entry_point():\n"
+    "    return strategy()\n"
+    "\n"
+    "# EVOLVE-BLOCK-START\n"
+    "def strategy():\n"
+    "    return 1\n"
+    "# EVOLVE-BLOCK-END\n"
+)
+
+# Actually executes the saved child (unlike EVAL_SCRIPT's regex, which never
+# runs the code and so can't observe a NameError). math is only touched when
+# strategy() is called, matching the real bug: exec() of the module succeeds
+# either way, the crash only happens when the evolve-block function runs.
+DIRECTIVE_EVAL_SCRIPT = (
+    "def evaluate(program_path):\n"
+    "    namespace = {}\n"
+    "    try:\n"
+    "        with open(program_path) as f:\n"
+    "            exec(f.read(), namespace)\n"
+    "        value = namespace['entry_point']()\n"
+    "    except Exception:\n"
+    "        return {'combined_score': 0.0}\n"
+    "    return {'combined_score': min(1.0, float(value) / 10.0)}\n"
+)
+
+
+def directive_mutation_client():
+    """Full-rewrite child importing a library F_imm never had, used inside the
+    evolve block — the exact shape of the task 0105 bug (e.g. PES-faithful
+    proposing scipy.optimize where the parent only imports numpy)."""
+    content = (
+        "```python\n"
+        "import math\n"
+        "\n"
+        "def entry_point():\n"
+        "    return strategy()\n"
+        "\n"
+        "# EVOLVE-BLOCK-START\n"
+        "def strategy():\n"
+        "    return math.floor(9.9)\n"
+        "# EVOLVE-BLOCK-END\n"
+        "```"
+    )
+
+    async def create(**params):
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+            usage=SimpleNamespace(prompt_tokens=100, completion_tokens=40),
+        )
+
+    return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+
+
+class TestDirectiveModeImportSurvives(unittest.TestCase):
+    """task 0105: PES-faithful directive mode generates a full rewrite whose
+    evolve-block strategy code may need a library F_imm never imported. Before
+    the fix, enforce_immutable_boundary silently stripped that import and the
+    evolve block crashed with NameError at evaluation (combined_score 0.0).
+    Proves the fix through a real NoemaController.run(), not just the
+    boundary.py unit — the load-bearing check that it actually fixes the
+    pipeline, not just the isolated function."""
+
+    def test_new_import_survives_and_child_scores(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(DIRECTIVE_EVAL_SCRIPT)
+
+            controller, _, _ = _build(
+                tmp, "pes-faithful", 1,
+                initial_code=DIRECTIVE_INITIAL,
+                mutation=directive_mutation_client(),
+            )
+            asyncio.run(controller.run())
+
+            children = [
+                p for p in controller.db._db.programs.values() if p.parent_id is not None
+            ]
+            self.assertTrue(children, "no child was accepted")
+            child = children[0]
+            self.assertIn("import math", child.code)
+            self.assertGreater(
+                child.metrics.get("combined_score", 0.0), 0.0,
+                "child scored 0 -- the import was stripped and strategy() raised NameError",
             )
 
 

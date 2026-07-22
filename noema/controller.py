@@ -456,7 +456,15 @@ class NoemaController:
                 )
                 continue
 
-            child_code = enforce_immutable_boundary(parent.code, child_code)
+            child_code = enforce_immutable_boundary(
+                parent.code,
+                child_code,
+                # PES-faithful directive mode (task 0065): the child is a full
+                # rewrite, so its preamble may need an import F_imm never had.
+                # `advice` is fixed for the whole iteration, so every retry
+                # attempt gets the same treatment.
+                merge_new_imports=bool(advice.attribution.get("full_executor_prompt")),
+            )
             if child_code is None:
                 error_text = (
                     "mutation broke the EVOLVE-BLOCK boundary: only code inside "
