@@ -122,8 +122,14 @@ class BudgetedLLM(LLMInterface):
             formatted_messages.append({"role": "system", "content": system_message})
         formatted_messages.extend(messages)
 
+        # Per-call model override (task 0107): a coordination module may
+        # request a different model for one generation (e.g. escalation to a
+        # stronger tier) via Advice.model, forwarded here as a kwarg. None
+        # (the default) uses the client's configured model — unchanged
+        # behaviour for every caller that doesn't pass it.
+        call_model = kwargs.get("model") or self.model
         params = {
-            "model": self.model,
+            "model": call_model,
             "messages": formatted_messages,
         }
         for name, default in (
@@ -196,7 +202,7 @@ class BudgetedLLM(LLMInterface):
                 CallRecord(
                     account=self.account,
                     tag=tag,
-                    model=self.model,
+                    model=call_model,
                     prompt_tokens=prompt_tokens,
                     completion_tokens=completion_tokens,
                     attempts=attempt + 1,

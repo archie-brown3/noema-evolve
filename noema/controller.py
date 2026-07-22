@@ -175,6 +175,11 @@ class NoemaController:
             # ignore it, like any other mechanism-specific coordination param.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
+            # Task 0107: the model name a module may request via Advice.model to
+            # escalate a mutation generation. Today the frontier coordination
+            # seat (PR #46); a bootstrap value, not a base.py field — modules
+            # that don't escalate never read it.
+            coordination_params.setdefault("escalation_model", config.llm.coordination.model)
             # Task 0080 removed the `island_bests_provider` callable that used to
             # be injected here. Cross-region best scores (task 0061) now reach a
             # module through `GenerationContext.global_population.regions` — a
@@ -445,6 +450,7 @@ class NoemaController:
             response = await self.mutation_llm.generate_with_context(
                 system_message=current_prompt["system"],
                 messages=[{"role": "user", "content": current_prompt["user"]}],
+                model=advice.model,  # task 0107: None = unchanged (default mutation model)
             )
 
             child_code, changes_summary = self._parse_response(response, parent.code, operator)
