@@ -38,19 +38,23 @@ class FakeClient:
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
 
 
+def make_llm(client, ledger=None, **kwargs):
+    ledger = ledger or TokenLedger(total_budget_tokens=10_000)
+    kwargs.setdefault("retry_delay", 0.0)
+    llm = BudgetedLLM(
+        model="test-model",
+        ledger=ledger,
+        account="mutation",
+        tag="mutate",
+        client=client,
+        **kwargs,
+    )
+    return llm, ledger
+
+
 class TestBudgetedLLM(unittest.TestCase):
     def _llm(self, client, ledger=None, **kwargs):
-        ledger = ledger or TokenLedger(total_budget_tokens=10_000)
-        kwargs.setdefault("retry_delay", 0.0)
-        llm = BudgetedLLM(
-            model="test-model",
-            ledger=ledger,
-            account="mutation",
-            tag="mutate",
-            client=client,
-            **kwargs,
-        )
-        return llm, ledger
+        return make_llm(client, ledger, **kwargs)
 
     def test_negative_retries_rejected_at_construction(self):
         # Task 0056 item 2: retries=-1 makes the retry loop empty, so the call
@@ -183,6 +187,79 @@ class TestBudgetedLLM(unittest.TestCase):
         client = FakeClient([])
         llm, _ = self._llm(client)
         self.assertIsInstance(llm, LLMInterface)
+
+
+class HangingClient:
+    """A degenerate slow-reasoning dribble: never returns, never raises. Mimics
+    an httpx per-chunk read timeout that keeps resetting (task 0103)."""
+
+    def __init__(self):
+        self.calls = []
+
+        async def create(**params):
+            self.calls.append(params)
+            await asyncio.sleep(3600)  # never actually reached in tests
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
+class FatalStatusError(Exception):
+    def __init__(self, status_code):
+        self.status_code = status_code
+        super().__init__(f"status {status_code}")
+
+
+class TestTotalDeadline(unittest.TestCase):
+    def test_total_deadline_exceeded_returns_empty_charges_nothing(self):
+        from noema.budget.llm import BudgetedLLM
+
+        client = HangingClient()
+        ledger = TokenLedger(total_budget_tokens=10_000)
+        llm = BudgetedLLM(
+            model="test-model", ledger=ledger, account="mutation", tag="mutate",
+            client=client, retries=0, retry_delay=0.0, total_deadline_s=0.05,
+        )
+
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        self.assertEqual(result, "")
+        self.assertEqual(len(ledger.records), 0)
+        self.assertEqual(ledger.spent(), 0)
+
+    def test_total_deadline_default_does_not_cut_off_fast_calls(self):
+        client = FakeClient([fake_response()])
+        llm, ledger = make_llm(client)  # default total_deadline_s=600
+
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        self.assertEqual(result, "response text")
+        self.assertEqual(len(ledger.records), 1)
+
+
+class TestFatalProviderError(unittest.TestCase):
+    def test_fatal_status_raises_immediately_without_exhausting_retries(self):
+        from noema.budget.llm import FatalProviderError
+
+        client = FakeClient([FatalStatusError(402)])
+        llm, ledger = make_llm(client, retries=3)
+
+        with self.assertRaises(FatalProviderError) as cm:
+            asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        self.assertEqual(cm.exception.status_code, 402)
+        # Not retried: exactly 1 call, not 4 (retries=3 -> 4 attempts if it had retried)
+        self.assertEqual(len(client.calls), 1)
+        self.assertEqual(len(ledger.records), 0)
+
+    def test_non_fatal_status_still_retries(self):
+        # A transient 500-style error is not in FATAL_STATUS_CODES -> normal retry path
+        client = FakeClient([FatalStatusError(500), fake_response()])
+        llm, ledger = make_llm(client, retries=1)
+
+        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+
+        self.assertEqual(result, "response text")
+        self.assertEqual(len(client.calls), 2)
 
 
 if __name__ == "__main__":

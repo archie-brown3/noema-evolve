@@ -251,6 +251,101 @@ class TestControllerEndToEnd(unittest.TestCase):
             self.assertIsNotNone(best)  # run ended cleanly with a result
             self.assertEqual(controller.start_iteration, 2)
 
+    def test_fatal_provider_error_stops_cleanly_with_checkpoint(self):
+        # 0103 scope addition: the 2026-07-17 temp-0.7 sweep died on OpenRouter
+        # 402s as raw unhandled tracebacks between checkpoints, discarding
+        # progress. A fatal status must stop run() cleanly instead, same as
+        # BudgetExhausted does.
+        class FatalAfterTwoClient:
+            def __init__(self):
+                self.calls = []
+                self._counter = 0
+
+                async def create(**params):
+                    self.calls.append(params)
+                    self._counter += 1
+                    if self._counter == 3:
+                        err = RuntimeError("insufficient credits")
+                        err.status_code = 402
+                        raise err
+                    content = f"```python\ndef f():\n    return {self._counter + 1}\n```"
+                    return SimpleNamespace(
+                        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                        usage=SimpleNamespace(prompt_tokens=100, completion_tokens=40),
+                    )
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            client = FatalAfterTwoClient()
+            controller, ledger, _ = make_controller(
+                tmp, config=make_config(checkpoint_interval=1), client=client
+            )
+
+            best = asyncio.run(controller.run())  # must NOT raise
+
+            self.assertEqual(len(client.calls), 3)
+            self.assertEqual(controller.start_iteration, 2)  # stopped before iteration 2
+            self.assertIsNotNone(best)  # the two prior children are still there
+            checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_1")
+            self.assertTrue(os.path.exists(checkpoint))
+
+    def test_run_with_missing_usage_fails_equal_token_verification(self):
+        # task 0106, end-to-end: a real controller run where one call's
+        # provider response has null usage (the 0085 OpenRouter shape) must
+        # produce an llm_calls.jsonl that verify_equal_token_metering_from_jsonl
+        # rejects — not just a ledger flag nobody checks.
+        from noema.verify import UnmeteredUsage, verify_equal_token_metering_from_jsonl
+
+        class NullUsageOnceClient:
+            def __init__(self):
+                self.calls = []
+                self._counter = 0
+
+                async def create(**params):
+                    self.calls.append(params)
+                    self._counter += 1
+                    content = f"```python\ndef f():\n    return {self._counter + 1}\n```"
+                    usage = (
+                        SimpleNamespace(prompt_tokens=None, completion_tokens=None)
+                        if self._counter == 2
+                        else SimpleNamespace(prompt_tokens=100, completion_tokens=40)
+                    )
+                    return SimpleNamespace(
+                        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+                        usage=usage,
+                    )
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            jsonl_path = os.path.join(tmp, "llm_calls.jsonl")
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            ledger = TokenLedger(total_budget_tokens=1_000_000, log_path=jsonl_path)
+            mutation_llm = BudgetedLLM(
+                model="fake-model", ledger=ledger, account="mutation", tag="mutate",
+                client=NullUsageOnceClient(), retries=0, retry_delay=0.0,
+            )
+            controller = NoemaController(
+                config=make_config(),
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                mutation_llm=mutation_llm,
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            asyncio.run(controller.run(iterations=3))
+
+            self.assertTrue(os.path.exists(jsonl_path))
+
+            with self.assertRaises(UnmeteredUsage) as cm:
+                verify_equal_token_metering_from_jsonl(jsonl_path)
+            self.assertEqual(len(cm.exception.offending), 1)
+            self.assertEqual(cm.exception.offending[0].tag, "mutate")
+
     def test_checkpoint_resume_continues(self):
         with tempfile.TemporaryDirectory() as tmp:
             controller, ledger, client = make_controller(tmp)
