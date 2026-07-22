@@ -48,7 +48,12 @@ class CVTSelectionPolicy:
         num_inspirations: int = 0,
         hints: Optional[Mapping[str, Any]] = None,
     ) -> Selection:
-        cells = [region.scope for region in store.regions()]
+        # Only scopes with a real elite are selectable candidates. Task 0111's
+        # grouped regions() always reports every region (a fixed-size scope
+        # space, even ones with zero members early in a run) — filter here
+        # rather than there, so regions() keeps reporting the true archive
+        # shape and any policy stays robust to a sparse/empty candidate.
+        cells = [region.scope for region in store.regions() if region.size > 0]
         if not cells:
             raise RuntimeError("CVT archive is empty; seed a program before selecting")
 

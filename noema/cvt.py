@@ -110,6 +110,7 @@ class CVTStore:
         seed: int = 42,
         steps_per_generation: int = 1,
         feature_dimensions: Sequence[str] = (),
+        num_regions: Optional[int] = None,
     ):
         if steps_per_generation <= 0:
             raise ValueError("steps_per_generation must be positive")
@@ -133,16 +134,54 @@ class CVTStore:
         self._artifacts: Dict[str, Dict[str, Any]] = {}
         self.last_iteration = 0
 
+        # Task 0111: OPT-IN region grouping. Unset (default) preserves 0108/0109
+        # behaviour exactly (one region per occupied cell — fine for null/PE).
+        # When set, cells are grouped into `num_regions` groups by clustering the
+        # (fixed) cell CENTROIDS with a seeded KMeans — a pure function of
+        # (centroids, num_regions, seed), stable for the run's lifetime, so a
+        # region's population grows (>1 member) instead of degenerating to one
+        # cell's single elite. Required for coordination arms (hifo/pes) that
+        # read a local cohort as a DISTRIBUTION, not a point.
+        self.num_regions = int(num_regions) if num_regions is not None else None
+        self._region_of_cell: Dict[int, int] = {}
+        if self.num_regions is not None:
+            self._region_of_cell = self._group_cells_into_regions()
+
+    def _group_cells_into_regions(self) -> Dict[int, int]:
+        if self.num_regions is None:
+            return {}
+        if self.num_regions <= 0:
+            raise ValueError("num_regions must be positive")
+        if self.num_regions > self.n_centroids:
+            raise ValueError(
+                f"num_regions ({self.num_regions}) cannot exceed n_centroids ({self.n_centroids})"
+            )
+        labels = KMeans(
+            n_clusters=self.num_regions, n_init=1, random_state=self.seed
+        ).fit_predict(self._centroids)
+        return {cell: int(region) for cell, region in enumerate(labels)}
+
+    def _region_of(self, cell: int) -> int:
+        """The scope a cell's programs are read under. Identity when ungrouped."""
+        if self.num_regions is None:
+            return cell
+        return self._region_of_cell[cell]
+
     # -- basic properties ---------------------------------------------------
 
     @property
     def num_programs(self) -> int:
         return len(self._programs)
 
-    def target_scope(self, iteration: int) -> None:
-        # The child's cell is decided by its behaviour at add() time, not chosen
-        # up front; parent selection is the composed policy's job.
-        return None
+    def target_scope(self, iteration: int) -> Optional[int]:
+        # The child's CELL is always decided by its own behaviour at add() time,
+        # never chosen up front — that invariant is unchanged. When regions are
+        # configured, rotate a REGION scope per iteration (like islands'
+        # `iteration % num_islands`) so coordination modules reading a "local"
+        # cohort see a genuinely different, non-degenerate population each tick.
+        if self.num_regions is None:
+            return None
+        return iteration % self.num_regions
 
     def _cell_vector(self, program: Program) -> np.ndarray:
         fv = self._extractor.extract(program.code)
@@ -168,6 +207,12 @@ class CVTStore:
     def population(self, scope: Any = None) -> Sequence[Program]:
         if scope is None:
             return tuple(self._programs[k] for k in sorted(self._programs))
+        if self.num_regions is not None:
+            region = int(scope)
+            return tuple(
+                self._programs[pid] for pid, cell in sorted(self._cell_of.items())
+                if self._region_of(cell) == region
+            )
         return tuple(
             self._programs[pid] for pid, cell in sorted(self._cell_of.items()) if cell == scope
         )
@@ -191,15 +236,30 @@ class CVTStore:
         return tuple(self.fitness(p) for p in self.population())
 
     def regions(self) -> Sequence[RegionSummary]:
+        if self.num_regions is None:
+            summaries = []
+            for cell in sorted(self._elite_of):
+                elite = self._programs[self._elite_of[cell]]
+                summaries.append(
+                    RegionSummary(
+                        scope=cell,
+                        label=f"cell:{cell}",
+                        best_fitness=self.fitness(elite),
+                        size=sum(1 for c in self._cell_of.values() if c == cell),
+                    )
+                )
+            return tuple(summaries)
+        # Grouped: one summary per region 0..num_regions-1, EVERY region present
+        # (even empty ones) — a fixed-size scope space, matching FixtureCVTStore.
         summaries = []
-        for cell in sorted(self._elite_of):
-            elite = self._programs[self._elite_of[cell]]
+        for region in range(self.num_regions):
+            programs = self.population(region)
             summaries.append(
                 RegionSummary(
-                    scope=cell,
-                    label=f"cell:{cell}",
-                    best_fitness=self.fitness(elite),
-                    size=sum(1 for c in self._cell_of.values() if c == cell),
+                    scope=region,
+                    label=f"region_{region}",
+                    best_fitness=max((self.fitness(p) for p in programs), default=0.0),
+                    size=len(programs),
                 )
             )
         return tuple(summaries)
@@ -292,6 +352,8 @@ class CVTStore:
             "cell_of": {k: self._cell_of[k] for k in sorted(self._cell_of)},
             "elite_of": {str(cell): self._elite_of[cell] for cell in sorted(self._elite_of)},
             "artifacts": _json_encode({k: self._artifacts[k] for k in sorted(self._artifacts)}),
+            "num_regions": self.num_regions,
+            "region_of_cell": {str(c): self._region_of_cell[c] for c in sorted(self._region_of_cell)},
         }
 
     def load_state_dict(self, state: Mapping[str, Any]) -> None:
@@ -310,6 +372,9 @@ class CVTStore:
             cell_of = {str(k): int(v) for k, v in state["cell_of"].items()}
             elite_of = {int(cell): str(pid) for cell, pid in state["elite_of"].items()}
             artifacts = _json_decode(state["artifacts"])
+            raw_num_regions = state["num_regions"]
+            num_regions = int(raw_num_regions) if raw_num_regions is not None else None
+            region_of_cell = {int(c): int(r) for c, r in state["region_of_cell"].items()}
         except (KeyError, TypeError, ValueError) as exc:
             raise ValueError("invalid CVTStore state shape") from exc
         if set(cell_of) != set(programs):
@@ -318,12 +383,16 @@ class CVTStore:
             raise ValueError("CVTStore elite refers to an unknown program")
         if self._centroids.shape != (self.n_centroids, len(self.behavior_features)):
             raise ValueError("CVTStore centroid shape inconsistent with config")
+        if num_regions is not None and set(region_of_cell) != set(range(self.n_centroids)):
+            raise ValueError("CVTStore region_of_cell must cover every cell when num_regions is set")
         self._extractor = BehaviorExtractor(list(self.behavior_features))
         self._extractor.set_fixed_bounds(dict(self._feature_bounds))
         self._programs = programs
         self._cell_of = cell_of
         self._elite_of = elite_of
         self._artifacts = {str(k): dict(v) for k, v in artifacts.items()}
+        self.num_regions = num_regions
+        self._region_of_cell = region_of_cell
 
     def save(self, path: str, iteration: int = 0) -> None:
         self.last_iteration = int(iteration)

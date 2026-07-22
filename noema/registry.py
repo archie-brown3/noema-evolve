@@ -55,6 +55,7 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
                 else 1
             ),
             feature_dimensions=config.database.feature_dimensions,
+            num_regions=config.substrate.cvt_num_regions,
         )
     else:
         raise ValueError(f"unknown substrate kind {config.substrate.kind!r}")
