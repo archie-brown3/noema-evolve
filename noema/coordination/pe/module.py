@@ -12,8 +12,15 @@ NOEMA adaptations vs. the donor (see [[Punctuated Equilibrium ... Spec]] §6):
   behaviour from their code, so no store internals are touched;
 - KMeans is seeded from the module RNG (donor uses random_state=None) — determinism;
 - ``advise`` is a no-op, so the mutation prompt stays byte-identical to null;
-- one coordination LLM, all paradigm + variant spend billed to the coordination
-  account (spec §8 recommendation).
+- one coordination LLM by default; task 0110 adds OPT-IN heavy/light tiering
+  (a second construction-time handle for paradigm shifts) — both tiers still
+  bill the coordination account (spec §8), unconfigured PE is unchanged.
+
+Task 0110 tiering: the donor picks its heavy model via ``random.choice`` over a
+model list at call time. NOEMA replaces that with a single FIXED
+``paradigm_model`` set at construction — no randomness to seed, deterministic
+by construction, a stronger guarantee than "seed the random choice". Documented
+deviation, not hidden (Decision #30 discipline).
 """
 
 from __future__ import annotations
@@ -60,6 +67,22 @@ class PunctuatedEquilibriumModule(CoordinationModule):
         self._extractor = BehaviorExtractor(list(_CLUSTER_FEATURES))
         self._extractor.set_fixed_bounds(dict(_CLUSTER_BOUNDS))
         self._trigger_count: int = 0
+        # Task 0110 tiering: default both tiers to the single injected `llm`
+        # (unconfigured PE = PR #61 behaviour, byte-identical). The controller
+        # may call set_paradigm_llm/set_variant_llm at construction time with a
+        # second BudgetedLLM if the run config names a distinct model — a
+        # duck-typed extension, not a base.py addition (same pattern as PES's
+        # build_retry_prompt).
+        self._paradigm_llm = self.llm
+        self._variant_llm = self.llm
+
+    def set_paradigm_llm(self, llm) -> None:
+        """Opt-in heavy model for paradigm-shift generation (task 0110)."""
+        self._paradigm_llm = llm
+
+    def set_variant_llm(self, llm) -> None:
+        """Opt-in light model for variant generation (task 0110)."""
+        self._variant_llm = llm
 
     # PE does not touch the mutation prompt — null-identical per mutation.
     async def advise(self, ctx: GenerationContext) -> Advice:
@@ -83,13 +106,13 @@ class PunctuatedEquilibriumModule(CoordinationModule):
                 reps[label] = elite
         return sorted(reps.values(), key=lambda e: -e.fitness)
 
-    async def _generate(self, prompt: str, tag: str) -> Optional[str]:
-        response = await self.llm.generate(prompt, tag=tag, temperature=self.temperature)
+    async def _generate(self, llm, prompt: str, tag: str) -> Optional[str]:
+        response = await llm.generate(prompt, tag=tag, temperature=self.temperature)
         code = parse_full_rewrite(response, self.language)
         return code or None
 
     async def on_generation_end(self, ctx: GenerationContext) -> Optional[Intervention]:
-        if self.llm is None:
+        if self._paradigm_llm is None or self._variant_llm is None:
             return None
         if self.interval <= 0 or ctx.iteration == 0 or ctx.iteration % self.interval != 0:
             return None
@@ -103,6 +126,7 @@ class PunctuatedEquilibriumModule(CoordinationModule):
 
         proposals: List[ProposedProgram] = []
         paradigm_code = await self._generate(
+            self._paradigm_llm,
             paradigm_shift_prompt(self.domain_context, [(e.code, e.fitness) for e in reps]),
             tag="pe.paradigm_shift",
         )
@@ -116,6 +140,7 @@ class PunctuatedEquilibriumModule(CoordinationModule):
 
         for _ in range(self.n_variants):
             variant_code = await self._generate(
+                self._variant_llm,
                 variant_prompt(self.domain_context, seed_code, seed_score),
                 tag="pe.variant",
             )

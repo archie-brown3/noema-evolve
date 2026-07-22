@@ -185,6 +185,21 @@ class NoemaController:
                 llm=coordination_llm,
                 rng=self.coordination_rng,
             )
+            # Task 0110: opt-in heavy/light model tiering. A module MAY expose
+            # set_paradigm_llm/set_variant_llm (duck-typed, not part of the
+            # CoordinationModule ABC — base.py stays untouched, same pattern as
+            # PES's build_retry_prompt). Config keys are read from the SAME
+            # coordination.params dict every module already receives; a run
+            # that names no override is unaffected (both tiers stay the
+            # already-injected coordination_llm — PR #61 behaviour).
+            self._wire_alternate_tier(
+                "set_paradigm_llm", coordination_params.get("paradigm_model"),
+                config, tag=f"{config.coordination.module}.paradigm",
+            )
+            self._wire_alternate_tier(
+                "set_variant_llm", coordination_params.get("variant_model"),
+                config, tag=f"{config.coordination.module}.variant",
+            )
 
         self.initial_program_code = initial_program_code
 
@@ -206,6 +221,34 @@ class NoemaController:
             "honored": None,
             "ignored": None,
         }
+
+    def _wire_alternate_tier(
+        self, setter_name: str, model_name: Optional[str], config: NoemaConfig, *, tag: str
+    ) -> None:
+        """Build and inject an alternate-model BudgetedLLM if BOTH the module
+        supports the duck-typed setter AND a distinct model was configured
+        (task 0110). No-op otherwise — default tiering is "unchanged"."""
+        if not model_name or model_name == config.llm.coordination.model:
+            return
+        setter = getattr(self.coordination, setter_name, None)
+        if setter is None:
+            return
+        alt_llm = BudgetedLLM(
+            model=model_name,
+            ledger=self.ledger,
+            account=COORDINATION_ACCOUNT,
+            tag=tag,
+            api_base=config.llm.coordination.api_base,
+            api_key=config.llm.coordination.api_key,
+            temperature=config.llm.coordination.temperature,
+            top_p=config.llm.coordination.top_p,
+            max_tokens=config.llm.coordination.max_tokens,
+            seed=config.llm.coordination.seed,
+            timeout=config.llm.coordination.timeout,
+            retries=config.llm.coordination.retries,
+            retry_delay=config.llm.coordination.retry_delay,
+        )
+        setter(alt_llm)
 
     @staticmethod
     def _freeze_config(output_dir: str, config: NoemaConfig) -> None:
