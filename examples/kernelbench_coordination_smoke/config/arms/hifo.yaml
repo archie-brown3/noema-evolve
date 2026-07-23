@@ -1,0 +1,4 @@
+# Arm overlay: HiFo-Prompt. Merges onto config/base.yaml via config_loader.py.
+# This file may set NOTHING except coordination.module.
+coordination:
+  module: hifo
