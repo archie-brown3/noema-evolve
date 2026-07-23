@@ -1,11 +1,13 @@
 """Punctuated Equilibrium coordination module tests (task 0109)."""
 
 import asyncio
+import inspect
 import random
 import unittest
 
 from openevolve.database import Program
 
+import noema.coordination.pe.module as pe_module
 from noema.coordination import MODULE_REGISTRY, build_coordination_module
 from noema.coordination.base import GenerationContext, Intervention, PopulationSnapshot
 from noema.views import ProgramView
@@ -111,6 +113,27 @@ class TestPunctuatedEquilibrium(unittest.TestCase):
         asyncio.run(make_pe(llm, n_variants=1).on_generation_end(ctx(10)))
         self.assertIn("pe.paradigm_shift", llm.calls)
         self.assertIn("pe.variant", llm.calls)
+
+    def test_module_never_touches_store_or_evaluator_directly(self):
+        # Structural proof of spec §3's metering boundary: PE PROPOSES via
+        # Intervention; only the host evaluates (self.evaluator) and inserts
+        # (db.add/store.add). The module source must reference neither.
+        source = inspect.getsource(pe_module)
+        for forbidden in ("db.add", "store.add", ".evaluate_program(", "self.evaluator",
+                          "from noema.cvt import", "CVTStore"):
+            self.assertNotIn(forbidden, source, f"PE module must not reference {forbidden!r}")
+
+    def test_intervention_carries_proposals_not_side_effects(self):
+        # The return value IS the effect boundary: on_generation_end must not
+        # mutate anything outside itself — it only returns data.
+        pe = make_pe(FakeLLM(), n_variants=1)
+        before = pe.state_dict()
+        result = asyncio.run(pe.on_generation_end(ctx(10)))
+        self.assertIsInstance(result, Intervention)
+        # State changed only through the documented state_dict (trigger_count),
+        # nothing PE doesn't own.
+        after = pe.state_dict()
+        self.assertEqual(set(before) | {"trigger_count"}, set(after))
 
 
 if __name__ == "__main__":
