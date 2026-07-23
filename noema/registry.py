@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from noema.config import NoemaConfig
 
 
-NATIVE_POLICIES = {"islands": "stock_openevolve", "tree": "uct"}
+NATIVE_POLICIES = {"islands": "stock_openevolve", "tree": "uct", "cvt": "cvt_ucb"}
 
 
 def resolve_selection_policy(
@@ -37,6 +37,26 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
             ),
             feature_dimensions=config.database.feature_dimensions,
         )
+    elif config.substrate.kind == "cvt":
+        from noema.cvt import CVTStore
+
+        cvt_features = config.substrate.cvt_behavior_features
+        store = CVTStore(
+            n_centroids=config.substrate.cvt_n_centroids,
+            behavior_features=(
+                tuple(cvt_features) if cvt_features is not None
+                else ("math_operators", "loop_nesting_max",
+                      "comprehension_count", "range_max_arg")
+            ),
+            seed=config.substrate.cvt_seed,
+            steps_per_generation=(
+                config.substrate.steps_per_generation
+                if config.substrate.steps_per_generation is not None
+                else 1
+            ),
+            feature_dimensions=config.database.feature_dimensions,
+            num_regions=config.substrate.cvt_num_regions,
+        )
     else:
         raise ValueError(f"unknown substrate kind {config.substrate.kind!r}")
 
@@ -56,6 +76,10 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
             widening_alpha=config.selection.widening_alpha,
             random_seed=config.selection.seed,
         )
+    elif policy_name == "cvt_ucb":
+        from noema.selection.cvt import CVTSelectionPolicy
+
+        policy = CVTSelectionPolicy(seed=config.selection.seed)
     else:
         raise ValueError(
             f"selection policy {policy_name!r} is unavailable for the implemented stores"

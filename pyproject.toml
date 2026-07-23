@@ -23,6 +23,9 @@ dependencies = [
     "numpy>=1.22.0",
     "tqdm>=4.64.0",
     "dacite>=1.9.2",
+    # CVT-MAP-Elites substrate (task 0108): KMeans centroid init. Nearest-cell
+    # lookup at runtime is pure numpy; sklearn is used only at store construction.
+    "scikit-learn>=1.4",
 ]
 
 [project.optional-dependencies]

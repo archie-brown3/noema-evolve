@@ -86,6 +86,14 @@ class SubstrateConfig:
 
     kind: str = "islands"
     steps_per_generation: Optional[int] = None
+    # CVT-MAP-Elites params (kind == "cvt"); inert otherwise.
+    cvt_n_centroids: int = 256
+    cvt_behavior_features: Optional[List[str]] = None
+    cvt_seed: Optional[int] = None  # defaults to NoemaConfig.random_seed + 4
+    # Task 0111: OPT-IN region grouping (cells -> region cohorts) for
+    # coordination arms that read a local population as a distribution
+    # (hifo/pes). None (default) = 0108/0109 behaviour, one region per cell.
+    cvt_num_regions: Optional[int] = None
 
 
 @dataclass
@@ -166,18 +174,30 @@ class NoemaConfig:
             self.coordination.seed = self.random_seed + 1
         if self.selection.seed is None:
             self.selection.seed = self.random_seed + 3
-        if self.substrate.kind not in ("islands", "tree"):
+        if self.substrate.kind not in ("islands", "tree", "cvt"):
             raise ValueError(f"unknown substrate kind {self.substrate.kind!r}")
         if (
             self.substrate.steps_per_generation is not None
             and self.substrate.steps_per_generation <= 0
         ):
             raise ValueError("substrate.steps_per_generation must be positive")
+        if self.substrate.kind == "cvt" and self.substrate.cvt_n_centroids <= 0:
+            raise ValueError("substrate.cvt_n_centroids must be positive")
+        if self.substrate.cvt_num_regions is not None:
+            if self.substrate.cvt_num_regions <= 0:
+                raise ValueError("substrate.cvt_num_regions must be positive")
+            if self.substrate.cvt_num_regions > self.substrate.cvt_n_centroids:
+                raise ValueError(
+                    "substrate.cvt_num_regions cannot exceed substrate.cvt_n_centroids"
+                )
+        if self.substrate.cvt_seed is None:
+            self.substrate.cvt_seed = self.random_seed + 4
         if self.selection.policy not in (
             "substrate_default",
             "stock_openevolve",
             "boltzmann",
             "uct",
+            "cvt_ucb",
         ):
             raise ValueError(f"unknown selection policy {self.selection.policy!r}")
         if self.selection.boltzmann_temperature <= 0:

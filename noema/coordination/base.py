@@ -136,6 +136,32 @@ class Advice:
     attribution: Dict[str, Any] = field(default_factory=dict)
 
 
+@dataclass(frozen=True)
+class ProposedProgram:
+    """A whole program a module authored at a generation tick, for the HOST to
+    evaluate and insert (Punctuated Equilibrium, task 0109).
+
+    Sanctioned addition #3: a coordination module may *propose* programs, but it
+    never evaluates or inserts them itself — the host does, through the same
+    metered, deterministic loop it uses for ordinary mutations. This preserves
+    the metering guarantee (the module's generation calls are already billed to
+    `self.llm`'s coordination account) and determinism (the host owns eval order
+    and RNG). `origin` is stamped on the child's metadata; `parent_id` records
+    lineage. Additive: a module that returns no Intervention is unaffected.
+    """
+
+    code: str
+    origin: str = "coordination"     # provenance tag, e.g. "paradigm_shift" / "variant"
+    parent_id: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class Intervention:
+    """A module's proposed programs at a generation tick (see ProposedProgram)."""
+
+    proposals: tuple["ProposedProgram", ...] = ()
+
+
 class CoordinationModule(ABC):
     """Base class for coordination mechanisms"""
 
@@ -185,10 +211,15 @@ class CoordinationModule(ABC):
         """
 
     @abstractmethod
-    async def on_generation_end(self, ctx: GenerationContext) -> None:
+    async def on_generation_end(self, ctx: GenerationContext) -> Optional["Intervention"]:
         """
         Generation tick. May make coordination LLM calls (HiFo: insight
         extraction) — hence async.
+
+        Returns None (the default for every arm to date) or an `Intervention`
+        carrying whole programs the module authored for the HOST to evaluate and
+        insert (Punctuated Equilibrium, task 0109). Returning None is unchanged
+        behaviour, so null/hifo/pes/bandit are byte-for-byte unaffected.
         """
 
     @abstractmethod
