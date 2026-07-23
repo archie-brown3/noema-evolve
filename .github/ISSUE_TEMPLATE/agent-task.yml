@@ -1,0 +1,47 @@
+name: Agent task
+description: Structured task for the automated agent swarm
+title: "[Agent]: "
+labels:
+  - agent:needs-human
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What must change? One or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Measurable, verifiable completion conditions.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Allowed/forbidden paths, APIs, compatibility requirements.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options: [feature, bug, refactor, documentation, test]
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options: [Low, Medium, High]
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant context
+      description: Link relevant files, specs, issues, or PRs. No large dumps.
