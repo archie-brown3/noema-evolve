@@ -8,14 +8,17 @@ from noema.coordination.base import (
     Advice,
     CoordinationModule,
     GenerationContext,
+    Intervention,
     NullCoordination,
     Outcome,
+    ProposedProgram,
     SamplingRequest,
     SelectionContext,
 )
 
 from noema.coordination.bandit.module import BanditModule
 from noema.coordination.hifo.module import HiFoPromptModule
+from noema.coordination.pe.module import PunctuatedEquilibriumModule
 from noema.coordination.pes.arms import PESCustomModule, PESFaithfulModule
 
 logger = logging.getLogger(__name__)
@@ -30,6 +33,7 @@ MODULE_REGISTRY: Dict[str, type] = {
     "pes-custom": PESCustomModule,
     "pes-faithful": PESFaithfulModule,
     "bandit": BanditModule,
+    "pe": PunctuatedEquilibriumModule,
 }
 
 # Deprecated alias -> canonical key. "pes" predates the split (task 0066) and
@@ -62,6 +66,8 @@ def build_coordination_module(
 
 __all__ = [
     "Advice",
+    "Intervention",
+    "ProposedProgram",
     "CoordinationModule",
     "GenerationContext",
     "NullCoordination",
