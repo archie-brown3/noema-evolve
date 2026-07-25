@@ -24,6 +24,7 @@ from typing import Any, Dict, Mapping, Optional, Sequence
 
 import numpy as np
 from sklearn.cluster import KMeans
+from threadpoolctl import threadpool_limits
 
 from openevolve.database import Program
 from openevolve.utils.metrics_utils import get_fitness_score
@@ -53,7 +54,12 @@ def init_cvt_centroids(n_centroids: int, n_dims: int, seed: int) -> np.ndarray:
     kmeans = KMeans(
         n_clusters=n_centroids, init="k-means++", n_init=1, max_iter=100, random_state=seed
     )
-    kmeans.fit(samples)
+    # sklearn KMeans is NOT reproducible across processes when OMP_NUM_THREADS>1
+    # even with random_state set (its multithreaded reduction sums in
+    # nondeterministic order). Pin to one thread so centroid init is a true pure
+    # function of (n_centroids, n_dims, seed) — the determinism guarantee.
+    with threadpool_limits(limits=1):
+        kmeans.fit(samples)
     return np.asarray(kmeans.cluster_centers_, dtype=float)
 
 
@@ -156,9 +162,10 @@ class CVTStore:
             raise ValueError(
                 f"num_regions ({self.num_regions}) cannot exceed n_centroids ({self.n_centroids})"
             )
-        labels = KMeans(
-            n_clusters=self.num_regions, n_init=1, random_state=self.seed
-        ).fit_predict(self._centroids)
+        with threadpool_limits(limits=1):  # reproducible across thread counts (see init_cvt_centroids)
+            labels = KMeans(
+                n_clusters=self.num_regions, n_init=1, random_state=self.seed
+            ).fit_predict(self._centroids)
         return {cell: int(region) for cell, region in enumerate(labels)}
 
     def _region_of(self, cell: int) -> int:

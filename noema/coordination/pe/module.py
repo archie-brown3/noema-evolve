@@ -30,6 +30,7 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 from sklearn.cluster import KMeans
+from threadpoolctl import threadpool_limits
 
 from openevolve.utils.code_utils import parse_full_rewrite
 from noema.coordination.base import (
@@ -98,7 +99,8 @@ class PunctuatedEquilibriumModule(CoordinationModule):
         )
         k = min(self.n_clusters, len(elites))
         seed = self.rng.randint(0, 2**31 - 1)  # deterministic given module RNG
-        labels = KMeans(n_clusters=k, n_init=1, random_state=seed).fit_predict(vectors)
+        with threadpool_limits(limits=1):  # reproducible across thread counts (see cvt.init_cvt_centroids)
+            labels = KMeans(n_clusters=k, n_init=1, random_state=seed).fit_predict(vectors)
         reps: Dict[int, Any] = {}
         for elite, label in zip(elites, labels):
             label = int(label)
