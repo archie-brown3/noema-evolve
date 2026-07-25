@@ -1,8 +1,9 @@
-"""End-to-end: PE arm on the CVT substrate through the controller (task 0109).
+"""End-to-end: PE arm through the controller (task 0109).
 
 Proves the host evaluates and inserts the module's proposed programs, that all
 PE spend lands on the coordination ledger (mutation prompts untouched), and that
-determinism/checkpoint hold.
+determinism/checkpoint hold — on the CVT substrate, and (smoke) on islands, since
+PE reads only the neutral global snapshot and is not coupled to any substrate.
 """
 
 import asyncio
@@ -69,7 +70,7 @@ def paradigm_client():
     return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create))), calls
 
 
-def build_pe_controller(tmp, ledger):
+def build_pe_controller(tmp, ledger, substrate=None):
     eval_path = os.path.join(tmp, "evaluator.py")
     with open(eval_path, "w") as f:
         f.write(EVAL_SCRIPT)
@@ -81,7 +82,7 @@ def build_pe_controller(tmp, ledger):
         database=DatabaseConfig(in_memory=True, num_islands=2, population_size=50, random_seed=42),
         evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=30, max_retries=0),
         budget=BudgetConfig(total_tokens=10_000_000),
-        substrate=SubstrateConfig(kind="cvt", cvt_n_centroids=64),
+        substrate=substrate or SubstrateConfig(kind="cvt", cvt_n_centroids=64),
         coordination=CoordinationConfig(module="pe"),
     )
     mut_client, mut_calls = diverse_mutation_client()
@@ -127,6 +128,29 @@ class TestPEOnCVTEndToEnd(unittest.TestCase):
             # Metering: PE spend is on the coordination account; mutations separate.
             self.assertGreater(ledger.spent("coordination"), 0)
             self.assertGreater(ledger.spent("mutation"), 0)
+
+    def test_pe_fires_and_inserts_on_islands_too(self):
+        # Smoke test: PE is not coupled to CVT — it reads only the neutral global
+        # snapshot, so it must fire and have its proposals inserted on the islands
+        # substrate as well (off LEVI's fidelity anchor, but a valid study cell).
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger = TokenLedger(total_budget_tokens=10_000_000)
+            controller, par_calls = build_pe_controller(
+                tmp, ledger, substrate=SubstrateConfig(kind="islands"),
+            )
+            asyncio.run(controller.run())
+
+            self.assertGreaterEqual(controller.coordination.state_dict()["trigger_count"], 1)
+            self.assertGreater(len(par_calls), 0)
+            inserted = [
+                p for p in controller.db.population()
+                if p.metadata.get("coordination_proposed")
+            ]
+            self.assertGreater(len(inserted), 0)
+            self.assertTrue(
+                {p.metadata.get("origin") for p in inserted} & {"paradigm_shift", "variant"}
+            )
+            self.assertGreater(ledger.spent("coordination"), 0)
 
     def test_checkpoint_resume_with_pe(self):
         with tempfile.TemporaryDirectory() as tmp:

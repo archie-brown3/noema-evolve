@@ -116,7 +116,12 @@ class PunctuatedEquilibriumModule(CoordinationModule):
     async def on_generation_end(self, ctx: GenerationContext) -> Optional[Intervention]:
         if self._paradigm_llm is None or self._variant_llm is None:
             return None
-        if self.interval <= 0 or ctx.iteration == 0 or ctx.iteration % self.interval != 0:
+        # `interval` is in GENERATION TICKS, not raw iterations: ctx.generation is
+        # the monotonic tick counter (1,2,3,...), so PE fires on the same cadence
+        # regardless of the substrate's steps_per_generation. Keying off
+        # ctx.iteration silently never fired when spg>1 made the tick iterations
+        # skip the interval's multiples (e.g. islands spg=2 -> odd ticks only).
+        if self.interval <= 0 or ctx.generation == 0 or ctx.generation % self.interval != 0:
             return None
         elites = list(ctx.global_population.top_programs)
         if len(elites) < self.n_clusters:
