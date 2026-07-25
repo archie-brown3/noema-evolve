@@ -185,6 +185,21 @@ class NoemaController:
                 llm=coordination_llm,
                 rng=self.coordination_rng,
             )
+            # Task 0110: opt-in heavy/light model tiering. A module MAY expose
+            # set_paradigm_llm/set_variant_llm (duck-typed, not part of the
+            # CoordinationModule ABC — base.py stays untouched, same pattern as
+            # PES's build_retry_prompt). Config keys are read from the SAME
+            # coordination.params dict every module already receives; a run
+            # that names no override is unaffected (both tiers stay the
+            # already-injected coordination_llm — PR #61 behaviour).
+            self._wire_alternate_tier(
+                "set_paradigm_llm", coordination_params.get("paradigm_model"),
+                config, tag=f"{config.coordination.module}.paradigm",
+            )
+            self._wire_alternate_tier(
+                "set_variant_llm", coordination_params.get("variant_model"),
+                config, tag=f"{config.coordination.module}.variant",
+            )
 
         self.initial_program_code = initial_program_code
 
@@ -206,6 +221,34 @@ class NoemaController:
             "honored": None,
             "ignored": None,
         }
+
+    def _wire_alternate_tier(
+        self, setter_name: str, model_name: Optional[str], config: NoemaConfig, *, tag: str
+    ) -> None:
+        """Build and inject an alternate-model BudgetedLLM if BOTH the module
+        supports the duck-typed setter AND a distinct model was configured
+        (task 0110). No-op otherwise — default tiering is "unchanged"."""
+        if not model_name or model_name == config.llm.coordination.model:
+            return
+        setter = getattr(self.coordination, setter_name, None)
+        if setter is None:
+            return
+        alt_llm = BudgetedLLM(
+            model=model_name,
+            ledger=self.ledger,
+            account=COORDINATION_ACCOUNT,
+            tag=tag,
+            api_base=config.llm.coordination.api_base,
+            api_key=config.llm.coordination.api_key,
+            temperature=config.llm.coordination.temperature,
+            top_p=config.llm.coordination.top_p,
+            max_tokens=config.llm.coordination.max_tokens,
+            seed=config.llm.coordination.seed,
+            timeout=config.llm.coordination.timeout,
+            retries=config.llm.coordination.retries,
+            retry_delay=config.llm.coordination.retry_delay,
+        )
+        setter(alt_llm)
 
     @staticmethod
     def _freeze_config(output_dir: str, config: NoemaConfig) -> None:
@@ -715,7 +758,9 @@ class NoemaController:
             inspirations=[],
             global_scope=True,
         )
-        await self.coordination.on_generation_end(ctx)  # coordination hook 3
+        intervention = await self.coordination.on_generation_end(ctx)  # coordination hook 3
+        if intervention is not None and intervention.proposals:
+            await self._apply_intervention(intervention, iteration)
         self.db.end_generation()
 
         self.generation_log.append(
@@ -732,6 +777,42 @@ class NoemaController:
                 "operator_selection": dict(self._last_operator_trace),
             }
         )
+
+    async def _apply_intervention(self, intervention, iteration: int) -> None:
+        """Evaluate and insert a coordination module's proposed programs (task 0109).
+
+        The module authored these via its own coordination-account LLM calls
+        (already metered); the host evaluates and inserts them through the same
+        path as ordinary children, so nothing bypasses metering or the store.
+        Evaluation runs the code and costs no tokens, so the equal-token basis is
+        unchanged. A proposal that fails evaluation is dropped, not inserted.
+        """
+        for i, proposal in enumerate(intervention.proposals):
+            child_id = f"it{iteration:06d}-pe{i:03d}"
+            metrics = await self.evaluator.evaluate_program(proposal.code, child_id)
+            artifacts = self.evaluator.get_pending_artifacts(child_id)
+            if (not metrics) or ("error" in metrics):
+                logger.warning(
+                    f"Iteration {iteration}: coordination proposal {child_id} "
+                    f"({proposal.origin}) failed evaluation; dropped"
+                )
+                continue
+            child = Program(
+                id=child_id,
+                code=proposal.code,
+                language=self.config.language,
+                parent_id=proposal.parent_id,
+                generation=self.generation,
+                metrics=metrics,
+                iteration_found=iteration,
+                metadata={
+                    "origin": proposal.origin,
+                    "coordination_proposed": True,
+                },
+            )
+            self.db.add(child, iteration=iteration)
+            if artifacts:
+                self.db.store_artifacts(child_id, artifacts)
 
     def _update_histories(self) -> None:
         best = self.db.best_program()
