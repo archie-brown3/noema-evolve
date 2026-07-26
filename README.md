@@ -1,11 +1,21 @@
-# noema
-
-Controlled ablation of coordination mechanisms in LLM-driven evolutionary search.
+<div align="center">
+  <h1>noema</h1>
+  <p>Controlled ablation of coordination mechanisms in LLM-driven evolutionary search.</p>
+  <p>
+    <a href="#install">Install</a> ·
+    <a href="#minimal-run-example">Run</a> ·
+    <a href="#ablation-axes">Ablation axes</a> ·
+    <a href="#outputs-and-resume">Outputs</a> ·
+    <a href="#guarantees-enforced-by-tests">Guarantees</a> ·
+    <a href="#repository-layout">Layout</a>
+  </p>
+</div>
 
 noema implements an independent evolutionary controller while reusing selected
 OpenEvolve components (evaluator, program database, prompt sampler) through
 isolated adapters. The study compares coordination **arms** by changing only
-`coordination.module`, while keeping seeds, prompts, budget, and loop behavior fixed.
+`coordination.module`. The shared prompt skeleton, seeds, budget, and loop
+behavior stay fixed; module-specific coordination content is the treatment.
 
 ## OpenEvolve library context
 
@@ -20,7 +30,8 @@ or a local submodule in this repository.
   (defined in `pyproject.toml`).
 
 This separation keeps the study variable controlled: coordination changes are
-isolated to noema modules while substrate behavior remains pinned and auditable.
+isolated to noema modules while the substrate remains pinned within each
+mechanism comparison.
 
 ## What this repository provides
 
@@ -31,6 +42,7 @@ isolated to noema modules while substrate behavior remains pinned and auditable.
 - Tests that protect prompt identity, metering integrity, and determinism
 
 Design and audit details are documented in [`PLAN.md`](PLAN.md).
+The [`noema` package guide](noema/README.md) lists the public API and subpackages.
 
 ## Install
 
@@ -67,36 +79,41 @@ coordination:
   module: "null"            # OFF / brute-force baseline
   # module: "hifo"
   # module: "pes-faithful"
+  # module: "bandit"
+  # module: "pe"
 substrate:
-  kind: "islands"           # "tree" is specified but not yet implemented
+  kind: "islands"           # or "tree" / "cvt"
 selection:
-  policy: "substrate_default"   # or "stock_openevolve" / "boltzmann"
+  policy: "substrate_default"   # or "stock_openevolve" / "boltzmann" / "uct" / "cvt_ucb"
 ```
 
 Use identical config outside `coordination.module` when comparing arms.
 
-## Ablation axes — what exists, what is planned
+## Ablation axes
 
 The study varies coordination **mechanisms** against population **substrates** at
-equal token budget. Selection policy is a third axis, decoupled from topology, so
-any policy can be paired with any store.
+equal token budget. Selection policy is a separate configurable component used
+for native substrate policies and gated probes. Compatible policies and stores
+compose through one capability-checked interface.
 
 ### Mechanisms — `coordination.module`
 
 | mechanism | status | what it is |
 |---|---|---|
 | `null` | **implemented** | coordination-OFF. The control arm. |
-| `hifo` | **implemented — not valid** | HiFo-Prompt insight pool + evolutionary navigator. Fidelity defects found after the transplant; excluded from reported results pending remediation. |
-| `pes-faithful` | **implemented** | LoongFlow plan–execute–summarize, near-verbatim recast. The reference / validity anchor. Its variant behaviour (retry trigger, executor mode, prompt variant) is set by config, not by a separate arm. |
-| `bandit` | *planned* | AsymmetricUCB over the operator menu. Zero coordination LLM calls — the only free mechanism on the axis. |
-| `punctuated` | *planned* | Punctuated equilibrium: hill-climb between periodic regime changes, rather than reasoning on every mutation. |
+| `hifo` | **implemented** | Source-faithful HiFo-Prompt re-port with documented repairs and deviations. |
+| `pes-custom` | **implemented** | The noema plan–execute–summarize variant with concise prompts and advisory execution. |
+| `pes-faithful` | **implemented** | LoongFlow plan–execute–summarize, near-verbatim recast. The reference / validity anchor. Its registry key fixes the prompt and executor variants. |
+| `bandit` | **implemented** | AsymmetricUCB over the operator menu. It makes no coordination LLM calls. |
+| `pe` | **implemented** | Punctuated equilibrium with periodic paradigm-shift and variant proposals. |
 
 ### Substrates — `substrate.kind`
 
 | substrate | status | what it is |
 |---|---|---|
 | `islands` | **implemented** | islands + MAP-Elites. Migration-mixed fronts, broken lineages. |
-| `tree` | *planned* | global tree + UCT. Deep persistent lineages. Raises explicitly until built. |
+| `tree` | **implemented** | global tree + UCT. Deep persistent lineages. |
+| `cvt` | **implemented** | CVT archive with deterministic behavior regions. |
 
 ### Selection policies — `selection.policy`
 
@@ -105,6 +122,8 @@ any policy can be paired with any store.
 | `substrate_default` | **implemented** | the store's native policy. |
 | `stock_openevolve` | **implemented** | OpenEvolve's sampling, unchanged. |
 | `boltzmann` | **implemented** | Boltzmann sampling with adaptive temperature and optional stagnation detection. |
+| `uct` | **implemented** | UCT selection for the tree substrate with token-budget exploration decay. |
+| `cvt_ucb` | **implemented** | UCB selection across CVT regions. |
 
 ## Outputs and resume
 
@@ -156,16 +175,23 @@ For cross-process bit-identical reruns, pin `PYTHONHASHSEED`.
   [HiFo-Prompt](https://github.com/Challenger-XJTU/HiFo-Prompt)
 - `noema/coordination/pes/` contains code adapted from
   [LoongFlow](https://github.com/baidu-baige/LoongFlow) (Apache-2.0)
+- `noema/coordination/bandit/` ports the AsymmetricUCB kernel from
+  [ShinkaEvolve](https://github.com/SakanaAI/ShinkaEvolve) (Apache-2.0)
+- `noema/coordination/pe/` and `noema/cvt_behavior.py` adapt components from
+  [LEVI](https://github.com/ttanv/levi) (MIT)
+- `noema/tree.py` and `noema/selection/uct.py` adapt the tree and UCT kernels
+  from MCTS-AHD commit `ee9c4f424503c65a5fd2b899e6620ce86079fedb`
+  (MIT)
 
 Borrowed files include provenance headers; local changes are marked with `NOEMA:`.
 
 ## Repository layout
 
 ```text
-noema/       framework code (controller, budget, coordination, substrate adapters)
+noema/       framework code and package guide
 tests/       regression tests for noema guarantees and modules
 examples/    benchmark inputs (run artifacts are gitignored, not committed)
-spec/        the study contract: claims, matrix, pre-registered predictions
+spec/        tracked study-design and live-run protocol snapshots
 PLAN.md      architecture and audit design notes
 ```
 
