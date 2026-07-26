@@ -110,8 +110,14 @@ any policy can be paired with any store.
 
 - Checkpoints: `output_dir/checkpoints/`
 - LLM call log: `output_dir/llm_calls.jsonl`
+- Attempt trace: `output_dir/attempt_trace.jsonl` (one append-only record per
+  mutation attempt, including rejected attempts, complete rendered prompts and
+  responses, coordination advice, evaluator diagnostics, and linked call IDs)
+- Selection trace: `output_dir/selection_trace.jsonl` (the accepted program and
+  exact attempt selected after retry resolution and successful database insertion)
 - Evolution trace: `output_dir/evolution_trace.jsonl` (includes per-mutation
-  prompt/response/metrics metadata plus iteration token-ledger breakdown)
+  prompt/response/metrics metadata plus iteration token-ledger breakdown;
+  retained for compatibility)
 
 Resume by loading a checkpoint before running:
 
@@ -119,6 +125,22 @@ Resume by loading a checkpoint before running:
 controller.load_checkpoint("runs/arm_off/checkpoints/<checkpoint_name>")
 best = asyncio.run(controller.run())
 ```
+
+## EvoReplay export
+
+Analysis lives in the separate private
+[noema-analysis](https://github.com/archie-brown3/noema-analysis) repository, so
+EvoReplay is not a dependency of experiment runs. Export a completed run to
+EvoReplay's refined layout with:
+
+```bash
+python -m noema.export_evoreplay runs/<run-id> \
+  --output ../noema-analysis/data/refined/<run-id>
+```
+
+The export writes content-addressed program and prompt blobs, checkpoint
+membership, iteration scalars, token/cost summaries, and lossless copies of the
+Noema attempt and selection traces.
 
 ## Guarantees enforced by tests
 
