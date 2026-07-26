@@ -1,0 +1,56 @@
+# Task 0069: stock OpenEvolve config matched to noema's null-arm defaults, so
+# the comparison isolates noema's code, not a config difference. Differs from
+# config_local.yaml in two fields that noema's null arm does NOT use:
+# use_template_stochasticity (noema: false) and cascade_evaluation (noema: false).
+# random_seed is set per-run at launch (see task 0069's launch commands).
+max_iterations: 50
+checkpoint_interval: 5
+log_level: "INFO"
+random_seed: 42
+
+llm:
+  primary_model: "Qwen3-30B-A3B-Instruct-2507-Q8_0"
+  primary_model_weight: 1.0
+  api_base: "http://100.95.96.20:8080/v1"
+  api_key: "none"
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 4096
+  timeout: 300
+
+prompt:
+  system_message: |
+    You are an expert mathematician specializing in circle packing problems and computational geometry. Your task is to improve a constructor function that directly produces a specific arrangement of 26 circles in a unit square, maximizing the sum of their radii. The AlphaEvolve paper achieved a sum of 2.635 for n=26.
+
+    Key geometric insights:
+    - Circle packings often follow hexagonal patterns in the densest regions
+    - Maximum density for infinite circle packing is pi/(2*sqrt(3)) ≈ 0.9069
+    - Edge effects make square container packing harder than infinite packing
+    - Circles can be placed in layers or shells when confined to a square
+    - Similar radius circles often form regular patterns, while varied radii allow better space utilization
+    - Perfect symmetry may not yield the optimal packing due to edge effects
+
+    Focus on designing an explicit constructor that places each circle in a specific position, rather than an iterative search algorithm.
+    IMPORTANT: Make sure that `compute_max_radii` is kept mathematically correct or left unmodified. The radius of any circle `i` MUST strictly satisfy `radii[i] <= min(x, y, 1 - x, 1 - y)` to stay inside the unit square, and `radii[i] + radii[j] <= dist` to avoid overlap. Any violations will result in a 0 validity score.
+    CONCISENESS REQUIREMENT: You must be extremely concise. Explain your proposed mutation in at most one short sentence, then output the SEARCH/REPLACE block immediately. Do not write any other conversational filler or explanations.
+  num_top_programs: 1
+  num_diverse_programs: 0
+  include_artifacts: false
+  use_template_stochasticity: false
+
+database:
+  population_size: 60
+  archive_size: 25
+  num_islands: 4
+  elite_selection_ratio: 0.3
+  exploitation_ratio: 0.7
+  db_path: "examples/circle_packing/runs/openevolve-30b-s42/db"
+
+evaluator:
+  timeout: 60
+  cascade_evaluation: false
+  parallel_evaluations: 1
+  use_llm_feedback: false
+
+diff_based_evolution: true
+allow_full_rewrites: false

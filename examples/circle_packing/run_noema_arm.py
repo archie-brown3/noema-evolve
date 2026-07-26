@@ -23,6 +23,8 @@ from noema.config import (
     LLMClientConfig,
     LLMRolesConfig,
     NoemaConfig,
+    SelectionConfig,
+    SubstrateConfig,
 )
 from noema.controller import NoemaController
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
@@ -61,7 +63,13 @@ def main():
     # random while the bandit steers them — the one controlled difference).
     ap.add_argument("--operator-menu", action="store_true", default=False)
     ap.add_argument("--api-base", required=True)
+    ap.add_argument("--api-key", default="none")
     ap.add_argument("--output-dir", required=True)
+    ap.add_argument("--substrate", choices=["islands", "tree", "cvt"], default="islands")
+    # Default "substrate_default" resolves per-substrate (islands -> stock
+    # OpenEvolve selection, tree -> UCT, cvt -> cvt_ucb) via
+    # noema.substrates.registry.NATIVE_POLICIES; only pass this to override.
+    ap.add_argument("--selection", default="substrate_default")
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
     # Defaults to --model, i.e. one model for both seats, as before.
     ap.add_argument("--coordination-model", default=None)
@@ -95,7 +103,7 @@ def main():
     mutation_llm = LLMClientConfig(
         model=args.model,
         api_base=args.api_base,
-        api_key="none",
+        api_key=args.api_key,
         temperature=0.7,
         top_p=0.95,
         max_tokens=4096,
@@ -139,6 +147,8 @@ def main():
             module=args.arm,
             params={"context_window_tokens": args.context_window_tokens},
         ),
+        substrate=SubstrateConfig(kind=args.substrate),
+        selection=SelectionConfig(policy=args.selection),
     )
 
     controller = NoemaController(
