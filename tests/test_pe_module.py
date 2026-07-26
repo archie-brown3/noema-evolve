@@ -10,7 +10,7 @@ from openevolve.database import Program
 import noema.coordination.pe.module as pe_module
 from noema.coordination import MODULE_REGISTRY, build_coordination_module
 from noema.coordination.base import GenerationContext, Intervention, PopulationSnapshot
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 CODE_BLOCK = "```python\ndef f():\n    return %d\n```"
 

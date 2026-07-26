@@ -21,7 +21,7 @@ from openevolve.database import Program
 from openevolve.utils.metrics_utils import get_fitness_score
 
 from noema.substrates.base import PopulationSnapshot, RegionSummary, Selection
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 
 _SCHEMA_VERSION = 1

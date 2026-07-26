@@ -68,7 +68,7 @@ from noema.coordination.pes.summarizer import (  # noqa: F401  (re-exported)
     STALE,
     Summarizer,
 )
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 

@@ -39,7 +39,7 @@ from typing import Any, Dict, List, Optional
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext, Outcome
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 

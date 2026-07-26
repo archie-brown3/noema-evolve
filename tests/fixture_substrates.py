@@ -27,7 +27,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence
 from openevolve.database import Program
 
 from noema.substrates.base import PopulationSnapshot, RegionSummary, Selection
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 
 class FixtureCVTStore:

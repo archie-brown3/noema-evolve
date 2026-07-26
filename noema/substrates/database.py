@@ -16,7 +16,7 @@ from openevolve.config import DatabaseConfig
 from openevolve.database import Program, ProgramDatabase
 from openevolve.utils.metrics_utils import get_fitness_score
 
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ from typing import Dict, List, Tuple
 
 from openevolve.utils.code_utils import apply_diff
 
-from noema.diff import apply_diff_lenient
+from noema.evolution.diff import apply_diff_lenient
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 
@@ -83,6 +83,15 @@ class TestApplyDiffLenient(unittest.TestCase):
     """Synthetic cases for the indentation-aware apply_diff. Independent of
     the real-corpus fixtures below — these are the regression tests for the
     lenient-matching logic itself."""
+
+    def test_imports_from_the_evolution_package(self):
+        try:
+            module = __import__(
+                "noema.evolution.diff", fromlist=["apply_diff_lenient"]
+            )
+        except ModuleNotFoundError:
+            self.fail("apply_diff_lenient must live in noema.evolution.diff")
+        self.assertIs(module.apply_diff_lenient, apply_diff_lenient)
 
     def test_exact_match_preserved(self):
         """Exact match (same indentation) still works as before."""

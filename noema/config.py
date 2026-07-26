@@ -16,7 +16,7 @@ import dacite
 import yaml
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
-from noema.operators import OPERATOR_MENU
+from noema.evolution.operators import OPERATOR_MENU
 
 
 def _default_prompt_config() -> PromptConfig:

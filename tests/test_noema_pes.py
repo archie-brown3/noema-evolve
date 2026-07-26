@@ -23,7 +23,7 @@ from noema.coordination.pes.module import (
     REGRESSED,
     STALE,
 )
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 PLAN_TEXT = """# Plan
 

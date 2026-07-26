@@ -12,7 +12,7 @@ from openevolve.database import Program
 
 from noema.config import NoemaConfig, SelectionConfig, SubstrateConfig
 from noema.substrates.islands import IslandsStore
-from noema.prompts import build_mutation_prompt, make_prompt_sampler
+from noema.evolution.prompts import build_mutation_prompt, make_prompt_sampler
 from noema.substrates.registry import build_substrate_runtime
 from noema.selection.uct import (
     UCTSelectionPolicy,

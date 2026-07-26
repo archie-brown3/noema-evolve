@@ -25,6 +25,7 @@ See the [repository overview](../README.md) for installation, configuration, and
 
 - [`budget/`](./budget/README.md) meters LLM calls and records token use.
 - [`coordination/`](./coordination/README.md) defines the arm interface and registry.
+- [`evolution/`](./evolution/README.md) owns the shared mutation and evaluation path.
 - [`selection/`](./selection/README.md) selects parents through store-neutral policies.
 - [`substrates/`](./substrates/README.md) owns population stores and runtime composition.
 

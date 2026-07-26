@@ -29,7 +29,7 @@ from noema.coordination.base import (
     SamplingRequest,
     SelectionContext,
 )
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 

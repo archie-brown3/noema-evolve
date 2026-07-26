@@ -23,7 +23,7 @@ from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional
 
 from noema.substrates.base import PopulationSnapshot
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 
 class Outcome(str, Enum):
