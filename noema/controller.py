@@ -49,7 +49,7 @@ from noema.coordination import (
     build_coordination_module,
 )
 from noema.boundary import enforce_immutable_boundary
-from noema.registry import build_substrate_runtime
+from noema.substrates.registry import build_substrate_runtime
 from noema.operators import OPERATOR_MENU, OperatorSpec
 from noema.evaluator import make_evaluator
 from noema.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler

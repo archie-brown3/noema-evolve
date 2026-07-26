@@ -6,9 +6,9 @@ import unittest
 
 from openevolve.database import Program
 
-from noema.cvt import CVTStore
+from noema.substrates.cvt import CVTStore
 from noema.export_evoreplay import export_run
-from noema.tree import TreeStore
+from noema.substrates.tree import TreeStore
 
 
 def write_json(path, value):

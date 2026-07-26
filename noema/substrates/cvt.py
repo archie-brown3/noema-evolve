@@ -29,8 +29,8 @@ from threadpoolctl import threadpool_limits
 from openevolve.database import Program
 from openevolve.utils.metrics_utils import get_fitness_score
 
-from noema.base import PopulationSnapshot, RegionSummary, Selection
-from noema.cvt_behavior import DEFAULT_FEATURE_BOUNDS, BehaviorExtractor
+from noema.substrates.base import PopulationSnapshot, RegionSummary, Selection
+from noema.substrates.cvt_behavior import DEFAULT_FEATURE_BOUNDS, BehaviorExtractor
 from noema.views import ProgramView
 
 

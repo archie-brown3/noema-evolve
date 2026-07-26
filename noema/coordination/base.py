@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional
 
-from noema.base import PopulationSnapshot
+from noema.substrates.base import PopulationSnapshot
 from noema.views import ProgramView
 
 

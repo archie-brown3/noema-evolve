@@ -20,7 +20,7 @@ from typing import Any, Dict, Mapping, Optional, Sequence
 from openevolve.database import Program
 from openevolve.utils.metrics_utils import get_fitness_score
 
-from noema.base import PopulationSnapshot, RegionSummary, Selection
+from noema.substrates.base import PopulationSnapshot, RegionSummary, Selection
 from noema.views import ProgramView
 
 

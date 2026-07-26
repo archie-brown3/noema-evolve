@@ -4,8 +4,8 @@ import json
 
 from openevolve.database import Program
 
-from noema.base import SelectionPolicy
-from noema.cvt import CVTStore
+from noema.substrates.base import SelectionPolicy
+from noema.substrates.cvt import CVTStore
 from noema.selection.cvt import CVTSelectionPolicy
 
 
@@ -80,6 +80,6 @@ def test_state_dict_round_trips():
 
 
 def test_composes_in_substrate_runtime():
-    from noema.base import SubstrateRuntime
+    from noema.substrates.base import SubstrateRuntime
     rt = SubstrateRuntime(seeded_store(), CVTSelectionPolicy(seed=4))
     assert rt.select(num_inspirations=2).parent is not None

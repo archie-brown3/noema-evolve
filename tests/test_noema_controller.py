@@ -820,7 +820,7 @@ class TestNoemaConfig(unittest.TestCase):
 class TestSubstrateRuntimeControllerContract(unittest.TestCase):
     def test_tree_uct_runs_offline_with_deep_lineage_and_checkpoint_resume(self):
         from noema.selection.uct import UCTSelectionPolicy
-        from noema.tree import TreeStore
+        from noema.substrates.tree import TreeStore
 
         config = make_config(
             max_iterations=5,

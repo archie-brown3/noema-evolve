@@ -15,7 +15,7 @@ from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
-from noema.base import PopulationSnapshot, RegionSummary
+from noema.substrates.base import PopulationSnapshot, RegionSummary
 from noema.prompts import (
     COORDINATION_HEADER,
     build_mutation_prompt,

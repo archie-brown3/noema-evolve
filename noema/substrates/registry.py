@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from noema.config import SelectionConfig, SubstrateConfig
-from noema.base import SubstrateRuntime
-from noema.islands import IslandsStore
+from noema.substrates.base import SubstrateRuntime
+from noema.substrates.islands import IslandsStore
 from noema.selection.stock_openevolve import StockOpenEvolveSelection
-from noema.tree import TreeStore
+from noema.substrates.tree import TreeStore
 
 if TYPE_CHECKING:
     from noema.config import NoemaConfig
@@ -38,7 +38,7 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
             feature_dimensions=config.database.feature_dimensions,
         )
     elif config.substrate.kind == "cvt":
-        from noema.cvt import CVTStore
+        from noema.substrates.cvt import CVTStore
 
         cvt_features = config.substrate.cvt_behavior_features
         store = CVTStore(

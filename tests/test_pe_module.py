@@ -120,7 +120,7 @@ class TestPunctuatedEquilibrium(unittest.TestCase):
         # (db.add/store.add). The module source must reference neither.
         source = inspect.getsource(pe_module)
         for forbidden in ("db.add", "store.add", ".evaluate_program(", "self.evaluator",
-                          "from noema.cvt import", "CVTStore"):
+                          "from noema.substrates.cvt import", "CVTStore"):
             self.assertNotIn(forbidden, source, f"PE module must not reference {forbidden!r}")
 
     def test_intervention_carries_proposals_not_side_effects(self):

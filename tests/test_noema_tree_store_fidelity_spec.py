@@ -74,8 +74,8 @@ class TestMctsAhdKernelSpec(unittest.TestCase):
 class TestUCTPolicyHostAdaptationSpec(unittest.TestCase):
     def make_runtime(self, seed=7):
         module = _uct_module(self)
-        base = importlib.import_module("noema.base")
-        tree = importlib.import_module("noema.tree")
+        base = importlib.import_module("noema.substrates.base")
+        tree = importlib.import_module("noema.substrates.tree")
         store = tree.TreeStore(steps_per_generation=4)
         policy = module.UCTSelectionPolicy(
             token_budget=10_000,
@@ -85,7 +85,7 @@ class TestUCTPolicyHostAdaptationSpec(unittest.TestCase):
         return base.SubstrateRuntime(store, policy)
 
     def test_runtime_selection_uses_neutral_selection_value(self):
-        base = importlib.import_module("noema.base")
+        base = importlib.import_module("noema.substrates.base")
         runtime = self.make_runtime()
         runtime.store.add(_program("p0", 1.0))
 

@@ -36,7 +36,7 @@ def public_names(cls):
 class TestSelectionPolicyContract(unittest.TestCase):
     def test_selection_policy_is_a_runtime_protocol_or_abstract_base(self):
         SelectionPolicy = require_symbol(
-            self, "noema.base", "SelectionPolicy"
+            self, "noema.substrates.base", "SelectionPolicy"
         )
         runtime_protocol = bool(
             getattr(SelectionPolicy, "_is_protocol", False)
@@ -49,7 +49,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_policy_contract_owns_selection_lifecycle_and_state(self):
         SelectionPolicy = require_symbol(
-            self, "noema.base", "SelectionPolicy"
+            self, "noema.substrates.base", "SelectionPolicy"
         )
         required = {
             "select",
@@ -63,7 +63,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_policy_public_contract_contains_no_concrete_store_names(self):
         SelectionPolicy = require_symbol(
-            self, "noema.base", "SelectionPolicy"
+            self, "noema.substrates.base", "SelectionPolicy"
         )
         source = inspect.getsource(SelectionPolicy).casefold()
         self.assertNotIn("islandsstore", source)
@@ -71,7 +71,7 @@ class TestSelectionPolicyContract(unittest.TestCase):
 
     def test_interface_runtime_composes_peer_store_and_policy(self):
         SubstrateRuntime = require_symbol(
-            self, "noema.base", "SubstrateRuntime"
+            self, "noema.substrates.base", "SubstrateRuntime"
         )
         names = public_names(SubstrateRuntime)
         self.assertTrue({"store", "policy", "select"}.issubset(names))
@@ -92,7 +92,7 @@ class TestIndependentConfiguration(unittest.TestCase):
     def test_omitted_configuration_resolves_native_islands_default(self):
         NoemaConfig = require_symbol(self, "noema.config", "NoemaConfig")
         resolve = require_symbol(
-            self, "noema.registry", "resolve_selection_policy"
+            self, "noema.substrates.registry", "resolve_selection_policy"
         )
         config = NoemaConfig.from_dict({})
 
@@ -108,8 +108,8 @@ class TestIndependentConfiguration(unittest.TestCase):
         except ImportError as exc:
             self.fail(f"missing planned Boltzmann policy module: {exc}")
         source = inspect.getsource(module)
-        self.assertNotIn("noema.islands", source)
-        self.assertNotIn("noema.tree", source)
+        self.assertNotIn("noema.substrates.islands", source)
+        self.assertNotIn("noema.substrates.tree", source)
 
 
 class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
@@ -127,7 +127,7 @@ class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
         SubstrateConfig = require_symbol(self, "noema.config", "SubstrateConfig")
         SelectionConfig = require_symbol(self, "noema.config", "SelectionConfig")
         build_substrate_runtime = require_symbol(
-            self, "noema.registry", "build_substrate_runtime"
+            self, "noema.substrates.registry", "build_substrate_runtime"
         )
 
         config = NoemaConfig(
@@ -148,7 +148,7 @@ class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
         SubstrateConfig = require_symbol(self, "noema.config", "SubstrateConfig")
         SelectionConfig = require_symbol(self, "noema.config", "SelectionConfig")
         build_substrate_runtime = require_symbol(
-            self, "noema.registry", "build_substrate_runtime"
+            self, "noema.substrates.registry", "build_substrate_runtime"
         )
 
         config = NoemaConfig(
@@ -164,7 +164,7 @@ class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
         # sampling_weights, not some other/wider mismatch that would make
         # this test pass for the wrong reason.
         from noema.selection.boltzmann import BoltzmannSelectionPolicy
-        from noema.tree import TreeStore
+        from noema.substrates.tree import TreeStore
 
         missing = BoltzmannSelectionPolicy.required_capabilities - TreeStore.capabilities
         self.assertEqual(missing, frozenset({"sampling_weights"}))

@@ -34,7 +34,7 @@ from noema.coordination.base import (
     NullCoordination,
     SelectionContext,
 )
-from noema.islands import IslandsStore
+from noema.substrates.islands import IslandsStore
 from tests.fixture_substrates import FixtureCVTStore, seed_store
 
 SCORES = {0: [0.30, 0.55, 0.71], 1: [0.42, 0.68], 2: [0.10, 0.25, 0.60]}
@@ -185,7 +185,7 @@ class TestNoConcreteSubstrateReachesCoordination(unittest.TestCase):
         for module in (hifo_mod, pes_planner):
             source = inspect.getsource(module)
             with self.subTest(module=module.__name__):
-                self.assertNotIn("from noema.islands", source)
+                self.assertNotIn("from noema.substrates.islands", source)
                 self.assertNotIn("IslandsStore", source)
                 self.assertNotIn("sample_from_island", source)
                 self.assertNotIn("num_islands", source)

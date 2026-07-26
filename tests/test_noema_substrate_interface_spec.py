@@ -2,7 +2,7 @@
 
 These tests deliberately describe an interface which has not landed yet.  Keep
 the future imports in test helpers: ``unittest discover`` must continue to run
-while ``noema.base`` is absent.  The failures become ordinary passes,
+while ``noema.substrates.base`` is absent.  The failures become ordinary passes,
 without test edits, when the corresponding interface is implemented.
 """
 
@@ -20,12 +20,12 @@ def _future_symbols(testcase: unittest.TestCase):
     """Import the proposed interface with an actionable specification failure."""
 
     try:
-        module = import_module("noema.base")
+        module = import_module("noema.substrates.base")
     except ModuleNotFoundError as exc:
-        if exc.name != "noema.base":
+        if exc.name not in {"noema.substrates", "noema.substrates.base"}:
             raise
         testcase.fail(
-            "future substrate interface missing: create noema.base with "
+            "future substrate interface missing: create noema.substrates.base with "
             "PopulationStore, Selection, and PopulationSnapshot"
         )
 
