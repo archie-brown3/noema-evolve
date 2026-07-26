@@ -101,7 +101,13 @@ def make_config(**overrides) -> NoemaConfig:
     return NoemaConfig(**defaults)
 
 
-def make_controller(tmp, config=None, budget_tokens=1_000_000, client=None):
+def make_controller(
+    tmp,
+    config=None,
+    budget_tokens=1_000_000,
+    client=None,
+    initial_program_code=INITIAL_PROGRAM,
+):
     eval_path = os.path.join(tmp, "evaluator.py")
     if not os.path.exists(eval_path):
         with open(eval_path, "w") as f:
@@ -122,7 +128,7 @@ def make_controller(tmp, config=None, budget_tokens=1_000_000, client=None):
     controller = NoemaController(
         config=config,
         evaluation_file=eval_path,
-        initial_program_code=INITIAL_PROGRAM,
+        initial_program_code=initial_program_code,
         output_dir=os.path.join(tmp, "output"),
         mutation_llm=mutation_llm,
         coordination=NullCoordination(),
@@ -181,6 +187,29 @@ class TestControllerEndToEnd(unittest.TestCase):
             self.assertEqual(token_ledger["calls"][0]["completion_tokens"], 40)
             self.assertEqual(token_ledger["calls"][0]["tag"], "mutate")
             self.assertEqual(ledger.records[0].iteration, 0)
+
+    def test_attempt_trace_contains_rendered_prompt_response_and_ledger_link(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, _ = make_controller(tmp)
+            asyncio.run(controller.run(iterations=1))
+
+            trace_path = os.path.join(tmp, "output", "attempt_trace.jsonl")
+            with open(trace_path) as f:
+                traces = [json.loads(line) for line in f]
+
+            self.assertEqual(len(traces), 1)
+            trace = traces[0]
+            self.assertEqual(trace["outcome"], "accepted")
+            self.assertEqual(trace["attempt"], 0)
+            self.assertIn("def f()", trace["prompt"]["user"])
+            self.assertIn("```python", trace["response"])
+            self.assertEqual(trace["parent"]["id"], "initial")
+            self.assertEqual(trace["candidate"]["id"], "it000000")
+            self.assertEqual(trace["ledger_call_ids"], [ledger.records[0].call_id])
+            self.assertEqual(trace["ledger_calls"][0]["prompt_tokens"], 100)
+            self.assertEqual(trace["ledger_calls"][0]["completion_tokens"], 40)
+            self.assertTrue(trace["ledger_calls"][0]["succeeded"])
+            self.assertEqual(trace["coordination"]["mode"], "none")
 
     def test_children_are_distributed_across_islands_not_all_island_zero(self):
         # Regression test: db.add() was never told which island a child
@@ -316,6 +345,95 @@ class TestControllerEndToEnd(unittest.TestCase):
                 self.assertEqual(outcome, Outcome.NO_PROGRAM)
             # No children were added
             self.assertEqual(controller.db.num_programs, 1)
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            self.assertEqual(
+                [trace["outcome"] for trace in traces],
+                ["unparseable_response", "unparseable_response"],
+            )
+
+    def test_provider_failure_trace_links_failed_call_accounting(self):
+        class FailingClient:
+            def __init__(self):
+                self.calls = []
+
+                async def create(**params):
+                    self.calls.append(params)
+                    raise RuntimeError("provider unavailable")
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, _ = make_controller(tmp, client=FailingClient())
+
+            with self.assertRaisesRegex(RuntimeError, "provider unavailable"):
+                asyncio.run(controller.run(iterations=1))
+
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
+            self.assertEqual(trace["outcome"], "provider_failure")
+            self.assertEqual(trace["ledger_call_ids"], [ledger.records[0].call_id])
+            self.assertEqual(trace["ledger_calls"][0]["attempts"], 1)
+            self.assertFalse(trace["ledger_calls"][0]["succeeded"])
+            self.assertIn("provider unavailable", trace["ledger_calls"][0]["error"])
+
+    def test_immutable_boundary_violation_is_traced(self):
+        parent = (
+            "def fixed():\n"
+            "    return 1\n"
+            "# EVOLVE-BLOCK-START\n"
+            "def f():\n"
+            "    return 1\n"
+            "# EVOLVE-BLOCK-END\n"
+        )
+
+        class MissingBoundaryClient:
+            def __init__(self):
+                self.calls = []
+
+                async def create(**params):
+                    self.calls.append(params)
+                    return SimpleNamespace(
+                        choices=[
+                            SimpleNamespace(
+                                message=SimpleNamespace(
+                                    content="```python\ndef f():\n    return 2\n```"
+                                )
+                            )
+                        ],
+                        usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+                    )
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(
+                tmp,
+                client=MissingBoundaryClient(),
+                initial_program_code=parent,
+            )
+            asyncio.run(controller.run(iterations=1))
+
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
+            self.assertEqual(trace["outcome"], "immutable_boundary_violation")
+            self.assertIsNone(trace["candidate"])
+
+    def test_acceptance_hook_failure_is_not_traced_as_accepted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+
+            def fail_acceptance(**kwargs):
+                raise RuntimeError("substrate acceptance failed")
+
+            controller.substrate.on_child_accepted = fail_acceptance
+            with self.assertRaisesRegex(RuntimeError, "substrate acceptance failed"):
+                asyncio.run(controller.run(iterations=1))
+
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
+            self.assertEqual(trace["outcome"], "acceptance_failure")
+            self.assertIn("substrate acceptance failed", trace["error"])
 
 
 class TestReportResultOutcome(unittest.TestCase):
@@ -347,13 +465,16 @@ class TestReportResultOutcome(unittest.TestCase):
             module = self._Recorder()
             controller.coordination = module
             asyncio.run(controller.run(iterations=2))
-            return module.outcomes, controller
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            return module.outcomes, controller, traces
 
     def test_successful_iteration_reports_accepted(self):
         # CyclingFakeClient emits parseable rewrites the default evaluator scores.
-        outcomes, controller = self._run()
+        outcomes, controller, traces = self._run()
         self.assertEqual(outcomes, [Outcome.ACCEPTED, Outcome.ACCEPTED])
         self.assertGreater(controller.db.num_programs, 1)
+        self.assertEqual([trace["outcome"] for trace in traces], ["accepted", "accepted"])
 
     def test_applyable_code_that_fails_evaluation_reports_eval_error(self):
         class ErroringEvaluator:
@@ -364,10 +485,39 @@ class TestReportResultOutcome(unittest.TestCase):
                 return {"stderr": "Traceback: boom"}
 
         # Parseable rewrites (so NOT no_program) that then error at evaluation.
-        outcomes, controller = self._run(evaluator=ErroringEvaluator())
+        outcomes, controller, traces = self._run(evaluator=ErroringEvaluator())
         self.assertEqual(outcomes, [Outcome.EVAL_ERROR, Outcome.EVAL_ERROR])
         # eval_error children are not added to the population
         self.assertEqual(controller.db.num_programs, 1)
+        self.assertEqual(
+            [trace["outcome"] for trace in traces],
+            ["evaluation_failure", "evaluation_failure"],
+        )
+
+    def test_evaluator_exception_is_traced_before_propagating(self):
+        class RaisingEvaluator:
+            def __init__(self):
+                self.calls = 0
+
+            async def evaluate_program(self, code, program_id):
+                self.calls += 1
+                if self.calls == 1:
+                    return {"combined_score": 0.1}
+                raise RuntimeError("evaluator crashed")
+
+            def get_pending_artifacts(self, program_id):
+                return {}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, _, _ = make_controller(tmp)
+            controller.evaluator = RaisingEvaluator()
+            with self.assertRaisesRegex(RuntimeError, "evaluator crashed"):
+                asyncio.run(controller.run(iterations=1))
+
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
+            self.assertEqual(trace["outcome"], "evaluation_failure")
+            self.assertIn("evaluator crashed", trace["error"])
 
     def test_outcome_is_json_safe_and_matches_its_value(self):
         # str-enum: it serializes verbatim into the run log / attribution.
@@ -819,6 +969,19 @@ class TestNonImprovementRetry(unittest.TestCase):
             self.assertEqual(len(client.calls), 2)
             self.assertEqual(len(children), 1)
             self.assertEqual(children[0].metrics["combined_score"], 0.05)
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            with open(os.path.join(tmp, "output", "selection_trace.jsonl")) as f:
+                selection = json.loads(f.readline())
+            self.assertEqual(
+                [trace["outcome"] for trace in traces],
+                ["non_improvement", "non_improvement"],
+            )
+            self.assertEqual(
+                selection["selected_attempt_id"],
+                children[0].metadata["source_attempt_id"],
+            )
+            self.assertEqual(selection["program_id"], children[0].id)
 
     def test_trailing_failure_still_stores_best_valid_attempt(self):
         # attempt 0: valid but worse (recorded as best); attempt 1: garbage.
@@ -845,6 +1008,50 @@ class TestNonImprovementRetry(unittest.TestCase):
             self.assertEqual(len(children), 1)
             self.assertEqual(children[0].metrics["combined_score"], 0.05)
 
+    def test_failed_acceptance_of_earlier_best_is_recorded_as_failed_selection(self):
+        contents = ["```python\ndef f():\n    return 0.5\n```", "no code here"]
+        client = SimpleNamespace(calls=[])
+
+        async def create(**params):
+            client.calls.append(params)
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        message=SimpleNamespace(
+                            content=contents[min(len(client.calls) - 1, 1)]
+                        )
+                    )
+                ],
+                usage=SimpleNamespace(prompt_tokens=10, completion_tokens=5),
+            )
+
+        client.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+        with tempfile.TemporaryDirectory() as tmp:
+            config = make_config(
+                retry_enabled=True, retry_cap=1, retry_on="non_improvement"
+            )
+            controller, _, _ = make_controller(tmp, config=config, client=client)
+
+            def fail_acceptance(**kwargs):
+                raise RuntimeError("substrate acceptance failed")
+
+            controller.substrate.on_child_accepted = fail_acceptance
+            with self.assertRaisesRegex(RuntimeError, "substrate acceptance failed"):
+                asyncio.run(controller.run(iterations=1))
+
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            with open(os.path.join(tmp, "output", "selection_trace.jsonl")) as f:
+                selection = json.loads(f.readline())
+
+            self.assertEqual(
+                [trace["outcome"] for trace in traces],
+                ["non_improvement", "non_improvement"],
+            )
+            self.assertEqual(selection["status"], "failed")
+            self.assertEqual(selection["selected_attempt_id"], traces[0]["attempt_id"])
+            self.assertIn("substrate acceptance failed", selection["error"])
+
     def test_retry_on_failure_default_ignores_non_improvement(self):
         with tempfile.TemporaryDirectory() as tmp:
             # regression pin: same worse child, default trigger -> no retry,
@@ -867,11 +1074,14 @@ class TestRetryLoop(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             controller, ledger, client = make_controller(tmp, config=config)
             asyncio.run(controller.run(iterations=1))
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
 
         self.assertEqual(len(client.calls), 1)
         self.assertGreater(ledger.spent("mutation"), 0)
         self.assertEqual(controller.db.num_programs, 1)
         self.assertEqual(controller.start_iteration, 1)
+        self.assertEqual(trace["outcome"], "over_length")
 
     def test_parse_failure_retries_and_succeeds(self):
         with tempfile.TemporaryDirectory() as tmp:

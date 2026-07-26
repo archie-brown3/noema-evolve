@@ -42,6 +42,17 @@ class TestTokenLedger(unittest.TestCase):
         self.assertEqual(ledger.spent(), 220)
         self.assertEqual(ledger.remaining(), 10_000 - 220)
 
+    def test_charge_assigns_stable_sequential_call_ids(self):
+        ledger = TokenLedger(total_budget_tokens=10_000)
+        first = record("mutation")
+        second = record("coordination")
+
+        ledger.charge(first)
+        ledger.charge(second)
+
+        self.assertEqual(first.call_id, "call-000000")
+        self.assertEqual(second.call_id, "call-000001")
+
     def test_shared_pool_across_accounts(self):
         # Coordination spending reduces what mutation can use — that is the
         # experimental point of a single shared pool
@@ -137,6 +148,9 @@ class TestTokenLedger(unittest.TestCase):
         self.assertEqual(len(restored.records), 2)
         self.assertEqual(restored.records[0].iteration, 3)
         self.assertEqual(restored.account_caps, {"coordination": 200})
+        next_record = record("mutation")
+        restored.charge(next_record)
+        self.assertEqual(next_record.call_id, "call-000002")
 
     def test_jsonl_log_written(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -191,6 +205,7 @@ class TestRetrySpendMetering(unittest.TestCase):
         controller = NoemaController(
             config=NoemaConfig(
                 retry_enabled=True, retry_cap=1, retry_on="non_improvement",
+                diff_based_evolution=False,
                 database=DatabaseConfig(in_memory=True, num_islands=2,
                                         population_size=50, random_seed=42,
                                         migration_interval=1000),
@@ -228,6 +243,17 @@ class TestRetrySpendMetering(unittest.TestCase):
             self.assertEqual(len(client.calls), 1)
             self.assertEqual(ledger.spent("mutation"), 15)
             self.assertEqual(ledger.remaining(), 0)
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            self.assertEqual(
+                [trace["attempt"] for trace in traces],
+                [0, 1],
+                "the valid first attempt must survive a retry budget abort",
+            )
+            self.assertEqual(
+                [trace["outcome"] for trace in traces],
+                ["non_improvement", "budget_exhausted"],
+            )
 
 
 if __name__ == "__main__":

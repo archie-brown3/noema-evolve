@@ -53,6 +53,7 @@ from noema.registry import build_substrate_runtime
 from noema.operators import OPERATOR_MENU, OperatorSpec
 from noema.evaluator import make_evaluator
 from noema.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
+from noema.trace import AttemptTraceWriter, git_provenance, sha256_file
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +98,13 @@ class NoemaController:
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
         self._freeze_config(output_dir, config)
+        frozen_config_path = os.path.join(output_dir, FROZEN_CONFIG_FILE)
+        self.attempt_tracer = AttemptTraceWriter(
+            os.path.join(output_dir, "attempt_trace.jsonl"),
+            run_id=os.path.basename(os.path.abspath(output_dir)),
+            config_sha256=sha256_file(frozen_config_path),
+            git_provenance=git_provenance(os.path.dirname(os.path.abspath(__file__))),
+        )
 
         self.ledger = ledger or TokenLedger(
             total_budget_tokens=config.budget.total_tokens,
@@ -421,7 +429,17 @@ class NoemaController:
             # no-menu path stays None (there is no EoH operator to name).
             operator=operator.name if self.config.mutation_operators is not None else None,
         )
+        # Provenance on ledger records (BudgetedLLM only; injected fakes may not have it).
+        # Set this before advice so coordination calls are attributed to this iteration.
+        if hasattr(self.mutation_llm, "iteration"):
+            self.mutation_llm.iteration = iteration
+        if hasattr(self.coordination.llm, "iteration"):
+            self.coordination.llm.iteration = iteration
+        advice_ledger_start = len(self.ledger.records)
         advice = await self.coordination.advise(ctx)  # coordination hook 1
+        self._current_advice_call_ids = [
+            record.call_id for record in self.ledger.records[advice_ledger_start:]
+        ]
 
         if advice.attribution.get("full_executor_prompt"):
             # Directive-mode fidelity anchor (task 0065, Decision #25 scoped
@@ -449,12 +467,6 @@ class NoemaController:
             )
             prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
 
-        # Provenance on ledger records (BudgetedLLM only; injected fakes may not have it)
-        if hasattr(self.mutation_llm, "iteration"):
-            self.mutation_llm.iteration = iteration
-        if hasattr(self.coordination.llm, "iteration"):
-            self.coordination.llm.iteration = iteration
-
         # BudgetExhausted propagates to run() and stops the loop cleanly.
         # Retry loop: parse/eval failures feed their real error back to
         # the mutation LLM and retry before the iteration counts as spent.
@@ -472,23 +484,39 @@ class NoemaController:
         retry_cap = self.config.retry_cap if self.config.retry_enabled else 0
         # Best valid attempt across rounds (retry_on="non_improvement" only)
         best_attempt: Optional[Dict[str, Any]] = None
+        accepted_trace: Optional[Dict[str, Any]] = None
+        source_attempt_id: Optional[str] = None
         parent_fitness = ctx.parent.fitness if ctx.parent is not None else 0.0
 
         for attempt in range(retry_cap + 1):
             # Reset per attempt so the LAST attempt's failure category is the one
             # reported (task 0090); the eval-error branch below upgrades it.
             failure_outcome = Outcome.NO_PROGRAM
-            if attempt > 0:
-                current_prompt = await self._build_retry_prompt(
-                    base_prompt, advice, error_text, attempt, ctx
+            ledger_start = len(self.ledger.records)
+            current_prompt = prompt
+            try:
+                if attempt > 0:
+                    current_prompt = await self._build_retry_prompt(
+                        base_prompt, advice, error_text, attempt, ctx
+                    )
+                response = await self.mutation_llm.generate_with_context(
+                    system_message=current_prompt["system"],
+                    messages=[{"role": "user", "content": current_prompt["user"]}],
                 )
-            else:
-                current_prompt = prompt
-
-            response = await self.mutation_llm.generate_with_context(
-                system_message=current_prompt["system"],
-                messages=[{"role": "user", "content": current_prompt["user"]}],
-            )
+            except BudgetExhausted as exc:
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, None, None, None, "budget_exhausted",
+                    str(exc), ledger_start,
+                )
+                raise
+            except Exception as exc:
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, None, None, None, "provider_failure",
+                    repr(exc), ledger_start,
+                )
+                raise
 
             child_code, changes_summary = self._parse_response(response, parent.code, operator)
             if child_code is None:
@@ -496,6 +524,11 @@ class NoemaController:
                 logger.warning(
                     f"Iteration {iteration}: no valid program in LLM response "
                     f"(attempt {attempt + 1})"
+                )
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, response, None, None, "unparseable_response",
+                    error_text, ledger_start,
                 )
                 continue
 
@@ -518,6 +551,11 @@ class NoemaController:
                     f"Iteration {iteration}: mutation touched F_imm outside the evolve "
                     f"block (attempt {attempt + 1})"
                 )
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, response, None, None,
+                    "immutable_boundary_violation", error_text, ledger_start,
+                )
                 continue
 
             if len(child_code) > self.config.max_code_length:
@@ -533,10 +571,24 @@ class NoemaController:
                     f"(attempt {attempt + 1}, {child_length} > "
                     f"{self.config.max_code_length})"
                 )
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, response,
+                    {"id": child_id, "code_length": child_length}, None,
+                    "over_length", error_text, ledger_start,
+                )
                 continue
 
-            metrics = await self.evaluator.evaluate_program(child_code, child_id)
-            artifacts = self.evaluator.get_pending_artifacts(child_id)
+            try:
+                metrics = await self.evaluator.evaluate_program(child_code, child_id)
+                artifacts = self.evaluator.get_pending_artifacts(child_id)
+            except Exception as exc:
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, response, {"id": child_id, "code": child_code},
+                    None, "evaluation_failure", repr(exc), ledger_start,
+                )
+                raise
             # "error" is a RESERVED key in the evaluator metrics contract: an
             # evaluator signals failure by returning {"error": ...} (openevolve
             # convention). A benchmark must not name a genuine score metric
@@ -553,6 +605,12 @@ class NoemaController:
                 logger.warning(
                     f"Iteration {iteration}: evaluation failed "
                     f"(attempt {attempt + 1}): {error_text[:200]}"
+                )
+                self._write_attempt_trace(
+                    iteration, attempt, ctx, selection, operator, advice,
+                    current_prompt, response, {"id": child_id, "code": child_code},
+                    {"metrics": metrics, "artifacts": artifacts},
+                    "evaluation_failure", error_text, ledger_start,
                 )
                 child_code = None
                 changes_summary = None
@@ -574,6 +632,7 @@ class NoemaController:
                         "response": response,
                         "prompt": current_prompt,
                         "fitness": child_fitness,
+                        "attempt": attempt,
                     }
                 if child_fitness <= parent_fitness and attempt < retry_cap:
                     error_text = (
@@ -584,8 +643,39 @@ class NoemaController:
                         f"Iteration {iteration}: valid child without improvement "
                         f"(attempt {attempt + 1}); retrying"
                     )
+                    self._write_attempt_trace(
+                        iteration, attempt, ctx, selection, operator, advice,
+                        current_prompt, response, {"id": child_id, "code": child_code},
+                        {"metrics": metrics, "artifacts": artifacts},
+                        "non_improvement", error_text, ledger_start,
+                    )
                     continue
-
+                selected = best_attempt is not None and best_attempt["attempt"] == attempt
+                if selected and child_fitness > parent_fitness:
+                    accepted_trace = {
+                        "attempt": attempt,
+                        "prompt": current_prompt,
+                        "response": response,
+                        "candidate": {"id": child_id, "code": child_code},
+                        "evaluation": {"metrics": metrics, "artifacts": artifacts},
+                        "ledger_start": ledger_start,
+                    }
+                else:
+                    self._write_attempt_trace(
+                        iteration, attempt, ctx, selection, operator, advice,
+                        current_prompt, response, {"id": child_id, "code": child_code},
+                        {"metrics": metrics, "artifacts": artifacts},
+                        "non_improvement", None, ledger_start,
+                    )
+            else:
+                accepted_trace = {
+                    "attempt": attempt,
+                    "prompt": current_prompt,
+                    "response": response,
+                    "candidate": {"id": child_id, "code": child_code},
+                    "evaluation": {"metrics": metrics, "artifacts": artifacts},
+                    "ledger_start": ledger_start,
+                }
             break  # success — child_code/metrics/artifacts/changes_summary/current_prompt are set
 
         if best_attempt is not None:
@@ -598,6 +688,11 @@ class NoemaController:
             artifacts = best_attempt["artifacts"]
             response = best_attempt["response"]
             current_prompt = best_attempt["prompt"]
+            source_attempt_id = self.attempt_tracer.attempt_id(
+                iteration, best_attempt["attempt"]
+            )
+        elif child_code is not None:
+            source_attempt_id = self.attempt_tracer.attempt_id(iteration, attempt)
 
         # Keep optional budget-aware selection policies checkpoint-exact even
         # when the final attempt is rejected or no subsequent selection occurs.
@@ -637,6 +732,7 @@ class NoemaController:
                 "island": island,
                 "stderr": (artifacts or {}).get("stderr", ""),
                 "operator": operator.name,
+                "source_attempt_id": source_attempt_id,
             },
             prompts=(
                 {
@@ -650,12 +746,61 @@ class NoemaController:
                 else None
             ),
         )
-        self.substrate.on_child_accepted(
-            parent=parent,
-            child=child,
-            step_size=min(1.0, (iteration + 1) / max(1, self.config.max_iterations)),
+        try:
+            self.substrate.on_child_accepted(
+                parent=parent,
+                child=child,
+                step_size=min(1.0, (iteration + 1) / max(1, self.config.max_iterations)),
+            )
+            self.db.add(child, iteration=iteration, target_scope=island)
+        except Exception as exc:
+            if accepted_trace is not None:
+                self._write_attempt_trace(
+                    iteration,
+                    accepted_trace["attempt"],
+                    ctx,
+                    selection,
+                    operator,
+                    advice,
+                    accepted_trace["prompt"],
+                    accepted_trace["response"],
+                    accepted_trace["candidate"],
+                    accepted_trace["evaluation"],
+                    "acceptance_failure",
+                    repr(exc),
+                    accepted_trace["ledger_start"],
+                )
+            self.attempt_tracer.write_selection(
+                iteration=iteration,
+                program_id=child.id,
+                selected_attempt_id=source_attempt_id,
+                status="failed",
+                error=repr(exc),
+            )
+            raise
+
+        if accepted_trace is not None:
+            self._write_attempt_trace(
+                iteration,
+                accepted_trace["attempt"],
+                ctx,
+                selection,
+                operator,
+                advice,
+                accepted_trace["prompt"],
+                accepted_trace["response"],
+                accepted_trace["candidate"],
+                accepted_trace["evaluation"],
+                "accepted",
+                None,
+                accepted_trace["ledger_start"],
+            )
+        self.attempt_tracer.write_selection(
+            iteration=iteration,
+            program_id=child.id,
+            selected_attempt_id=source_attempt_id,
+            status="accepted",
         )
-        self.db.add(child, iteration=iteration, target_scope=island)
         if artifacts:
             self.db.store_artifacts(child_id, artifacts)
 
@@ -680,6 +825,75 @@ class NoemaController:
                 "token_ledger": self._iteration_ledger_metadata(iteration),
             },
         )
+
+    def _write_attempt_trace(
+        self,
+        iteration: int,
+        attempt: int,
+        ctx: GenerationContext,
+        selection,
+        operator: OperatorSpec,
+        advice,
+        prompt: Dict[str, str],
+        response: Optional[str],
+        candidate: Optional[Dict[str, Any]],
+        evaluation: Optional[Dict[str, Any]],
+        outcome: str,
+        error: Optional[str],
+        ledger_start: int,
+        ledger_end: Optional[int] = None,
+    ) -> None:
+        records = self.ledger.records[ledger_start:ledger_end]
+        mode = (
+            "directive"
+            if advice.attribution.get("full_executor_prompt")
+            else "injected"
+            if advice.system_block or advice.prompt_block
+            else "none"
+        )
+        self.attempt_tracer.write(
+            iteration=iteration,
+            attempt=attempt,
+            outcome=outcome,
+            generation=self.generation,
+            arm=self.config.coordination.module,
+            substrate=self.config.substrate.kind,
+            seed=self.config.random_seed,
+            target_scope=selection.target_scope,
+            source_scope=selection.source_scope,
+            parent=self._program_trace_snapshot(selection.parent),
+            inspirations=[
+                self._program_trace_snapshot(item) for item in selection.inspirations
+            ],
+            selection=dict(self.substrate.last_selection_trace),
+            operator={"name": operator.name, **self._last_operator_trace},
+            coordination={
+                "system_block": advice.system_block,
+                "prompt_block": advice.prompt_block,
+                "attribution": advice.attribution,
+                "mode": mode,
+                "ledger_call_ids": self._current_advice_call_ids,
+            },
+            prompt=prompt,
+            response=response,
+            candidate=candidate,
+            evaluation=evaluation,
+            error=error,
+            ledger_call_ids=[record.call_id for record in records],
+            ledger_calls=[asdict(record) for record in records],
+        )
+
+    @staticmethod
+    def _program_trace_snapshot(program: Program) -> Dict[str, Any]:
+        return {
+            "id": program.id,
+            "code": program.code,
+            "metrics": program.metrics,
+            "generation": program.generation,
+            "iteration_found": program.iteration_found,
+            "parent_id": program.parent_id,
+            "metadata": program.metadata,
+        }
 
     def _iteration_ledger_metadata(self, iteration: int) -> Dict[str, Any]:
         records = [r for r in self.ledger.records if r.iteration == iteration]

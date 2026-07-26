@@ -62,6 +62,7 @@ class CallRecord:
     model: str
     prompt_tokens: int
     completion_tokens: int
+    call_id: str = ""  # deterministic run-local linkage into attempt_trace.jsonl
     attempts: int = 1  # billed requests, including failed retries
     latency_s: float = 0.0
     iteration: int = -1
@@ -70,6 +71,8 @@ class CallRecord:
     finish_reason: str = ""  # "stop" | "length" | "content_filter" | "" (local servers)
     reasoning_tokens: int = 0  # thinking tokens (DeepSeek R1, o1, etc.)
     cost: float = 0.0  # dollar cost (OpenRouter x-openrouter-cost header or 0.0)
+    succeeded: bool = True
+    error: str = ""
 
     @property
     def total_tokens(self) -> int:
@@ -142,6 +145,8 @@ class TokenLedger:
         been crossed; the next ensure() will then raise).
         """
         with self._lock:
+            if not record.call_id:
+                record.call_id = f"call-{len(self._records):06d}"
             self._records.append(record)
             self._spent_by_account[record.account] = (
                 self._spent_by_account.get(record.account, 0) + record.total_tokens

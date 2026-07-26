@@ -155,6 +155,21 @@ class BudgetedLLM(LLMInterface):
                     )
                     await asyncio.sleep(retry_delay)
                     continue
+                self.ledger.charge(
+                    CallRecord(
+                        account=self.account,
+                        tag=tag,
+                        model=self.model,
+                        prompt_tokens=0,
+                        completion_tokens=0,
+                        attempts=attempt + 1,
+                        latency_s=time.time() - start,
+                        iteration=self.iteration,
+                        estimated=True,
+                        succeeded=False,
+                        error=repr(e),
+                    )
+                )
                 raise
 
             usage = getattr(response, "usage", None)

@@ -107,7 +107,15 @@ class TestBudgetedLLM(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
-        self.assertEqual(len(ledger.records), 0)
+        self.assertEqual(len(ledger.records), 1)
+        record = ledger.records[0]
+        self.assertEqual(record.attempts, 2)
+        self.assertEqual(record.prompt_tokens, 0)
+        self.assertEqual(record.completion_tokens, 0)
+        self.assertTrue(record.estimated)
+        self.assertFalse(record.succeeded)
+        self.assertIn("RuntimeError('b')", record.error)
+        self.assertGreaterEqual(record.latency_s, 0)
 
     def test_preflight_raises_without_calling_api(self):
         ledger = TokenLedger(total_budget_tokens=100)
