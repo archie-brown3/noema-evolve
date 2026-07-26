@@ -2,7 +2,7 @@
 
 import ast
 
-from noema.cvt_behavior import (
+from noema.substrates.cvt_behavior import (
     BehaviorExtractor,
     compute_numeric_literal_count,
     compute_range_max_arg,

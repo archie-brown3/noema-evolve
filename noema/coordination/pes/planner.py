@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination.base import GenerationContext
-from noema.base import RegionSummary
+from noema.substrates.base import RegionSummary
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard, typing only
     from noema.coordination.pes.module import PESPlannerModule

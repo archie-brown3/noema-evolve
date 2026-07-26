@@ -22,7 +22,7 @@ See the [noema package guide](../README.md) for the complete package map.
 
 ## Composition
 
-[`build_substrate_runtime`](../registry.py) resolves the configured policy.
+[`build_substrate_runtime`](../substrates/registry.py) resolves the configured policy.
 It combines the policy with an islands, tree, or CVT store.
 The controller passes selection hints through `SubstrateRuntime.select`.
 The runtime forwards only hints that the policy supports.

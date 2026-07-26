@@ -10,7 +10,7 @@ Mapping from the released HiFo-Prompt code (hifo_interface_EC.InterfaceEC glue):
 - on_generation_end() <- InterfaceEC.extract_insights_from_population (the
                          mechanism's only LLM call) + generation bookkeeping
 
-Documented deviations from the released code (PLAN.md section 2.2; authorities in
+Documented deviations from the released code (authorities in
 the vault's HiFo Fidelity Contract — 2026-07, Decisions #50-#54):
 1. Credit assignment actually works here. The original ran offspring generation
    in joblib subprocesses, so tip-stat updates mutated worker-local copies of
@@ -39,7 +39,7 @@ from typing import Any, Dict, List, Optional
 from noema.coordination.base import Advice, CoordinationModule, GenerationContext, Outcome
 from noema.coordination.hifo.evolutionary_navigator import EvolutionaryNavigator
 from noema.coordination.hifo.insight_pool import InsightPool
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 

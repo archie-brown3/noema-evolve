@@ -5,9 +5,9 @@ The mechanism (insight pool + evolutionary navigator + credit assignment +
 insight extraction) is copied from the released HiFo-Prompt code and isolated
 in this package; HiFo's substrate (its EoH evolution loop, operator prompts,
 response parsing, LLM interface) is NOT ported — noema's controller and
-OpenEvolve components replace it. See PLAN.md section 2.2 for the
-mechanism/substrate boundary and the documented deviations from the released
-code.
+OpenEvolve components replace it. The mechanism/substrate boundary and
+documented deviations are recorded in the module docstring and vault fidelity
+contract.
 
 Borrowed source: https://github.com/Challenger-XJTU/HiFo-Prompt
 (files under hifo/src/hifo/methods/hifo/). Files in this package carry

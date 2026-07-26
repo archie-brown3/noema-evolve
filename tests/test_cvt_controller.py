@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 from noema.config import NoemaConfig, SubstrateConfig
-from noema.cvt import CVTStore
+from noema.substrates.cvt import CVTStore
 
 from tests.test_noema_controller import make_config, make_controller
 

@@ -40,8 +40,8 @@ from noema.coordination import (
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.arms import PESCustomModule
 from noema.coordination.pes.module import PESPlannerModule
-from noema.prompts import COORDINATION_HEADER
-from noema.views import ProgramView
+from noema.evolution.prompts import COORDINATION_HEADER
+from noema.evolution.views import ProgramView
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 from openevolve.database import Program
@@ -820,7 +820,7 @@ class TestNoemaConfig(unittest.TestCase):
 class TestSubstrateRuntimeControllerContract(unittest.TestCase):
     def test_tree_uct_runs_offline_with_deep_lineage_and_checkpoint_resume(self):
         from noema.selection.uct import UCTSelectionPolicy
-        from noema.tree import TreeStore
+        from noema.substrates.tree import TreeStore
 
         config = make_config(
             max_iterations=5,

@@ -1,5 +1,5 @@
 """
-Tests for noema.prompts — the identical-prompts-across-arms guarantee
+Tests for noema.evolution.prompts — the identical-prompts-across-arms guarantee
 """
 
 import asyncio
@@ -15,14 +15,14 @@ from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
-from noema.base import PopulationSnapshot, RegionSummary
-from noema.prompts import (
+from noema.substrates.base import PopulationSnapshot, RegionSummary
+from noema.evolution.prompts import (
     COORDINATION_HEADER,
     build_mutation_prompt,
     inject_advice,
     make_prompt_sampler,
 )
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 from noema.controller import NoemaController
 
 
@@ -93,7 +93,7 @@ class TestOperatorTemplatePassthrough(unittest.TestCase):
     above use no template_key/parent2 and must stay green unchanged)."""
 
     def test_make_prompt_sampler_registers_operator_templates(self):
-        from noema.operators import OPERATOR_TEMPLATES
+        from noema.evolution.operators import OPERATOR_TEMPLATES
 
         sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
         for template_key in OPERATOR_TEMPLATES:
@@ -1127,7 +1127,7 @@ class TestPESExecutorDirectiveConstants(unittest.TestCase):
         # advisory suffix, which is just the raw plan text.
         from noema.coordination.pes.executor import Executor
         from noema.coordination.base import GenerationContext
-        from noema.views import ProgramView
+        from noema.evolution.views import ProgramView
         from types import SimpleNamespace
 
         module = SimpleNamespace(executor_mode="advisory", _plans={}, domain_context="")

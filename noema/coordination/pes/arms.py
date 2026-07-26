@@ -1,7 +1,7 @@
 """
 Named PES arms (task 0066).
 
-The study's verify-run invariant (spec/LIVE-RUNS.md §4) is that two paired runs
+The study's paired-run verification invariant is that two paired runs
 differ in exactly ONE config setting: `coordination.module`. So arm identity
 lives in the registry KEY, never in a bundle of sub-options a run config has to
 get right — a typo in one knob would otherwise yield a half-faithful arm that

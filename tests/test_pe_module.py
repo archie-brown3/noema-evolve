@@ -10,7 +10,7 @@ from openevolve.database import Program
 import noema.coordination.pe.module as pe_module
 from noema.coordination import MODULE_REGISTRY, build_coordination_module
 from noema.coordination.base import GenerationContext, Intervention, PopulationSnapshot
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 CODE_BLOCK = "```python\ndef f():\n    return %d\n```"
 
@@ -120,7 +120,7 @@ class TestPunctuatedEquilibrium(unittest.TestCase):
         # (db.add/store.add). The module source must reference neither.
         source = inspect.getsource(pe_module)
         for forbidden in ("db.add", "store.add", ".evaluate_program(", "self.evaluator",
-                          "from noema.cvt import", "CVTStore"):
+                          "from noema.substrates.cvt import", "CVTStore"):
             self.assertNotIn(forbidden, source, f"PE module must not reference {forbidden!r}")
 
     def test_intervention_carries_proposals_not_side_effects(self):

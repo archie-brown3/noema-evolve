@@ -42,7 +42,7 @@ from noema.coordination.base import (
     ProposedProgram,
 )
 from noema.coordination.pe.prompts import paradigm_shift_prompt, variant_prompt
-from noema.cvt_behavior import DEFAULT_FEATURE_BOUNDS, BehaviorExtractor
+from noema.substrates.cvt_behavior import DEFAULT_FEATURE_BOUNDS, BehaviorExtractor
 
 logger = logging.getLogger(__name__)
 

@@ -33,9 +33,9 @@ from noema.controller import NoemaController
 from noema.coordination import build_coordination_module
 from noema.coordination.base import GenerationContext, NullCoordination
 from noema.coordination.pes.module import PESPlannerModule
-from noema.base import PopulationSnapshot, RegionSummary
-from noema.islands import IslandsStore
-from noema.views import ProgramView
+from noema.substrates.base import PopulationSnapshot, RegionSummary
+from noema.substrates.islands import IslandsStore
+from noema.evolution.views import ProgramView
 
 INITIAL_PROGRAM = "def f():\n    return 1\n"
 

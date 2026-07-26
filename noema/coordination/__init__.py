@@ -1,4 +1,4 @@
-"""Pluggable coordination mechanisms (see PLAN.md section 3.1)"""
+"""Pluggable coordination mechanisms."""
 
 import logging
 import random
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 # Registry of coordination arms, selected by NoemaConfig.coordination.module.
 # Arm identity lives in the KEY: paired runs must differ in this one setting
-# and nothing else (verify-run invariant, spec/LIVE-RUNS.md §4). The two PES
+# and nothing else (the paired-run verification invariant). The two PES
 # variants therefore get their own keys rather than sharing "pes" plus params.
 MODULE_REGISTRY: Dict[str, type] = {
     "null": NullCoordination,

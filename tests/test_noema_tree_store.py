@@ -10,8 +10,8 @@ import unittest
 
 from openevolve.database import Program
 
-from noema.base import PopulationStore
-from noema.tree import TreeStore
+from noema.substrates.base import PopulationStore
+from noema.substrates.tree import TreeStore
 
 
 def program(program_id: str, score: float, parent_id=None, **extra) -> Program:

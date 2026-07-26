@@ -2,7 +2,7 @@
 Prompt assembly for noema.
 
 All arms of an experiment share identical prompts except for the coordination
-block (PLAN.md sections 1.5 and 3.4 risk 3). Two rules enforce that here:
+block. Two rules enforce that here:
 
 1. Template stochasticity is forced OFF — openevolve defaults it ON, which
    randomizes prompt phrasing and voids identical-prompt guarantees.
@@ -18,7 +18,7 @@ from openevolve.config import PromptConfig
 from openevolve.database import Program
 from openevolve.prompt.sampler import PromptSampler
 
-from noema.operators import OPERATOR_TEMPLATES
+from noema.evolution.operators import OPERATOR_TEMPLATES
 
 # Delimits the coordination block in the user prompt. The header is part of the
 # controlled variable: the coordination-OFF arm has no block and no header.

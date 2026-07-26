@@ -11,9 +11,9 @@ import uuid
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 from openevolve.database import Program
 
-from noema.database import SubstrateDatabase
-from noema.evaluator import make_evaluator
-from noema.views import ProgramView
+from noema.substrates.database import SubstrateDatabase
+from noema.evolution.evaluator import make_evaluator
+from noema.evolution.views import ProgramView
 
 
 def make_db(**overrides) -> SubstrateDatabase:

@@ -1,5 +1,5 @@
 """
-The CoordinationModule interface (PLAN.md section 3.1).
+The CoordinationModule interface.
 
 A coordination mechanism observes evolution state, injects text into mutation
 prompts, and receives credit-assignment feedback. Coordination-present vs
@@ -22,8 +22,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional
 
-from noema.base import PopulationSnapshot
-from noema.views import ProgramView
+from noema.substrates.base import PopulationSnapshot
+from noema.evolution.views import ProgramView
 
 
 class Outcome(str, Enum):

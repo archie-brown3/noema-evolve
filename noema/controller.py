@@ -1,10 +1,10 @@
 """
-The noema controller loop (PLAN.md section 3.3).
+The noema controller loop.
 
 Single-process, strictly sequential: sample → advise → prompt → mutate → parse →
 evaluate → add → report → generation tick → checkpoint. Coordination state lives
 in this process (the released HiFo-Prompt lost its credit-assignment feedback to
-joblib subprocess copies — see PLAN.md section 2.2), and the coordination-OFF vs
+joblib subprocess copies), and the coordination-OFF vs
 coordination-ON arms differ ONLY in which CoordinationModule is plugged in.
 """
 
@@ -31,7 +31,7 @@ from openevolve.utils.metrics_utils import get_fitness_score
 # Indentation-aware SEARCH/REPLACE application: openevolve's apply_diff requires
 # a byte-exact match on the SEARCH block, so an LLM that re-indents the snippet
 # silently produces a no-op diff. apply_diff_lenient tolerates that.
-from noema.diff import apply_diff_lenient as apply_diff
+from noema.evolution.diff import apply_diff_lenient as apply_diff
 
 from noema.budget.ledger import (
     COORDINATION_ACCOUNT,
@@ -48,11 +48,11 @@ from noema.coordination import (
     SelectionContext,
     build_coordination_module,
 )
-from noema.boundary import enforce_immutable_boundary
-from noema.registry import build_substrate_runtime
-from noema.operators import OPERATOR_MENU, OperatorSpec
-from noema.evaluator import make_evaluator
-from noema.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
+from noema.evolution.boundary import enforce_immutable_boundary
+from noema.substrates.registry import build_substrate_runtime
+from noema.evolution.operators import OPERATOR_MENU, OperatorSpec
+from noema.evolution.evaluator import make_evaluator
+from noema.evolution.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
 from noema.trace import AttemptTraceWriter, git_provenance, sha256_file
 
 logger = logging.getLogger(__name__)

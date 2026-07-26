@@ -7,9 +7,9 @@ import tempfile
 import numpy as np
 from openevolve.database import Program
 
-import noema.cvt as cvt_module
-from noema.base import PopulationSnapshot, PopulationStore
-from noema.cvt import CVTStore, init_cvt_centroids, nearest_centroid
+import noema.substrates.cvt as cvt_module
+from noema.substrates.base import PopulationSnapshot, PopulationStore
+from noema.substrates.cvt import CVTStore, init_cvt_centroids, nearest_centroid
 
 
 def prog(pid, code, score, parent=None):

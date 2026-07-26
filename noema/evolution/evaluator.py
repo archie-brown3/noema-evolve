@@ -2,8 +2,8 @@
 Adapter around openevolve.evaluator.Evaluator.
 
 noema constructs the evaluator with no LLM ensemble, no prompt sampler and no
-database, so the use_llm_feedback path (an unmetered LLM call site,
-PLAN.md section 1.3 site #3) is structurally dead, not just configured off.
+database, so the unmetered ``use_llm_feedback`` path is structurally dead, not
+just configured off.
 """
 
 from typing import Optional

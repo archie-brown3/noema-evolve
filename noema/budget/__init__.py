@@ -1,4 +1,4 @@
-"""Token budget accounting for noema (see PLAN.md section 3.2)"""
+"""Token budget accounting for noema."""
 
 from noema.budget.ledger import BudgetExhausted, CallRecord, TokenLedger
 from noema.budget.llm import BudgetedLLM

@@ -11,16 +11,16 @@ from openevolve.config import DatabaseConfig, PromptConfig
 from openevolve.database import Program
 
 from noema.config import NoemaConfig, SelectionConfig, SubstrateConfig
-from noema.islands import IslandsStore
-from noema.prompts import build_mutation_prompt, make_prompt_sampler
-from noema.registry import build_substrate_runtime
+from noema.substrates.islands import IslandsStore
+from noema.evolution.prompts import build_mutation_prompt, make_prompt_sampler
+from noema.substrates.registry import build_substrate_runtime
 from noema.selection.uct import (
     UCTSelectionPolicy,
     budget_exploration,
     should_widen,
     uct_score,
 )
-from noema.tree import TreeStore
+from noema.substrates.tree import TreeStore
 
 
 def program(program_id: str, score: float, parent_id=None) -> Program:
@@ -274,9 +274,9 @@ class TestUCTComposition(unittest.TestCase):
         import noema.selection.uct as module
 
         source = inspect.getsource(module)
-        self.assertNotIn("noema.tree", source)
-        self.assertNotIn("from noema.tree", source)
-        self.assertNotIn("import noema.tree", source)
+        self.assertNotIn("noema.substrates.tree", source)
+        self.assertNotIn("from noema.substrates.tree", source)
+        self.assertNotIn("import noema.substrates.tree", source)
 
 
 class TestCrossSubstratePromptIdentity(unittest.TestCase):

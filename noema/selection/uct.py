@@ -15,7 +15,7 @@ from typing import Any, Dict, Mapping, Optional
 
 from openevolve.utils.metrics_utils import get_fitness_score
 
-from noema.base import PopulationStore, Selection, TreeTopology
+from noema.substrates.base import PopulationStore, Selection, TreeTopology
 
 
 _SCHEMA_VERSION = 1

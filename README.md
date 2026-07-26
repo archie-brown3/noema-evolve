@@ -41,8 +41,9 @@ mechanism comparison.
 - Checkpoint/resume support including controller, DB, ledger, and coordination state
 - Tests that protect prompt identity, metering integrity, and determinism
 
-Design and audit details are documented in [`PLAN.md`](PLAN.md).
 The [`noema` package guide](noema/README.md) lists the public API and subpackages.
+Study specifications and planning documents are maintained in the canonical
+Noema vault instead of being duplicated across repository branches.
 
 ## Install
 
@@ -177,9 +178,9 @@ For cross-process bit-identical reruns, pin `PYTHONHASHSEED`.
   [LoongFlow](https://github.com/baidu-baige/LoongFlow) (Apache-2.0)
 - `noema/coordination/bandit/` ports the AsymmetricUCB kernel from
   [ShinkaEvolve](https://github.com/SakanaAI/ShinkaEvolve) (Apache-2.0)
-- `noema/coordination/pe/` and `noema/cvt_behavior.py` adapt components from
+- `noema/coordination/pe/` and `noema/substrates/cvt_behavior.py` adapt components from
   [LEVI](https://github.com/ttanv/levi) (MIT)
-- `noema/tree.py` and `noema/selection/uct.py` adapt the tree and UCT kernels
+- `noema/substrates/tree.py` and `noema/selection/uct.py` adapt the tree and UCT kernels
   from MCTS-AHD commit `ee9c4f424503c65a5fd2b899e6620ce86079fedb`
   (MIT)
 
@@ -188,11 +189,14 @@ Borrowed files include provenance headers; local changes are marked with `NOEMA:
 ## Repository layout
 
 ```text
-noema/       framework code and package guide
-tests/       regression tests for noema guarantees and modules
-examples/    benchmark inputs (run artifacts are gitignored, not committed)
-spec/        tracked study-design and live-run protocol snapshots
-PLAN.md      architecture and audit design notes
+noema/
+  budget/        token accounting and metered LLM access
+  coordination/  experiment arms and their shared interface
+  evolution/     mutation, prompts, boundaries, diffs, and evaluation
+  selection/     store-neutral parent-selection policies
+  substrates/    population stores and runtime composition
+tests/           regression tests for noema guarantees and modules
+examples/        benchmark inputs (run artifacts are gitignored, not committed)
 ```
 
 ## Run tests

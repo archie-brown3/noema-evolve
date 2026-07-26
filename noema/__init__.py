@@ -7,7 +7,7 @@ pool + navigator) are pluggable modules behind the CoordinationModule interface,
 coordination-present vs coordination-absent is a single controlled variable. All LLM
 calls draw from a shared token budget ledger.
 
-See PLAN.md at the repository root for the design document.
+See noema/README.md for package architecture and supported entry points.
 """
 
 from noema.budget.ledger import BudgetExhausted, CallRecord, TokenLedger

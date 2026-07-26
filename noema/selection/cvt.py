@@ -17,7 +17,7 @@ import math
 import random
 from typing import Any, Dict, List, Mapping, Optional
 
-from noema.base import PopulationStore, Selection
+from noema.substrates.base import PopulationStore, Selection
 
 
 class CVTSelectionPolicy:

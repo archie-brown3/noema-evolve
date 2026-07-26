@@ -16,7 +16,7 @@ dependencies = [
     # 80945ed in every module noema imports:
     #   database, evaluator, prompt.sampler, config, llm.base,
     #   utils.code_utils, utils.metrics_utils
-    # Otherwise the PLAN.md audit must be re-run against that version.
+    # Otherwise the upstream dependency audit must be repeated for that version.
     "openevolve @ git+https://github.com/codelion/openevolve@80945ed",
     "openai>=1.0.0",
     "pyyaml>=6.0",

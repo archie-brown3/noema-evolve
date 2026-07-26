@@ -20,7 +20,7 @@ from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.config import CoordinationConfig, NoemaConfig, SubstrateConfig
 from noema.controller import NoemaController
-from noema.cvt import CVTStore
+from noema.substrates.cvt import CVTStore
 from noema.coordination.pe.module import PunctuatedEquilibriumModule
 
 from tests.test_pe_cvt_controller import EVAL_SCRIPT, INITIAL, diverse_mutation_client

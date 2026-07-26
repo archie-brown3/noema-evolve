@@ -19,7 +19,7 @@ planner/ executor/ summary/ layout): planner.py (Planner), executor.py
                        sees it (LoongFlow stores generate_plan/summary on every
                        solution: framework/pes/database/database.py:96-101)
 
-Documented deviations from the released code (PLAN.md section 2.2 discipline):
+Documented deviations from the released code:
 1. One single-shot planning call, not a multi-turn Claude Code agent session.
    LoongFlow's own math_agent runs PES on plain LLM calls, so this recast has
    upstream precedent.
@@ -68,7 +68,7 @@ from noema.coordination.pes.summarizer import (  # noqa: F401  (re-exported)
     STALE,
     Summarizer,
 )
-from noema.views import ProgramView
+from noema.evolution.views import ProgramView
 
 logger = logging.getLogger(__name__)
 
