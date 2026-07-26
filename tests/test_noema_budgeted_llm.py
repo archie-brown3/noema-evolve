@@ -3,11 +3,14 @@ Tests for noema.budget.llm.BudgetedLLM with a fake chat-completions client
 """
 
 import asyncio
+import os
+import tempfile
 import unittest
 from types import SimpleNamespace
 
 from noema.budget.ledger import BudgetExhausted, TokenLedger
 from noema.budget.llm import BudgetedLLM
+from noema.verify import UnmeteredUsage, verify_equal_token_metering_from_jsonl
 
 
 def fake_response(content="response text", prompt_tokens=100, completion_tokens=40):
@@ -211,6 +214,23 @@ class HangingClient:
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
 
 
+class CancellationSuppressingClient:
+    """Returns a response after deliberately ignoring task cancellation."""
+
+    def __init__(self):
+        self.finished = asyncio.Event()
+
+        async def create(**params):
+            try:
+                await asyncio.sleep(3600)
+            except asyncio.CancelledError:
+                await asyncio.sleep(0.05)
+                self.finished.set()
+                return fake_response(prompt_tokens=10, completion_tokens=5)
+
+        self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+
 class FatalStatusError(Exception):
     def __init__(self, status_code):
         self.status_code = status_code
@@ -218,21 +238,74 @@ class FatalStatusError(Exception):
 
 
 class TestTotalDeadline(unittest.TestCase):
-    def test_total_deadline_exceeded_returns_empty_charges_nothing(self):
-        from noema.budget.llm import BudgetedLLM
+    def test_total_deadline_is_recorded_and_rejected_by_verifier(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log_path = os.path.join(tmp, "llm_calls.jsonl")
+            client = HangingClient()
+            ledger = TokenLedger(total_budget_tokens=10_000, log_path=log_path)
+            llm = BudgetedLLM(
+                model="test-model",
+                ledger=ledger,
+                account="mutation",
+                tag="mutate",
+                client=client,
+                retries=0,
+                retry_delay=0.0,
+                total_deadline_s=0.05,
+            )
+            llm.iteration = 7
 
-        client = HangingClient()
-        ledger = TokenLedger(total_budget_tokens=10_000)
-        llm = BudgetedLLM(
-            model="test-model", ledger=ledger, account="mutation", tag="mutate",
-            client=client, retries=0, retry_delay=0.0, total_deadline_s=0.05,
-        )
+            result = asyncio.run(
+                llm.generate_with_context("s", [{"role": "user", "content": "u"}])
+            )
 
-        result = asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+            self.assertEqual(result, "")
+            self.assertEqual(ledger.spent(), 0)
+            self.assertEqual(len(ledger.records), 1)
+            record = ledger.records[0]
+            self.assertEqual(record.attempts, 1)
+            self.assertEqual(record.iteration, 7)
+            self.assertTrue(record.estimated)
+            self.assertFalse(record.succeeded)
+            self.assertIn("total deadline", record.error)
+            self.assertGreater(record.latency_s, 0)
+
+            with self.assertRaises(UnmeteredUsage) as cm:
+                verify_equal_token_metering_from_jsonl(log_path)
+            self.assertEqual(cm.exception.offending[0].call_id, record.call_id)
+
+    def test_provider_timeout_is_not_misclassified_as_total_deadline(self):
+        client = FakeClient([asyncio.TimeoutError("provider timed out")])
+        llm, ledger = make_llm(client, retries=0, total_deadline_s=10)
+
+        with self.assertRaisesRegex(asyncio.TimeoutError, "provider timed out"):
+            asyncio.run(
+                llm.generate_with_context("s", [{"role": "user", "content": "u"}])
+            )
+
+        self.assertEqual(len(ledger.records), 1)
+        self.assertIn("provider timed out", ledger.records[0].error)
+        self.assertNotIn("total deadline", ledger.records[0].error)
+
+    def test_deadline_does_not_wait_for_or_charge_late_cancelled_response(self):
+        client = CancellationSuppressingClient()
+        llm, ledger = make_llm(client, retries=0, total_deadline_s=0.01)
+
+        async def run():
+            result = await llm.generate_with_context(
+                "s", [{"role": "user", "content": "u"}]
+            )
+            returned_before_provider = not client.finished.is_set()
+            await client.finished.wait()
+            return result, returned_before_provider
+
+        result, returned_before_provider = asyncio.run(run())
 
         self.assertEqual(result, "")
-        self.assertEqual(len(ledger.records), 0)
-        self.assertEqual(ledger.spent(), 0)
+        self.assertTrue(returned_before_provider)
+        self.assertEqual(len(ledger.records), 1)
+        self.assertTrue(ledger.records[0].estimated)
+        self.assertFalse(ledger.records[0].succeeded)
 
     def test_total_deadline_default_does_not_cut_off_fast_calls(self):
         client = FakeClient([fake_response()])
@@ -257,7 +330,12 @@ class TestFatalProviderError(unittest.TestCase):
         self.assertEqual(cm.exception.status_code, 402)
         # Not retried: exactly 1 call, not 4 (retries=3 -> 4 attempts if it had retried)
         self.assertEqual(len(client.calls), 1)
-        self.assertEqual(len(ledger.records), 0)
+        self.assertEqual(len(ledger.records), 1)
+        record = ledger.records[0]
+        self.assertEqual(record.attempts, 1)
+        self.assertTrue(record.estimated)
+        self.assertFalse(record.succeeded)
+        self.assertIn("status 402", record.error)
 
     def test_non_fatal_status_still_retries(self):
         # A transient 500-style error is not in FATAL_STATUS_CODES -> normal retry path

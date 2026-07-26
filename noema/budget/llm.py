@@ -30,6 +30,14 @@ logger = logging.getLogger(__name__)
 FATAL_STATUS_CODES = frozenset({401, 402, 403})
 
 
+def _consume_task_result(task: asyncio.Task) -> None:
+    """Prevent an abandoned provider task from emitting an unhandled exception."""
+    try:
+        task.result()
+    except BaseException:
+        pass
+
+
 class FatalProviderError(Exception):
     """A provider error retrying cannot fix (401/402/403). Not retried."""
 
@@ -62,8 +70,8 @@ class BudgetedLLM(LLMInterface):
             overridable per call via kwargs.
         retries / retry_delay: noema-level retry policy.
         total_deadline_s: Wall-clock cap on generate_with_context's WHOLE retry
-            loop (all attempts combined). On expiry: warn, charge nothing, return
-            "" (existing NO_PROGRAM path) — never estimate (task 0055).
+            loop (all attempts combined). On expiry: record an unresolved
+            zero-token call and return "" (existing NO_PROGRAM path).
         client: Injectable pre-built client (used by tests); must expose
             `chat.completions.create(**params)` as an awaitable.
     """
@@ -139,27 +147,66 @@ class BudgetedLLM(LLMInterface):
         Raises BudgetExhausted (from ledger.ensure) before issuing a request once
         the account's budget is used up. The response that crosses the cap is still
         returned and charged; the next call raises. Raises FatalProviderError on a
-        401/402/403 (not retried). On total-deadline expiry: warns, charges
-        nothing, returns "" (existing NO_PROGRAM path) — never estimates (0055).
+        401/402/403 (not retried). On total-deadline expiry: records an unresolved
+        zero-token call and returns "" (existing NO_PROGRAM path).
         """
         total_deadline = kwargs.get("total_deadline_s", self.total_deadline_s)
+        call_state = {"attempts_started": 0, "abandoned": False}
         start = time.time()
+        task = asyncio.create_task(
+            self._generate_with_context_inner(
+                system_message,
+                messages,
+                _call_state=call_state,
+                **kwargs,
+            )
+        )
         try:
-            return await asyncio.wait_for(
-                self._generate_with_context_inner(system_message, messages, **kwargs),
-                timeout=total_deadline,
+            done, _ = await asyncio.wait((task,), timeout=total_deadline)
+        except BaseException:
+            call_state["abandoned"] = True
+            task.cancel()
+            task.add_done_callback(_consume_task_result)
+            raise
+        if done:
+            return task.result()
+
+        call_state["abandoned"] = True
+        task.cancel()
+        task.add_done_callback(_consume_task_result)
+        tag = kwargs.get("tag", self.tag)
+        elapsed = time.time() - start
+        self.ledger.charge(
+            CallRecord(
+                account=self.account,
+                tag=tag,
+                model=self.model,
+                prompt_tokens=0,
+                completion_tokens=0,
+                attempts=call_state["attempts_started"],
+                latency_s=elapsed,
+                iteration=self.iteration,
+                estimated=True,
+                succeeded=False,
+                error=(
+                    f"total deadline exceeded after {elapsed:.3f}s "
+                    f"(limit {total_deadline}s)"
+                ),
             )
-        except asyncio.TimeoutError:
-            tag = kwargs.get("tag", self.tag)
-            logger.warning(
-                f"Total deadline ({total_deadline}s) exceeded for {self.account}/{tag} "
-                f"after {time.time() - start:.1f}s elapsed. Charging nothing; treating "
-                "as no-program (task 0103)."
-            )
-            return ""
+        )
+        logger.warning(
+            f"Total deadline ({total_deadline}s) exceeded for {self.account}/{tag} "
+            f"after {elapsed:.1f}s elapsed. Recording unresolved zero-token call; "
+            "treating as no-program (task 0103)."
+        )
+        return ""
 
     async def _generate_with_context_inner(
-        self, system_message: str, messages: List[Dict[str, str]], **kwargs
+        self,
+        system_message: str,
+        messages: List[Dict[str, str]],
+        _call_state: Dict[str, object],
+        **kwargs,
     ) -> str:
         formatted_messages = []
         if system_message:
@@ -190,13 +237,31 @@ class BudgetedLLM(LLMInterface):
             # Pre-flight on every attempt: retrying is also spending
             self.ledger.ensure(self.account)
             try:
+                _call_state["attempts_started"] = attempt + 1
                 response = await self.client.chat.completions.create(**params)
             except Exception as e:
+                if _call_state["abandoned"]:
+                    return ""
                 status_code = getattr(e, "status_code", None)
                 if status_code in FATAL_STATUS_CODES:
                     # Not retryable — a 401/402/403 on attempt 1 is still a
                     # 401/402/403 on attempt N. Fail immediately rather than
                     # burn the whole retry budget before raising anyway.
+                    self.ledger.charge(
+                        CallRecord(
+                            account=self.account,
+                            tag=tag,
+                            model=self.model,
+                            prompt_tokens=0,
+                            completion_tokens=0,
+                            attempts=attempt + 1,
+                            latency_s=time.time() - start,
+                            iteration=self.iteration,
+                            estimated=True,
+                            succeeded=False,
+                            error=repr(e),
+                        )
+                    )
                     raise FatalProviderError(status_code, tag, e) from e
                 last_exception = e
                 if attempt < retries:
@@ -219,8 +284,11 @@ class BudgetedLLM(LLMInterface):
                         succeeded=False,
                         error=repr(e),
                     )
-                )
+                    )
                 raise
+
+            if _call_state["abandoned"]:
+                return ""
 
             usage = getattr(response, "usage", None)
             content = response.choices[0].message.content

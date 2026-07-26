@@ -257,6 +257,7 @@ class NoemaController:
             timeout=config.llm.coordination.timeout,
             retries=config.llm.coordination.retries,
             retry_delay=config.llm.coordination.retry_delay,
+            total_deadline_s=config.llm.coordination.total_deadline_s,
         )
         setter(alt_llm)
 
@@ -446,7 +447,33 @@ class NoemaController:
         if hasattr(self.coordination.llm, "iteration"):
             self.coordination.llm.iteration = iteration
         advice_ledger_start = len(self.ledger.records)
-        advice = await self.coordination.advise(ctx)  # coordination hook 1
+        try:
+            advice = await self.coordination.advise(ctx)  # coordination hook 1
+        except Exception as exc:
+            self._current_advice_call_ids = [
+                record.call_id for record in self.ledger.records[advice_ledger_start:]
+            ]
+            outcome = (
+                "budget_exhausted"
+                if isinstance(exc, BudgetExhausted)
+                else "provider_failure"
+            )
+            self._write_attempt_trace(
+                iteration,
+                0,
+                ctx,
+                selection,
+                operator,
+                None,
+                None,
+                None,
+                None,
+                None,
+                outcome,
+                repr(exc),
+                advice_ledger_start,
+            )
+            raise
         self._current_advice_call_ids = [
             record.call_id for record in self.ledger.records[advice_ledger_start:]
         ]
@@ -843,8 +870,8 @@ class NoemaController:
         ctx: GenerationContext,
         selection,
         operator: OperatorSpec,
-        advice,
-        prompt: Dict[str, str],
+        advice: Optional[Any],
+        prompt: Optional[Dict[str, str]],
         response: Optional[str],
         candidate: Optional[Dict[str, Any]],
         evaluation: Optional[Dict[str, Any]],
@@ -854,11 +881,12 @@ class NoemaController:
         ledger_end: Optional[int] = None,
     ) -> None:
         records = self.ledger.records[ledger_start:ledger_end]
+        attribution = advice.attribution if advice is not None else {}
         mode = (
             "directive"
-            if advice.attribution.get("full_executor_prompt")
+            if attribution.get("full_executor_prompt")
             else "injected"
-            if advice.system_block or advice.prompt_block
+            if advice is not None and (advice.system_block or advice.prompt_block)
             else "none"
         )
         self.attempt_tracer.write(
@@ -878,9 +906,9 @@ class NoemaController:
             selection=dict(self.substrate.last_selection_trace),
             operator={"name": operator.name, **self._last_operator_trace},
             coordination={
-                "system_block": advice.system_block,
-                "prompt_block": advice.prompt_block,
-                "attribution": advice.attribution,
+                "system_block": advice.system_block if advice is not None else None,
+                "prompt_block": advice.prompt_block if advice is not None else None,
+                "attribution": attribution,
                 "mode": mode,
                 "ledger_call_ids": self._current_advice_call_ids,
             },

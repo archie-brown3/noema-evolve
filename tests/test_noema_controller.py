@@ -318,6 +318,54 @@ class TestControllerEndToEnd(unittest.TestCase):
             self.assertIsNotNone(best)  # the two prior children are still there
             checkpoint = os.path.join(tmp, "output", "checkpoints", "checkpoint_1")
             self.assertTrue(os.path.exists(checkpoint))
+            self.assertEqual(len(ledger.records), 3)
+            fatal_record = ledger.records[-1]
+            self.assertTrue(fatal_record.estimated)
+            self.assertFalse(fatal_record.succeeded)
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                traces = [json.loads(line) for line in f]
+            self.assertEqual(traces[-1]["outcome"], "provider_failure")
+            self.assertEqual(traces[-1]["ledger_call_ids"], [fatal_record.call_id])
+
+    def test_fatal_coordination_error_is_linked_before_mutation(self):
+        class FatalClient:
+            def __init__(self):
+                async def create(**params):
+                    err = RuntimeError("coordination credits exhausted")
+                    err.status_code = 402
+                    raise err
+
+                self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
+
+        class FailingAdvice(NullCoordination):
+            async def advise(self, ctx):
+                await self.llm.generate("coordinate", tag="hifo.advise")
+                return Advice()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            controller, ledger, mutation_client = make_controller(tmp)
+            coordination_llm = BudgetedLLM(
+                model="coord-model",
+                ledger=ledger,
+                account="coordination",
+                client=FatalClient(),
+                retries=0,
+            )
+            controller.coordination = FailingAdvice(llm=coordination_llm)
+
+            best = asyncio.run(controller.run(iterations=1))
+
+            self.assertIsNotNone(best)
+            self.assertEqual(len(mutation_client.calls), 0)
+            self.assertEqual(len(ledger.records), 1)
+            fatal_record = ledger.records[0]
+            with open(os.path.join(tmp, "output", "attempt_trace.jsonl")) as f:
+                trace = json.loads(f.readline())
+            self.assertEqual(trace["outcome"], "provider_failure")
+            self.assertEqual(trace["ledger_call_ids"], [fatal_record.call_id])
+            self.assertEqual(
+                trace["coordination"]["ledger_call_ids"], [fatal_record.call_id]
+            )
 
     def test_run_with_missing_usage_fails_equal_token_verification(self):
         # task 0106, end-to-end: a real controller run where one call's
