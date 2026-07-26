@@ -39,7 +39,7 @@ from noema.budget.ledger import (
     BudgetExhausted,
     TokenLedger,
 )
-from noema.budget.llm import BudgetedLLM
+from noema.budget.llm import BudgetedLLM, FatalProviderError
 from noema.config import NoemaConfig
 from noema.coordination import (
     CoordinationModule,
@@ -157,6 +157,7 @@ class NoemaController:
             timeout=config.llm.mutation.timeout,
             retries=config.llm.mutation.retries,
             retry_delay=config.llm.mutation.retry_delay,
+            total_deadline_s=config.llm.mutation.total_deadline_s,
         )
 
         if coordination is not None:
@@ -176,6 +177,7 @@ class NoemaController:
                 timeout=config.llm.coordination.timeout,
                 retries=config.llm.coordination.retries,
                 retry_delay=config.llm.coordination.retry_delay,
+                total_deadline_s=config.llm.coordination.total_deadline_s,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
@@ -255,6 +257,7 @@ class NoemaController:
             timeout=config.llm.coordination.timeout,
             retries=config.llm.coordination.retries,
             retry_delay=config.llm.coordination.retry_delay,
+            total_deadline_s=config.llm.coordination.total_deadline_s,
         )
         setter(alt_llm)
 
@@ -293,6 +296,14 @@ class NoemaController:
                         await self._generation_tick(iteration)
                 except BudgetExhausted as e:
                     logger.info(f"Stopping at iteration {iteration}: {e}")
+                    break
+                except FatalProviderError as e:
+                    # 0103 scope addition: the 2026-07-17 temp-0.7 sweep died on
+                    # OpenRouter 402s as raw unhandled tracebacks between
+                    # checkpoints, discarding up to checkpoint_interval-1
+                    # iterations of progress each time. Stop cleanly instead —
+                    # the checkpoint below preserves everything up to here.
+                    logger.error(f"Stopping at iteration {iteration}: {e}")
                     break
 
                 if next_iteration % self.config.checkpoint_interval == 0:
@@ -436,7 +447,33 @@ class NoemaController:
         if hasattr(self.coordination.llm, "iteration"):
             self.coordination.llm.iteration = iteration
         advice_ledger_start = len(self.ledger.records)
-        advice = await self.coordination.advise(ctx)  # coordination hook 1
+        try:
+            advice = await self.coordination.advise(ctx)  # coordination hook 1
+        except Exception as exc:
+            self._current_advice_call_ids = [
+                record.call_id for record in self.ledger.records[advice_ledger_start:]
+            ]
+            outcome = (
+                "budget_exhausted"
+                if isinstance(exc, BudgetExhausted)
+                else "provider_failure"
+            )
+            self._write_attempt_trace(
+                iteration,
+                0,
+                ctx,
+                selection,
+                operator,
+                None,
+                None,
+                None,
+                None,
+                None,
+                outcome,
+                repr(exc),
+                advice_ledger_start,
+            )
+            raise
         self._current_advice_call_ids = [
             record.call_id for record in self.ledger.records[advice_ledger_start:]
         ]
@@ -833,8 +870,8 @@ class NoemaController:
         ctx: GenerationContext,
         selection,
         operator: OperatorSpec,
-        advice,
-        prompt: Dict[str, str],
+        advice: Optional[Any],
+        prompt: Optional[Dict[str, str]],
         response: Optional[str],
         candidate: Optional[Dict[str, Any]],
         evaluation: Optional[Dict[str, Any]],
@@ -844,11 +881,12 @@ class NoemaController:
         ledger_end: Optional[int] = None,
     ) -> None:
         records = self.ledger.records[ledger_start:ledger_end]
+        attribution = advice.attribution if advice is not None else {}
         mode = (
             "directive"
-            if advice.attribution.get("full_executor_prompt")
+            if attribution.get("full_executor_prompt")
             else "injected"
-            if advice.system_block or advice.prompt_block
+            if advice is not None and (advice.system_block or advice.prompt_block)
             else "none"
         )
         self.attempt_tracer.write(
@@ -868,9 +906,9 @@ class NoemaController:
             selection=dict(self.substrate.last_selection_trace),
             operator={"name": operator.name, **self._last_operator_trace},
             coordination={
-                "system_block": advice.system_block,
-                "prompt_block": advice.prompt_block,
-                "attribution": advice.attribution,
+                "system_block": advice.system_block if advice is not None else None,
+                "prompt_block": advice.prompt_block if advice is not None else None,
+                "attribution": attribution,
                 "mode": mode,
                 "ledger_call_ids": self._current_advice_call_ids,
             },

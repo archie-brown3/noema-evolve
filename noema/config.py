@@ -54,6 +54,12 @@ class LLMClientConfig:
     timeout: float = 60.0
     retries: int = 3
     retry_delay: float = 5.0
+    # task 0103: httpx's `timeout` is a per-chunk read timeout that resets on
+    # every streamed token, so a degenerate slow-reasoning dribble never trips
+    # it — a live run hung 24+ minutes on one call before this existed. This
+    # bounds generate_with_context's WHOLE retry loop (all attempts combined),
+    # not any single request. 600s default: legitimate calls observed up to 160s.
+    total_deadline_s: float = 600.0
 
 
 @dataclass

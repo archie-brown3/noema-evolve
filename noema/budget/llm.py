@@ -23,6 +23,32 @@ from noema.budget.ledger import CallRecord, TokenLedger
 
 logger = logging.getLogger(__name__)
 
+# task 0103: provider status codes that retrying cannot fix (auth/quota, not a
+# transient failure) — burning the full retry budget on a 402 just delays the
+# same outcome. Fail fast so the controller can stop the run cleanly instead
+# of retrying into a wall and then raising an unhandled traceback mid-loop.
+FATAL_STATUS_CODES = frozenset({401, 402, 403})
+
+
+def _consume_task_result(task: asyncio.Task) -> None:
+    """Prevent an abandoned provider task from emitting an unhandled exception."""
+    try:
+        task.result()
+    except BaseException:
+        pass
+
+
+class FatalProviderError(Exception):
+    """A provider error retrying cannot fix (401/402/403). Not retried."""
+
+    def __init__(self, status_code: int, tag: str, original: Exception):
+        self.status_code = status_code
+        self.tag = tag
+        self.original = original
+        super().__init__(
+            f"Fatal provider error (status {status_code}) on '{tag}': {original}"
+        )
+
 
 class BudgetedLLM(LLMInterface):
     """
@@ -43,6 +69,9 @@ class BudgetedLLM(LLMInterface):
         temperature / top_p / max_tokens / seed: Default generation parameters,
             overridable per call via kwargs.
         retries / retry_delay: noema-level retry policy.
+        total_deadline_s: Wall-clock cap on generate_with_context's WHOLE retry
+            loop (all attempts combined). On expiry: record an unresolved
+            zero-token call and return "" (existing NO_PROGRAM path).
         client: Injectable pre-built client (used by tests); must expose
             `chat.completions.create(**params)` as an awaitable.
     """
@@ -62,6 +91,7 @@ class BudgetedLLM(LLMInterface):
         timeout: Optional[float] = 60.0,
         retries: int = 3,
         retry_delay: float = 5.0,
+        total_deadline_s: float = 600.0,
         client=None,
     ):
         self.model = model
@@ -73,6 +103,7 @@ class BudgetedLLM(LLMInterface):
         self.max_tokens = max_tokens
         self.seed = seed
         self.timeout = timeout
+        self.total_deadline_s = total_deadline_s
         # Guard against retries < 0 (task 0056 item 2): the retry loop is
         # `range(retries + 1)`, so retries == -1 makes it empty — the call is
         # never issued and the method would fall through to `raise
@@ -111,12 +142,72 @@ class BudgetedLLM(LLMInterface):
         self, system_message: str, messages: List[Dict[str, str]], **kwargs
     ) -> str:
         """
-        Make a metered chat-completions call.
+        Make a metered chat-completions call, bounded by total_deadline_s.
 
         Raises BudgetExhausted (from ledger.ensure) before issuing a request once
         the account's budget is used up. The response that crosses the cap is still
-        returned and charged; the next call raises.
+        returned and charged; the next call raises. Raises FatalProviderError on a
+        401/402/403 (not retried). On total-deadline expiry: records an unresolved
+        zero-token call and returns "" (existing NO_PROGRAM path).
         """
+        total_deadline = kwargs.get("total_deadline_s", self.total_deadline_s)
+        call_state = {"attempts_started": 0, "abandoned": False}
+        start = time.time()
+        task = asyncio.create_task(
+            self._generate_with_context_inner(
+                system_message,
+                messages,
+                _call_state=call_state,
+                **kwargs,
+            )
+        )
+        try:
+            done, _ = await asyncio.wait((task,), timeout=total_deadline)
+        except BaseException:
+            call_state["abandoned"] = True
+            task.cancel()
+            task.add_done_callback(_consume_task_result)
+            raise
+        if done:
+            return task.result()
+
+        call_state["abandoned"] = True
+        task.cancel()
+        task.add_done_callback(_consume_task_result)
+        tag = kwargs.get("tag", self.tag)
+        elapsed = time.time() - start
+        self.ledger.charge(
+            CallRecord(
+                account=self.account,
+                tag=tag,
+                model=self.model,
+                prompt_tokens=0,
+                completion_tokens=0,
+                attempts=call_state["attempts_started"],
+                latency_s=elapsed,
+                iteration=self.iteration,
+                estimated=True,
+                succeeded=False,
+                error=(
+                    f"total deadline exceeded after {elapsed:.3f}s "
+                    f"(limit {total_deadline}s)"
+                ),
+            )
+        )
+        logger.warning(
+            f"Total deadline ({total_deadline}s) exceeded for {self.account}/{tag} "
+            f"after {elapsed:.1f}s elapsed. Recording unresolved zero-token call; "
+            "treating as no-program (task 0103)."
+        )
+        return ""
+
+    async def _generate_with_context_inner(
+        self,
+        system_message: str,
+        messages: List[Dict[str, str]],
+        _call_state: Dict[str, object],
+        **kwargs,
+    ) -> str:
         formatted_messages = []
         if system_message:
             formatted_messages.append({"role": "system", "content": system_message})
@@ -146,8 +237,32 @@ class BudgetedLLM(LLMInterface):
             # Pre-flight on every attempt: retrying is also spending
             self.ledger.ensure(self.account)
             try:
+                _call_state["attempts_started"] = attempt + 1
                 response = await self.client.chat.completions.create(**params)
             except Exception as e:
+                if _call_state["abandoned"]:
+                    return ""
+                status_code = getattr(e, "status_code", None)
+                if status_code in FATAL_STATUS_CODES:
+                    # Not retryable — a 401/402/403 on attempt 1 is still a
+                    # 401/402/403 on attempt N. Fail immediately rather than
+                    # burn the whole retry budget before raising anyway.
+                    self.ledger.charge(
+                        CallRecord(
+                            account=self.account,
+                            tag=tag,
+                            model=self.model,
+                            prompt_tokens=0,
+                            completion_tokens=0,
+                            attempts=attempt + 1,
+                            latency_s=time.time() - start,
+                            iteration=self.iteration,
+                            estimated=True,
+                            succeeded=False,
+                            error=repr(e),
+                        )
+                    )
+                    raise FatalProviderError(status_code, tag, e) from e
                 last_exception = e
                 if attempt < retries:
                     logger.warning(
@@ -169,8 +284,11 @@ class BudgetedLLM(LLMInterface):
                         succeeded=False,
                         error=repr(e),
                     )
-                )
+                    )
                 raise
+
+            if _call_state["abandoned"]:
+                return ""
 
             usage = getattr(response, "usage", None)
             content = response.choices[0].message.content

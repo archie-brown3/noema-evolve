@@ -189,6 +189,59 @@ class TestPEModelTieringControllerEndToEnd(unittest.TestCase):
                 # handle) — no alt-tier client when nothing was configured.
                 self.assertEqual(ctor.call_count, 1)
 
+    def test_alternate_tier_honors_coordination_total_deadline(self):
+        async def hanging_create(**params):
+            await asyncio.sleep(3600)
+
+        fake_client = SimpleNamespace(
+            chat=SimpleNamespace(completions=SimpleNamespace(create=hanging_create))
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            config = NoemaConfig(
+                database=DatabaseConfig(in_memory=True, num_islands=2),
+                evaluator=EvaluatorConfig(cascade_evaluation=False),
+                llm=LLMRolesConfig(
+                    mutation=LLMClientConfig(model="mut-model"),
+                    coordination=LLMClientConfig(
+                        model="light-model",
+                        retries=0,
+                        total_deadline_s=0.01,
+                    ),
+                ),
+                coordination=CoordinationConfig(
+                    module="pe",
+                    params={"paradigm_model": "heavy-model"},
+                ),
+            )
+            ledger = TokenLedger(total_budget_tokens=10_000)
+            mutation_llm = BudgetedLLM(
+                model="mut-model",
+                ledger=ledger,
+                account="mutation",
+                client=fake_client,
+            )
+
+            with mock.patch("openai.AsyncOpenAI", return_value=fake_client):
+                controller = NoemaController(
+                    config=config,
+                    evaluation_file=eval_path,
+                    initial_program_code=INITIAL,
+                    output_dir=os.path.join(tmp, "output"),
+                    mutation_llm=mutation_llm,
+                    ledger=ledger,
+                )
+                result = asyncio.run(
+                    controller.coordination._paradigm_llm.generate("prompt")
+                )
+
+        self.assertEqual(result, "")
+        self.assertEqual(len(ledger.records), 1)
+        self.assertIn("total deadline", ledger.records[0].error)
+
 
 if __name__ == "__main__":
     unittest.main()
