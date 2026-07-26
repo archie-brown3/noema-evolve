@@ -9,6 +9,8 @@ tags: [noema, substrates, population]
 This package owns population storage, neutral store and policy contracts, and
 runtime construction. Selection policies remain in [`noema.selection`](../selection/README.md).
 
+See the [noema package guide](../README.md) for the complete package map.
+
 ## Package map
 
 - [`base.py`](./base.py) defines the store-neutral contracts and `SubstrateRuntime`.

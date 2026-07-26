@@ -9,6 +9,8 @@ tags: [noema, evolution, mutation]
 This package owns the shared mutation path used by every coordination arm and
 population substrate.
 
+See the [noema package guide](../README.md) for the complete package map.
+
 ## Package map
 
 - [`prompts.py`](./prompts.py) builds the arm-independent mutation prompt.

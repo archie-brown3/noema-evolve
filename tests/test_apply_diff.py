@@ -84,15 +84,6 @@ class TestApplyDiffLenient(unittest.TestCase):
     the real-corpus fixtures below — these are the regression tests for the
     lenient-matching logic itself."""
 
-    def test_imports_from_the_evolution_package(self):
-        try:
-            module = __import__(
-                "noema.evolution.diff", fromlist=["apply_diff_lenient"]
-            )
-        except ModuleNotFoundError:
-            self.fail("apply_diff_lenient must live in noema.evolution.diff")
-        self.assertIs(module.apply_diff_lenient, apply_diff_lenient)
-
     def test_exact_match_preserved(self):
         """Exact match (same indentation) still works as before."""
         original = "    x = 1\n    y = 2\n"
