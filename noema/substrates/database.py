@@ -1,7 +1,7 @@
 """
 Adapter around openevolve.database.ProgramDatabase.
 
-Responsibilities (PLAN.md sections 1.2 and 1.4):
+Responsibilities:
 - construct the database with the novelty features hard-disabled, so db.add()
   can never make embedding/LLM-judge network calls behind the ledger's back;
 - own the island/migration bookkeeping that openevolve's own controller drives
@@ -26,7 +26,7 @@ class SubstrateDatabase:
 
     def __init__(self, config: DatabaseConfig):
         # Hard-disable novelty checking: it makes embedding + LLM-judge calls
-        # inside db.add() that would bypass the token ledger (PLAN.md risk 2)
+        # inside db.add() that would bypass the token ledger
         if config.embedding_model is not None or config.novelty_llm is not None:
             raise ValueError(
                 "noema requires novelty features disabled "
@@ -103,7 +103,7 @@ class SubstrateDatabase:
 
     def end_generation(self) -> bool:
         """
-        Generation bookkeeping the external controller must drive (PLAN.md 1.2):
+        Generation bookkeeping the external controller must drive:
         advance island generation counters and migrate when due.
 
         Returns True if a migration happened.

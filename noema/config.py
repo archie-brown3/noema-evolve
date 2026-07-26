@@ -3,7 +3,7 @@ Experiment configuration for noema.
 
 Composes openevolve's component configs (database, evaluator, prompt) with
 noema's own budget / coordination / mutation-LLM settings. Defaults deliberately
-differ from openevolve where the plan requires it (PLAN.md section 3.4 risk 3):
+differ from openevolve where the controlled-study design requires it:
 prompt stochasticity off, evaluator cascade off.
 """
 
@@ -33,7 +33,7 @@ def _default_evaluator_config() -> EvaluatorConfig:
 
 @dataclass
 class BudgetConfig:
-    """Token budget: one shared pool, per-account accounting (PLAN.md 3.2)"""
+    """Token budget: one shared pool with per-account accounting."""
 
     total_tokens: int = 1_000_000
     account_caps: Dict[str, int] = field(default_factory=dict)

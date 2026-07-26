@@ -1,10 +1,10 @@
 """
-The noema controller loop (PLAN.md section 3.3).
+The noema controller loop.
 
 Single-process, strictly sequential: sample → advise → prompt → mutate → parse →
 evaluate → add → report → generation tick → checkpoint. Coordination state lives
 in this process (the released HiFo-Prompt lost its credit-assignment feedback to
-joblib subprocess copies — see PLAN.md section 2.2), and the coordination-OFF vs
+joblib subprocess copies), and the coordination-OFF vs
 coordination-ON arms differ ONLY in which CoordinationModule is plugged in.
 """
 

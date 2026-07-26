@@ -3,7 +3,7 @@
 # The fidelity anchor: near-verbatim LoongFlow math-agent prompts, the plan as
 # the executor's brief, non-improvement retries. Load with
 # NoemaConfig.from_yaml(); this is a CONFIG ONLY — no run is started from it
-# (live runs are launched by the user, see spec/LIVE-RUNS.md).
+# (live runs are launched by the user under the vault's LIVE-RUNS protocol).
 #
 # Pair this against config_pes_custom.yaml: the ONLY field that may differ
 # between the two is coordination.module (verify-run invariant) — with two

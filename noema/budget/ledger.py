@@ -6,7 +6,7 @@ compared at equal spend. Accounting is split per account ("mutation" vs
 "coordination") so ablations can report where the tokens went, and optional
 per-account caps allow bounding one side independently.
 
-Enforcement model (see PLAN.md section 3.2): ``charge()`` never raises — tokens
+Enforcement model: ``charge()`` never raises — tokens
 reported by the API have already been spent, and discarding a paid-for response
 would waste budget. Instead callers run ``ensure(account)`` *before* each request;
 it raises ``BudgetExhausted`` once the pool (or the account's cap) is used up. The

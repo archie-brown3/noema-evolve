@@ -5,7 +5,7 @@ The only ZERO-TOKEN mechanism on the axis — it makes no coordination LLM call
 and injects no prompt text. It steers evolution solely by choosing WHICH operator
 fires each iteration, requested through the pre-selection hook `sampling_request`.
 Alongside Null it anchors the zero-coordination-token end of the mechanism axis
-(task 0073, spec/DELIVERABLES.md §3.2).
+(task 0073; the study design is maintained in the vault).
 
 Reward (fixed for the study): the parent-shifted, asymmetrically-clipped fitness
 delta `max(child_fitness - parent_fitness, 0)` — ShinkaEvolve's own scheme. A

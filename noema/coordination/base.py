@@ -1,5 +1,5 @@
 """
-The CoordinationModule interface (PLAN.md section 3.1).
+The CoordinationModule interface.
 
 A coordination mechanism observes evolution state, injects text into mutation
 prompts, and receives credit-assignment feedback. Coordination-present vs
