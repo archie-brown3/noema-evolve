@@ -15,6 +15,7 @@ import os
 import random
 import re
 import time
+from collections import deque
 from dataclasses import asdict
 from dataclasses import replace as dataclass_replace
 from typing import Any, Dict, List, Optional, Tuple
@@ -48,6 +49,7 @@ from noema.coordination import (
     SelectionContext,
     build_coordination_module,
 )
+from noema.coordination.escalation import EscalationContext, EscalationPolicy
 from noema.evolution.boundary import enforce_immutable_boundary
 from noema.substrates.registry import build_substrate_runtime
 from noema.evolution.operators import OPERATOR_MENU, OperatorSpec
@@ -185,6 +187,11 @@ class NoemaController:
             # ignore it, like any other mechanism-specific coordination param.
             coordination_params = dict(config.coordination.params)
             coordination_params.setdefault("domain_context", config.prompt.system_message)
+            # Task 0107: the model name a module may request via Advice.model to
+            # escalate a mutation generation. Today the frontier coordination
+            # seat (PR #46); a bootstrap value, not a base.py field — modules
+            # that don't escalate never read it.
+            coordination_params.setdefault("escalation_model", config.llm.coordination.model)
             # Task 0080 removed the `island_bests_provider` callable that used to
             # be injected here. Cross-region best scores (task 0061) now reach a
             # module through `GenerationContext.global_population.regions` — a
@@ -212,6 +219,24 @@ class NoemaController:
             )
 
         self.initial_program_code = initial_program_code
+
+        # Model escalation (task 0107, "B"): a controller-owned modifier layered
+        # on ANY arm's Advice. Its own RNG stream (random_seed + 5, distinct from
+        # coordination +1 / operators +2 / selection +3 / cvt +4) so turning
+        # escalation on/off never perturbs another consumer's draws. None =
+        # escalation off = byte-identical to today.
+        self.escalation: Optional[EscalationPolicy] = None
+        esc_window = 10
+        if config.coordination.escalation is not None:
+            self.escalation = EscalationPolicy(
+                config.coordination.escalation,
+                rng=random.Random(config.random_seed + 5),
+            )
+            esc_window = config.coordination.escalation.window
+        # Rolling per-mutation signals for the invalidity / diversity triggers,
+        # updated once per iteration and read at the NEXT iteration's advise.
+        self._esc_recent_valid: deque = deque(maxlen=esc_window)
+        self._esc_recent_scores: deque = deque(maxlen=esc_window)
 
         # Host-maintained histories, one entry per generation tick. Fixed
         # definitions, identical across arms:
@@ -478,6 +503,13 @@ class NoemaController:
             record.call_id for record in self.ledger.records[advice_ledger_start:]
         ]
 
+        # Model escalation (task 0107, "B"): layer the controller-owned policy on
+        # the arm's Advice. Built from state the host already holds; sets
+        # advice.model, which the mutation call below forwards to BudgetedLLM.
+        # No-op when escalation is off, so every arm is byte-identical then.
+        if self.escalation is not None:
+            advice.model = self.escalation.step(self._build_escalation_context(iteration))
+
         if advice.attribution.get("full_executor_prompt"):
             # Directive-mode fidelity anchor (task 0065, Decision #25 scoped
             # exemption): the advice IS the full prompt — the plan is the
@@ -539,6 +571,7 @@ class NoemaController:
                 response = await self.mutation_llm.generate_with_context(
                     system_message=current_prompt["system"],
                     messages=[{"role": "user", "content": current_prompt["user"]}],
+                    model=advice.model,  # task 0107: None = unchanged (default mutation model)
                 )
             except BudgetExhausted as exc:
                 self._write_attempt_trace(
@@ -739,6 +772,7 @@ class NoemaController:
             self.substrate.on_child_rejected(
                 parent=parent, child=None, eval_failed=True
             )
+            self._record_escalation_signal(valid=False, score=None)
             self.coordination.report_result(
                 ctx,
                 child=None,
@@ -841,6 +875,9 @@ class NoemaController:
         if artifacts:
             self.db.store_artifacts(child_id, artifacts)
 
+        self._record_escalation_signal(
+            valid=True, score=get_fitness_score(metrics, self.db.feature_dimensions)
+        )
         self.coordination.report_result(  # coordination hook 2
             ctx,
             child=self.db.view(child),
@@ -1074,6 +1111,28 @@ class NoemaController:
             if artifacts:
                 self.db.store_artifacts(child_id, artifacts)
 
+    def _build_escalation_context(self, iteration: int) -> EscalationContext:
+        """Snapshot the generic signals the escalation policy thresholds, from
+        state the host already maintains (histories, ledger, rolling validity)."""
+        recent = self._esc_recent_valid
+        invalidity_rate = (recent.count(False) / len(recent)) if recent else 0.0
+        return EscalationContext(
+            best_fitness_history=tuple(self.best_fitness_history),
+            recent_scores=tuple(self._esc_recent_scores),
+            invalidity_rate=invalidity_rate,
+            tokens_spent=self.ledger.spent(),
+            tokens_budget=self.config.budget.total_tokens,
+            iteration=iteration,
+        )
+
+    def _record_escalation_signal(self, valid: bool, score: Optional[float]) -> None:
+        """One per-iteration observation feeding the invalidity/diversity triggers."""
+        if self.escalation is None:
+            return
+        self._esc_recent_valid.append(valid)
+        if score is not None:
+            self._esc_recent_scores.append(score)
+
     def _update_histories(self) -> None:
         best = self.db.best_program()
         self.best_fitness_history.append(self.db.fitness(best) if best else 0.0)
@@ -1145,6 +1204,13 @@ class NoemaController:
                 self.mutation_operator_rng.getstate()
             ),
         }
+        if self.escalation is not None:
+            state["escalation"] = self.escalation.state_dict()
+            state["escalation_rng_state"] = _encode_rng_state(
+                self.escalation.rng.getstate()
+            )
+            state["escalation_recent_valid"] = list(self._esc_recent_valid)
+            state["escalation_recent_scores"] = list(self._esc_recent_scores)
         with open(os.path.join(path, NOEMA_STATE_FILE), "w") as f:
             json.dump(state, f)
         logger.info(f"Saved checkpoint at iteration {iteration} to {path}")
@@ -1168,5 +1234,16 @@ class NoemaController:
         if "mutation_operator_rng_state" in state:
             self.mutation_operator_rng.setstate(
                 _decode_rng_state(state["mutation_operator_rng_state"])
+            )
+        if self.escalation is not None and "escalation" in state:
+            self.escalation.load_state_dict(state["escalation"])
+            self.escalation.rng.setstate(
+                _decode_rng_state(state["escalation_rng_state"])
+            )
+            self._esc_recent_valid = deque(
+                state["escalation_recent_valid"], maxlen=self._esc_recent_valid.maxlen
+            )
+            self._esc_recent_scores = deque(
+                state["escalation_recent_scores"], maxlen=self._esc_recent_scores.maxlen
             )
         logger.info(f"Loaded checkpoint from {path} (resuming at {self.start_iteration})")

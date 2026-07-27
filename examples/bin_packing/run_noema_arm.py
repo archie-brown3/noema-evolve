@@ -18,6 +18,7 @@ from dataclasses import replace
 from noema.config import (
     BudgetConfig,
     CoordinationConfig,
+    EscalationConfig,
     LLMClientConfig,
     LLMRolesConfig,
     NoemaConfig,
@@ -65,6 +66,22 @@ def main():
     ap.add_argument("--budget-tokens", type=int, default=1_000_000)  # From STUDY.md
     ap.add_argument("--retry-enabled", action="store_true", default=False)
     ap.add_argument("--retry-cap", type=int, default=2)
+    # Model escalation (task 0107). Off unless --escalation-trigger is passed;
+    # then a mutation burst routes to --escalation-model (defaults to the
+    # coordination seat) when the trigger fires. Mutation seat only.
+    ap.add_argument(
+        "--escalation-trigger",
+        choices=["plateau", "invalidity", "budget_fraction", "diversity", "random"],
+        default=None,
+    )
+    ap.add_argument("--escalation-model", default=None)
+    ap.add_argument("--escalation-burst", type=int, default=5)
+    ap.add_argument("--escalation-cooldown", type=int, default=20)
+    ap.add_argument("--escalation-window", type=int, default=10)
+    ap.add_argument("--escalation-min-delta", type=float, default=0.001)
+    ap.add_argument("--escalation-threshold", type=float, default=0.5)
+    ap.add_argument("--escalation-fraction", type=float, default=0.7)
+    ap.add_argument("--escalation-probability", type=float, default=0.2)
     args = ap.parse_args()
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
@@ -113,7 +130,24 @@ def main():
                 mutation_llm, model=args.coordination_model or args.model
             ),
         ),
-        coordination=CoordinationConfig(module=args.arm),
+        coordination=CoordinationConfig(
+            module=args.arm,
+            escalation=(
+                EscalationConfig(
+                    trigger=args.escalation_trigger,
+                    escalation_model=args.escalation_model,
+                    burst_length=args.escalation_burst,
+                    cooldown_mutations=args.escalation_cooldown,
+                    window=args.escalation_window,
+                    min_delta=args.escalation_min_delta,
+                    threshold=args.escalation_threshold,
+                    fraction=args.escalation_fraction,
+                    probability=args.escalation_probability,
+                )
+                if args.escalation_trigger
+                else None
+            ),
+        ),
     )
 
     controller = NoemaController(

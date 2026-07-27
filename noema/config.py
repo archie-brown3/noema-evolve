@@ -78,12 +78,40 @@ class LLMRolesConfig:
 
 
 @dataclass
+class EscalationConfig:
+    """Escalation policy settings (task 0107). `trigger` picks the strategy; the
+    rest are per-trigger knobs (ignored when not relevant to the chosen trigger).
+
+    Escalation routes a mutation generation to a stronger model for a fixed burst
+    when a trigger fires, then cools down before it can re-trigger. It lives on
+    the MUTATION seat only — the coordination seat is untouched, preserving the
+    single-model controlled-ablation contribution. The policy that consumes this
+    is noema.coordination.escalation.EscalationPolicy."""
+
+    trigger: str = "plateau"  # plateau | invalidity | budget_fraction | diversity | random
+    burst_length: int = 5     # mutations escalated per trigger
+    cooldown_mutations: int = 20  # non-escalating calls before a re-trigger is allowed
+    # trigger-specific:
+    window: int = 10          # plateau / diversity lookback length
+    min_delta: float = 0.001  # plateau: best-fitness change over the window counting as "flat"
+    threshold: float = 0.5    # invalidity rate ceiling / diversity variance floor
+    fraction: float = 0.7     # budget_fraction: escalate once this share of tokens is spent
+    probability: float = 0.2  # random: per-call escalation probability (OpenEvolve baseline)
+    # The strong model to route to. None disables escalation entirely (the
+    # policy is inert). The host bootstraps this from the coordination seat.
+    escalation_model: Optional[str] = None
+
+
+@dataclass
 class CoordinationConfig:
     """Which coordination module runs, and its mechanism-specific parameters"""
 
     module: str = "null"  # registry key: "null" (OFF arm), "hifo", ...
     params: Dict[str, Any] = field(default_factory=dict)
     seed: Optional[int] = None  # module RNG; defaults to NoemaConfig.random_seed + 1
+    # Escalation modifier (task 0107). None = escalation off = byte-identical to
+    # today; any arm can carry it since the controller applies it after advise().
+    escalation: Optional[EscalationConfig] = None
 
 
 @dataclass
@@ -178,6 +206,21 @@ class NoemaConfig:
             )
         if self.coordination.seed is None:
             self.coordination.seed = self.random_seed + 1
+        if self.coordination.escalation is not None:
+            esc = self.coordination.escalation
+            valid_triggers = (
+                "plateau", "invalidity", "budget_fraction", "diversity", "random",
+            )
+            if esc.trigger not in valid_triggers:
+                raise ValueError(
+                    f"unknown escalation trigger {esc.trigger!r}; "
+                    f"choose one of {valid_triggers}"
+                )
+            # Default the strong model to the frontier coordination seat (PR #46),
+            # the same bootstrap the Advice.model plumbing uses. None here would
+            # make the policy inert, so resolve it once at config time.
+            if esc.escalation_model is None:
+                esc.escalation_model = self.llm.coordination.model
         if self.selection.seed is None:
             self.selection.seed = self.random_seed + 3
         if self.substrate.kind not in ("islands", "tree", "cvt"):

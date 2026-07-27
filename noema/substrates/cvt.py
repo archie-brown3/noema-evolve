@@ -104,7 +104,7 @@ class CVTStore:
     highest-fitness elite per CVT cell."""
 
     topology = "cvt_regions"
-    capabilities = frozenset({"population", "elites", "fitness", "code", "regions", "cvt_cells"})
+    capabilities = frozenset({"population", "elites", "fitness", "code", "regions", "cvt_cells", "sampling_weights"})
 
     def __init__(
         self,

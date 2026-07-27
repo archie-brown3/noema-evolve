@@ -28,6 +28,23 @@ The builder constructs an arm from `NoemaConfig.coordination.module`.
 
 The registry also provides the `null` control arm.
 
+## Model escalation (task 0107)
+
+[`escalation.py`](./escalation.py) is an arm-agnostic modifier, not an arm.
+An `EscalationPolicy` routes a mutation generation to a stronger model for a
+fixed burst when a trigger fires, then cools down before it can re-trigger.
+Five triggers are configurable (`plateau`, `invalidity`, `budget_fraction`,
+`diversity`, and `random` — the last reproduces OpenEvolve's weighted-model
+coin flip as a study baseline).
+
+The policy is owned and applied by the **controller**, which builds an
+`EscalationContext` from state it already holds and sets `Advice.model` after
+`advise()`. So escalation composes with any arm — including `null` — with no
+arm change. It lives on the mutation seat only; the coordination seat is
+untouched, preserving the single-model controlled-ablation basis. Enable it via
+`NoemaConfig.coordination.escalation` (an `EscalationConfig`); `None` is off and
+byte-identical to today.
+
 ## Composition
 
 The controller asks `sampling_request` for pre-selection hints.
