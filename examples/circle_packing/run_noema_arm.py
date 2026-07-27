@@ -52,7 +52,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--arm",
-        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes", "bandit"],
+        choices=["null", "hifo", "pes-custom", "pes-faithful", "pes", "bandit", "pe"],
         required=True,
         help="'pes' is a deprecated alias for pes-custom (task 0066)",
     )
@@ -114,7 +114,7 @@ def main():
         max_iterations=args.iterations,
         checkpoint_interval=5,
         random_seed=args.seed,
-        diff_based_evolution=True,
+        diff_based_evolution=False,
         mutation_operators=mutation_operators,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
