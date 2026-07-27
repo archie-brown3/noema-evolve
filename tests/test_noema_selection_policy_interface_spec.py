@@ -112,17 +112,16 @@ class TestIndependentConfiguration(unittest.TestCase):
         self.assertNotIn("noema.substrates.tree", source)
 
 
-class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
-    """task 0086 / Decision #18's gated Boltzmann probe: TreeStore does not
-    declare `sampling_weights` (Boltzmann's whole mechanism is weighting the
-    sampling distribution — a tree has no such concept, only islands' MAP-
-    Elites archive does), so this combination must fail loudly at
-    composition, not run degraded or silently ignore the weighting. Offline:
-    no LLM call, no controller, no run — this is the only part of 0086
-    that's agent-executable before the headline matrix exists and the user
-    approves the probe run budget (see the ticket)."""
+class TestBoltzmannCrossSubstrateComposition(unittest.TestCase):
+    """Boltzmann selection composes with all three store kinds.
 
-    def test_tree_substrate_with_boltzmann_selection_raises_at_composition(self):
+    Tree and CVT expose `sampling_weights` in their capabilities frozenset
+    because they persist program.metadata verbatim, which is all Boltzmann
+    needs to read and write sample_weight values.  The default policy for
+    tree remains UCT and for CVT remains cvt_ucb; Boltzmann is opt-in via
+    explicit `selection: policy: boltzmann` in the experiment YAML."""
+
+    def test_tree_substrate_with_boltzmann_selection_composes_cleanly(self):
         NoemaConfig = require_symbol(self, "noema.config", "NoemaConfig")
         SubstrateConfig = require_symbol(self, "noema.config", "SubstrateConfig")
         SelectionConfig = require_symbol(self, "noema.config", "SelectionConfig")
@@ -135,15 +134,10 @@ class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
             selection=SelectionConfig(policy="boltzmann"),
         )
 
-        with self.assertRaises(ValueError) as cm:
-            build_substrate_runtime(config)
-        self.assertIn("sampling_weights", str(cm.exception))
+        runtime = build_substrate_runtime(config)
+        self.assertEqual(runtime.policy.__class__.__name__, "BoltzmannSelectionPolicy")
 
     def test_islands_with_boltzmann_selection_composes_cleanly(self):
-        # Negative control: the same policy against the substrate it's
-        # actually designed for must NOT raise — proves the failure above is
-        # about the specific tree/boltzmann capability gap, not boltzmann
-        # being broken in general.
         NoemaConfig = require_symbol(self, "noema.config", "NoemaConfig")
         SubstrateConfig = require_symbol(self, "noema.config", "SubstrateConfig")
         SelectionConfig = require_symbol(self, "noema.config", "SelectionConfig")
@@ -159,15 +153,31 @@ class TestTreeBoltzmannCompositionFailure(unittest.TestCase):
         runtime = build_substrate_runtime(config)
         self.assertEqual(runtime.policy.__class__.__name__, "BoltzmannSelectionPolicy")
 
-    def test_tree_declares_the_capabilities_boltzmann_actually_needs_except_weights(self):
-        # Precision check: the failure must be specifically about
-        # sampling_weights, not some other/wider mismatch that would make
-        # this test pass for the wrong reason.
-        from noema.selection.boltzmann import BoltzmannSelectionPolicy
+    def test_cvt_substrate_with_boltzmann_selection_composes_cleanly(self):
+        NoemaConfig = require_symbol(self, "noema.config", "NoemaConfig")
+        SubstrateConfig = require_symbol(self, "noema.config", "SubstrateConfig")
+        SelectionConfig = require_symbol(self, "noema.config", "SelectionConfig")
+        build_substrate_runtime = require_symbol(
+            self, "noema.substrates.registry", "build_substrate_runtime"
+        )
+
+        config = NoemaConfig(
+            substrate=SubstrateConfig(kind="cvt"),
+            selection=SelectionConfig(policy="boltzmann"),
+        )
+
+        runtime = build_substrate_runtime(config)
+        self.assertEqual(runtime.policy.__class__.__name__, "BoltzmannSelectionPolicy")
+
+    def test_tree_declares_sampling_weights_capability(self):
         from noema.substrates.tree import TreeStore
 
-        missing = BoltzmannSelectionPolicy.required_capabilities - TreeStore.capabilities
-        self.assertEqual(missing, frozenset({"sampling_weights"}))
+        self.assertIn("sampling_weights", TreeStore.capabilities)
+
+    def test_cvt_declares_sampling_weights_capability(self):
+        from noema.substrates.cvt import CVTStore
+
+        self.assertIn("sampling_weights", CVTStore.capabilities)
 
 
 if __name__ == "__main__":

@@ -67,7 +67,7 @@ class TreeStore:
 
     topology = "tree_branches"
     capabilities = frozenset(
-        {"population", "elites", "fitness", "code", "regions", "tree_topology"}
+        {"population", "elites", "fitness", "code", "regions", "tree_topology", "sampling_weights"}
     )
 
     def __init__(

@@ -1,6 +1,6 @@
 ---
 title: Population substrates
-updated: 2026-07-26T00:00:00Z
+updated: 2026-07-27T00:00:00Z
 tags: [noema, substrates, population]
 ---
 
