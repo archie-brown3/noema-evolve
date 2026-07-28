@@ -235,7 +235,7 @@ class BudgetedLLM(LLMInterface):
             if value is not None:
                 params[name] = value
         if self.disable_reasoning:
-            params["reasoning"] = {"enabled": False}
+            params["extra_body"] = {"reasoning": {"enabled": False}}
 
         retries = kwargs.get("retries", self.retries)
         retry_delay = kwargs.get("retry_delay", self.retry_delay)
