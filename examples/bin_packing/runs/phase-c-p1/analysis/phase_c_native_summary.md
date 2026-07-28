@@ -1,0 +1,14 @@
+# Phase C native-selection — per-cell summary
+
+Baseline 0.9562. 1M tokens, seed 42, V4 Flash.
+
+| arm | substrate | final_score | delta | total_tokens | coord_tokens | coord_pct | coord_calls | iters | viol_pct | inval_pct |
+|---|---|---|---|---|---|---|---|---|---|---|
+| hifo | tree | 0.9654 | 0.0092 | 1000974 | 40099 | 4.0 | 31 | 183 | 7.7 | 0.5 |
+| null | tree | 0.9649 | 0.0087 | 1000128 | 0 | 0.0 | 0 | 163 | 12.3 | 9.2 |
+| hifo | islands | 0.964 | 0.0078 | 1003253 | 27282 | 2.7 | 35 | 178 | 7.9 | 3.9 |
+| null | islands | 0.9631 | 0.0069 | 1000144 | 0 | 0.0 | 0 | 194 | 8.8 | 2.6 |
+| bandit | islands | 0.9608 | 0.0046 | 1000212 | 0 | 0.0 | 0 | 207 | 1.0 | 2.9 |
+| bandit | tree | 0.9608 | 0.0046 | 1003132 | 0 | 0.0 | 0 | 226 | 0.9 | 1.8 |
+| pe | islands | 0.9603 | 0.0041 | 1001302 | 54300 | 5.4 | 16 | 175 | 9.1 | 4.0 |
+| pe | tree | 0.9585 | 0.0023 | 1003577 | 178639 | 17.8 | 50 | 150 | 4.7 | 2.0 |

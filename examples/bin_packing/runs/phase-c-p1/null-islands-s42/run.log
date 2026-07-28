@@ -1,0 +1,1102 @@
+2026-07-27 22:24:53,710 - INFO - Froze run config to examples/bin_packing/runs/phase-c-p1/null-islands-s42/config.yaml (sha256=a08ecf8bc124a841af72c1ab161d380903eeb14859b0cf98be5e26ddb6117f14)
+2026-07-27 22:24:53,865 - INFO - Evolution tracer initialized: examples/bin_packing/runs/phase-c-p1/null-islands-s42/evolution_trace.jsonl
+2026-07-27 22:24:53,865 - INFO - Initialized program database with 0 programs
+2026-07-27 22:24:53,871 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/bin_packing/evaluator.py
+2026-07-27 22:24:53,872 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/bin_packing/evaluator.py
+2026-07-27 22:24:53,874 - INFO - Initialized prompt sampler
+2026-07-27 22:24:53,935 - INFO - Evaluating and adding initial program
+2026-07-27 22:24:54,155 - INFO - Evaluated program initial in 0.22s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2167, validity=1.0000
+2026-07-27 22:24:54,156 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-27 22:24:57,177 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:26:12,200 - INFO - Evaluated program it000000 in 0.13s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1261, validity=1.0000
+2026-07-27 22:26:12,200 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-07-27 22:26:13,557 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:26:40,556 - INFO - Evaluated program it000001 in 0.12s: combined_score=0.8826, mean_excess=0.1330, bins_used=2276.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1199, validity=1.0000
+2026-07-27 22:26:40,557 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 9}
+2026-07-27 22:26:42,468 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:26:50,282 - INFO - Evaluated program it000002 in 0.15s: combined_score=0.8989, mean_excess=0.1125, bins_used=2235.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1436, validity=1.0000
+2026-07-27 22:26:50,283 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 0}
+2026-07-27 22:26:51,046 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:26:52,226 - WARNING - Iteration 3: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 22:26:53,331 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:27:09,340 - INFO - Evaluated program it000004 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1650, validity=1.0000
+2026-07-27 22:27:09,341 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 0}
+2026-07-27 22:27:09,344 - INFO - Saved database with 5 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_4
+2026-07-27 22:27:09,345 - INFO - Saved checkpoint at iteration 4 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_4
+2026-07-27 22:27:10,167 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:27:35,152 - INFO - Evaluated program it000005 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1239, validity=1.0000
+2026-07-27 22:27:35,153 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 9} (fitness: 0.883 -> 0.956)
+2026-07-27 22:27:37,552 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:28:13,568 - INFO - Evaluated program it000006 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1664, validity=1.0000
+2026-07-27 22:28:13,569 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 2}
+2026-07-27 22:28:13,821 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:28:30,824 - INFO - Evaluated program it000007 in 0.13s: combined_score=0.9472, mean_excess=0.0558, bins_used=2121.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1269, validity=1.0000
+2026-07-27 22:28:30,824 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 1}
+2026-07-27 22:28:31,085 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:28:49,993 - INFO - Evaluated program it000008 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1575, validity=1.0000
+2026-07-27 22:28:49,994 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 3, 'diversity': 0}
+2026-07-27 22:28:51,700 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:29:21,172 - INFO - Evaluated program it000009 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1565, validity=1.0000
+2026-07-27 22:29:21,178 - INFO - Saved database with 10 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_9
+2026-07-27 22:29:21,179 - INFO - Saved checkpoint at iteration 9 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_9
+2026-07-27 22:29:21,518 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:29:41,378 - INFO - Evaluated program it000010 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1207, validity=1.0000
+2026-07-27 22:29:43,663 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:30:21,217 - INFO - Evaluated program it000011 in 0.13s: combined_score=0.9454, mean_excess=0.0577, bins_used=2125.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1317, validity=1.0000
+2026-07-27 22:30:21,218 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 0, 'diversity': 1}
+2026-07-27 22:30:21,934 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:30:43,614 - INFO - Evaluated program it000012 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1307, validity=1.0000
+2026-07-27 22:30:43,615 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 1}
+2026-07-27 22:30:43,615 - INFO - New best program it000012 replaces initial (combined_score: 0.9562 → 0.9626, +0.0064)
+2026-07-27 22:30:44,287 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:31:10,553 - INFO - Evaluated program it000013 in 0.12s: combined_score=0.9490, mean_excess=0.0538, bins_used=2117.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1211, validity=1.0000
+2026-07-27 22:31:10,554 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 7}
+2026-07-27 22:31:11,400 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:31:26,516 - INFO - Evaluated program it000014 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1571, validity=1.0000
+2026-07-27 22:31:26,525 - INFO - Saved database with 15 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_14
+2026-07-27 22:31:26,526 - INFO - Saved checkpoint at iteration 14 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_14
+2026-07-27 22:31:27,748 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:31:42,217 - INFO - Evaluated program it000015 in 0.12s: combined_score=0.9485, mean_excess=0.0543, bins_used=2118.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1214, validity=1.0000
+2026-07-27 22:31:42,219 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 1}
+2026-07-27 22:31:44,424 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:31:45,598 - WARNING - Iteration 16: no valid program in LLM response (attempt 1)
+2026-07-27 22:31:50,969 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:32:16,957 - INFO - Evaluated program it000017 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1638, validity=1.0000
+2026-07-27 22:32:19,191 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:33:58,707 - INFO - Evaluated program it000018 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1596, validity=1.0000
+2026-07-27 22:33:59,543 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:34:07,227 - INFO - Evaluated program it000019 in 0.13s: combined_score=0.9485, mean_excess=0.0543, bins_used=2118.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1321, validity=1.0000
+2026-07-27 22:34:07,236 - INFO - Saved database with 19 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_19
+2026-07-27 22:34:07,240 - INFO - Saved checkpoint at iteration 19 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_19
+2026-07-27 22:34:08,634 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:34:24,297 - INFO - Evaluated program it000020 in 0.16s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1572, validity=1.0000
+2026-07-27 22:34:24,299 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 1}
+2026-07-27 22:34:27,498 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:35:42,790 - WARNING - Iteration 21: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 22:35:44,693 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:35:57,168 - INFO - Evaluated program it000022 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1614, validity=1.0000
+2026-07-27 22:35:59,005 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:36:12,092 - INFO - Evaluated program it000023 in 0.13s: combined_score=0.9436, mean_excess=0.0597, bins_used=2129.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1249, validity=1.0000
+2026-07-27 22:36:14,113 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:36:26,601 - WARNING - Iteration 24: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 22:36:26,618 - INFO - Saved database with 22 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_24
+2026-07-27 22:36:26,621 - INFO - Saved checkpoint at iteration 24 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_24
+2026-07-27 22:36:27,330 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:36:45,609 - INFO - Evaluated program it000025 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1506, validity=1.0000
+2026-07-27 22:36:45,611 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 8, 'diversity': 8}
+2026-07-27 22:36:47,943 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:37:28,097 - INFO - Evaluated program it000026 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1518, validity=1.0000
+2026-07-27 22:37:28,099 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 1}
+2026-07-27 22:37:29,605 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:37:53,897 - INFO - Evaluated program it000027 in 0.15s: combined_score=0.9485, mean_excess=0.0543, bins_used=2118.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1395, validity=1.0000
+2026-07-27 22:37:55,172 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:38:20,893 - INFO - Evaluated program it000028 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1570, validity=1.0000
+2026-07-27 22:38:22,176 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:38:43,037 - INFO - Evaluated program it000029 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1258, validity=1.0000
+2026-07-27 22:38:43,049 - INFO - Saved database with 27 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_29
+2026-07-27 22:38:43,050 - INFO - Saved checkpoint at iteration 29 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_29
+2026-07-27 22:38:43,881 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:39:08,973 - INFO - Evaluated program it000030 in 0.14s: combined_score=0.8834, mean_excess=0.1320, bins_used=2274.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1403, validity=1.0000
+2026-07-27 22:39:12,609 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:41:08,262 - INFO - Evaluated program it000031 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1335, validity=1.0000
+2026-07-27 22:41:08,264 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 2, 'diversity': 1} (fitness: 0.947 -> 0.956)
+2026-07-27 22:41:10,430 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:41:24,543 - INFO - Evaluated program it000032 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1273, validity=1.0000
+2026-07-27 22:41:25,778 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:42:31,840 - INFO - Evaluated program it000033 in 0.16s: combined_score=0.9530, mean_excess=0.0493, bins_used=2108.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1569, validity=1.0000
+2026-07-27 22:42:31,841 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 6}
+2026-07-27 22:42:34,164 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:43:02,661 - INFO - Evaluated program it000034 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1600, validity=1.0000
+2026-07-27 22:43:02,663 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 1}
+2026-07-27 22:43:02,674 - INFO - Saved database with 32 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_34
+2026-07-27 22:43:02,675 - INFO - Saved checkpoint at iteration 34 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_34
+2026-07-27 22:43:04,534 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:43:22,985 - INFO - Evaluated program it000035 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1468, validity=1.0000
+2026-07-27 22:43:24,212 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:44:05,111 - INFO - Evaluated program it000036 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1588, validity=1.0000
+2026-07-27 22:44:06,309 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:44:36,323 - INFO - Evaluated program it000037 in 0.16s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1617, validity=1.0000
+2026-07-27 22:44:37,457 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:45:05,508 - INFO - Evaluated program it000038 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1330, validity=1.0000
+2026-07-27 22:45:06,144 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:45:31,770 - INFO - Evaluated program it000039 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1457, validity=1.0000
+2026-07-27 22:45:31,772 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 0, 'diversity': 1} (fitness: 0.945 -> 0.956)
+2026-07-27 22:45:31,785 - INFO - Saved database with 37 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_39
+2026-07-27 22:45:31,786 - INFO - Saved checkpoint at iteration 39 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_39
+2026-07-27 22:45:33,252 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:46:29,811 - INFO - Evaluated program it000040 in 0.13s: combined_score=0.9612, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1266, validity=1.0000
+2026-07-27 22:46:30,182 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:46:52,837 - INFO - Evaluated program it000041 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1494, validity=1.0000
+2026-07-27 22:46:53,932 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:47:12,323 - INFO - Evaluated program it000042 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1438, validity=1.0000
+2026-07-27 22:47:13,074 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:47:47,381 - INFO - Evaluated program it000043 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1720, validity=1.0000
+2026-07-27 22:47:47,383 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 2}
+2026-07-27 22:47:48,079 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:48:07,271 - INFO - Evaluated program it000044 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1263, validity=1.0000
+2026-07-27 22:48:07,288 - INFO - Saved database with 42 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_44
+2026-07-27 22:48:07,291 - INFO - Saved checkpoint at iteration 44 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_44
+2026-07-27 22:48:07,993 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:49:06,982 - INFO - Evaluated program it000045 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1492, validity=1.0000
+2026-07-27 22:49:06,984 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 4, 'diversity': 3}
+2026-07-27 22:49:08,438 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:50:55,837 - INFO - Evaluated program it000046 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1353, validity=1.0000
+2026-07-27 22:50:59,120 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:52:27,284 - INFO - Evaluated program it000047 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1193, validity=1.0000
+2026-07-27 22:52:27,973 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:52:49,061 - INFO - Evaluated program it000048 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1613, validity=1.0000
+2026-07-27 22:52:49,062 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 0, 'diversity': 0}
+2026-07-27 22:52:51,135 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:53:11,895 - INFO - Evaluated program it000049 in 0.13s: combined_score=0.9553, mean_excess=0.0468, bins_used=2103.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1319, validity=1.0000
+2026-07-27 22:53:11,897 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 3, 'diversity': 2}
+2026-07-27 22:53:11,912 - INFO - Saved database with 47 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_49
+2026-07-27 22:53:11,914 - INFO - Saved checkpoint at iteration 49 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_49
+2026-07-27 22:53:12,689 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:53:25,947 - INFO - Evaluated program it000050 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1404, validity=1.0000
+2026-07-27 22:53:27,305 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:54:03,894 - WARNING - Iteration 51: no valid program in LLM response (attempt 1)
+2026-07-27 22:54:06,267 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:54:17,434 - INFO - Evaluated program it000052 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1262, validity=1.0000
+2026-07-27 22:54:18,510 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:55:15,902 - INFO - Evaluated program it000053 in 0.13s: combined_score=0.9450, mean_excess=0.0582, bins_used=2126.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1312, validity=1.0000
+2026-07-27 22:55:17,529 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:55:42,265 - INFO - Evaluated program it000054 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1630, validity=1.0000
+2026-07-27 22:55:42,299 - INFO - Saved database with 51 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_54
+2026-07-27 22:55:42,301 - INFO - Saved checkpoint at iteration 54 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_54
+2026-07-27 22:55:43,658 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:57:16,278 - INFO - Evaluated program it000055 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1286, validity=1.0000
+2026-07-27 22:57:17,640 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:57:55,771 - INFO - Evaluated program it000056 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1373, validity=1.0000
+2026-07-27 22:57:58,194 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:58:05,905 - INFO - Evaluated program it000057 in 0.18s: combined_score=0.9567, mean_excess=0.0453, bins_used=2100.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1770, validity=1.0000
+2026-07-27 22:58:05,907 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 6, 'diversity': 5}
+2026-07-27 22:58:06,554 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:58:40,762 - WARNING - Iteration 58: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 22:58:42,076 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:59:16,042 - WARNING - Iteration 59: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 22:59:16,077 - INFO - Saved database with 54 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_59
+2026-07-27 22:59:16,081 - INFO - Saved checkpoint at iteration 59 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_59
+2026-07-27 22:59:17,033 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 22:59:52,479 - INFO - Evaluated program it000060 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1282, validity=1.0000
+2026-07-27 22:59:53,083 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:01:25,051 - INFO - Evaluated program it000061 in 0.14s: combined_score=0.9531, mean_excess=0.0493, bins_used=2108.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1417, validity=1.0000
+2026-07-27 23:01:25,818 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:01:55,651 - WARNING - Iteration 62: no valid program in LLM response (attempt 1)
+2026-07-27 23:01:58,171 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:03:04,043 - WARNING - Iteration 63: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 23:03:05,052 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:03:24,760 - INFO - Evaluated program it000064 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1373, validity=1.0000
+2026-07-27 23:03:24,782 - INFO - Saved database with 57 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_64
+2026-07-27 23:03:24,785 - INFO - Saved checkpoint at iteration 64 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_64
+2026-07-27 23:03:26,716 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:05:45,863 - INFO - Evaluated program it000065 in 0.25s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2491, validity=1.0000
+2026-07-27 23:05:45,865 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 9} (fitness: 0.956 -> 0.957)
+2026-07-27 23:05:46,702 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:06:47,695 - INFO - Evaluated program it000066 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1310, validity=1.0000
+2026-07-27 23:06:47,697 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 0}
+2026-07-27 23:06:48,917 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:07:56,100 - INFO - Evaluated program it000067 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1387, validity=1.0000
+2026-07-27 23:07:56,103 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 1, 'diversity': 1} (fitness: 0.949 -> 0.956)
+2026-07-27 23:07:57,906 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:08:13,577 - INFO - Evaluated program it000068 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1266, validity=1.0000
+2026-07-27 23:08:13,579 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:08:13,579 - INFO - Population size after cleanup: 60
+2026-07-27 23:08:14,444 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:08:43,983 - WARNING - Iteration 69: no valid program in LLM response (attempt 1)
+2026-07-27 23:08:44,013 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_69
+2026-07-27 23:08:44,016 - INFO - Saved checkpoint at iteration 69 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_69
+2026-07-27 23:08:44,830 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:09:09,645 - INFO - Evaluated program it000070 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1358, validity=1.0000
+2026-07-27 23:09:09,648 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:09:09,648 - INFO - Population size after cleanup: 60
+2026-07-27 23:09:10,869 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:09:29,841 - INFO - Evaluated program it000071 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1337, validity=1.0000
+2026-07-27 23:09:29,844 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 1, 'diversity': 0}
+2026-07-27 23:09:29,844 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:09:29,844 - INFO - Population size after cleanup: 60
+2026-07-27 23:09:32,151 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:09:54,090 - INFO - Evaluated program it000072 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1168, validity=1.0000
+2026-07-27 23:09:54,093 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:09:54,093 - INFO - Population size after cleanup: 60
+2026-07-27 23:09:54,857 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:10:06,583 - INFO - Evaluated program it000073 in 0.13s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1319, validity=1.0000
+2026-07-27 23:10:06,584 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:10:06,584 - INFO - Population size after cleanup: 60
+2026-07-27 23:10:07,328 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:10:32,320 - INFO - Evaluated program it000074 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1231, validity=1.0000
+2026-07-27 23:10:32,321 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:10:32,322 - INFO - Population size after cleanup: 60
+2026-07-27 23:10:32,339 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_74
+2026-07-27 23:10:32,342 - INFO - Saved checkpoint at iteration 74 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_74
+2026-07-27 23:10:34,019 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:12:12,479 - INFO - Evaluated program it000075 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1338, validity=1.0000
+2026-07-27 23:12:12,481 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:12:12,481 - INFO - Population size after cleanup: 60
+2026-07-27 23:12:14,588 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:12:29,622 - INFO - Evaluated program it000076 in 0.14s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1405, validity=1.0000
+2026-07-27 23:12:29,623 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:12:29,623 - INFO - Population size after cleanup: 60
+2026-07-27 23:12:31,324 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:12:44,546 - INFO - Evaluated program it000077 in 0.18s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1796, validity=1.0000
+2026-07-27 23:12:44,547 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:12:44,547 - INFO - Population size after cleanup: 60
+2026-07-27 23:12:45,165 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:13:14,854 - WARNING - Iteration 78: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 23:13:16,363 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:15:03,732 - INFO - Evaluated program it000079 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1445, validity=1.0000
+2026-07-27 23:15:03,734 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 4, 'diversity': 3}
+2026-07-27 23:15:03,734 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:15:03,734 - INFO - Population size after cleanup: 60
+2026-07-27 23:15:03,754 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_79
+2026-07-27 23:15:04,442 - INFO - Saved checkpoint at iteration 79 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_79
+2026-07-27 23:15:06,101 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:15:13,292 - WARNING - LLM call failed (attempt 1/4): Connection error.. Retrying...
+2026-07-27 23:15:19,824 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:16:44,637 - INFO - Evaluated program it000080 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1298, validity=1.0000
+2026-07-27 23:16:44,639 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:16:44,639 - INFO - Population size after cleanup: 60
+2026-07-27 23:16:45,522 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:17:00,163 - INFO - Evaluated program it000081 in 0.15s: combined_score=0.9567, mean_excess=0.0453, bins_used=2100.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1470, validity=1.0000
+2026-07-27 23:17:00,166 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:17:00,166 - INFO - Population size after cleanup: 60
+2026-07-27 23:17:01,397 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:17:09,743 - INFO - Evaluated program it000082 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1253, validity=1.0000
+2026-07-27 23:17:09,745 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 1, 'diversity': 1}
+2026-07-27 23:17:09,745 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:17:09,745 - INFO - Population size after cleanup: 60
+2026-07-27 23:17:11,390 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:17:27,629 - WARNING - Iteration 83: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 23:17:28,572 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:17:58,027 - INFO - Evaluated program it000084 in 0.16s: combined_score=0.8901, mean_excess=0.1235, bins_used=2257.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1555, validity=1.0000
+2026-07-27 23:17:58,029 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:17:58,029 - INFO - Population size after cleanup: 60
+2026-07-27 23:17:58,063 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_84
+2026-07-27 23:17:58,066 - INFO - Saved checkpoint at iteration 84 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_84
+2026-07-27 23:18:01,297 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:18:13,565 - INFO - Evaluated program it000085 in 0.16s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1601, validity=1.0000
+2026-07-27 23:18:13,567 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:18:13,567 - INFO - Population size after cleanup: 60
+2026-07-27 23:18:14,449 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:18:28,130 - INFO - Evaluated program it000086 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1524, validity=1.0000
+2026-07-27 23:18:28,132 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 1, 'diversity': 0}
+2026-07-27 23:18:28,132 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:18:28,132 - INFO - Population size after cleanup: 60
+2026-07-27 23:18:30,271 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:18:54,226 - INFO - Evaluated program it000087 in 0.16s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1571, validity=1.0000
+2026-07-27 23:18:54,228 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 0, 'diversity': 1} (fitness: 0.956 -> 0.961)
+2026-07-27 23:18:54,228 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:18:54,228 - INFO - Population size after cleanup: 60
+2026-07-27 23:18:56,222 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:19:30,628 - WARNING - Iteration 88: no valid program in LLM response (attempt 1)
+2026-07-27 23:19:32,030 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:22:09,501 - INFO - Evaluated program it000089 in 0.15s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1453, validity=1.0000
+2026-07-27 23:22:09,503 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 8, 'diversity': 7}
+2026-07-27 23:22:09,504 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:22:09,504 - INFO - Population size after cleanup: 60
+2026-07-27 23:22:09,529 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_89
+2026-07-27 23:22:09,532 - INFO - Saved checkpoint at iteration 89 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_89
+2026-07-27 23:22:09,809 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:22:37,745 - INFO - Evaluated program it000090 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1427, validity=1.0000
+2026-07-27 23:22:37,747 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:22:37,747 - INFO - Population size after cleanup: 60
+2026-07-27 23:22:39,671 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:24:31,953 - INFO - Evaluated program it000091 in 0.16s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1626, validity=1.0000
+2026-07-27 23:24:31,955 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 1, 'diversity': 0} (fitness: 0.956 -> 0.958)
+2026-07-27 23:24:31,955 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:24:31,955 - INFO - Population size after cleanup: 60
+2026-07-27 23:24:32,822 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:25:03,927 - INFO - Evaluated program it000092 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1273, validity=1.0000
+2026-07-27 23:25:03,928 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 1, 'diversity': 0}
+2026-07-27 23:25:03,928 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:25:03,928 - INFO - Population size after cleanup: 60
+2026-07-27 23:25:03,928 - INFO - Cleaned up 1 stale island best program references
+2026-07-27 23:25:04,738 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:25:41,156 - INFO - Evaluated program it000093 in 0.18s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1763, validity=1.0000
+2026-07-27 23:25:41,158 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 9} (fitness: 0.957 -> 0.959)
+2026-07-27 23:25:41,158 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:25:41,158 - INFO - Population size after cleanup: 60
+2026-07-27 23:25:41,510 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.22s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.13s
+Evaluation: instances=5, bins=2276, lower_bound=2009, mean_excess=0.1330, score=0.8826, time=0.12s
+Evaluation: instances=5, bins=2235, lower_bound=2009, mean_excess=0.1125, score=0.8989, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.17s
+Evaluation: instances=5, bins=2121, lower_bound=2009, mean_excess=0.0558, score=0.9472, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2125, lower_bound=2009, mean_excess=0.0577, score=0.9454, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2117, lower_bound=2009, mean_excess=0.0538, score=0.9490, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2118, lower_bound=2009, mean_excess=0.0543, score=0.9485, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2118, lower_bound=2009, mean_excess=0.0543, score=0.9485, time=0.13s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2129, lower_bound=2009, mean_excess=0.0597, score=0.9436, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2118, lower_bound=2009, mean_excess=0.0543, score=0.9485, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2274, lower_bound=2009, mean_excess=0.1320, score=0.8834, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2108, lower_bound=2009, mean_excess=0.0493, score=0.9530, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9612, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.17s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2103, lower_bound=2009, mean_excess=0.0468, score=0.9553, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2126, lower_bound=2009, mean_excess=0.0582, score=0.9450, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2100, lower_bound=2009, mean_excess=0.0453, score=0.9567, time=0.18s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2108, lower_bound=2009, mean_excess=0.0493, score=0.9531, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.25s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.14s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.18s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2100, lower_bound=2009, mean_excess=0.0453, score=0.9567, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2257, lower_bound=2009, mean_excess=0.1235, score=0.8901, time=0.16s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.16s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.18s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s2026-07-27 23:26:02,631 - INFO - Evaluated program it000094 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1374, validity=1.0000
+2026-07-27 23:26:02,633 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:26:02,633 - INFO - Population size after cleanup: 60
+2026-07-27 23:26:02,657 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_94
+2026-07-27 23:26:02,660 - INFO - Saved checkpoint at iteration 94 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_94
+2026-07-27 23:26:05,688 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:27:26,674 - INFO - Evaluated program it000095 in 0.11s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1139, validity=1.0000
+2026-07-27 23:27:26,676 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 0, 'diversity': 1} (fitness: 0.961 -> 0.963)
+2026-07-27 23:27:26,676 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:27:26,676 - INFO - Population size after cleanup: 60
+2026-07-27 23:27:26,676 - INFO - Cleaned up 1 stale island best program references
+2026-07-27 23:27:26,676 - INFO - New best program it000095 replaces it000012 (combined_score: 0.9626 → 0.9626, +0.0000)
+2026-07-27 23:27:27,711 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:27:55,127 - INFO - Evaluated program it000096 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1564, validity=1.0000
+2026-07-27 23:27:55,129 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:27:55,129 - INFO - Population size after cleanup: 60
+2026-07-27 23:27:55,129 - INFO - Cleaned up 1 stale island best program references
+2026-07-27 23:27:56,048 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:28:29,691 - INFO - Evaluated program it000097 in 0.19s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1758, validity=1.0000
+2026-07-27 23:28:29,691 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:28:29,691 - INFO - Population size after cleanup: 60
+2026-07-27 23:28:30,206 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:28:44,959 - INFO - Evaluated program it000098 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1324, validity=1.0000
+2026-07-27 23:28:44,961 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:28:44,961 - INFO - Population size after cleanup: 60
+2026-07-27 23:28:46,769 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:29:56,151 - INFO - Evaluated program it000099 in 0.14s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1412, validity=1.0000
+2026-07-27 23:29:56,153 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:29:56,153 - INFO - Population size after cleanup: 60
+2026-07-27 23:29:56,180 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_99
+2026-07-27 23:29:56,184 - INFO - Saved checkpoint at iteration 99 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_99
+2026-07-27 23:29:58,178 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:30:11,262 - INFO - Evaluated program it000100 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1538, validity=1.0000
+2026-07-27 23:30:11,262 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:30:11,263 - INFO - Population size after cleanup: 60
+2026-07-27 23:30:15,336 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:32:34,247 - INFO - Evaluated program it000101 in 0.17s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1619, validity=1.0000
+2026-07-27 23:32:34,249 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 7}
+2026-07-27 23:32:34,249 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:32:34,249 - INFO - Population size after cleanup: 60
+2026-07-27 23:32:35,972 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:33:47,839 - INFO - Evaluated program it000102 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1626, validity=1.0000
+2026-07-27 23:33:47,841 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:33:47,841 - INFO - Population size after cleanup: 60
+2026-07-27 23:33:49,827 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:35:37,220 - INFO - Evaluated program it000103 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1587, validity=1.0000
+2026-07-27 23:35:37,222 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 1, 'diversity': 0} (fitness: 0.958 -> 0.963)
+2026-07-27 23:35:37,222 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:35:37,222 - INFO - Population size after cleanup: 60
+2026-07-27 23:35:38,176 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:36:35,468 - INFO - Evaluated program it000104 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1324, validity=1.0000
+2026-07-27 23:36:35,470 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:36:35,470 - INFO - Population size after cleanup: 60
+2026-07-27 23:36:35,503 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_104
+2026-07-27 23:36:35,507 - INFO - Saved checkpoint at iteration 104 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_104
+2026-07-27 23:36:36,940 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:37:03,892 - INFO - Evaluated program it000105 in 0.14s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1361, validity=1.0000
+2026-07-27 23:37:03,893 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:37:03,893 - INFO - Population size after cleanup: 60
+2026-07-27 23:37:06,215 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:37:32,109 - INFO - Evaluated program it000106 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1616, validity=1.0000
+2026-07-27 23:37:32,111 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:37:32,111 - INFO - Population size after cleanup: 60
+2026-07-27 23:37:42,303 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:38:03,245 - INFO - Evaluated program it000107 in 0.15s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1440, validity=1.0000
+2026-07-27 23:38:03,247 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:38:03,247 - INFO - Population size after cleanup: 60
+2026-07-27 23:38:05,296 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:38:25,345 - INFO - Evaluated program it000108 in 0.11s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1077, validity=1.0000
+2026-07-27 23:38:25,347 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:38:25,347 - INFO - Population size after cleanup: 60
+2026-07-27 23:38:32,250 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:40:17,159 - INFO - Evaluated program it000109 in 0.19s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1843, validity=1.0000
+2026-07-27 23:40:17,161 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:40:17,161 - INFO - Population size after cleanup: 60
+2026-07-27 23:40:17,191 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_109
+2026-07-27 23:40:17,196 - INFO - Saved checkpoint at iteration 109 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_109
+2026-07-27 23:40:19,701 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:40:31,217 - INFO - Evaluated program it000110 in 0.14s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1343, validity=1.0000
+2026-07-27 23:40:31,218 - INFO - Island 2 MAP-Elites cell improved: {'complexity': 0, 'diversity': 0} (fitness: 0.956 -> 0.963)
+2026-07-27 23:40:31,218 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:40:31,218 - INFO - Population size after cleanup: 60
+2026-07-27 23:40:31,218 - INFO - Cleaned up 1 stale island best program references
+2026-07-27 23:40:31,559 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:40:58,729 - INFO - Evaluated program it000111 in 0.15s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1456, validity=1.0000
+2026-07-27 23:40:58,731 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:40:58,731 - INFO - Population size after cleanup: 60
+2026-07-27 23:41:00,535 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:42:11,006 - INFO - Evaluated program it000112 in 0.12s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1167, validity=1.0000
+2026-07-27 23:42:11,007 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:42:11,007 - INFO - Population size after cleanup: 60
+2026-07-27 23:42:12,697 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:42:24,482 - INFO - Evaluated program it000113 in 0.15s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1471, validity=1.0000
+2026-07-27 23:42:24,483 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 8, 'diversity': 7} (fitness: 0.957 -> 0.959)
+2026-07-27 23:42:24,483 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:42:24,483 - INFO - Population size after cleanup: 60
+2026-07-27 23:42:25,855 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:42:43,061 - INFO - Evaluated program it000114 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1277, validity=1.0000
+2026-07-27 23:42:43,063 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 1}
+2026-07-27 23:42:43,063 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:42:43,063 - INFO - Population size after cleanup: 60
+2026-07-27 23:42:43,091 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_114
+2026-07-27 23:42:43,095 - INFO - Saved checkpoint at iteration 114 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_114
+2026-07-27 23:42:45,364 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:43:09,603 - INFO - Evaluated program it000115 in 0.15s: combined_score=0.9622, mean_excess=0.0393, bins_used=2088.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1484, validity=1.0000
+2026-07-27 23:43:09,605 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:43:09,605 - INFO - Population size after cleanup: 60
+2026-07-27 23:43:11,009 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:43:46,562 - INFO - Evaluated program it000116 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1326, validity=1.0000
+2026-07-27 23:43:46,564 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:43:46,564 - INFO - Population size after cleanup: 60
+2026-07-27 23:43:47,581 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:45:24,373 - INFO - Evaluated program it000117 in 0.16s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1605, validity=1.0000
+2026-07-27 23:45:24,374 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:45:24,374 - INFO - Population size after cleanup: 60
+2026-07-27 23:45:26,921 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:45:44,675 - INFO - Evaluated program it000118 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1304, validity=1.0000
+2026-07-27 23:45:44,677 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:45:44,677 - INFO - Population size after cleanup: 60
+2026-07-27 23:45:45,537 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:45:51,113 - WARNING - Iteration 119: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-27 23:45:51,153 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_119
+2026-07-27 23:45:51,157 - INFO - Saved checkpoint at iteration 119 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_119
+2026-07-27 23:45:51,826 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:46:08,329 - INFO - Evaluated program it000120 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1568, validity=1.0000
+2026-07-27 23:46:08,331 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:46:08,331 - INFO - Population size after cleanup: 60
+2026-07-27 23:46:09,404 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:46:35,516 - INFO - Evaluated program it000121 in 0.16s: combined_score=0.9571, mean_excess=0.0448, bins_used=2099.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1566, validity=1.0000
+2026-07-27 23:46:35,518 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 8, 'diversity': 8}
+2026-07-27 23:46:35,518 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:46:35,518 - INFO - Population size after cleanup: 60
+2026-07-27 23:46:38,225 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:46:51,220 - INFO - Evaluated program it000122 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1669, validity=1.0000
+2026-07-27 23:46:51,222 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:46:51,222 - INFO - Population size after cleanup: 60
+2026-07-27 23:46:52,409 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:47:02,218 - INFO - Evaluated program it000123 in 0.13s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1325, validity=1.0000
+2026-07-27 23:47:02,220 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:47:02,220 - INFO - Population size after cleanup: 60
+2026-07-27 23:47:03,687 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:48:38,925 - INFO - Evaluated program it000124 in 0.12s: combined_score=0.9414, mean_excess=0.0622, bins_used=2134.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1206, validity=1.0000
+2026-07-27 23:48:38,927 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 4, 'diversity': 3}
+2026-07-27 23:48:38,927 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:48:38,927 - INFO - Population size after cleanup: 60
+2026-07-27 23:48:38,956 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_124
+2026-07-27 23:48:38,960 - INFO - Saved checkpoint at iteration 124 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_124
+2026-07-27 23:48:39,937 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:49:56,878 - INFO - Evaluated program it000125 in 0.17s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1711, validity=1.0000
+2026-07-27 23:49:56,879 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:49:56,879 - INFO - Population size after cleanup: 60
+2026-07-27 23:49:57,926 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:50:57,849 - INFO - Evaluated program it000126 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1234, validity=1.0000
+2026-07-27 23:50:57,851 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:50:57,851 - INFO - Population size after cleanup: 60
+2026-07-27 23:50:59,038 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:51:21,978 - INFO - Evaluated program it000127 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1289, validity=1.0000
+2026-07-27 23:51:21,979 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:51:21,979 - INFO - Population size after cleanup: 60
+2026-07-27 23:51:22,617 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:51:32,963 - INFO - Evaluated program it000128 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1287, validity=1.0000
+2026-07-27 23:51:32,965 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:51:32,965 - INFO - Population size after cleanup: 60
+2026-07-27 23:51:34,303 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:52:02,942 - INFO - Evaluated program it000129 in 0.16s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1587, validity=1.0000
+2026-07-27 23:52:02,944 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 9, 'diversity': 9} (fitness: 0.959 -> 0.961)
+2026-07-27 23:52:02,944 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:52:02,944 - INFO - Population size after cleanup: 60
+2026-07-27 23:52:02,944 - INFO - Cleaned up 1 stale island best program references
+2026-07-27 23:52:02,966 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_129
+2026-07-27 23:52:02,970 - INFO - Saved checkpoint at iteration 129 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_129
+2026-07-27 23:52:04,502 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:52:34,155 - INFO - Evaluated program it000130 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1222, validity=1.0000
+2026-07-27 23:52:34,156 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:52:34,156 - INFO - Population size after cleanup: 60
+2026-07-27 23:52:34,984 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:52:41,998 - INFO - Evaluated program it000131 in 0.13s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1328, validity=1.0000
+2026-07-27 23:52:41,999 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:52:42,000 - INFO - Population size after cleanup: 60
+2026-07-27 23:52:44,101 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:53:54,758 - INFO - Evaluated program it000132 in 0.13s: combined_score=0.9157, mean_excess=0.0921, bins_used=2194.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1324, validity=1.0000
+2026-07-27 23:53:54,760 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 6, 'diversity': 4}
+2026-07-27 23:53:54,760 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:53:54,760 - INFO - Population size after cleanup: 60
+2026-07-27 23:53:56,454 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:54:57,913 - INFO - Evaluated program it000133 in 0.16s: combined_score=0.9503, mean_excess=0.0523, bins_used=2114.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1555, validity=1.0000
+2026-07-27 23:54:57,915 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:54:57,915 - INFO - Population size after cleanup: 60
+2026-07-27 23:54:58,562 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:55:37,773 - INFO - Evaluated program it000134 in 0.21s: combined_score=0.8905, mean_excess=0.1230, bins_used=2256.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2097, validity=1.0000
+2026-07-27 23:55:37,776 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:55:37,776 - INFO - Population size after cleanup: 60
+2026-07-27 23:55:37,807 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_134
+2026-07-27 23:55:37,813 - INFO - Saved checkpoint at iteration 134 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_134
+2026-07-27 23:55:40,151 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:55:58,009 - INFO - Evaluated program it000135 in 0.16s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1590, validity=1.0000
+2026-07-27 23:55:58,011 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:55:58,011 - INFO - Population size after cleanup: 60
+2026-07-27 23:55:58,349 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:56:55,970 - INFO - Evaluated program it000136 in 0.16s: combined_score=0.9140, mean_excess=0.0941, bins_used=2198.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1632, validity=1.0000
+2026-07-27 23:56:55,972 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:56:55,972 - INFO - Population size after cleanup: 60
+2026-07-27 23:56:57,352 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:58:06,069 - INFO - Evaluated program it000137 in 0.17s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1653, validity=1.0000
+2026-07-27 23:58:06,071 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:58:06,071 - INFO - Population size after cleanup: 60
+2026-07-27 23:58:06,639 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:58:47,571 - INFO - Evaluated program it000138 in 0.24s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2352, validity=1.0000
+2026-07-27 23:58:47,573 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:58:47,573 - INFO - Population size after cleanup: 60
+2026-07-27 23:58:50,285 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-27 23:59:13,828 - INFO - Evaluated program it000139 in 0.11s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1081, validity=1.0000
+2026-07-27 23:59:13,830 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 0, 'diversity': 0}
+2026-07-27 23:59:13,830 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-27 23:59:13,830 - INFO - Population size after cleanup: 60
+2026-07-27 23:59:13,864 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_139
+2026-07-27 23:59:13,869 - INFO - Saved checkpoint at iteration 139 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_139
+2026-07-27 23:59:14,588 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:00:21,998 - WARNING - Iteration 140: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:00:23,312 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:00:42,963 - INFO - Evaluated program it000141 in 0.16s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1560, validity=1.0000
+2026-07-28 00:00:42,964 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 8, 'diversity': 7} (fitness: 0.959 -> 0.961)
+2026-07-28 00:00:42,964 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:00:42,964 - INFO - Population size after cleanup: 60
+2026-07-28 00:00:44,099 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:01:10,810 - INFO - Evaluated program it000142 in 0.13s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1245, validity=1.0000
+2026-07-28 00:01:10,812 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:01:10,812 - INFO - Population size after cleanup: 60
+2026-07-28 00:01:11,785 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:01:23,038 - INFO - Evaluated program it000143 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1610, validity=1.0000
+2026-07-28 00:01:23,040 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:01:23,040 - INFO - Population size after cleanup: 60
+2026-07-28 00:01:23,710 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:01:48,540 - INFO - Evaluated program it000144 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1441, validity=1.0000
+2026-07-28 00:01:48,542 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:01:48,542 - INFO - Population size after cleanup: 60
+2026-07-28 00:01:48,567 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_144
+2026-07-28 00:01:48,571 - INFO - Saved checkpoint at iteration 144 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_144
+2026-07-28 00:01:49,468 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:02:07,268 - INFO - Evaluated program it000145 in 0.20s: combined_score=0.9590, mean_excess=0.0428, bins_used=2095.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1930, validity=1.0000
+2026-07-28 00:02:07,270 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:02:07,270 - INFO - Population size after cleanup: 60
+2026-07-28 00:02:07,943 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:02:27,129 - INFO - Evaluated program it000146 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1580, validity=1.0000
+2026-07-28 00:02:27,130 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:02:27,130 - INFO - Population size after cleanup: 60
+2026-07-28 00:02:27,977 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:02:31,144 - WARNING - Iteration 147: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:02:32,112 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:03:12,403 - INFO - Evaluated program it000148 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1319, validity=1.0000
+2026-07-28 00:03:12,405 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:03:12,405 - INFO - Population size after cleanup: 60
+2026-07-28 00:03:13,672 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:03:31,077 - WARNING - Iteration 149: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:03:31,119 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_149
+2026-07-28 00:03:31,125 - INFO - Saved checkpoint at iteration 149 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_149
+2026-07-28 00:03:32,209 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:04:13,971 - INFO - Evaluated program it000150 in 0.12s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1203, validity=1.0000
+2026-07-28 00:04:13,972 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:04:13,972 - INFO - Population size after cleanup: 60
+2026-07-28 00:04:14,907 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:04:18,744 - WARNING - Iteration 151: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:04:20,648 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:04:42,589 - INFO - Evaluated program it000152 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1298, validity=1.0000
+2026-07-28 00:04:42,589 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:04:42,589 - INFO - Population size after cleanup: 60
+2026-07-28 00:04:43,712 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:04:59,564 - INFO - Evaluated program it000153 in 0.14s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1392, validity=1.0000
+2026-07-28 00:04:59,565 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 0}
+2026-07-28 00:04:59,566 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:04:59,566 - INFO - Population size after cleanup: 60
+2026-07-28 00:05:00,456 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:05:19,075 - INFO - Evaluated program it000154 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1615, validity=1.0000
+2026-07-28 00:05:19,075 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:05:19,076 - INFO - Population size after cleanup: 60
+2026-07-28 00:05:19,100 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_154
+2026-07-28 00:05:19,104 - INFO - Saved checkpoint at iteration 154 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_154
+2026-07-28 00:05:19,408 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:05:33,174 - INFO - Evaluated program it000155 in 0.22s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2137, validity=1.0000
+2026-07-28 00:05:33,174 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:05:33,174 - INFO - Population size after cleanup: 60
+2026-07-28 00:05:35,522 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:05:57,762 - INFO - Evaluated program it000156 in 0.12s: combined_score=0.9494, mean_excess=0.0533, bins_used=2116.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1191, validity=1.0000
+2026-07-28 00:05:57,764 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:05:57,764 - INFO - Population size after cleanup: 60
+2026-07-28 00:05:59,743 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:06:12,901 - INFO - Evaluated program it000157 in 0.13s: combined_score=0.9603, mean_excess=0.0413, bins_used=2092.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1250, validity=1.0000
+2026-07-28 00:06:12,903 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:06:12,903 - INFO - Population size after cleanup: 60
+2026-07-28 00:06:13,927 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:06:34,813 - INFO - Evaluated program it000158 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1451, validity=1.0000
+2026-07-28 00:06:34,815 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 1}
+2026-07-28 00:06:34,815 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:06:34,815 - INFO - Population size after cleanup: 60
+2026-07-28 00:06:36,235 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:06:43,543 - WARNING - Iteration 159: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:06:43,588 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_159
+2026-07-28 00:06:43,595 - INFO - Saved checkpoint at iteration 159 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_159
+2026-07-28 00:06:44,522 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:07:44,714 - INFO - Evaluated program it000160 in 0.13s: combined_score=0.9612, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1315, validity=1.0000
+2026-07-28 00:07:44,716 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:07:44,716 - INFO - Population size after cleanup: 60
+2026-07-28 00:07:45,341 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:08:02,582 - INFO - Evaluated program it000161 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1533, validity=1.0000
+2026-07-28 00:08:02,583 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:08:02,583 - INFO - Population size after cleanup: 60
+2026-07-28 00:08:03,345 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:08:27,302 - INFO - Evaluated program it000162 in 0.16s: combined_score=0.9414, mean_excess=0.0622, bins_used=2134.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1539, validity=1.0000
+2026-07-28 00:08:27,304 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 2}
+2026-07-28 00:08:27,304 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:08:27,304 - INFO - Population size after cleanup: 60
+2026-07-28 00:08:28,313 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:09:21,943 - INFO - Evaluated program it000163 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1190, validity=1.0000
+2026-07-28 00:09:21,944 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:09:21,944 - INFO - Population size after cleanup: 60
+2026-07-28 00:09:24,350 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:10:21,237 - INFO - Evaluated program it000164 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1387, validity=1.0000
+2026-07-28 00:10:21,238 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:10:21,238 - INFO - Population size after cleanup: 60
+2026-07-28 00:10:21,259 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_164
+2026-07-28 00:10:21,264 - INFO - Saved checkpoint at iteration 164 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_164
+2026-07-28 00:10:23,221 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:11:31,604 - INFO - Evaluated program it000165 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1203, validity=1.0000
+2026-07-28 00:11:31,606 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:11:31,606 - INFO - Population size after cleanup: 60
+2026-07-28 00:11:32,765 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:12:10,268 - INFO - Evaluated program it000166 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1296, validity=1.0000
+2026-07-28 00:12:10,270 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:12:10,270 - INFO - Population size after cleanup: 60
+2026-07-28 00:12:11,237 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:12:28,765 - INFO - Evaluated program it000167 in 0.14s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1369, validity=1.0000
+2026-07-28 00:12:28,767 - INFO - Island 3 MAP-Elites cell improved: {'complexity': 0, 'diversity': 1} (fitness: 0.963 -> 0.963)
+2026-07-28 00:12:28,767 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:12:28,767 - INFO - Population size after cleanup: 60
+2026-07-28 00:12:28,767 - INFO - Cleaned up 1 stale island best program references
+2026-07-28 00:12:28,767 - INFO - New best program it000167 replaces it000095 (combined_score: 0.9626 → 0.9631, +0.0004)
+2026-07-28 00:12:30,236 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:13:34,122 - INFO - Evaluated program it000168 in 0.23s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2271, validity=1.0000
+2026-07-28 00:13:34,124 - INFO - Island 0 MAP-Elites cell improved: {'complexity': 1, 'diversity': 0} (fitness: 0.963 -> 0.963)
+2026-07-28 00:13:34,124 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:13:34,124 - INFO - Population size after cleanup: 60
+2026-07-28 00:13:36,347 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:13:58,225 - INFO - Evaluated program it000169 in 0.23s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2240, validity=1.0000
+2026-07-28 00:13:58,227 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:13:58,227 - INFO - Population size after cleanup: 60
+2026-07-28 00:13:58,251 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_169
+2026-07-28 00:13:58,256 - INFO - Saved checkpoint at iteration 169 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_169
+2026-07-28 00:14:00,088 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:14:24,045 - INFO - Evaluated program it000170 in 0.14s: combined_score=0.9362, mean_excess=0.0682, bins_used=2146.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1327, validity=1.0000
+2026-07-28 00:14:24,047 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 1}
+2026-07-28 00:14:24,047 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:14:24,047 - INFO - Population size after cleanup: 60
+2026-07-28 00:14:24,947 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:14:44,386 - WARNING - Iteration 171: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:14:45,123 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:14:52,952 - INFO - Evaluated program it000172 in 0.15s: combined_score=0.9590, mean_excess=0.0428, bins_used=2095.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1501, validity=1.0000
+2026-07-28 00:14:52,954 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:14:52,954 - INFO - Population size after cleanup: 60
+2026-07-28 00:14:56,171 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:15:36,598 - INFO - Evaluated program it000173 in 0.13s: combined_score=0.9553, mean_excess=0.0468, bins_used=2103.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1239, validity=1.0000
+2026-07-28 00:15:36,600 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:15:36,600 - INFO - Population size after cleanup: 60
+2026-07-28 00:15:37,397 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:16:39,697 - INFO - Evaluated program it000174 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1236, validity=1.0000
+2026-07-28 00:16:39,699 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:16:39,699 - INFO - Population size after cleanup: 60
+2026-07-28 00:16:39,725 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_174
+2026-07-28 00:16:39,730 - INFO - Saved checkpoint at iteration 174 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_174
+2026-07-28 00:16:40,036 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:16:48,984 - INFO - Evaluated program it000175 in 0.13s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1249, validity=1.0000
+2026-07-28 00:16:48,984 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:16:48,984 - INFO - Population size after cleanup: 60
+2026-07-28 00:16:50,931 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:17:04,815 - INFO - Evaluated program it000176 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1301, validity=1.0000
+2026-07-28 00:17:04,816 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:17:04,816 - INFO - Population size after cleanup: 60
+2026-07-28 00:17:06,800 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:17:22,604 - INFO - Evaluated program it000177 in 0.16s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1553, validity=1.0000
+2026-07-28 00:17:22,605 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:17:22,605 - INFO - Population size after cleanup: 60
+2026-07-28 00:17:22,880 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:17:47,756 - INFO - Evaluated program it000178 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1441, validity=1.0000
+2026-07-28 00:17:47,758 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 1, 'diversity': 0}
+2026-07-28 00:17:47,758 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:17:47,758 - INFO - Population size after cleanup: 60
+2026-07-28 00:17:48,664 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:18:07,667 - INFO - Evaluated program it000179 in 0.14s: combined_score=0.9622, mean_excess=0.0393, bins_used=2088.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1362, validity=1.0000
+2026-07-28 00:18:07,669 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:18:07,669 - INFO - Population size after cleanup: 60
+2026-07-28 00:18:07,702 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_179
+2026-07-28 00:18:07,707 - INFO - Saved checkpoint at iteration 179 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_179
+2026-07-28 00:18:08,090 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:18:09,320 - WARNING - Iteration 180: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:18:19,595 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:18:49,629 - INFO - Evaluated program it000181 in 0.17s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1698, validity=1.0000
+2026-07-28 00:18:49,631 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:18:49,631 - INFO - Population size after cleanup: 60
+2026-07-28 00:18:49,983 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:19:06,507 - INFO - Evaluated program it000182 in 0.11s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1134, validity=1.0000
+2026-07-28 00:19:06,509 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:19:06,509 - INFO - Population size after cleanup: 60
+2026-07-28 00:19:12,168 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:19:29,618 - INFO - Evaluated program it000183 in 0.16s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1595, validity=1.0000
+2026-07-28 00:19:29,618 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:19:29,619 - INFO - Population size after cleanup: 60
+2026-07-28 00:19:30,399 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:19:42,157 - INFO - Evaluated program it000184 in 0.13s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1276, validity=1.0000
+2026-07-28 00:19:42,159 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:19:42,159 - INFO - Population size after cleanup: 60
+2026-07-28 00:19:42,181 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_184
+2026-07-28 00:19:42,187 - INFO - Saved checkpoint at iteration 184 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_184
+2026-07-28 00:19:44,989 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.11s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.18s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.18s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.15s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.12s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2088, lower_bound=2009, mean_excess=0.0393, score=0.9622, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2099, lower_bound=2009, mean_excess=0.0448, score=0.9571, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.17s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.13s
+Evaluation: instances=5, bins=2134, lower_bound=2009, mean_excess=0.0622, score=0.9414, time=0.12s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.17s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.13s
+Evaluation: instances=5, bins=2194, lower_bound=2009, mean_excess=0.0921, score=0.9157, time=0.13s
+Evaluation: instances=5, bins=2114, lower_bound=2009, mean_excess=0.0523, score=0.9503, time=0.16s
+Evaluation: instances=5, bins=2256, lower_bound=2009, mean_excess=0.1230, score=0.8905, time=0.21s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.16s
+Evaluation: instances=5, bins=2198, lower_bound=2009, mean_excess=0.0941, score=0.9140, time=0.16s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.17s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.24s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.16s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2095, lower_bound=2009, mean_excess=0.0428, score=0.9590, time=0.19s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.14s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.21s
+Evaluation: instances=5, bins=2116, lower_bound=2009, mean_excess=0.0533, score=0.9494, time=0.12s
+Evaluation: instances=5, bins=2092, lower_bound=2009, mean_excess=0.0413, score=0.9603, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9612, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.15s
+Evaluation: instances=5, bins=2134, lower_bound=2009, mean_excess=0.0622, score=0.9414, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.14s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.23s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.22s
+Evaluation: instances=5, bins=2146, lower_bound=2009, mean_excess=0.0682, score=0.9362, time=0.13s
+Evaluation: instances=5, bins=2095, lower_bound=2009, mean_excess=0.0428, score=0.9590, time=0.15s
+Evaluation: instances=5, bins=2103, lower_bound=2009, mean_excess=0.0468, score=0.9553, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2088, lower_bound=2009, mean_excess=0.0393, score=0.9622, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.17s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.16s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s2026-07-28 00:20:05,806 - INFO - Evaluated program it000185 in 0.17s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1637, validity=1.0000
+2026-07-28 00:20:05,808 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:20:05,808 - INFO - Population size after cleanup: 60
+2026-07-28 00:20:07,385 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:20:32,670 - INFO - Evaluated program it000186 in 0.16s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1576, validity=1.0000
+2026-07-28 00:20:32,672 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 4}
+2026-07-28 00:20:32,672 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:20:32,672 - INFO - Population size after cleanup: 60
+2026-07-28 00:20:33,474 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:20:42,024 - INFO - Evaluated program it000187 in 0.13s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1254, validity=1.0000
+2026-07-28 00:20:42,024 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 1}
+2026-07-28 00:20:42,024 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:20:42,024 - INFO - Population size after cleanup: 60
+2026-07-28 00:20:43,891 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:23:45,248 - INFO - Evaluated program it000188 in 0.16s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1534, validity=1.0000
+2026-07-28 00:23:45,250 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:23:45,250 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:23:45,250 - INFO - Population size after cleanup: 60
+2026-07-28 00:23:47,114 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:23:59,170 - INFO - Evaluated program it000189 in 0.13s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1238, validity=1.0000
+2026-07-28 00:23:59,172 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:23:59,172 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:23:59,172 - INFO - Population size after cleanup: 60
+2026-07-28 00:23:59,198 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_189
+2026-07-28 00:23:59,203 - INFO - Saved checkpoint at iteration 189 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_189
+2026-07-28 00:23:59,471 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:24:17,093 - INFO - Evaluated program it000190 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1583, validity=1.0000
+2026-07-28 00:24:17,095 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:24:17,095 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:24:17,095 - INFO - Population size after cleanup: 60
+2026-07-28 00:24:17,768 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:24:34,270 - INFO - Evaluated program it000191 in 0.15s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1490, validity=1.0000
+2026-07-28 00:24:34,271 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:24:34,271 - INFO - Population size after cleanup: 60
+2026-07-28 00:24:34,704 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:24:52,497 - WARNING - Iteration 192: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 00:24:54,414 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:25:06,985 - INFO - Evaluated program it000193 in 0.14s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1337, validity=1.0000
+2026-07-28 00:25:06,987 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:25:06,987 - INFO - Population size after cleanup: 60
+2026-07-28 00:25:07,341 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:25:39,395 - INFO - Evaluated program it000194 in 0.13s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1323, validity=1.0000
+2026-07-28 00:25:39,397 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 3, 'diversity': 1}
+2026-07-28 00:25:39,397 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:25:39,397 - INFO - Population size after cleanup: 60
+2026-07-28 00:25:39,425 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_194
+2026-07-28 00:25:39,431 - INFO - Saved checkpoint at iteration 194 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_194
+2026-07-28 00:25:39,809 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:26:03,504 - INFO - Evaluated program it000195 in 0.13s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1233, validity=1.0000
+2026-07-28 00:26:03,506 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:26:03,506 - INFO - Population size after cleanup: 60
+2026-07-28 00:26:04,302 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:27:37,656 - INFO - Evaluated program it000196 in 0.13s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1269, validity=1.0000
+2026-07-28 00:27:37,658 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 3, 'diversity': 0}
+2026-07-28 00:27:37,658 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:27:37,658 - INFO - Population size after cleanup: 60
+2026-07-28 00:27:39,397 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:27:46,674 - INFO - Evaluated program it000197 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1352, validity=1.0000
+2026-07-28 00:27:46,676 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:27:46,676 - INFO - Population size after cleanup: 60
+2026-07-28 00:27:46,998 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:28:00,456 - INFO - Evaluated program it000198 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1351, validity=1.0000
+2026-07-28 00:28:00,458 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:28:00,458 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:28:00,458 - INFO - Population size after cleanup: 60
+2026-07-28 00:28:02,212 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:29:11,114 - INFO - Evaluated program it000199 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1289, validity=1.0000
+2026-07-28 00:29:11,116 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,116 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,119 - INFO - Migration due — migrating programs between islands
+2026-07-28 00:29:11,119 - INFO - Performing migration between islands
+2026-07-28 00:29:11,119 - INFO - Island 1 MAP-Elites cell improved: {'complexity': 2, 'diversity': 0} (fitness: 0.962 -> 0.963)
+2026-07-28 00:29:11,119 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,119 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,120 - INFO - Program 1d79797b migrated to island 1
+2026-07-28 00:29:11,120 - INFO - New MAP-Elites cell occupied in island 3: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:29:11,120 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,120 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,120 - INFO - Program 724b15c2 migrated to island 3
+2026-07-28 00:29:11,120 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,120 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,120 - INFO - Program 426f99c9 migrated to island 3
+2026-07-28 00:29:11,120 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,120 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,121 - INFO - Program f1a469f9 migrated to island 1
+2026-07-28 00:29:11,121 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 2, 'diversity': 1}
+2026-07-28 00:29:11,121 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,121 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,121 - INFO - Program b0e961e4 migrated to island 0
+2026-07-28 00:29:11,121 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 1}
+2026-07-28 00:29:11,121 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:11,121 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:11,122 - INFO - Program 8f4b068e migrated to island 2
+2026-07-28 00:29:11,122 - INFO - Migration completed at generation 50
+2026-07-28 00:29:11,144 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_199
+2026-07-28 00:29:11,151 - INFO - Saved checkpoint at iteration 199 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_199
+2026-07-28 00:29:11,802 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:29:23,406 - INFO - Evaluated program it000200 in 0.14s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1373, validity=1.0000
+2026-07-28 00:29:23,408 - INFO - Island 0 MAP-Elites cell improved: {'complexity': 2, 'diversity': 0} (fitness: 0.962 -> 0.962)
+2026-07-28 00:29:23,408 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:29:23,408 - INFO - Population size after cleanup: 60
+2026-07-28 00:29:24,205 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:31:02,332 - INFO - Evaluated program it000201 in 0.14s: combined_score=0.9622, mean_excess=0.0393, bins_used=2088.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1372, validity=1.0000
+2026-07-28 00:31:02,334 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:31:02,334 - INFO - Population size after cleanup: 60
+2026-07-28 00:31:03,119 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:31:15,894 - INFO - Evaluated program it000202 in 0.16s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1517, validity=1.0000
+2026-07-28 00:31:15,896 - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 2, 'diversity': 0}
+2026-07-28 00:31:15,896 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:31:15,896 - INFO - Population size after cleanup: 60
+2026-07-28 00:31:16,749 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:31:29,923 - INFO - Evaluated program it000203 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1342, validity=1.0000
+2026-07-28 00:31:29,925 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:31:29,925 - INFO - Population size after cleanup: 60
+2026-07-28 00:31:31,107 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:32:16,592 - INFO - Evaluated program it000204 in 0.13s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1242, validity=1.0000
+2026-07-28 00:32:16,594 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:32:16,595 - INFO - Population size after cleanup: 60
+2026-07-28 00:32:16,616 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_204
+2026-07-28 00:32:16,622 - INFO - Saved checkpoint at iteration 204 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_204
+2026-07-28 00:32:19,644 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:32:31,193 - INFO - Evaluated program it000205 in 0.17s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1638, validity=1.0000
+2026-07-28 00:32:31,193 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:32:31,193 - INFO - Population size after cleanup: 60
+2026-07-28 00:32:31,539 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:32:48,071 - INFO - Evaluated program it000206 in 0.14s: combined_score=0.9612, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1421, validity=1.0000
+2026-07-28 00:32:48,073 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:32:48,073 - INFO - Population size after cleanup: 60
+2026-07-28 00:32:48,365 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:32:58,523 - INFO - Evaluated program it000207 in 0.13s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1278, validity=1.0000
+2026-07-28 00:32:58,524 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:32:58,524 - INFO - Population size after cleanup: 60
+2026-07-28 00:32:59,591 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:33:10,351 - INFO - Evaluated program it000208 in 0.15s: combined_score=0.9631, mean_excess=0.0383, bins_used=2086.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1430, validity=1.0000
+2026-07-28 00:33:10,352 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:33:10,352 - INFO - Population size after cleanup: 60
+2026-07-28 00:33:11,632 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:33:57,478 - INFO - Evaluated program it000209 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1169, validity=1.0000
+2026-07-28 00:33:57,480 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:33:57,480 - INFO - Population size after cleanup: 60
+2026-07-28 00:33:57,500 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_209
+2026-07-28 00:33:57,505 - INFO - Saved checkpoint at iteration 209 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_209
+2026-07-28 00:33:59,792 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:34:11,804 - INFO - Evaluated program it000210 in 0.14s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1401, validity=1.0000
+2026-07-28 00:34:11,805 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:34:11,806 - INFO - Population size after cleanup: 60
+2026-07-28 00:34:12,552 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:34:32,918 - INFO - Evaluated program it000211 in 0.11s: combined_score=0.9617, mean_excess=0.0398, bins_used=2089.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1069, validity=1.0000
+2026-07-28 00:34:32,920 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:34:32,920 - INFO - Population size after cleanup: 60
+2026-07-28 00:34:34,780 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:34:42,675 - INFO - Evaluated program it000212 in 0.16s: combined_score=0.9612, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1562, validity=1.0000
+2026-07-28 00:34:42,677 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:34:42,677 - INFO - Population size after cleanup: 60
+2026-07-28 00:34:43,959 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:35:12,394 - INFO - Evaluated program it000213 in 0.13s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1294, validity=1.0000
+2026-07-28 00:35:12,396 - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 3, 'diversity': 0}
+2026-07-28 00:35:12,397 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:35:12,397 - INFO - Population size after cleanup: 60
+2026-07-28 00:35:12,742 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:35:53,629 - INFO - Evaluated program it000214 in 0.13s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1256, validity=1.0000
+2026-07-28 00:35:53,631 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:35:53,631 - INFO - Population size after cleanup: 60
+2026-07-28 00:35:53,649 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_214
+2026-07-28 00:35:53,655 - INFO - Saved checkpoint at iteration 214 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_214
+2026-07-28 00:35:54,549 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 00:36:07,810 - INFO - Evaluated program it000215 in 0.10s: combined_score=0.9626, mean_excess=0.0388, bins_used=2087.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1036, validity=1.0000
+2026-07-28 00:36:07,811 - INFO - Population size (61) exceeds limit (60), removing 1 programs
+2026-07-28 00:36:07,811 - INFO - Population size after cleanup: 60
+2026-07-28 00:36:07,814 - INFO - Stopping at iteration 216: Total token budget exhausted (shared pool): spent 1000144 of cap 1000000. The next call was for account 'mutation' — that account is not itself capped; the shared pool is what ran out.
+2026-07-28 00:36:07,832 - INFO - Saved database with 60 programs to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_215
+2026-07-28 00:36:07,838 - INFO - Saved checkpoint at iteration 215 to examples/bin_packing/runs/phase-c-p1/null-islands-s42/checkpoints/checkpoint_215
+2026-07-28 00:36:07,839 - INFO - Evolution tracing complete. Total traces: 194
+2026-07-28 00:36:07,839 - INFO - Improvement rate: 33.51%
+2026-07-28 00:36:07,839 - INFO - Best improvements: {'combined_score': 0.07356451309269918, 'mean_excess': 0.08716150566837064, 'bins_used': 175.0, 'lower_bound': 0.0, 'num_instances': 0, 'eval_time': 0.1009378433227539, 'validity': 0.0}
+2026-07-28 00:36:07,839 - INFO - Worst declines: {'combined_score': -0.07356451309269918, 'mean_excess': -0.08716150566837064, 'bins_used': -175.0, 'lower_bound': 0.0, 'num_instances': 0, 'eval_time': -0.10013914108276367, 'validity': 0.0}
+
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.16s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.13s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.15s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.15s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.13s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.13s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.12s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.14s
+Evaluation: instances=5, bins=2088, lower_bound=2009, mean_excess=0.0393, score=0.9622, time=0.14s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.12s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.16s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9612, time=0.14s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.13s
+Evaluation: instances=5, bins=2086, lower_bound=2009, mean_excess=0.0383, score=0.9631, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.14s
+Evaluation: instances=5, bins=2089, lower_bound=2009, mean_excess=0.0398, score=0.9617, time=0.11s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9612, time=0.16s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.13s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.13s
+Evaluation: instances=5, bins=2087, lower_bound=2009, mean_excess=0.0388, score=0.9626, time=0.10s
+BEST: {'combined_score': 0.9630793184233848, 'mean_excess': 0.03833607561738156, 'bins_used': 2086.0, 'lower_bound': 2009.0, 'num_instances': 5, 'eval_time': 0.1369457244873047, 'validity': 1.0}

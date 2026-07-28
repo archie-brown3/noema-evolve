@@ -1,0 +1,163 @@
+budget:
+  account_caps: {}
+  log_path: null
+  total_tokens: 1000000
+checkpoint_interval: 5
+coordination:
+  escalation: null
+  module: hifo
+  params: {}
+  seed: 43
+database:
+  archive_size: 25
+  artifact_retention_days: 30
+  artifact_size_threshold: 32768
+  artifacts_base_path: null
+  cleanup_old_artifacts: true
+  db_path: examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/db
+  diversity_metric: edit_distance
+  diversity_reference_size: 20
+  elite_selection_ratio: 0.3
+  embedding_model: null
+  exploitation_ratio: 0.7
+  exploration_ratio: 0.2
+  feature_bins: 10
+  feature_dimensions:
+  - complexity
+  - diversity
+  in_memory: true
+  log_prompts: true
+  max_snapshot_artifacts: 100
+  migration_interval: 50
+  migration_rate: 0.1
+  novelty_llm: null
+  num_islands: 4
+  population_size: 60
+  random_seed: 42
+  similarity_threshold: 0.99
+diff_based_evolution: false
+diff_pattern: <<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE
+evaluator:
+  cascade_evaluation: false
+  cascade_thresholds:
+  - 0.5
+  - 0.75
+  - 0.9
+  cpu_limit: null
+  distributed: false
+  enable_artifacts: true
+  llm_feedback_weight: 0.1
+  max_artifact_storage: 104857600
+  max_retries: 3
+  memory_limit_mb: null
+  parallel_evaluations: 1
+  timeout: 60
+  use_llm_feedback: false
+file_suffix: .py
+language: python
+llm:
+  coordination:
+    api_base: https://openrouter.ai/api/v1
+    api_key: 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
+    max_tokens: 4096
+    model: deepseek/deepseek-v4-flash
+    retries: 3
+    retry_delay: 5.0
+    seed: null
+    temperature: 0.7
+    timeout: 300
+    top_p: 0.95
+    total_deadline_s: 600.0
+  mutation:
+    api_base: https://openrouter.ai/api/v1
+    api_key: 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
+    max_tokens: 4096
+    model: deepseek/deepseek-v4-flash
+    retries: 3
+    retry_delay: 5.0
+    seed: null
+    temperature: 0.7
+    timeout: 300
+    top_p: 0.95
+    total_deadline_s: 600.0
+max_code_length: 10000
+max_iterations: 9999
+mutation_operator_seed: 44
+mutation_operators: null
+num_inspirations: 0
+num_previous_programs: 3
+num_top_programs: 1
+prompt:
+  artifact_security_filter: true
+  code_length_threshold: null
+  comprehensive_implementation_min_lines: 50
+  concise_implementation_max_lines: 10
+  diff_summary_max_line_len: 100
+  diff_summary_max_lines: 30
+  evaluator_system_message: evaluator_system_message
+  include_artifacts: false
+  include_changes_under_chars: 100
+  initial_changes_description: ''
+  max_artifact_bytes: 20480
+  meta_prompt_weight: 0.1
+  num_diverse_programs: 2
+  num_top_programs: 3
+  programs_as_changes_description: false
+  suggest_simplification_after_chars: 500
+  system_message: "You are an expert in online bin packing heuristics. Items of integer\
+    \ size arrive ONE AT A TIME and must be placed immediately into a bin of capacity\
+    \ 100 \u2014 you cannot see future items or reorder past ones. Your only job is\
+    \ to improve the `priority(item, bins)` heuristic: given the arriving item size\
+    \ and a numpy array of the remaining capacities of the bins that can still hold\
+    \ it, return a score per bin. The item is placed in the highest-scoring bin (or\
+    \ a new bin if none fits). The goal is to pack all items into as few bins as possible,\
+    \ beating the best-fit baseline.\n\nKey facts about THIS problem:\n- It is ONLINE.\
+    \ You cannot sort items or look ahead \u2014 the harness feeds items in arrival\
+    \ order and only calls your `priority` function. Any strategy that assumes offline\
+    \ access is impossible here.\n- The baseline is best-fit: `priority = -(bins -\
+    \ item)` (prefer the tightest fit). Good heuristics are subtle non-linear functions\
+    \ of the item size and each bin's remaining capacity.\n- Score = 1 / (1 + mean\
+    \ excess bins over the lower bound), averaged over the instances. Fewer bins \u2192\
+    \ higher score.\n\nEVOLVE-BLOCK CONSTRAINT: Only modify code between `# EVOLVE-BLOCK-START`\
+    \ and `# EVOLVE-BLOCK-END`. Do not touch any other function, import, constant,\
+    \ or comment \u2014 violations are rejected automatically and waste your budget.\n\
+    CONCISENESS REQUIREMENT: Explain your mutation in at most one short sentence,\
+    \ then output your change immediately. No filler."
+  system_message_changes_description: null
+  template_dir: null
+  template_variations: {}
+  use_meta_prompting: false
+  use_template_stochasticity: false
+random_seed: 42
+retry_cap: 2
+retry_enabled: false
+retry_on: failure
+selection:
+  boltzmann_exploration_rate: 0.2
+  boltzmann_temperature: 1.0
+  initial_exploration: 0.1
+  policy: boltzmann
+  seed: 45
+  stagnation_detection_enabled: false
+  stagnation_mode: released
+  widening_alpha: 0.5
+substrate:
+  cvt_behavior_features: null
+  cvt_feature_bounds:
+    comprehension_count:
+    - 0.0
+    - 2.0
+    loop_nesting_max:
+    - 0.0
+    - 1.0
+    math_operators:
+    - 0.0
+    - 12.0
+    range_max_arg:
+    - 0.0
+    - 10.0
+  cvt_n_centroids: 256
+  cvt_num_regions: null
+  cvt_seed: 46
+  kind: cvt
+  steps_per_generation: null

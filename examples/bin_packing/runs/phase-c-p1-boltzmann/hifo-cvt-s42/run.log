@@ -1,0 +1,623 @@
+2026-07-28 10:20:37,029 - INFO - Froze run config to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/config.yaml (sha256=f75f3101d24a9a0ef695766461d0afbc29f07e997618a2f7e81b0c288d5b0f53)
+2026-07-28 10:20:37,241 - INFO - Evolution tracer initialized: examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/evolution_trace.jsonl
+2026-07-28 10:20:37,810 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/bin_packing/evaluator.py
+2026-07-28 10:20:37,811 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/bin_packing/evaluator.py
+2026-07-28 10:20:37,815 - INFO - Initialized prompt sampler
+2026-07-28 10:20:37,912 - INFO - Evaluating and adding initial program
+2026-07-28 10:20:38,158 - INFO - Evaluated program initial in 0.25s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2423, validity=1.0000
+2026-07-28 10:20:39,730 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:22:06,066 - INFO - Evaluated program it000000 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1327, validity=1.0000
+2026-07-28 10:22:07,948 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:23:42,326 - INFO - Evaluated program it000001 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1389, validity=1.0000
+2026-07-28 10:23:44,020 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:25:36,375 - INFO - Evaluated program it000002 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1402, validity=1.0000
+2026-07-28 10:25:37,350 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:25:42,403 - INFO - Evaluated program it000003 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1345, validity=1.0000
+2026-07-28 10:25:44,309 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:26:19,192 - INFO - Evaluated program it000004 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1368, validity=1.0000
+2026-07-28 10:26:19,200 - INFO - Saved checkpoint at iteration 4 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_4
+2026-07-28 10:26:20,505 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:26:37,410 - INFO - Evaluated program it000005 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1455, validity=1.0000
+2026-07-28 10:26:39,283 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:27:01,077 - INFO - Evaluated program it000006 in 0.14s: combined_score=0.9182, mean_excess=0.0891, bins_used=2188.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1386, validity=1.0000
+2026-07-28 10:27:02,172 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:27:27,161 - INFO - Evaluated program it000007 in 0.13s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1264, validity=1.0000
+2026-07-28 10:27:28,667 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:27:37,932 - INFO - Evaluated program it000008 in 0.15s: combined_score=0.9450, mean_excess=0.0582, bins_used=2126.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1470, validity=1.0000
+2026-07-28 10:27:38,858 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:27:41,893 - WARNING - Iteration 9: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 10:27:42,628 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:27:52,655 - INFO - Saved checkpoint at iteration 9 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_9
+2026-07-28 10:27:53,462 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:28:23,280 - INFO - Evaluated program it000010 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1447, validity=1.0000
+2026-07-28 10:28:24,876 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:28:44,767 - INFO - Evaluated program it000011 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1350, validity=1.0000
+2026-07-28 10:28:45,842 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:29:08,337 - INFO - Evaluated program it000012 in 0.12s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1137, validity=1.0000
+2026-07-28 10:29:09,411 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:29:34,213 - INFO - Evaluated program it000013 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1281, validity=1.0000
+2026-07-28 10:29:35,443 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:30:01,603 - INFO - Evaluated program it000014 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1353, validity=1.0000
+2026-07-28 10:30:02,327 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:30:14,039 - INFO - Saved checkpoint at iteration 14 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_14
+2026-07-28 10:30:14,681 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:30:38,284 - INFO - Evaluated program it000015 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1161, validity=1.0000
+2026-07-28 10:30:42,334 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:38:44,151 - INFO - Evaluated program it000016 in 0.19s: combined_score=0.9549, mean_excess=0.0473, bins_used=2104.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1886, validity=1.0000
+2026-07-28 10:38:44,493 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:38:58,205 - INFO - Evaluated program it000017 in 0.13s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1249, validity=1.0000
+2026-07-28 10:38:58,466 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:39:06,561 - INFO - Evaluated program it000018 in 0.11s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1131, validity=1.0000
+2026-07-28 10:39:08,867 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:39:31,873 - INFO - Evaluated program it000019 in 0.12s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1163, validity=1.0000
+2026-07-28 10:39:33,541 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:39:45,038 - INFO - Saved checkpoint at iteration 19 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_19
+2026-07-28 10:39:47,958 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:41:43,829 - INFO - Evaluated program it000020 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1180, validity=1.0000
+2026-07-28 10:41:45,668 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:43:09,580 - INFO - Evaluated program it000021 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1359, validity=1.0000
+2026-07-28 10:43:10,686 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:43:31,693 - INFO - Evaluated program it000022 in 0.11s: combined_score=0.9000, mean_excess=0.1111, bins_used=2232.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1090, validity=1.0000
+2026-07-28 10:43:35,328 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:47:33,818 - INFO - Evaluated program it000023 in 0.14s: combined_score=0.9549, mean_excess=0.0473, bins_used=2104.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1383, validity=1.0000
+2026-07-28 10:47:34,805 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:47:54,940 - INFO - Evaluated program it000024 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1284, validity=1.0000
+2026-07-28 10:47:56,610 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:48:10,522 - INFO - Saved checkpoint at iteration 24 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_24
+2026-07-28 10:48:11,897 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:48:36,494 - INFO - Evaluated program it000025 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1139, validity=1.0000
+2026-07-28 10:48:46,701 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:49:13,380 - INFO - Evaluated program it000026 in 0.21s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2080, validity=1.0000
+2026-07-28 10:49:15,139 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:50:22,306 - INFO - Evaluated program it000027 in 0.14s: combined_score=0.8933, mean_excess=0.1195, bins_used=2249.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1348, validity=1.0000
+2026-07-28 10:50:22,656 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:50:37,939 - INFO - Evaluated program it000028 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1428, validity=1.0000
+2026-07-28 10:50:38,284 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:50:56,067 - INFO - Evaluated program it000029 in 0.18s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1757, validity=1.0000
+2026-07-28 10:50:57,962 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:51:07,716 - INFO - Saved checkpoint at iteration 29 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_29
+2026-07-28 10:51:08,450 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:51:27,567 - INFO - Evaluated program it000030 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1433, validity=1.0000
+2026-07-28 10:51:27,863 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:51:40,506 - INFO - Evaluated program it000031 in 0.16s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1586, validity=1.0000
+2026-07-28 10:51:45,069 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:52:12,262 - WARNING - Iteration 32: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 10:52:14,274 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:52:47,514 - INFO - Evaluated program it000033 in 0.13s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1284, validity=1.0000
+2026-07-28 10:52:50,628 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:57:27,857 - INFO - Evaluated program it000034 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1258, validity=1.0000
+2026-07-28 10:57:28,650 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:57:29,868 - INFO - Saved checkpoint at iteration 34 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_34
+2026-07-28 10:57:30,280 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:57:52,199 - INFO - Evaluated program it000035 in 0.12s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1159, validity=1.0000
+2026-07-28 10:57:53,281 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:58:30,661 - INFO - Evaluated program it000036 in 0.14s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1347, validity=1.0000
+2026-07-28 10:58:35,583 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 10:59:00,035 - INFO - Evaluated program it000037 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1336, validity=1.0000
+2026-07-28 10:59:01,708 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:00:37,209 - INFO - Evaluated program it000038 in 0.15s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1480, validity=1.0000
+2026-07-28 11:00:39,120 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:01:14,029 - WARNING - Iteration 39: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:01:16,963 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:01:22,385 - INFO - Saved checkpoint at iteration 39 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_39
+2026-07-28 11:01:23,720 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:01:25,981 - WARNING - Iteration 40: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:01:27,593 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:02:28,874 - INFO - Evaluated program it000041 in 0.14s: combined_score=0.9603, mean_excess=0.0413, bins_used=2092.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1365, validity=1.0000
+2026-07-28 11:02:30,743 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:03:55,752 - INFO - Evaluated program it000042 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1396, validity=1.0000
+2026-07-28 11:03:57,309 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:05:11,873 - INFO - Evaluated program it000043 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1341, validity=1.0000
+2026-07-28 11:05:14,130 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:05:33,880 - INFO - Evaluated program it000044 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1356, validity=1.0000
+2026-07-28 11:05:38,698 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:05:44,160 - INFO - Saved checkpoint at iteration 44 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_44
+2026-07-28 11:05:46,388 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:05:53,551 - INFO - Evaluated program it000045 in 0.15s: combined_score=0.9331, mean_excess=0.0717, bins_used=2153.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1387, validity=1.0000
+2026-07-28 11:05:54,726 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:07:30,467 - INFO - Evaluated program it000046 in 0.13s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1287, validity=1.0000
+2026-07-28 11:07:31,594 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:07:48,305 - INFO - Evaluated program it000047 in 0.15s: combined_score=0.8815, mean_excess=0.1344, bins_used=2279.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1443, validity=1.0000
+2026-07-28 11:07:50,696 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:08:21,316 - INFO - Evaluated program it000048 in 0.16s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1587, validity=1.0000
+2026-07-28 11:08:21,682 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:08:28,389 - INFO - Evaluated program it000049 in 0.15s: combined_score=0.9590, mean_excess=0.0428, bins_used=2095.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1440, validity=1.0000
+2026-07-28 11:08:28,411 - INFO - Saved checkpoint at iteration 49 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_49
+2026-07-28 11:08:28,785 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:08:44,208 - INFO - Evaluated program it000050 in 0.28s: combined_score=0.8921, mean_excess=0.1210, bins_used=2252.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2735, validity=1.0000
+2026-07-28 11:08:45,439 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:08:50,540 - WARNING - Iteration 51: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:08:53,392 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:10:56,767 - INFO - Evaluated program it000052 in 0.17s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1656, validity=1.0000
+2026-07-28 11:10:59,324 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:14:41,359 - INFO - Evaluated program it000053 in 0.14s: combined_score=0.9237, mean_excess=0.0826, bins_used=2175.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1355, validity=1.0000
+2026-07-28 11:14:48,401 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:15:52,007 - INFO - Evaluated program it000054 in 0.12s: combined_score=0.9401, mean_excess=0.0637, bins_used=2137.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1164, validity=1.0000
+2026-07-28 11:15:52,036 - INFO - Saved checkpoint at iteration 54 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_54
+2026-07-28 11:15:52,345 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:15:57,232 - WARNING - Iteration 55: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:16:00,128 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:18:08,745 - INFO - Evaluated program it000056 in 0.26s: combined_score=0.9544, mean_excess=0.0478, bins_used=2105.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2526, validity=1.0000
+2026-07-28 11:18:09,122 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:18:12,881 - WARNING - Iteration 57: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:18:14,307 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:18:58,373 - INFO - Evaluated program it000058 in 0.32s: combined_score=0.9459, mean_excess=0.0572, bins_used=2124.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.3196, validity=1.0000
+2026-07-28 11:18:59,799 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:20:28,985 - INFO - Evaluated program it000059 in 0.17s: combined_score=0.9590, mean_excess=0.0428, bins_used=2095.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1682, validity=1.0000
+2026-07-28 11:20:31,917 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:20:40,642 - INFO - Saved checkpoint at iteration 59 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_59
+2026-07-28 11:20:42,092 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:21:21,135 - INFO - Evaluated program it000060 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1246, validity=1.0000
+2026-07-28 11:21:22,895 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:23:16,487 - INFO - Evaluated program it000061 in 0.14s: combined_score=0.9490, mean_excess=0.0537, bins_used=2117.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1431, validity=1.0000
+2026-07-28 11:23:18,069 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:25:06,471 - INFO - Evaluated program it000062 in 0.13s: combined_score=0.9428, mean_excess=0.0607, bins_used=2131.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1293, validity=1.0000
+2026-07-28 11:25:08,165 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:26:03,560 - INFO - Evaluated program it000063 in 0.13s: combined_score=0.9512, mean_excess=0.0513, bins_used=2112.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1304, validity=1.0000
+2026-07-28 11:26:05,115 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:26:43,980 - INFO - Evaluated program it000064 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1302, validity=1.0000
+2026-07-28 11:26:45,610 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:26:50,416 - INFO - Saved checkpoint at iteration 64 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_64
+2026-07-28 11:26:51,914 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:27:05,035 - INFO - Evaluated program it000065 in 0.14s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1353, validity=1.0000
+2026-07-28 11:27:05,442 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:27:32,443 - INFO - Evaluated program it000066 in 0.14s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1405, validity=1.0000
+2026-07-28 11:27:34,066 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:28:16,203 - INFO - Evaluated program it000067 in 0.12s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1169, validity=1.0000
+2026-07-28 11:28:18,261 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:28:23,965 - INFO - Evaluated program it000068 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1590, validity=1.0000
+2026-07-28 11:28:26,234 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:28:54,020 - INFO - Evaluated program it000069 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1400, validity=1.0000
+2026-07-28 11:28:55,702 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:29:00,889 - INFO - Saved checkpoint at iteration 69 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_69
+2026-07-28 11:29:02,505 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:30:37,428 - INFO - Evaluated program it000070 in 0.12s: combined_score=0.9558, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1227, validity=1.0000
+2026-07-28 11:30:38,594 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:30:44,819 - WARNING - Iteration 71: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:30:49,970 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:31:44,201 - INFO - Evaluated program it000072 in 0.14s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1421, validity=1.0000
+2026-07-28 11:31:45,848 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:32:08,135 - INFO - Evaluated program it000073 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1380, validity=1.0000
+2026-07-28 11:32:10,466 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:32:30,291 - INFO - Evaluated program it000074 in 0.13s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1266, validity=1.0000
+2026-07-28 11:32:32,568 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:32:42,310 - INFO - Saved checkpoint at iteration 74 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_74
+2026-07-28 11:32:45,042 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:33:04,405 - INFO - Evaluated program it000075 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1452, validity=1.0000
+2026-07-28 11:33:05,306 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:34:05,736 - INFO - Evaluated program it000076 in 0.14s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1418, validity=1.0000
+2026-07-28 11:34:07,523 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:34:10,904 - WARNING - Iteration 77: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:34:13,055 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:34:32,365 - INFO - Evaluated program it000078 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1274, validity=1.0000
+2026-07-28 11:34:34,958 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:36:26,606 - INFO - Evaluated program it000079 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1323, validity=1.0000
+2026-07-28 11:36:27,843 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:36:32,708 - INFO - Saved checkpoint at iteration 79 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_79
+2026-07-28 11:36:34,594 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:37:01,227 - WARNING - Iteration 80: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:37:03,118 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:37:20,773 - INFO - Evaluated program it000081 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1312, validity=1.0000
+2026-07-28 11:37:22,359 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:37:42,728 - INFO - Evaluated program it000082 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1399, validity=1.0000
+2026-07-28 11:37:44,999 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:38:07,909 - INFO - Evaluated program it000083 in 0.15s: combined_score=0.9037, mean_excess=0.1065, bins_used=2223.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1431, validity=1.0000
+2026-07-28 11:38:10,146 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:38:27,963 - INFO - Evaluated program it000084 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1415, validity=1.0000
+2026-07-28 11:38:27,987 - INFO - Saved checkpoint at iteration 84 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_84
+2026-07-28 11:38:30,581 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:38:59,839 - INFO - Evaluated program it000085 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1291, validity=1.0000
+2026-07-28 11:39:03,560 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:40:38,268 - WARNING - Iteration 86: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 11:40:40,556 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:41:05,151 - INFO - Evaluated program it000087 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1349, validity=1.0000
+2026-07-28 11:41:07,719 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:41:30,213 - INFO - Evaluated program it000088 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1491, validity=1.0000
+2026-07-28 11:41:33,842 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:43:44,751 - INFO - Evaluated program it000089 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1260, validity=1.0000
+2026-07-28 11:43:44,777 - INFO - Saved checkpoint at iteration 89 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_89
+2026-07-28 11:43:46,881 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:44:21,545 - INFO - Evaluated program it000090 in 0.15s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1491, validity=1.0000
+2026-07-28 11:44:25,471 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:47:51,684 - INFO - Evaluated program it000091 in 0.13s: combined_score=0.9327, mean_excess=0.0722, bins_used=2154.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1307, validity=1.0000
+2026-07-28 11:47:56,798 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.24s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2188, lower_bound=2009, mean_excess=0.0891, score=0.9182, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.13s
+Evaluation: instances=5, bins=2126, lower_bound=2009, mean_excess=0.0582, score=0.9450, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.11s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2104, lower_bound=2009, mean_excess=0.0473, score=0.9549, time=0.19s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2232, lower_bound=2009, mean_excess=0.1111, score=0.9000, time=0.11s
+Evaluation: instances=5, bins=2104, lower_bound=2009, mean_excess=0.0473, score=0.9549, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.21s
+Evaluation: instances=5, bins=2249, lower_bound=2009, mean_excess=0.1195, score=0.8933, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.18s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.16s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.12s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.15s
+Evaluation: instances=5, bins=2092, lower_bound=2009, mean_excess=0.0413, score=0.9603, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2153, lower_bound=2009, mean_excess=0.0717, score=0.9331, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.13s
+Evaluation: instances=5, bins=2279, lower_bound=2009, mean_excess=0.1344, score=0.8815, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s
+Evaluation: instances=5, bins=2095, lower_bound=2009, mean_excess=0.0428, score=0.9590, time=0.14s
+Evaluation: instances=5, bins=2252, lower_bound=2009, mean_excess=0.1210, score=0.8921, time=0.27s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.17s
+Evaluation: instances=5, bins=2175, lower_bound=2009, mean_excess=0.0826, score=0.9237, time=0.14s
+Evaluation: instances=5, bins=2137, lower_bound=2009, mean_excess=0.0637, score=0.9401, time=0.12s
+Evaluation: instances=5, bins=2105, lower_bound=2009, mean_excess=0.0478, score=0.9544, time=0.25s
+Evaluation: instances=5, bins=2124, lower_bound=2009, mean_excess=0.0572, score=0.9459, time=0.32s
+Evaluation: instances=5, bins=2095, lower_bound=2009, mean_excess=0.0428, score=0.9590, time=0.17s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.12s
+Evaluation: instances=5, bins=2117, lower_bound=2009, mean_excess=0.0537, score=0.9490, time=0.14s
+Evaluation: instances=5, bins=2131, lower_bound=2009, mean_excess=0.0607, score=0.9428, time=0.13s
+Evaluation: instances=5, bins=2112, lower_bound=2009, mean_excess=0.0513, score=0.9512, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9558, time=0.12s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.15s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2223, lower_bound=2009, mean_excess=0.1065, score=0.9037, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.15s
+Evaluation: instances=5, bins=2154, lower_bound=2009, mean_excess=0.0722, score=0.9327, time=0.13s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.13s2026-07-28 11:52:23,730 - INFO - Evaluated program it000092 in 0.14s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1320, validity=1.0000
+2026-07-28 11:52:25,500 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:52:36,746 - INFO - Evaluated program it000093 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1297, validity=1.0000
+2026-07-28 11:52:37,567 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:53:26,463 - INFO - Evaluated program it000094 in 0.13s: combined_score=0.8988, mean_excess=0.1126, bins_used=2235.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1306, validity=1.0000
+2026-07-28 11:53:28,150 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:53:29,929 - INFO - Saved checkpoint at iteration 94 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_94
+2026-07-28 11:53:40,193 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:56:29,656 - INFO - Evaluated program it000095 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1339, validity=1.0000
+2026-07-28 11:56:31,550 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:56:48,532 - INFO - Evaluated program it000096 in 0.16s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1562, validity=1.0000
+2026-07-28 11:56:49,090 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:56:56,265 - INFO - Evaluated program it000097 in 0.15s: combined_score=0.9544, mean_excess=0.0478, bins_used=2105.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1481, validity=1.0000
+2026-07-28 11:56:57,678 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:57:15,017 - INFO - Evaluated program it000098 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1415, validity=1.0000
+2026-07-28 11:57:16,702 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:58:25,712 - INFO - Evaluated program it000099 in 0.12s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1197, validity=1.0000
+2026-07-28 11:58:27,835 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:58:37,597 - INFO - Saved checkpoint at iteration 99 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_99
+2026-07-28 11:58:39,344 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:59:07,787 - INFO - Evaluated program it000100 in 0.16s: combined_score=0.9481, mean_excess=0.0548, bins_used=2119.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1612, validity=1.0000
+2026-07-28 11:59:14,560 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 11:59:25,118 - INFO - Evaluated program it000101 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1347, validity=1.0000
+2026-07-28 11:59:26,573 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:00:07,250 - INFO - Evaluated program it000102 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1402, validity=1.0000
+2026-07-28 12:00:09,529 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:00:46,477 - INFO - Evaluated program it000103 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1476, validity=1.0000
+2026-07-28 12:00:46,961 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:01:25,073 - INFO - Evaluated program it000104 in 0.14s: combined_score=0.9037, mean_excess=0.1065, bins_used=2223.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1397, validity=1.0000
+2026-07-28 12:01:26,587 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:01:31,803 - INFO - Saved checkpoint at iteration 104 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_104
+2026-07-28 12:01:32,661 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:02:02,555 - INFO - Evaluated program it000105 in 0.15s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1471, validity=1.0000
+2026-07-28 12:02:04,232 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:06:01,864 - INFO - Evaluated program it000106 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1347, validity=1.0000
+2026-07-28 12:06:03,867 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:06:30,784 - INFO - Evaluated program it000107 in 0.14s: combined_score=0.9094, mean_excess=0.0996, bins_used=2209.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1338, validity=1.0000
+2026-07-28 12:06:32,715 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:07:16,913 - INFO - Evaluated program it000108 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1430, validity=1.0000
+2026-07-28 12:07:19,144 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:07:58,756 - INFO - Evaluated program it000109 in 0.14s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1362, validity=1.0000
+2026-07-28 12:08:01,172 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:08:07,364 - INFO - Saved checkpoint at iteration 109 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_109
+2026-07-28 12:08:09,540 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:08:45,351 - INFO - Evaluated program it000110 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1274, validity=1.0000
+2026-07-28 12:08:46,895 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:09:04,088 - INFO - Evaluated program it000111 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1337, validity=1.0000
+2026-07-28 12:09:05,860 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:09:41,198 - INFO - Evaluated program it000112 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1402, validity=1.0000
+2026-07-28 12:09:43,470 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:10:09,889 - INFO - Evaluated program it000113 in 0.12s: combined_score=0.9608, mean_excess=0.0408, bins_used=2091.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1199, validity=1.0000
+2026-07-28 12:10:11,028 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:10:44,036 - INFO - Evaluated program it000114 in 0.12s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1231, validity=1.0000
+2026-07-28 12:10:44,069 - INFO - Saved checkpoint at iteration 114 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_114
+2026-07-28 12:10:45,959 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:11:14,981 - INFO - Evaluated program it000115 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1445, validity=1.0000
+2026-07-28 12:11:16,032 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:11:31,738 - INFO - Evaluated program it000116 in 0.15s: combined_score=0.9576, mean_excess=0.0443, bins_used=2098.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1445, validity=1.0000
+2026-07-28 12:11:32,969 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:11:50,517 - INFO - Evaluated program it000117 in 0.30s: combined_score=0.9557, mean_excess=0.0463, bins_used=2102.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2980, validity=1.0000
+2026-07-28 12:11:53,783 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:15:24,532 - INFO - Evaluated program it000118 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1392, validity=1.0000
+2026-07-28 12:15:25,456 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:16:04,141 - INFO - Evaluated program it000119 in 0.14s: combined_score=0.8921, mean_excess=0.1210, bins_used=2252.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1380, validity=1.0000
+2026-07-28 12:16:04,172 - INFO - Saved checkpoint at iteration 119 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_119
+2026-07-28 12:16:07,079 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:16:34,286 - INFO - Evaluated program it000120 in 0.14s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1328, validity=1.0000
+2026-07-28 12:16:36,820 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:17:04,548 - INFO - Evaluated program it000121 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1317, validity=1.0000
+2026-07-28 12:17:06,802 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:17:24,047 - INFO - Evaluated program it000122 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1328, validity=1.0000
+2026-07-28 12:17:24,455 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:17:57,820 - INFO - Evaluated program it000123 in 0.15s: combined_score=0.9370, mean_excess=0.0672, bins_used=2144.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1477, validity=1.0000
+2026-07-28 12:18:01,441 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:18:24,200 - WARNING - Iteration 124: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 12:18:25,376 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:18:28,228 - INFO - Saved checkpoint at iteration 124 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_124
+2026-07-28 12:18:32,621 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:19:24,877 - INFO - Evaluated program it000125 in 0.13s: combined_score=0.9580, mean_excess=0.0438, bins_used=2097.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1294, validity=1.0000
+2026-07-28 12:19:35,236 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:19:43,146 - INFO - Evaluated program it000126 in 0.12s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1140, validity=1.0000
+2026-07-28 12:19:53,405 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:19:57,014 - INFO - Evaluated program it000127 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1487, validity=1.0000
+2026-07-28 12:20:04,555 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:20:56,362 - INFO - Evaluated program it000128 in 0.13s: combined_score=0.9432, mean_excess=0.0602, bins_used=2130.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1290, validity=1.0000
+2026-07-28 12:20:57,612 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:21:46,095 - INFO - Evaluated program it000129 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1290, validity=1.0000
+2026-07-28 12:21:49,402 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:21:49,574 - INFO - Saved checkpoint at iteration 129 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_129
+2026-07-28 12:21:51,654 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:22:28,607 - INFO - Evaluated program it000130 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1160, validity=1.0000
+2026-07-28 12:22:35,798 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:23:30,918 - INFO - Evaluated program it000131 in 0.11s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1134, validity=1.0000
+2026-07-28 12:23:31,911 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:25:12,528 - INFO - Evaluated program it000132 in 0.18s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1819, validity=1.0000
+2026-07-28 12:25:22,774 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:28:06,044 - WARNING - LLM call failed (attempt 1/4): Expecting value: line 825 column 1 (char 4532). Retrying...
+2026-07-28 12:28:11,639 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:28:47,106 - INFO - Evaluated program it000133 in 0.17s: combined_score=0.9553, mean_excess=0.0468, bins_used=2103.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1672, validity=1.0000
+2026-07-28 12:28:47,862 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:29:10,537 - INFO - Evaluated program it000134 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1509, validity=1.0000
+2026-07-28 12:29:18,508 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:30:13,614 - INFO - Saved checkpoint at iteration 134 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_134
+2026-07-28 12:30:17,348 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:30:55,907 - INFO - Evaluated program it000135 in 0.16s: combined_score=0.8854, mean_excess=0.1295, bins_used=2269.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1586, validity=1.0000
+2026-07-28 12:30:58,240 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:31:11,575 - INFO - Evaluated program it000136 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1148, validity=1.0000
+2026-07-28 12:31:11,933 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:31:44,291 - INFO - Evaluated program it000137 in 0.14s: combined_score=0.9397, mean_excess=0.0642, bins_used=2138.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1360, validity=1.0000
+2026-07-28 12:31:46,109 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:32:03,533 - INFO - Evaluated program it000138 in 0.11s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1084, validity=1.0000
+2026-07-28 12:32:03,960 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:32:38,464 - INFO - Evaluated program it000139 in 0.13s: combined_score=0.9589, mean_excess=0.0428, bins_used=2095.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1317, validity=1.0000
+2026-07-28 12:32:40,516 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:32:46,060 - INFO - Saved checkpoint at iteration 139 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_139
+2026-07-28 12:32:48,474 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:33:12,868 - INFO - Evaluated program it000140 in 0.11s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1122, validity=1.0000
+2026-07-28 12:33:14,781 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:33:58,393 - INFO - Evaluated program it000141 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1524, validity=1.0000
+2026-07-28 12:34:01,086 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:34:19,886 - INFO - Evaluated program it000142 in 0.14s: combined_score=0.9349, mean_excess=0.0697, bins_used=2149.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1368, validity=1.0000
+2026-07-28 12:34:22,092 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:34:43,001 - INFO - Evaluated program it000143 in 0.17s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1676, validity=1.0000
+2026-07-28 12:34:45,380 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:35:20,138 - WARNING - Iteration 144: no valid program in LLM response (attempt 1)
+2026-07-28 12:35:20,199 - INFO - Saved checkpoint at iteration 144 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_144
+2026-07-28 12:35:22,492 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:36:00,199 - WARNING - Iteration 145: mutation touched F_imm outside the evolve block (attempt 1)
+2026-07-28 12:36:08,504 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:37:04,532 - INFO - Evaluated program it000146 in 0.13s: combined_score=0.9508, mean_excess=0.0518, bins_used=2113.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1309, validity=1.0000
+2026-07-28 12:37:06,726 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:37:23,006 - INFO - Evaluated program it000147 in 0.12s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1227, validity=1.0000
+2026-07-28 12:37:24,974 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:37:53,519 - INFO - Evaluated program it000148 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1221, validity=1.0000
+2026-07-28 12:37:55,839 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:38:27,655 - INFO - Evaluated program it000149 in 0.14s: combined_score=0.8933, mean_excess=0.1195, bins_used=2249.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1358, validity=1.0000
+2026-07-28 12:38:30,017 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:38:32,690 - INFO - Saved checkpoint at iteration 149 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_149
+2026-07-28 12:38:34,997 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:38:51,110 - INFO - Evaluated program it000150 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1417, validity=1.0000
+2026-07-28 12:38:54,035 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:39:28,433 - INFO - Evaluated program it000151 in 0.12s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1159, validity=1.0000
+2026-07-28 12:39:30,645 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:40:04,288 - INFO - Evaluated program it000152 in 0.14s: combined_score=0.8823, mean_excess=0.1334, bins_used=2277.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1358, validity=1.0000
+2026-07-28 12:40:06,227 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:40:30,655 - INFO - Evaluated program it000153 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1291, validity=1.0000
+2026-07-28 12:40:33,328 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:40:51,437 - INFO - Evaluated program it000154 in 0.14s: combined_score=0.9585, mean_excess=0.0433, bins_used=2096.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1412, validity=1.0000
+2026-07-28 12:40:52,131 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:40:56,595 - INFO - Saved checkpoint at iteration 154 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_154
+2026-07-28 12:40:59,276 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:41:23,840 - INFO - Evaluated program it000155 in 0.14s: combined_score=0.9228, mean_excess=0.0836, bins_used=2177.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1372, validity=1.0000
+2026-07-28 12:41:25,888 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:42:04,762 - WARNING - Iteration 156: no valid program in LLM response (attempt 1)
+2026-07-28 12:42:07,093 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:42:42,629 - INFO - Evaluated program it000157 in 0.12s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1145, validity=1.0000
+2026-07-28 12:42:44,851 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:43:07,974 - INFO - Evaluated program it000158 in 0.13s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1308, validity=1.0000
+2026-07-28 12:43:08,356 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:43:27,136 - INFO - Evaluated program it000159 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1315, validity=1.0000
+2026-07-28 12:43:28,335 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:43:32,259 - INFO - Saved checkpoint at iteration 159 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_159
+2026-07-28 12:43:37,269 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:44:17,195 - WARNING - Iteration 160: no valid program in LLM response (attempt 1)
+2026-07-28 12:44:23,673 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:45:30,466 - INFO - Evaluated program it000161 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1330, validity=1.0000
+2026-07-28 12:45:32,547 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:45:48,277 - INFO - Evaluated program it000162 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1450, validity=1.0000
+2026-07-28 12:45:50,078 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:47:09,913 - WARNING - Iteration 163: no valid program in LLM response (attempt 1)
+2026-07-28 12:47:10,348 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:47:41,484 - INFO - Evaluated program it000164 in 0.15s: combined_score=0.9544, mean_excess=0.0478, bins_used=2105.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1480, validity=1.0000
+2026-07-28 12:47:41,540 - INFO - Saved checkpoint at iteration 164 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_164
+2026-07-28 12:47:45,067 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:48:04,053 - INFO - Evaluated program it000165 in 0.28s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.2807, validity=1.0000
+2026-07-28 12:48:05,047 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:48:58,266 - INFO - Evaluated program it000166 in 0.16s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1593, validity=1.0000
+2026-07-28 12:48:59,856 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:49:14,606 - INFO - Evaluated program it000167 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1501, validity=1.0000
+2026-07-28 12:49:16,646 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:49:37,042 - INFO - Evaluated program it000168 in 0.16s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1596, validity=1.0000
+2026-07-28 12:49:39,846 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:50:05,043 - INFO - Evaluated program it000169 in 0.16s: combined_score=0.9228, mean_excess=0.0836, bins_used=2177.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1617, validity=1.0000
+2026-07-28 12:50:05,086 - INFO - Saved checkpoint at iteration 169 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_169
+2026-07-28 12:50:07,065 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:50:23,703 - INFO - Evaluated program it000170 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1335, validity=1.0000
+2026-07-28 12:50:24,715 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:51:10,661 - INFO - Evaluated program it000171 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1339, validity=1.0000
+2026-07-28 12:51:13,027 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:51:35,401 - INFO - Evaluated program it000172 in 0.14s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1390, validity=1.0000
+2026-07-28 12:51:37,700 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:52:00,609 - INFO - Evaluated program it000173 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1465, validity=1.0000
+2026-07-28 12:52:03,314 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:52:24,526 - INFO - Evaluated program it000174 in 0.13s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1272, validity=1.0000
+2026-07-28 12:52:26,290 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:52:27,601 - INFO - Saved checkpoint at iteration 174 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_174
+2026-07-28 12:52:28,817 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:52:50,005 - INFO - Evaluated program it000175 in 0.13s: combined_score=0.9594, mean_excess=0.0423, bins_used=2094.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1321, validity=1.0000
+2026-07-28 12:52:52,961 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:53:17,050 - INFO - Evaluated program it000176 in 0.16s: combined_score=0.8819, mean_excess=0.1339, bins_used=2278.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1540, validity=1.0000
+2026-07-28 12:53:18,878 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:53:46,870 - INFO - Evaluated program it000177 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1346, validity=1.0000
+2026-07-28 12:53:49,312 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:54:07,396 - INFO - Evaluated program it000178 in 0.16s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1628, validity=1.0000
+2026-07-28 12:54:07,832 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:54:42,272 - INFO - Evaluated program it000179 in 0.14s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1382, validity=1.0000
+2026-07-28 12:54:45,769 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:54:59,786 - INFO - Saved checkpoint at iteration 179 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_179
+2026-07-28 12:55:01,069 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:55:09,375 - INFO - Evaluated program it000180 in 0.15s: combined_score=0.8873, mean_excess=0.1270, bins_used=2264.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1470, validity=1.0000
+2026-07-28 12:55:11,094 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2235, lower_bound=2009, mean_excess=0.1126, score=0.8988, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s
+Evaluation: instances=5, bins=2105, lower_bound=2009, mean_excess=0.0478, score=0.9544, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.12s
+Evaluation: instances=5, bins=2119, lower_bound=2009, mean_excess=0.0548, score=0.9481, time=0.16s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2223, lower_bound=2009, mean_excess=0.1065, score=0.9037, time=0.14s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2209, lower_bound=2009, mean_excess=0.0996, score=0.9094, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2091, lower_bound=2009, mean_excess=0.0408, score=0.9608, time=0.12s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2098, lower_bound=2009, mean_excess=0.0443, score=0.9576, time=0.14s
+Evaluation: instances=5, bins=2102, lower_bound=2009, mean_excess=0.0463, score=0.9557, time=0.30s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2252, lower_bound=2009, mean_excess=0.1210, score=0.8921, time=0.14s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2144, lower_bound=2009, mean_excess=0.0672, score=0.9370, time=0.15s
+Evaluation: instances=5, bins=2097, lower_bound=2009, mean_excess=0.0438, score=0.9580, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.11s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2130, lower_bound=2009, mean_excess=0.0602, score=0.9432, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.11s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.18s
+Evaluation: instances=5, bins=2103, lower_bound=2009, mean_excess=0.0468, score=0.9553, time=0.17s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+Evaluation: instances=5, bins=2269, lower_bound=2009, mean_excess=0.1295, score=0.8854, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2138, lower_bound=2009, mean_excess=0.0642, score=0.9397, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.11s
+Evaluation: instances=5, bins=2095, lower_bound=2009, mean_excess=0.0428, score=0.9589, time=0.13s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.11s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.15s
+Evaluation: instances=5, bins=2149, lower_bound=2009, mean_excess=0.0697, score=0.9349, time=0.14s
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.17s
+Evaluation: instances=5, bins=2113, lower_bound=2009, mean_excess=0.0518, score=0.9508, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.12s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.12s
+Evaluation: instances=5, bins=2249, lower_bound=2009, mean_excess=0.1195, score=0.8933, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.12s
+Evaluation: instances=5, bins=2277, lower_bound=2009, mean_excess=0.1334, score=0.8823, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2096, lower_bound=2009, mean_excess=0.0433, score=0.9585, time=0.14s
+Evaluation: instances=5, bins=2177, lower_bound=2009, mean_excess=0.0836, score=0.9228, time=0.14s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.11s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2105, lower_bound=2009, mean_excess=0.0478, score=0.9544, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.28s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.16s
+Evaluation: instances=5, bins=2177, lower_bound=2009, mean_excess=0.0836, score=0.9228, time=0.16s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.13s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2094, lower_bound=2009, mean_excess=0.0423, score=0.9594, time=0.13s
+Evaluation: instances=5, bins=2278, lower_bound=2009, mean_excess=0.1339, score=0.8819, time=0.15s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.13s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.16s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.14s
+Evaluation: instances=5, bins=2264, lower_bound=2009, mean_excess=0.1270, score=0.8873, time=0.15s
+Evaluation: instances=5, bins=2090, lower_bound=2009, mean_excess=0.0403, score=0.9613, time=0.14s2026-07-28 12:55:31,176 - INFO - Evaluated program it000181 in 0.15s: combined_score=0.9613, mean_excess=0.0403, bins_used=2090.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1439, validity=1.0000
+2026-07-28 12:55:41,432 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:57:31,437 - INFO - Evaluated program it000182 in 0.14s: combined_score=0.0000, mean_excess=inf, bins_used=inf, lower_bound=0.0000, num_instances=0.0000, validity=0.0000, error=Program execution failed: name 'capacity' is not defined
+2026-07-28 12:57:31,438 - WARNING - Iteration 182: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-28 12:57:33,825 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:58:07,531 - INFO - Evaluated program it000183 in 0.16s: combined_score=0.9599, mean_excess=0.0418, bins_used=2093.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1587, validity=1.0000
+2026-07-28 12:58:07,947 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:58:32,030 - INFO - Evaluated program it000184 in 0.18s: combined_score=0.9001, mean_excess=0.1110, bins_used=2232.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1795, validity=1.0000
+2026-07-28 12:58:32,710 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:58:36,639 - INFO - Saved checkpoint at iteration 184 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_184
+2026-07-28 12:58:43,071 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-28 12:59:00,314 - INFO - Evaluated program it000185 in 0.15s: combined_score=0.9562, mean_excess=0.0458, bins_used=2101.0000, lower_bound=2009.0000, num_instances=5.0000, eval_time=0.1494, validity=1.0000
+2026-07-28 12:59:00,401 - INFO - Stopping at iteration 186: Total token budget exhausted (shared pool): spent 1001474 of cap 1000000. The next call was for account 'mutation' — that account is not itself capped; the shared pool is what ran out.
+2026-07-28 12:59:00,442 - INFO - Saved checkpoint at iteration 185 to examples/bin_packing/runs/phase-c-p1-boltzmann/hifo-cvt-s42/checkpoints/checkpoint_185
+2026-07-28 12:59:00,442 - INFO - Evolution tracing complete. Total traces: 168
+2026-07-28 12:59:00,442 - INFO - Improvement rate: 46.43%
+2026-07-28 12:59:00,442 - INFO - Best improvements: {'combined_score': 0.07938486573475523, 'mean_excess': 0.09364590206007245, 'bins_used': 188.0, 'lower_bound': 0.0, 'num_instances': 0, 'eval_time': 0.20562481880187988, 'validity': 0.0}
+2026-07-28 12:59:00,442 - INFO - Worst declines: {'combined_score': -0.07938486573475523, 'mean_excess': -0.09364590206007245, 'bins_used': -188.0, 'lower_bound': 0.0, 'num_instances': 0, 'eval_time': -0.11105704307556152, 'validity': 0.0}
+
+Evaluation error: Program execution failed: name 'capacity' is not defined
+Evaluation: instances=5, bins=2093, lower_bound=2009, mean_excess=0.0418, score=0.9599, time=0.16s
+Evaluation: instances=5, bins=2232, lower_bound=2009, mean_excess=0.1110, score=0.9001, time=0.18s
+Evaluation: instances=5, bins=2101, lower_bound=2009, mean_excess=0.0458, score=0.9562, time=0.15s
+BEST: {'combined_score': 0.961261026347324, 'mean_excess': 0.040300160508826115, 'bins_used': 2090.0, 'lower_bound': 2009.0, 'num_instances': 5, 'eval_time': 0.13555026054382324, 'validity': 1.0}
