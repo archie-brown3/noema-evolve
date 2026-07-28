@@ -188,6 +188,9 @@ class NoemaConfig:
     num_inspirations: int = 3
     num_top_programs: int = 5
     num_previous_programs: int = 3
+    # Metric fields shown in mutation prompts. None = all fields (default).
+    # Specify to strip noisy/redundant fields (e.g. eval_time, validity).
+    prompt_metric_fields: Optional[set] = None
 
     # Borrowed component configs
     database: DatabaseConfig = field(default_factory=DatabaseConfig)

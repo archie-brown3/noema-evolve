@@ -73,6 +73,10 @@ def main():
                     help="Comma-separated operator names, e.g. e1,e2,m1,m2,m3")
     ap.add_argument("--disable-reasoning", action="store_true", default=False,
                     help="Disable provider reasoning tokens (OpenRouter: reasoning={enabled:false})")
+    ap.add_argument("--num-inspirations", type=int, default=3,
+                    help="Elite programs shown as inspiration in mutation prompt (default 3)")
+    ap.add_argument("--metric-fields", default="combined_score,bins_used,lower_bound",
+                    help="Comma-separated metric fields to include in prompts (default: score+gap only)")
     # Model escalation (task 0107). Off unless --escalation-trigger is passed;
     # then a mutation burst routes to --escalation-model (defaults to the
     # coordination seat) when the trigger fires. Mutation seat only.
@@ -118,9 +122,10 @@ def main():
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
         mutation_operators=mutation_operators,
-        num_inspirations=0,
-        num_top_programs=1,
+        num_inspirations=args.num_inspirations,
+        num_top_programs=3,
         num_previous_programs=3,
+        prompt_metric_fields=set(args.metric_fields.split(",")) if args.metric_fields else None,
         database=DatabaseConfig(
             population_size=60,
             archive_size=25,

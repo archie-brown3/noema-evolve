@@ -44,6 +44,25 @@ def make_prompt_sampler(config: Optional[PromptConfig] = None) -> PromptSampler:
     return sampler
 
 
+def _filter_metrics(metrics: Dict[str, Any], fields: Optional[set]) -> Dict[str, Any]:
+    """Keep only the named metric fields; None means keep all."""
+    if fields is None:
+        return metrics
+    return {k: v for k, v in metrics.items() if k in fields}
+
+
+def _filter_program_list(programs: List[Dict], fields: Optional[set]) -> List[Dict]:
+    if fields is None:
+        return programs
+    result = []
+    for p in programs:
+        p = dict(p)
+        if "metrics" in p:
+            p["metrics"] = _filter_metrics(p["metrics"], fields)
+        result.append(p)
+    return result
+
+
 def build_mutation_prompt(
     sampler: PromptSampler,
     parent: Program,
@@ -57,14 +76,15 @@ def build_mutation_prompt(
     parent_artifacts: Optional[Dict[str, Any]] = None,
     template_key: Optional[str] = None,
     parent2: Optional[Program] = None,
+    metric_fields: Optional[set] = None,
 ) -> Dict[str, str]:
     """Assemble the shared (pre-coordination) mutation prompt via openevolve"""
     return sampler.build_prompt(
         current_program=parent.code,
         parent_program=parent.code,
-        program_metrics=parent.metrics,
-        previous_programs=[p.to_dict() for p in previous_programs],
-        top_programs=[p.to_dict() for p in top_programs],
+        program_metrics=_filter_metrics(parent.metrics, metric_fields),
+        previous_programs=_filter_program_list([p.to_dict() for p in previous_programs], metric_fields),
+        top_programs=_filter_program_list([p.to_dict() for p in top_programs], metric_fields),
         inspirations=[p.to_dict() for p in inspirations],
         language=language,
         evolution_round=iteration,

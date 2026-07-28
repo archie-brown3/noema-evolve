@@ -536,6 +536,7 @@ class NoemaController:
                 feature_dimensions=self.db.feature_dimensions,
                 template_key=operator.template_key,
                 parent2=parent2,
+                metric_fields=self.config.prompt_metric_fields,
             )
             prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
 
