@@ -160,6 +160,7 @@ class NoemaController:
             retries=config.llm.mutation.retries,
             retry_delay=config.llm.mutation.retry_delay,
             total_deadline_s=config.llm.mutation.total_deadline_s,
+            disable_reasoning=config.llm.mutation.disable_reasoning,
         )
 
         if coordination is not None:
@@ -180,6 +181,7 @@ class NoemaController:
                 retries=config.llm.coordination.retries,
                 retry_delay=config.llm.coordination.retry_delay,
                 total_deadline_s=config.llm.coordination.total_deadline_s,
+                disable_reasoning=config.llm.coordination.disable_reasoning,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
@@ -283,6 +285,7 @@ class NoemaController:
             retries=config.llm.coordination.retries,
             retry_delay=config.llm.coordination.retry_delay,
             total_deadline_s=config.llm.coordination.total_deadline_s,
+            disable_reasoning=config.llm.coordination.disable_reasoning,
         )
         setter(alt_llm)
 

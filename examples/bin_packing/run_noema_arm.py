@@ -37,8 +37,8 @@ Key facts about THIS problem:
 - The baseline is best-fit: `priority = -(bins - item)` (prefer the tightest fit). Good heuristics are subtle non-linear functions of the item size and each bin's remaining capacity.
 - Score = 1 / (1 + mean excess bins over the lower bound), averaged over the instances. Fewer bins → higher score.
 
-Only the `priority` function (inside the EVOLVE-BLOCK) may change. The instance generator and the online placement loop are fixed and must not be touched.
-CONCISENESS REQUIREMENT: You must be extremely concise. Explain your proposed mutation in at most one short sentence, then output the SEARCH/REPLACE block immediately. Do not write any other conversational filler or explanations."""
+EVOLVE-BLOCK CONSTRAINT: Only modify code between `# EVOLVE-BLOCK-START` and `# EVOLVE-BLOCK-END`. Do not touch any other function, import, constant, or comment — violations are rejected automatically and waste your budget.
+CONCISENESS REQUIREMENT: Explain your mutation in at most one short sentence, then output your change immediately. No filler."""
 
 EXAMPLE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -52,6 +52,7 @@ def main():
         help="'pes' is a deprecated alias for pes-custom (task 0066)",
     )
     ap.add_argument("--api-base", required=True)
+    ap.add_argument("--api-key", default="none")
     ap.add_argument("--output-dir", required=True)
     ap.add_argument("--substrate", choices=["islands", "tree", "cvt"], default="islands")
     # Default "substrate_default" resolves per-substrate (islands -> stock
@@ -66,6 +67,12 @@ def main():
     ap.add_argument("--budget-tokens", type=int, default=1_000_000)  # From STUDY.md
     ap.add_argument("--retry-enabled", action="store_true", default=False)
     ap.add_argument("--retry-cap", type=int, default=2)
+    # Operator menu for the bandit arm. Comma-separated list of operator names
+    # (e1,e2,m1,m2,m3). None (default) = legacy path, bandit hint ignored.
+    ap.add_argument("--mutation-operators", default=None,
+                    help="Comma-separated operator names, e.g. e1,e2,m1,m2,m3")
+    ap.add_argument("--disable-reasoning", action="store_true", default=False,
+                    help="Disable provider reasoning tokens (OpenRouter: reasoning={enabled:false})")
     # Model escalation (task 0107). Off unless --escalation-trigger is passed;
     # then a mutation burst routes to --escalation-model (defaults to the
     # coordination seat) when the trigger fires. Mutation seat only.
@@ -90,20 +97,27 @@ def main():
     mutation_llm = LLMClientConfig(
         model=args.model,
         api_base=args.api_base,
-        api_key="none",
+        api_key=args.api_key,
         temperature=0.7,
         top_p=0.95,
         max_tokens=4096,
         timeout=300,
+        disable_reasoning=args.disable_reasoning,
+    )
+
+    mutation_operators = (
+        [op.strip() for op in args.mutation_operators.split(",")]
+        if args.mutation_operators else None
     )
 
     config = NoemaConfig(
         max_iterations=args.iterations,
         checkpoint_interval=5,
         random_seed=args.seed,
-        diff_based_evolution=True,
+        diff_based_evolution=False,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
+        mutation_operators=mutation_operators,
         num_inspirations=0,
         num_top_programs=1,
         num_previous_programs=3,
@@ -122,7 +136,19 @@ def main():
             system_message=SYSTEM_MESSAGE,
         ),
         budget=BudgetConfig(total_tokens=args.budget_tokens),
-        substrate=SubstrateConfig(kind=args.substrate),
+        substrate=SubstrateConfig(
+            kind=args.substrate,
+            # Gate 5: tighten CVT feature bounds for bin_packing's short
+            # priority() functions. Default bounds (range_max_arg 0-500,
+            # loop_nesting_max 0-3) map all short numpy one-liners to one
+            # cell. These bounds match the actual variation space.
+            cvt_feature_bounds={
+                "math_operators": (0.0, 12.0),
+                "loop_nesting_max": (0.0, 1.0),
+                "comprehension_count": (0.0, 2.0),
+                "range_max_arg": (0.0, 10.0),
+            } if args.substrate == "cvt" else None,
+        ),
         selection=SelectionConfig(policy=args.selection),
         llm=LLMRolesConfig(
             mutation=mutation_llm,

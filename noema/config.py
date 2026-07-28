@@ -60,6 +60,9 @@ class LLMClientConfig:
     # bounds generate_with_context's WHOLE retry loop (all attempts combined),
     # not any single request. 600s default: legitimate calls observed up to 160s.
     total_deadline_s: float = 600.0
+    # Disable provider reasoning/thinking tokens (OpenRouter: reasoning={"enabled":False}).
+    # Roughly doubles effective sample count for reasoning models (47-63% token burn).
+    disable_reasoning: bool = False
 
 
 @dataclass
@@ -128,6 +131,10 @@ class SubstrateConfig:
     # coordination arms that read a local population as a distribution
     # (hifo/pes). None (default) = 0108/0109 behaviour, one region per cell.
     cvt_num_regions: Optional[int] = None
+    # Per-feature (min, max) overrides for CVT normalisation. Keys must match
+    # feature names in cvt_behavior_features (or the defaults). Unset keys fall
+    # back to DEFAULT_FEATURE_BOUNDS. None = use defaults unchanged.
+    cvt_feature_bounds: Optional[Dict[str, tuple]] = None
 
 
 @dataclass

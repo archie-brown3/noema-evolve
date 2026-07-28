@@ -92,6 +92,7 @@ class BudgetedLLM(LLMInterface):
         retries: int = 3,
         retry_delay: float = 5.0,
         total_deadline_s: float = 600.0,
+        disable_reasoning: bool = False,
         client=None,
     ):
         self.model = model
@@ -104,6 +105,7 @@ class BudgetedLLM(LLMInterface):
         self.seed = seed
         self.timeout = timeout
         self.total_deadline_s = total_deadline_s
+        self.disable_reasoning = disable_reasoning
         # Guard against retries < 0 (task 0056 item 2): the retry loop is
         # `range(retries + 1)`, so retries == -1 makes it empty — the call is
         # never issued and the method would fall through to `raise
@@ -232,6 +234,8 @@ class BudgetedLLM(LLMInterface):
             value = kwargs.get(name, default)
             if value is not None:
                 params[name] = value
+        if self.disable_reasoning:
+            params["reasoning"] = {"enabled": False}
 
         retries = kwargs.get("retries", self.retries)
         retry_delay = kwargs.get("retry_delay", self.retry_delay)
@@ -297,7 +301,7 @@ class BudgetedLLM(LLMInterface):
                 return ""
 
             usage = getattr(response, "usage", None)
-            content = response.choices[0].message.content
+            content = response.choices[0].message.content or ""
 
             finish_reason = getattr(response.choices[0], "finish_reason", "") or ""
 
