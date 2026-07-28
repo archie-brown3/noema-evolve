@@ -228,14 +228,78 @@ def _ledger_scalars(checkpoint: Path):
         }
 
 
+def _jsonl_rows(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as f:
+        return [json.loads(line) for line in f if line.strip()]
+
+
+def _trace_programs(
+    attempts: list[dict[str, Any]], evolution: list[dict[str, Any]], blobs: Path
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    evolution_by_child = {
+        row.get("child_id"): row for row in evolution if row.get("child_id")
+    }
+    programs = []
+    iterations = []
+    seen = set()
+
+    def add(program: dict[str, Any], source: str) -> None:
+        program_id = program.get("id")
+        if not program_id or program_id in seen:
+            return
+        seen.add(program_id)
+        program.setdefault("language", "python")
+        programs.append(_program_row(program, blobs, source))
+
+    for attempt in attempts:
+        if attempt.get("outcome") != "accepted":
+            continue
+        parent = attempt.get("parent")
+        if isinstance(parent, dict):
+            add(dict(parent), "attempt_trace.parent")
+
+        candidate = attempt.get("candidate")
+        if not isinstance(candidate, dict) or not candidate.get("id"):
+            continue
+        trace = evolution_by_child.get(candidate["id"], {})
+        program = {
+            "id": candidate["id"],
+            "code": candidate.get("code"),
+            "language": parent.get("language", "python") if isinstance(parent, dict) else "python",
+            "metrics": trace.get("child_metrics"),
+            "iteration_found": attempt.get("iteration"),
+            "parent_id": trace.get("parent_id")
+            or (parent.get("id") if isinstance(parent, dict) else None),
+            "metadata": attempt.get("metadata", {}),
+            "generation": trace.get("generation", attempt.get("generation")),
+            "timestamp": trace.get("timestamp", attempt.get("timestamp")),
+            "prompts": attempt.get("prompt"),
+        }
+        add(program, "attempt_trace.candidate")
+        iterations.append(
+            {
+                "iteration": attempt.get("iteration"),
+                "role": "accepted_attempt",
+                "slot_key": attempt.get("attempt_id"),
+                "program_id": candidate["id"],
+                "value": None,
+            }
+        )
+    return programs, iterations
+
+
 def export_run(run_dir: os.PathLike[str] | str, output_dir: os.PathLike[str] | str) -> Path:
     run = Path(run_dir)
     output = Path(output_dir)
     if output.exists():
         raise FileExistsError(f"destination already exists: {output}")
     checkpoints = _checkpoints(run)
-    if not checkpoints:
-        raise FileNotFoundError(f"no checkpoints found in {run}")
+    attempt_path = run / "attempt_trace.jsonl"
+    attempt_rows = _jsonl_rows(attempt_path)
+    if not checkpoints and not attempt_rows:
+        raise FileNotFoundError(f"no checkpoints or attempt trace found in {run}")
 
     output.mkdir(parents=True)
     blobs = output / "blobs"
@@ -249,47 +313,50 @@ def export_run(run_dir: os.PathLike[str] | str, output_dir: os.PathLike[str] | s
     seen = set()
     iterations = []
     scalars = []
-    for iteration, checkpoint in checkpoints:
-        program_dir = checkpoint / "programs"
-        if program_dir.is_dir():
-            for path in sorted(program_dir.glob("*.json")):
-                program = json.loads(path.read_text())
-                if program.get("id") not in seen:
-                    seen.add(program.get("id"))
-                    programs.append(_program_row(program, blobs))
-        store = _store_state(checkpoint)
-        if store is not None:
-            kind, state = store
-            for program_id in sorted(state.get("programs", {})):
-                program = state["programs"][program_id]
-                if program_id not in seen:
-                    seen.add(program_id)
-                    programs.append(_program_row(program, blobs, f"{kind}_store.programs"))
-            iterations.extend(_store_membership_rows(iteration, kind, state))
-            if "last_iteration" in state:
-                scalars.append(
-                    {
-                        "iteration": iteration,
-                        "key": "last_iteration",
-                        "value": state["last_iteration"],
-                    }
-                )
-        metadata_path = checkpoint / "metadata.json"
-        if metadata_path.exists():
-            metadata = json.loads(metadata_path.read_text())
-            iterations.extend(_membership_rows(iteration, metadata))
-            for key in ("best_program_id", "last_iteration", "current_island"):
-                if key in metadata:
-                    scalars.append({"iteration": iteration, "key": key, "value": metadata[key]})
-
-    scalars.extend(_ledger_scalars(checkpoints[-1][1]))
+    if checkpoints:
+        for iteration, checkpoint in checkpoints:
+            program_dir = checkpoint / "programs"
+            if program_dir.is_dir():
+                for path in sorted(program_dir.glob("*.json")):
+                    program = json.loads(path.read_text())
+                    if program.get("id") not in seen:
+                        seen.add(program.get("id"))
+                        programs.append(_program_row(program, blobs))
+            store = _store_state(checkpoint)
+            if store is not None:
+                kind, state = store
+                for program_id in sorted(state.get("programs", {})):
+                    program = state["programs"][program_id]
+                    if program_id not in seen:
+                        seen.add(program_id)
+                        programs.append(_program_row(program, blobs, f"{kind}_store.programs"))
+                iterations.extend(_store_membership_rows(iteration, kind, state))
+                if "last_iteration" in state:
+                    scalars.append(
+                        {
+                            "iteration": iteration,
+                            "key": "last_iteration",
+                            "value": state["last_iteration"],
+                        }
+                    )
+            metadata_path = checkpoint / "metadata.json"
+            if metadata_path.exists():
+                metadata = json.loads(metadata_path.read_text())
+                iterations.extend(_membership_rows(iteration, metadata))
+                for key in ("best_program_id", "last_iteration", "current_island"):
+                    if key in metadata:
+                        scalars.append({"iteration": iteration, "key": key, "value": metadata[key]})
+        scalars.extend(_ledger_scalars(checkpoints[-1][1]))
+    else:
+        programs, iterations = _trace_programs(
+            attempt_rows, _jsonl_rows(run / "evolution_trace.jsonl"), blobs
+        )
     _jsonl(output / "programs.jsonl", programs)
     _jsonl(output / "iterations.jsonl", iterations)
     _jsonl(output / "iter_scalars.jsonl", scalars)
 
-    attempts = run / "attempt_trace.jsonl"
-    if attempts.exists():
-        shutil.copyfile(attempts, output / "noema_attempts.jsonl")
+    if attempt_path.exists():
+        shutil.copyfile(attempt_path, output / "noema_attempts.jsonl")
     else:
         (output / "noema_attempts.jsonl").touch()
 
@@ -299,15 +366,13 @@ def export_run(run_dir: os.PathLike[str] | str, output_dir: os.PathLike[str] | s
     else:
         (output / "noema_selections.jsonl").touch()
 
-    with (output / "noema_attempts.jsonl").open() as f:
-        attempt_count = sum(1 for _ in f)
     meta = {
         "backend": "noema",
         "source": run.name,
         "counts": {
             "checkpoints": len(checkpoints),
             "accepted_unique": len(programs),
-            "attempts": attempt_count,
+            "attempts": len(attempt_rows),
         },
     }
     (output / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")

@@ -202,6 +202,75 @@ class TestEvoReplayExport(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 export_run(run, output)
 
+    def test_exports_trace_only_run_without_checkpoints(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run = os.path.join(tmp, "run")
+            output = os.path.join(tmp, "refined")
+            os.makedirs(run)
+            with open(os.path.join(run, "config.yaml"), "w") as f:
+                f.write("llm:\n  api_key: trace-only-secret\n")
+
+            parent = {
+                "id": "initial",
+                "code": "def f():\n    return 1\n",
+                "metrics": {"combined_score": 0.1},
+                "iteration_found": 0,
+                "parent_id": None,
+                "metadata": {},
+                "generation": 0,
+            }
+            attempt = {
+                "attempt_id": "run:000001:00",
+                "iteration": 1,
+                "outcome": "accepted",
+                "parent": parent,
+                "candidate": {"id": "it000001", "code": "def f():\n    return 2\n"},
+                "generation": 1,
+                "timestamp": 2.0,
+            }
+            evolution = {
+                "iteration": 1,
+                "parent_id": "initial",
+                "child_id": "it000001",
+                "child_metrics": {"combined_score": 0.2},
+                "generation": 1,
+                "timestamp": 2.0,
+            }
+            selection = {
+                "iteration": 1,
+                "program_id": "it000001",
+                "selected_attempt_id": "run:000001:00",
+            }
+            for filename, rows in (
+                ("attempt_trace.jsonl", [attempt]),
+                ("evolution_trace.jsonl", [evolution]),
+                ("selection_trace.jsonl", [selection]),
+            ):
+                with open(os.path.join(run, filename), "w") as f:
+                    for row in rows:
+                        f.write(json.dumps(row) + "\n")
+
+            export_run(run, output)
+
+            with open(os.path.join(output, "programs.jsonl")) as f:
+                programs = {row["id"]: row for row in map(json.loads, f)}
+            self.assertEqual(set(programs), {"initial", "it000001"})
+            self.assertEqual(programs["it000001"]["parent_id"], "initial")
+            self.assertEqual(programs["it000001"]["metrics"], {"combined_score": 0.2})
+            self.assertEqual(programs["it000001"]["source"], "attempt_trace.candidate")
+            with open(os.path.join(output, "meta.json")) as f:
+                self.assertEqual(json.load(f)["counts"], {
+                    "checkpoints": 0,
+                    "accepted_unique": 2,
+                    "attempts": 1,
+                })
+            with open(os.path.join(output, "noema_attempts.jsonl")) as f:
+                self.assertEqual(json.loads(f.readline()), attempt)
+            with open(os.path.join(output, "noema_selections.jsonl")) as f:
+                self.assertEqual(json.loads(f.readline()), selection)
+            with open(os.path.join(output, "run_config.yaml")) as f:
+                self.assertNotIn("trace-only-secret", f.read())
+
     def test_exports_cvt_and_tree_store_programs(self):
         for filename, store in (
             ("cvt_store.json", CVTStore(n_centroids=4, seed=3)),
