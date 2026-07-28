@@ -20,7 +20,11 @@ from noema.config import BudgetConfig, CoordinationConfig, NoemaConfig, Substrat
 from noema.controller import NoemaController
 from noema.coordination.pe.module import PunctuatedEquilibriumModule
 
-INITIAL = "def f():\n    return 1\n"
+def _scaffold(body: str) -> str:
+    return f"def run_f():\n    return f()\n\n# EVOLVE-BLOCK-START\n{body}\n# EVOLVE-BLOCK-END\n"
+
+
+INITIAL = _scaffold("def f():\n    return 1")
 
 EVAL_SCRIPT = """\
 import re
@@ -35,10 +39,10 @@ def evaluate(program_path):
 # Behaviourally well-separated programs -> distinct CVT cells, so PE can cluster.
 # Each maxes out a different behaviour axis (nesting+math / comprehension+range / trivial).
 DIVERSE = [
-    "def f():\n    t = 0\n    for i in range(20):\n        for j in range(20):\n"
-    "            t = t + i * j - i + j * 2\n    return t\n",
-    "def f():\n    return sum([x * x for x in range(400)])\n",
-    "def f():\n    return 7\n",
+    _scaffold("def f():\n    t = 0\n    for i in range(20):\n        for j in range(20):\n"
+              "            t = t + i * j - i + j * 2\n    return t"),
+    _scaffold("def f():\n    return sum([x * x for x in range(400)])"),
+    _scaffold("def f():\n    return 7"),
 ]
 
 

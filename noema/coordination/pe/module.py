@@ -41,7 +41,12 @@ from noema.coordination.base import (
     Outcome,
     ProposedProgram,
 )
-from noema.coordination.pe.prompts import paradigm_shift_prompt, variant_prompt
+from noema.coordination.pe.prompts import (
+    extract_evolve_block,
+    paradigm_shift_prompt,
+    splice_evolve_block,
+    variant_prompt,
+)
 from noema.substrates.cvt_behavior import DEFAULT_FEATURE_BOUNDS, BehaviorExtractor
 
 logger = logging.getLogger(__name__)
@@ -108,10 +113,18 @@ class PunctuatedEquilibriumModule(CoordinationModule):
                 reps[label] = elite
         return sorted(reps.values(), key=lambda e: -e.fitness)
 
-    async def _generate(self, llm, prompt: str, tag: str) -> Optional[str]:
+    async def _generate(self, llm, prompt: str, tag: str, scaffold: str) -> Optional[str]:
         response = await llm.generate(prompt, tag=tag, temperature=self.temperature)
-        code = parse_full_rewrite(response, self.language)
-        return code or None
+        raw = parse_full_rewrite(response, self.language)
+        if not raw:
+            return None
+        # If the model returned a full program with EVOLVE-BLOCK markers, extract
+        # just the inner block. Otherwise treat the entire response as the block.
+        block = extract_evolve_block(raw) or raw.strip()
+        spliced = splice_evolve_block(scaffold, block)
+        if spliced is None:
+            logger.warning("[PE/%s] scaffold has no EVOLVE-BLOCK markers — dropping proposal", tag)
+        return spliced
 
     async def on_generation_end(self, ctx: GenerationContext) -> Optional[Intervention]:
         if self._paradigm_llm is None or self._variant_llm is None:
@@ -130,26 +143,37 @@ class PunctuatedEquilibriumModule(CoordinationModule):
         self._trigger_count += 1
         reps = self._cluster_representatives(elites)
         anchor = reps[0]  # highest-fitness representative
+        scaffold = anchor.code  # fixed harness; only the EVOLVE-BLOCK changes
+
+        # Show the LLM only the evolvable part of each representative, not the
+        # full scaffold (saves tokens; prompts now ask for the block, not a program).
+        rep_blocks = [
+            (extract_evolve_block(e.code) or e.code, e.fitness) for e in reps
+        ]
 
         proposals: List[ProposedProgram] = []
         paradigm_code = await self._generate(
             self._paradigm_llm,
-            paradigm_shift_prompt(self.domain_context, [(e.code, e.fitness) for e in reps]),
+            paradigm_shift_prompt(self.domain_context, rep_blocks),
             tag="pe.paradigm_shift",
+            scaffold=scaffold,
         )
         if paradigm_code:
             proposals.append(
                 ProposedProgram(code=paradigm_code, origin="paradigm_shift", parent_id=anchor.id)
             )
-            seed_code, seed_score = paradigm_code, anchor.fitness
+            seed_block = extract_evolve_block(paradigm_code) or anchor.code
+            seed_score = anchor.fitness
         else:
-            seed_code, seed_score = anchor.code, anchor.fitness
+            seed_block = extract_evolve_block(anchor.code) or anchor.code
+            seed_score = anchor.fitness
 
         for _ in range(self.n_variants):
             variant_code = await self._generate(
                 self._variant_llm,
-                variant_prompt(self.domain_context, seed_code, seed_score),
+                variant_prompt(self.domain_context, seed_block, seed_score),
                 tag="pe.variant",
+                scaffold=scaffold,
             )
             if variant_code:
                 proposals.append(

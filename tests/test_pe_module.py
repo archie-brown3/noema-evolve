@@ -12,11 +12,20 @@ from noema.coordination import MODULE_REGISTRY, build_coordination_module
 from noema.coordination.base import GenerationContext, Intervention, PopulationSnapshot
 from noema.evolution.views import ProgramView
 
+def _scaffold(body: str) -> str:
+    return (
+        f"def run_f():\n    return f()\n\n"
+        f"# EVOLVE-BLOCK-START\n{body}\n# EVOLVE-BLOCK-END\n"
+    )
+
+
+# FakeLLM returns a response that contains only the evolvable block body —
+# matching what the updated prompts now request.
 CODE_BLOCK = "```python\ndef f():\n    return %d\n```"
 
 
 class FakeLLM:
-    """Records tags; returns a full-rewrite code block, billed nowhere (test)."""
+    """Records tags; returns an evolvable-block code response, billed nowhere (test)."""
 
     def __init__(self):
         self.calls = []
@@ -33,10 +42,10 @@ def pv(pid, code, score):
 
 
 ELITES = [
-    pv("e1", "def f():\n    return 1\n", 0.3),
-    pv("e2", "def f():\n    return sum(i for i in range(10))\n", 0.5),
-    pv("e3", "def f():\n    t=0\n    for i in range(50):\n        t+=i\n    return t\n", 0.7),
-    pv("e4", "def f():\n    return [x*2 for x in range(20)][0]\n", 0.4),
+    pv("e1", _scaffold("def f():\n    return 1"), 0.3),
+    pv("e2", _scaffold("def f():\n    return sum(i for i in range(10))"), 0.5),
+    pv("e3", _scaffold("def f():\n    t=0\n    for i in range(50):\n        t+=i\n    return t"), 0.7),
+    pv("e4", _scaffold("def f():\n    return [x*2 for x in range(20)][0]"), 0.4),
 ]
 
 
