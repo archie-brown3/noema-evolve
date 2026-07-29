@@ -821,13 +821,14 @@ class NoemaController:
                 else None
             ),
         )
+        retained_program_id = None
         try:
             self.substrate.on_child_accepted(
                 parent=parent,
                 child=child,
                 step_size=min(1.0, (iteration + 1) / max(1, self.config.max_iterations)),
             )
-            self.db.add(child, iteration=iteration, target_scope=island)
+            retained_program_id = self.db.add(child, iteration=iteration, target_scope=island)
         except Exception as exc:
             if accepted_trace is not None:
                 self._write_attempt_trace(
@@ -876,7 +877,7 @@ class NoemaController:
             selected_attempt_id=source_attempt_id,
             status="accepted",
         )
-        if artifacts:
+        if artifacts and retained_program_id is not None:
             self.db.store_artifacts(child_id, artifacts)
 
         self._record_escalation_signal(
@@ -1111,8 +1112,8 @@ class NoemaController:
                     "coordination_proposed": True,
                 },
             )
-            self.db.add(child, iteration=iteration)
-            if artifacts:
+            retained_program_id = self.db.add(child, iteration=iteration)
+            if artifacts and retained_program_id is not None:
                 self.db.store_artifacts(child_id, artifacts)
 
     def _build_escalation_context(self, iteration: int) -> EscalationContext:

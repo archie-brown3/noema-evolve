@@ -14,7 +14,12 @@ if TYPE_CHECKING:
     from noema.config import NoemaConfig
 
 
-NATIVE_POLICIES = {"islands": "stock_openevolve", "tree": "uct", "cvt": "cvt_ucb"}
+NATIVE_POLICIES = {
+    "islands": "stock_openevolve",
+    "tree": "uct",
+    "cvt": "cvt_ucb",
+    "flat": "hifo_prob_rank",
+}
 
 
 def resolve_selection_policy(
@@ -58,6 +63,18 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
             feature_dimensions=config.database.feature_dimensions,
             num_regions=config.substrate.cvt_num_regions,
         )
+    elif config.substrate.kind == "flat":
+        from noema.substrates.flat import FlatPopulationStore
+
+        store = FlatPopulationStore(
+            population_size=config.database.population_size,
+            steps_per_generation=(
+                config.substrate.steps_per_generation
+                if config.substrate.steps_per_generation is not None
+                else 1
+            ),
+            feature_dimensions=config.database.feature_dimensions,
+        )
     else:
         raise ValueError(f"unknown substrate kind {config.substrate.kind!r}")
 
@@ -81,6 +98,10 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
         from noema.selection.cvt import CVTSelectionPolicy
 
         policy = CVTSelectionPolicy(seed=config.selection.seed)
+    elif policy_name == "hifo_prob_rank":
+        from noema.selection.hifo_prob_rank import HiFoProbRankSelection
+
+        policy = HiFoProbRankSelection(random_seed=config.selection.seed)
     else:
         raise ValueError(
             f"selection policy {policy_name!r} is unavailable for the implemented stores"

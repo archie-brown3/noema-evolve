@@ -233,7 +233,7 @@ class NoemaConfig:
                 esc.escalation_model = self.llm.coordination.model
         if self.selection.seed is None:
             self.selection.seed = self.random_seed + 3
-        if self.substrate.kind not in ("islands", "tree", "cvt"):
+        if self.substrate.kind not in ("islands", "tree", "cvt", "flat"):
             raise ValueError(f"unknown substrate kind {self.substrate.kind!r}")
         if (
             self.substrate.steps_per_generation is not None
@@ -257,6 +257,7 @@ class NoemaConfig:
             "boltzmann",
             "uct",
             "cvt_ucb",
+            "hifo_prob_rank",
         ):
             raise ValueError(f"unknown selection policy {self.selection.policy!r}")
         if self.selection.boltzmann_temperature <= 0:
