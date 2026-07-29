@@ -48,6 +48,7 @@ def build_substrate_runtime(config: "NoemaConfig") -> SubstrateRuntime:
                 else ("math_operators", "loop_nesting_max",
                       "comprehension_count", "range_max_arg")
             ),
+            feature_bounds=config.substrate.cvt_feature_bounds or None,
             seed=config.substrate.cvt_seed,
             steps_per_generation=(
                 config.substrate.steps_per_generation

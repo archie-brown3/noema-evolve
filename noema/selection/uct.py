@@ -162,12 +162,17 @@ class UCTSelectionPolicy:
         if visited != set(programs):
             raise ValueError("tree population contains a disconnected program")
 
-        if self.visits and any(
+        # Only run consistency checks when the population is unchanged. If
+        # programs were added (e.g. PE paradigm-shift injection), parent visit
+        # counts legitimately increased to include the new children — comparing
+        # stale counts from the previous call would false-positive here.
+        population_unchanged = set(visits) == set(self.visits)
+        if population_unchanged and self.visits and any(
             program_id in self.visits and self.visits[program_id] != value
             for program_id, value in visits.items()
         ):
             raise ValueError("UCT visit state is inconsistent with tree topology")
-        if self.qualities and any(
+        if population_unchanged and self.qualities and any(
             program_id in self.qualities
             and not math.isclose(
                 self.qualities[program_id], value, rel_tol=0.0, abs_tol=1e-12
