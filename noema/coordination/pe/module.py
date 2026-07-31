@@ -154,7 +154,7 @@ class PunctuatedEquilibriumModule(CoordinationModule):
         proposals: List[ProposedProgram] = []
         paradigm_code = await self._generate(
             self._paradigm_llm,
-            paradigm_shift_prompt(self.domain_context, rep_blocks),
+            paradigm_shift_prompt(self.domain_context, rep_blocks, ctx.iteration, scaffold),
             tag="pe.paradigm_shift",
             scaffold=scaffold,
         )
@@ -171,7 +171,7 @@ class PunctuatedEquilibriumModule(CoordinationModule):
         for _ in range(self.n_variants):
             variant_code = await self._generate(
                 self._variant_llm,
-                variant_prompt(self.domain_context, seed_block, seed_score),
+                variant_prompt(self.domain_context, seed_block, seed_score, scaffold),
                 tag="pe.variant",
                 scaffold=scaffold,
             )
