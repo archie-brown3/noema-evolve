@@ -137,6 +137,9 @@ class AttemptTraceWriter:
         program_id: str,
         selected_attempt_id: str,
         status: str,
+        admission: Optional[str] = None,
+        target_scope: Any = None,
+        removed_program_ids: Optional[list[str]] = None,
         error: Optional[str] = None,
     ) -> None:
         if status not in {"accepted", "failed"}:
@@ -148,6 +151,9 @@ class AttemptTraceWriter:
             "program_id": program_id,
             "selected_attempt_id": selected_attempt_id,
             "status": status,
+            "admission": admission,
+            "target_scope": target_scope,
+            "removed_program_ids": list(removed_program_ids or []),
             "error": error,
             "timestamp": time.time(),
         }

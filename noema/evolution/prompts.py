@@ -85,7 +85,7 @@ def build_mutation_prompt(
         program_metrics=_filter_metrics(parent.metrics, metric_fields),
         previous_programs=_filter_program_list([p.to_dict() for p in previous_programs], metric_fields),
         top_programs=_filter_program_list([p.to_dict() for p in top_programs], metric_fields),
-        inspirations=[p.to_dict() for p in inspirations],
+        inspirations=_filter_program_list([p.to_dict() for p in inspirations], metric_fields),
         language=language,
         evolution_round=iteration,
         diff_based_evolution=diff_based_evolution,

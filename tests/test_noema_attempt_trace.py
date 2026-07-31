@@ -64,6 +64,26 @@ class TestAttemptTraceWriter(unittest.TestCase):
             with self.assertRaises(ValueError):
                 writer.write(iteration=0, attempt=0, outcome="mystery")
 
+    def test_selection_record_captures_population_admission(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "attempt_trace.jsonl")
+            writer = AttemptTraceWriter(path, run_id="run-1")
+            writer.write_selection(
+                iteration=4,
+                program_id="child",
+                selected_attempt_id="run-1:000004:00",
+                status="accepted",
+                admission="replaced",
+                target_scope=2,
+                removed_program_ids=["old"],
+            )
+            with open(os.path.join(tmp, "selection_trace.jsonl")) as f:
+                record = json.loads(f.readline())
+
+        self.assertEqual(record["admission"], "replaced")
+        self.assertEqual(record["target_scope"], 2)
+        self.assertEqual(record["removed_program_ids"], ["old"])
+
     def test_binary_artifacts_are_reversibly_encoded(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "attempt_trace.jsonl")

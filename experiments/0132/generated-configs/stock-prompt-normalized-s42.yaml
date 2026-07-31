@@ -1,0 +1,52 @@
+max_iterations: 200
+checkpoint_interval: 5
+log_level: INFO
+random_seed: 42
+llm:
+  primary_model: deepseek/deepseek-v4-flash
+  primary_model_weight: 1.0
+  api_base: https://openrouter.ai/api/v1
+  api_key: ${OPENROUTER_API_KEY}
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 4096
+  timeout: 300
+prompt:
+  system_message: "You are an expert in online bin packing heuristics. Items of integer\
+    \ size arrive ONE AT A TIME and must be placed immediately into a bin of capacity\
+    \ 100 \u2014 you cannot see future items or reorder past ones. Your only job is\
+    \ to improve the `priority(item, bins)` heuristic: given the arriving item size\
+    \ and a numpy array of the remaining capacities of the bins that can still hold\
+    \ it, return a score per bin. The item is placed in the highest-scoring bin (or\
+    \ a new bin if none fits). The goal is to pack all items into as few bins as possible,\
+    \ beating the best-fit baseline.\n\nKey facts about THIS problem:\n- It is ONLINE.\
+    \ You cannot sort items or look ahead \u2014 the harness feeds items in arrival\
+    \ order and only calls your `priority` function. Any strategy that assumes offline\
+    \ access is impossible here.\n- The baseline is best-fit: `priority = -(bins -\
+    \ item)` (prefer the tightest fit). Good heuristics are subtle non-linear functions\
+    \ of the item size and each bin's remaining capacity.\n- Score = 1 / (1 + mean\
+    \ excess bins over the lower bound), averaged over the instances. Fewer bins \u2192\
+    \ higher score.\n\nEVOLVE-BLOCK CONSTRAINT: Only modify code between `# EVOLVE-BLOCK-START`\
+    \ and `# EVOLVE-BLOCK-END`. Do not touch any other function, import, constant,\
+    \ or comment \u2014 violations are rejected automatically and waste your budget.\n\
+    CONCISENESS REQUIREMENT: Explain your mutation in at most one short sentence,\
+    \ then output your change immediately. No filler.\n"
+  num_top_programs: 1
+  num_diverse_programs: 0
+  include_artifacts: false
+  use_template_stochasticity: false
+  template_dir: /Users/archiebrown/noema-evolve/experiments/0132/prompt-normalized-templates
+database:
+  population_size: 60
+  archive_size: 25
+  num_islands: 4
+  elite_selection_ratio: 0.3
+  exploitation_ratio: 0.7
+  db_path: /private/tmp/noema-0132-runs/stock-prompt-normalized-s42/db
+evaluator:
+  timeout: 60
+  cascade_evaluation: false
+  parallel_evaluations: 4
+  use_llm_feedback: false
+diff_based_evolution: false
+allow_full_rewrites: true

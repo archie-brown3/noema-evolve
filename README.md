@@ -83,9 +83,9 @@ coordination:
   # module: "bandit"
   # module: "pe"
 substrate:
-  kind: "islands"           # or "tree" / "cvt"
+  kind: "islands"           # or "tree" / "cvt" / "flat"
 selection:
-  policy: "substrate_default"   # or "stock_openevolve" / "boltzmann" / "uct" / "cvt_ucb"
+  policy: "substrate_default"   # or "stock_openevolve" / "boltzmann" / "uct" / "cvt_ucb" / "hifo_prob_rank"
 ```
 
 Use identical config outside `coordination.module` when comparing arms.
@@ -115,6 +115,7 @@ compose through one capability-checked interface.
 | `islands` | **implemented** | islands + MAP-Elites. Migration-mixed fronts, broken lineages. |
 | `tree` | **implemented** | global tree + UCT. Deep persistent lineages. |
 | `cvt` | **implemented** | CVT archive with deterministic behavior regions. |
+| `flat` | **implemented** | bounded global population with greedy distinct-fitness retention. |
 
 ### Selection policies — `selection.policy`
 
@@ -125,6 +126,7 @@ compose through one capability-checked interface.
 | `boltzmann` | **implemented** | Boltzmann sampling with adaptive temperature and optional stagnation detection. |
 | `uct` | **implemented** | UCT selection for the tree substrate with token-budget exploration decay. |
 | `cvt_ucb` | **implemented** | UCB selection across CVT regions. |
+| `hifo_prob_rank` | **implemented** | HiFo probability-rank sampling from the flat population. |
 
 ## Outputs and resume
 

@@ -54,15 +54,25 @@ def main():
     ap.add_argument("--api-base", required=True)
     ap.add_argument("--api-key", default="none")
     ap.add_argument("--output-dir", required=True)
-    ap.add_argument("--substrate", choices=["islands", "tree", "cvt"], default="islands")
+    ap.add_argument("--substrate", choices=["islands", "tree", "cvt", "flat"], default="islands")
     # Default "substrate_default" resolves per-substrate (islands -> stock
-    # OpenEvolve selection, tree -> UCT, cvt -> cvt_ucb) via
+    # OpenEvolve selection, tree -> UCT, cvt -> cvt_ucb, flat -> HiFo
+    # probability-rank) via
     # noema.substrates.registry.NATIVE_POLICIES; only pass this to override.
     ap.add_argument("--selection", default="substrate_default")
     ap.add_argument("--model", default="/var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf")
     # Defaults to --model, i.e. one model for both seats, as before.
     ap.add_argument("--coordination-model", default=None)
     ap.add_argument("--iterations", type=int, default=50)
+    ap.add_argument(
+        "--completed-mutations",
+        type=int,
+        default=None,
+        help=(
+            "Stop after this many completed logical mutation requests. Requires "
+            "retries off so one controller iteration equals one request."
+        ),
+    )
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--budget-tokens", type=int, default=1_000_000)  # From STUDY.md
     ap.add_argument("--retry-enabled", action="store_true", default=False)
@@ -74,7 +84,9 @@ def main():
     ap.add_argument("--disable-reasoning", action="store_true", default=False,
                     help="Disable provider reasoning tokens (OpenRouter: reasoning={enabled:false})")
     ap.add_argument("--num-inspirations", type=int, default=3,
-                    help="Elite programs shown as inspiration in mutation prompt (default 3)")
+                    help="Elite programs shown as inspiration in mutation prompt")
+    ap.add_argument("--num-top-programs", type=int, default=3)
+    ap.add_argument("--num-previous-programs", type=int, default=3)
     ap.add_argument("--metric-fields", default="combined_score,bins_used,lower_bound",
                     help="Comma-separated metric fields to include in prompts (default: score+gap only)")
     # Model escalation (task 0107). Off unless --escalation-trigger is passed;
@@ -94,6 +106,15 @@ def main():
     ap.add_argument("--escalation-fraction", type=float, default=0.7)
     ap.add_argument("--escalation-probability", type=float, default=0.2)
     args = ap.parse_args()
+    if args.completed_mutations is not None:
+        if args.completed_mutations <= 0:
+            ap.error("--completed-mutations must be positive")
+        if args.retry_enabled:
+            ap.error(
+                "--completed-mutations requires retries off so the cross-system "
+                "mutation-request count is unambiguous"
+            )
+        args.iterations = args.completed_mutations
 
     with open(f"{EXAMPLE_DIR}/initial_program.py") as f:
         initial_program_code = f.read()
@@ -123,8 +144,8 @@ def main():
         retry_cap=args.retry_cap,
         mutation_operators=mutation_operators,
         num_inspirations=args.num_inspirations,
-        num_top_programs=3,
-        num_previous_programs=3,
+        num_top_programs=args.num_top_programs,
+        num_previous_programs=args.num_previous_programs,
         prompt_metric_fields=set(args.metric_fields.split(",")) if args.metric_fields else None,
         database=DatabaseConfig(
             population_size=60,

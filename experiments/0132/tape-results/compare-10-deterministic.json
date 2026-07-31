@@ -1,0 +1,219 @@
+{
+  "left": {
+    "system": "stock_openevolve",
+    "requested": 10,
+    "raised": null
+  },
+  "right": {
+    "system": "noema_null",
+    "requested": 10,
+    "raised": null
+  },
+  "steps_left": 10,
+  "steps_right": 10,
+  "identical": false,
+  "first_divergence": 0,
+  "divergence_count": 10,
+  "divergences": [
+    {
+      "index": 0,
+      "left": {
+        "index": 0,
+        "parent": "6c343285ab55",
+        "child": "2478cff3a491",
+        "admitted": true,
+        "population": [
+          "2478cff3a491"
+        ],
+        "island_sizes": [
+          1,
+          0,
+          0,
+          0
+        ],
+        "best": 0.8222643896268185
+      },
+      "right": {
+        "index": 0,
+        "parent": "6c343285ab55",
+        "child": "2478cff3a491",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "6c343285ab55"
+        ],
+        "island_sizes": [
+          2,
+          0,
+          0,
+          0
+        ],
+        "best": 0.8222643896268185
+      }
+    },
+    {
+      "index": 1,
+      "left": {
+        "index": 1,
+        "parent": "6c343285ab55",
+        "child": "90155575120b",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "90155575120b"
+        ],
+        "island_sizes": [
+          1,
+          1,
+          0,
+          0
+        ],
+        "best": 0.8222643896268185
+      },
+      "right": {
+        "index": 1,
+        "parent": "6c343285ab55",
+        "child": "90155575120b",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "6c343285ab55",
+          "90155575120b"
+        ],
+        "island_sizes": [
+          2,
+          1,
+          0,
+          0
+        ],
+        "best": 0.8222643896268185
+      }
+    },
+    {
+      "index": 2,
+      "left": {
+        "index": 2,
+        "parent": "6c343285ab55",
+        "child": "a9204a13b88f",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "90155575120b",
+          "a9204a13b88f"
+        ],
+        "island_sizes": [
+          1,
+          1,
+          1,
+          0
+        ],
+        "best": 0.8222643896268185
+      },
+      "right": {
+        "index": 2,
+        "parent": "6c343285ab55",
+        "child": "a9204a13b88f",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "6c343285ab55",
+          "90155575120b",
+          "a9204a13b88f"
+        ],
+        "island_sizes": [
+          2,
+          1,
+          1,
+          0
+        ],
+        "best": 0.8222643896268185
+      }
+    },
+    {
+      "index": 3,
+      "left": {
+        "index": 3,
+        "parent": "6c343285ab55",
+        "child": "f539727cf418",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "90155575120b",
+          "a9204a13b88f",
+          "f539727cf418"
+        ],
+        "island_sizes": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "best": 0.8222643896268185
+      },
+      "right": {
+        "index": 3,
+        "parent": "6c343285ab55",
+        "child": "f539727cf418",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "6c343285ab55",
+          "90155575120b",
+          "a9204a13b88f",
+          "f539727cf418"
+        ],
+        "island_sizes": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "best": 0.8222643896268185
+      }
+    },
+    {
+      "index": 4,
+      "left": {
+        "index": 4,
+        "parent": "2478cff3a491",
+        "child": "de9eaf442e05",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "90155575120b",
+          "a9204a13b88f",
+          "de9eaf442e05",
+          "f539727cf418"
+        ],
+        "island_sizes": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "best": 0.8222643896268185
+      },
+      "right": {
+        "index": 4,
+        "parent": "6c343285ab55",
+        "child": "de9eaf442e05",
+        "admitted": true,
+        "population": [
+          "2478cff3a491",
+          "6c343285ab55",
+          "90155575120b",
+          "a9204a13b88f",
+          "de9eaf442e05",
+          "f539727cf418"
+        ],
+        "island_sizes": [
+          3,
+          1,
+          1,
+          1
+        ],
+        "best": 0.8222643896268185
+      }
+    }
+  ]
+}

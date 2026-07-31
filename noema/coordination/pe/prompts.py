@@ -225,17 +225,20 @@ def extract_signature_from_code(code: str) -> str:
         line_stripped = line.strip()
         if line_stripped.startswith("def ") and "(" in line_stripped:
             if ":" in line_stripped:
-                return line_stripped.split(":")[0] + ":"
+                return line_stripped.rsplit(":", 1)[0] + ":"
             return line_stripped
-    return "def f():"
+    return None
 
 
 def get_function_signature(scaffold: str, representative_code: str) -> str:
     """Get function signature from the representative code or the scaffold."""
     sig = extract_signature_from_code(representative_code)
-    if sig != "def f():":
+    if sig:
         return sig
-    return extract_signature_from_code(scaffold)
+    sig = extract_signature_from_code(scaffold)
+    if sig:
+        return sig
+    raise ValueError("Could not extract function signature from code or scaffold.")
 
 
 def paradigm_shift_prompt(

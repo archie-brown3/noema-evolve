@@ -1,0 +1,222 @@
+{
+  "system": "noema_null",
+  "requested": 10,
+  "raised": null,
+  "steps": [
+    {
+      "index": 0,
+      "parent": "6c343285ab55",
+      "child": "2478cff3a491",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55"
+      ],
+      "island_sizes": [
+        2,
+        0,
+        0,
+        0
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 1,
+      "parent": "2478cff3a491",
+      "child": "90155575120b",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55",
+        "90155575120b"
+      ],
+      "island_sizes": [
+        2,
+        1,
+        0,
+        0
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 2,
+      "parent": "2478cff3a491",
+      "child": "a9204a13b88f",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55",
+        "90155575120b",
+        "a9204a13b88f"
+      ],
+      "island_sizes": [
+        2,
+        1,
+        1,
+        0
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 3,
+      "parent": "2478cff3a491",
+      "child": "f539727cf418",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55",
+        "90155575120b",
+        "a9204a13b88f",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        2,
+        1,
+        1,
+        1
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 4,
+      "parent": "2478cff3a491",
+      "child": "de9eaf442e05",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55",
+        "90155575120b",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 5,
+      "parent": "90155575120b",
+      "child": "6e9451421308",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "6c343285ab55",
+        "6e9451421308",
+        "90155575120b",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        3,
+        2,
+        1,
+        1
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 6,
+      "parent": "a9204a13b88f",
+      "child": "3e94d5c53eb4",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "3e94d5c53eb4",
+        "6c343285ab55",
+        "6e9451421308",
+        "90155575120b",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        3,
+        2,
+        2,
+        1
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 7,
+      "parent": "f539727cf418",
+      "child": "9c9260e424a1",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "3e94d5c53eb4",
+        "6c343285ab55",
+        "6e9451421308",
+        "90155575120b",
+        "9c9260e424a1",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        3,
+        2,
+        2,
+        2
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 8,
+      "parent": "6c343285ab55",
+      "child": "99c3e07f57fd",
+      "admitted": true,
+      "population": [
+        "2478cff3a491",
+        "3e94d5c53eb4",
+        "6c343285ab55",
+        "6e9451421308",
+        "90155575120b",
+        "99c3e07f57fd",
+        "9c9260e424a1",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        4,
+        2,
+        2,
+        2
+      ],
+      "best": 0.8222643896268185
+    },
+    {
+      "index": 9,
+      "parent": "6e9451421308",
+      "child": "02bbeaafba54",
+      "admitted": true,
+      "population": [
+        "02bbeaafba54",
+        "2478cff3a491",
+        "3e94d5c53eb4",
+        "6c343285ab55",
+        "6e9451421308",
+        "90155575120b",
+        "99c3e07f57fd",
+        "9c9260e424a1",
+        "a9204a13b88f",
+        "de9eaf442e05",
+        "f539727cf418"
+      ],
+      "island_sizes": [
+        4,
+        3,
+        2,
+        2
+      ],
+      "best": 0.8222643896268185
+    }
+  ]
+}

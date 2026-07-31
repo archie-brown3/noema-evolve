@@ -1,0 +1,233 @@
+2026-07-14 02:03:06,940 - INFO - Froze run config to runs/0086/attention-pes-faithful/config.yaml (sha256=10c5fe02881f54fd8b56ec26d38f3a9d64031260a2418333d254855030a8ad2f)
+2026-07-14 02:03:06,940 - INFO - Initialized program database with 0 programs
+2026-07-14 02:03:06,945 - ERROR - Error loading evaluation function: Required tool not found: mlir-opt
+2026-07-14 02:04:02,908 - INFO - Initialized program database with 0 programs
+2026-07-14 02:04:02,909 - ERROR - Error loading evaluation function: Required tool not found: mlir-opt
+2026-07-14 02:04:51,884 - INFO - Initialized program database with 0 programs
+2026-07-14 02:04:51,884 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:04:51,884 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:04:51,886 - INFO - Initialized prompt sampler
+2026-07-14 02:04:51,916 - INFO - Evaluating and adding initial program
+2026-07-14 02:04:52,212 - INFO - Evaluated program initial in 0.30s: error=0.1000, speedup=1.3284, runtime=7.5280, compile_time=0.2896, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:04:52,212 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-14 02:04:56,207 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:05:33,831 - INFO - Reconstructed islands: restored 0 programs to islands
+2026-07-14 02:05:33,831 - INFO - No island assignments found, distributing programs across islands
+2026-07-14 02:05:33,831 - INFO - Distributed 1 programs across 4 islands
+2026-07-14 02:05:33,831 - INFO - Loaded database with 1 programs from runs/0086/attention-pes-faithful/db
+2026-07-14 02:05:33,831 - INFO - Island Status:
+2026-07-14 02:05:33,831 - INFO -  * Island 0: 1 programs, best=1.9226, avg=1.9226, diversity=0.00, gen=0
+2026-07-14 02:05:33,831 - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-14 02:05:33,832 - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-14 02:05:33,832 - INFO -    Island 3: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-07-14 02:05:33,832 - INFO - Initialized program database with 1 programs
+2026-07-14 02:05:33,853 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:05:33,853 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:05:33,855 - INFO - Initialized prompt sampler
+2026-07-14 02:05:44,225 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:05:57,902 - INFO - Evaluated program it000000 in 0.43s: error=0.1000, speedup=1.4805, runtime=6.7546, compile_time=0.4233, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:05:57,903 - WARNING - Iteration 0: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:06:01,859 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:06:15,458 - INFO - Evaluated program it000001 in 0.27s: error=1.0818, speedup=1.2479, runtime=8.0136, compile_time=0.2597, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:06:15,458 - WARNING - Iteration 1: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:06:19,353 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:06:32,029 - INFO - Evaluated program it000002 in 0.33s: error=2.0567, speedup=1.1829, runtime=8.4539, compile_time=0.3255, method=ir_analysis, size_ratio=0.9798, optimization_score=1.2101
+2026-07-14 02:06:32,029 - WARNING - Iteration 2: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:06:33,615 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:06:56,124 - INFO - Evaluated program it000003 in 0.33s: error=0.1000, speedup=1.4197, runtime=7.0438, compile_time=0.3219, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:06:56,125 - WARNING - Iteration 3: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:06:56,125 - INFO - Updated best program tracking from None to initial
+2026-07-14 02:06:57,542 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:07:04,622 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:07:13,127 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:07:18,888 - INFO - Evaluated program it000004 in 0.34s: error=0.1000, speedup=1.3923, runtime=7.1825, compile_time=0.3349, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:07:18,889 - WARNING - Iteration 4: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:07:18,890 - INFO - Saved database with 1 programs to runs/0086/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 02:07:18,892 - INFO - Saved checkpoint at iteration 4 to runs/0086/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 02:07:22,127 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:07:32,636 - INFO - Evaluated program it000005 in 0.32s: error=0.1000, speedup=1.3841, runtime=7.2247, compile_time=0.3125, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:07:32,636 - WARNING - Iteration 5: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:07:36,347 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:08:04,063 - INFO - Evaluated program it000000 in 0.31s: error=3.5731, speedup=1.0818, runtime=9.2439, compile_time=0.3045, method=ir_analysis, size_ratio=0.9798, optimization_score=1.1101
+2026-07-14 02:08:04,063 - WARNING - Iteration 0: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:08:06,517 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:08:45,040 - WARNING - PES faithful planner: final-plan heading missing at iteration 1; using the full completion (shakedown gate 1)
+2026-07-14 02:08:46,208 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:09:01,785 - INFO - Evaluated program it000001 in 0.32s: error=0.1000, speedup=1.3333, runtime=7.5004, compile_time=0.3148, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:09:01,785 - WARNING - Iteration 1: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:09:03,506 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:11:14,273 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:11:27,944 - INFO - Evaluated program it000002 in 0.05s: error=0.1000, speedup=1.3220, runtime=7.5645, compile_time=0.0409, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:11:27,944 - WARNING - Iteration 2: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:11:31,338 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:15,236 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:29,410 - INFO - Evaluated program it000003 in 0.05s: error=0.1000, speedup=1.3218, runtime=7.5652, compile_time=0.0350, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:12:29,411 - WARNING - Iteration 3: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:12:32,581 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:13:37,704 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:14:07,033 - INFO - Evaluated program it000004 in 0.35s: error=0.1000, speedup=1.3684, runtime=7.3076, compile_time=0.3445, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:14:07,034 - WARNING - Iteration 4: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:14:07,036 - INFO - Saved database with 1 programs to runs/0086/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 02:14:07,038 - INFO - Saved checkpoint at iteration 4 to runs/0086/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 02:14:09,596 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:15:02,306 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:15:31,903 - INFO - Evaluated program it000005 in 0.04s: error=0.1000, speedup=1.3221, runtime=7.5638, compile_time=0.0376, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:15:31,904 - WARNING - Iteration 5: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:15:34,368 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:16:26,658 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:16:48,649 - INFO - Evaluated program it000006 in 0.05s: error=0.1000, speedup=1.3440, runtime=7.4404, compile_time=0.0413, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:16:48,649 - WARNING - Iteration 6: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:16:51,102 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:18:14,885 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:18:51,521 - INFO - Evaluated program it000007 in 0.05s: error=0.1000, speedup=1.3384, runtime=7.4717, compile_time=0.0351, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:18:51,521 - WARNING - Iteration 7: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:18:53,540 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:19:49,388 - WARNING - PES faithful planner: final-plan heading missing at iteration 8; using the full completion (shakedown gate 1)
+2026-07-14 02:19:55,409 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:20:16,536 - INFO - Evaluated program it000008 in 0.32s: error=0.1000, speedup=1.4981, runtime=6.6753, compile_time=0.3180, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:20:16,536 - WARNING - Iteration 8: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:20:18,952 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:09,533 - WARNING - PES faithful planner: final-plan heading missing at iteration 9; using the full completion (shakedown gate 1)
+2026-07-14 02:21:11,741 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:38,158 - INFO - Evaluated program it000009 in 0.33s: error=0.1000, speedup=1.5108, runtime=6.6188, compile_time=0.3154, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:21:38,158 - WARNING - Iteration 9: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:21:38,160 - INFO - Saved database with 1 programs to runs/0086/attention-pes-faithful/checkpoints/checkpoint_9
+2026-07-14 02:21:38,161 - INFO - Saved checkpoint at iteration 9 to runs/0086/attention-pes-faithful/checkpoints/checkpoint_9
+2026-07-14 02:21:40,362 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:22:26,237 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:22:40,167 - INFO - Evaluated program it000010 in 0.29s: error=0.1000, speedup=1.4937, runtime=6.6950, compile_time=0.2863, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:22:40,168 - WARNING - Iteration 10: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:22:42,829 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:23:17,485 - WARNING - LLM call failed (attempt 1/4): Connection error.. Retrying...
+2026-07-14 02:23:25,220 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:24:19,080 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:24:35,432 - INFO - Evaluated program it000011 in 0.27s: error=0.1000, speedup=1.3986, runtime=7.1500, compile_time=0.2659, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:24:35,433 - WARNING - Iteration 11: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:24:37,590 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:25:20,568 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:25:27,926 - INFO - Evaluated program it000012 in 0.36s: error=0.1000, speedup=1.4714, runtime=6.7962, compile_time=0.3384, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:25:27,926 - WARNING - Iteration 12: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:25:30,339 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:26:20,823 - WARNING - PES faithful planner: final-plan heading missing at iteration 13; using the full completion (shakedown gate 1)
+2026-07-14 02:26:22,275 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:26:55,333 - INFO - Evaluated program it000013 in 0.34s: error=0.1000, speedup=1.4837, runtime=6.7401, compile_time=0.3307, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:26:55,333 - WARNING - Iteration 13: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:26:57,911 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:27:38,250 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:28:24,437 - INFO - Evaluated program it000014 in 0.96s: error=0.1000, speedup=1.3244, runtime=7.5505, compile_time=0.9285, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:28:24,437 - WARNING - Iteration 14: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:28:24,440 - INFO - Saved database with 1 programs to runs/0086/attention-pes-faithful/checkpoints/checkpoint_14
+2026-07-14 02:28:24,443 - INFO - Saved checkpoint at iteration 14 to runs/0086/attention-pes-faithful/checkpoints/checkpoint_14
+2026-07-14 02:28:26,663 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 09:51:00,509 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-14 13:13:44,462 - WARNING - LLM call failed (attempt 2/4): Request timed out.. Retrying...
+2026-07-14 13:13:50,777 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:19:26,753 - WARNING - LLM call failed (attempt 3/4): Request timed out.. Retrying...
+2026-07-14 13:19:32,895 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:24:38,006 - WARNING - PES planning call failed; iteration runs unplanned: Request timed out.
+2026-07-14 13:24:40,257 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:29:48,822 - WARNING - LLM call failed (attempt 1/4): Request timed out.. Retrying...
+2026-07-14 13:29:55,383 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:34:59,845 - WARNING - LLM call failed (attempt 2/4): Request timed out.. Retrying...
+2026-07-14 13:35:11,792 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:40:11,844 - WARNING - LLM call failed (attempt 3/4): Request timed out.. Retrying...
+2026-07-14 13:40:19,017 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 13:45:22,276 - ERROR - run crashed
+Traceback (most recent call last):
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 271, in __aiter__
+    async for part in self._httpcore_stream:
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/connection_pool.py", line 407, in __aiter__
+    raise exc from None
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/connection_pool.py", line 403, in __aiter__
+    async for part in self._stream:
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/http11.py", line 342, in __aiter__
+    raise exc
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/http11.py", line 334, in __aiter__
+    async for chunk in self._connection._receive_response_body(**kwargs):
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/http11.py", line 203, in _receive_response_body
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_async/http11.py", line 217, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_backends/anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadTimeout
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1648, in request
+    response = await self._send_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_client.py", line 1074, in _send_request
+    response = await self._send_with_auth_retry(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_client.py", line 1052, in _send_with_auth_retry
+    response = await super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1571, in _send_request
+    return await self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_client.py", line 1643, in send
+    raise exc
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_client.py", line 1637, in send
+    await response.aread()
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_models.py", line 979, in aread
+    self._content = b"".join([part async for part in self.aiter_bytes()])
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_models.py", line 979, in <listcomp>
+    self._content = b"".join([part async for part in self.aiter_bytes()])
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_models.py", line 997, in aiter_bytes
+    async for raw_bytes in self.aiter_raw():
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_models.py", line 1055, in aiter_raw
+    async for raw_stream_bytes in self.stream:
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_client.py", line 176, in __aiter__
+    async for chunk in self._stream:
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 270, in __aiter__
+    with map_httpcore_exceptions():
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py", line 158, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadTimeout
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/archiebrown/noema-evolve/examples/attention_optimization/run_noema_arm.py", line 137, in main
+    best = asyncio.run(controller.run())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/noema/controller.py", line 234, in run
+    await self._run_iteration(iteration)
+  File "/Users/archiebrown/noema-evolve/noema/controller.py", line 395, in _run_iteration
+    response = await self.mutation_llm.generate_with_context(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/noema/budget/llm.py", line 142, in generate_with_context
+    response = await self.client.chat.completions.create(**params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/resources/chat/completions/completions.py", line 2814, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1931, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openai/_base_client.py", line 1666, in request
+    raise APITimeoutError(request=request) from err
+openai.APITimeoutError: Request timed out.

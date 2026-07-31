@@ -1,0 +1,76 @@
+2026-07-14 01:39:42,530 - INFO - Froze run config to runs/0085/attention-pes-faithful/config.yaml (sha256=f3bce4a8392fa592f007d6528ee09137d07325460e574f17d9e494910cda9b87)
+2026-07-14 01:39:42,530 - INFO - Initialized program database with 0 programs
+2026-07-14 01:39:42,534 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 01:39:42,534 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 01:39:42,536 - INFO - Initialized prompt sampler
+2026-07-14 01:39:42,577 - INFO - Evaluating and adding initial program
+2026-07-14 01:39:42,856 - INFO - Evaluated program initial in 0.28s: error=0.1000, speedup=1.3284, runtime=7.5280, compile_time=0.2732, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 01:39:42,856 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-14 01:39:44,365 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:42:18,868 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:43:01,632 - INFO - Evaluated program it000000 in 0.01s: error=1000.0000, exception=name 'np' is not defined
+2026-07-14 01:43:01,633 - WARNING - Iteration 0: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:43:04,061 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:45:29,638 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:46:21,612 - INFO - Evaluated program it000001 in 0.25s: error=0.1000, speedup=1.4946, runtime=6.6906, compile_time=0.2434, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 01:46:21,612 - WARNING - Iteration 1: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:46:24,020 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:47:07,240 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:47:44,531 - INFO - Evaluated program it000002 in 0.30s: error=0.1000, speedup=1.4733, runtime=6.7874, compile_time=0.2913, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 01:47:44,531 - WARNING - Iteration 2: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:47:46,413 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:48:32,263 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:48:55,076 - INFO - Evaluated program it000003 in 0.28s: error=0.1000, speedup=1.4190, runtime=7.0471, compile_time=0.2757, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 01:48:55,077 - WARNING - Iteration 3: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:48:56,879 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:49:45,541 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:50:12,989 - INFO - Evaluated program it000004 in 0.33s: error=0.1000, speedup=1.5697, runtime=6.3708, compile_time=0.3203, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:50:12,989 - WARNING - Iteration 4: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:50:12,992 - INFO - Saved database with 1 programs to runs/0085/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 01:50:12,993 - INFO - Saved checkpoint at iteration 4 to runs/0085/attention-pes-faithful/checkpoints/checkpoint_4
+2026-07-14 01:50:14,988 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:51:01,086 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:51:26,446 - INFO - Evaluated program it000005 in 0.30s: error=0.1000, speedup=1.5165, runtime=6.5942, compile_time=0.2962, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:51:26,446 - WARNING - Iteration 5: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:51:28,117 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:52:01,565 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:52:29,308 - INFO - Evaluated program it000006 in 0.27s: error=0.1000, speedup=1.6005, runtime=6.2481, compile_time=0.2678, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:52:29,308 - WARNING - Iteration 6: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:52:31,127 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:53:21,367 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:53:50,968 - INFO - Evaluated program it000007 in 0.30s: error=0.1000, speedup=1.5352, runtime=6.5139, compile_time=0.2898, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:53:50,968 - WARNING - Iteration 7: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:53:52,581 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:54:32,228 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:55:28,360 - INFO - Evaluated program it000008 in 0.31s: error=0.1000, speedup=1.4020, runtime=7.1325, compile_time=0.2962, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 01:55:28,361 - WARNING - Iteration 8: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:55:29,987 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:56:18,391 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:56:47,759 - INFO - Evaluated program it000009 in 0.32s: error=0.1000, speedup=1.5108, runtime=6.6188, compile_time=0.3109, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 01:56:47,759 - WARNING - Iteration 9: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:56:47,761 - INFO - Saved database with 1 programs to runs/0085/attention-pes-faithful/checkpoints/checkpoint_9
+2026-07-14 01:56:47,762 - INFO - Saved checkpoint at iteration 9 to runs/0085/attention-pes-faithful/checkpoints/checkpoint_9
+2026-07-14 01:56:49,450 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:57:36,865 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:58:11,308 - INFO - Evaluated program it000010 in 0.30s: error=0.1000, speedup=1.5960, runtime=6.2659, compile_time=0.2967, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:58:11,308 - WARNING - Iteration 10: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:58:13,642 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:58:54,416 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 01:59:37,851 - INFO - Evaluated program it000011 in 0.35s: error=0.1000, speedup=1.4944, runtime=6.6917, compile_time=0.3368, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 01:59:37,852 - WARNING - Iteration 11: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 01:59:39,472 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:00:29,875 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:01:08,032 - INFO - Evaluated program it000012 in 0.33s: error=0.1000, speedup=1.5722, runtime=6.3606, compile_time=0.3184, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:01:08,032 - WARNING - Iteration 12: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:01:11,571 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:02:02,135 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:02:30,417 - INFO - Evaluated program it000013 in 0.34s: error=0.1000, speedup=1.4837, runtime=6.7401, compile_time=0.3344, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:02:30,417 - WARNING - Iteration 13: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:02:33,864 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:03:12,674 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:03:41,905 - INFO - Evaluated program it000014 in 0.35s: error=0.1000, speedup=1.3567, runtime=7.3710, compile_time=0.3443, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:03:41,906 - WARNING - Iteration 14: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:03:41,907 - INFO - Saved database with 1 programs to runs/0085/attention-pes-faithful/checkpoints/checkpoint_14
+2026-07-14 02:03:41,910 - INFO - Saved checkpoint at iteration 14 to runs/0085/attention-pes-faithful/checkpoints/checkpoint_14
+2026-07-14 02:03:44,538 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:04:17,816 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scenarios": {
+    "valid_improvement": {
+      "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+    },
+    "valid_regression": {
+      "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+    },
+    "no_diff": {
+      "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+    },
+    "malformed": {
+      "content": ""
+    },
+    "boundary_destroyed": {
+      "content": "```python\nIMMUTABLE = 99\nVALUE = 2\n\n\ndef score():\n    return VALUE\n```"
+    },
+    "evaluation_failure": {
+      "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nRAISE_EVAL = True\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+    },
+    "provider_failure": {
+      "error": "fixture provider failure"
+    },
+    "over_length": {
+      "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nPADDING = \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+    }
+  },
+  "out_of_order": {
+    "responses": {
+      "1": {
+        "delay_s": 0.20,
+        "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+      },
+      "2": {
+        "delay_s": 0.01,
+        "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 3\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+      },
+      "3": {
+        "delay_s": 0.10,
+        "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 4\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+      },
+      "4": {
+        "delay_s": 0.00,
+        "content": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 5\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```"
+      }
+    }
+  }
+}

@@ -822,6 +822,7 @@ class NoemaController:
             ),
         )
         retained_program_id = None
+        population_before = {program.id for program in self.db.population(island)}
         try:
             self.substrate.on_child_accepted(
                 parent=parent,
@@ -851,9 +852,20 @@ class NoemaController:
                 program_id=child.id,
                 selected_attempt_id=source_attempt_id,
                 status="failed",
+                admission="error",
+                target_scope=island,
                 error=repr(exc),
             )
             raise
+
+        population_after = {program.id for program in self.db.population(island)}
+        removed_program_ids = sorted(population_before - population_after)
+        if child.id not in population_after:
+            admission = "rejected"
+        elif removed_program_ids:
+            admission = "replaced"
+        else:
+            admission = "inserted"
 
         if accepted_trace is not None:
             self._write_attempt_trace(
@@ -876,6 +888,9 @@ class NoemaController:
             program_id=child.id,
             selected_attempt_id=source_attempt_id,
             status="accepted",
+            admission=admission,
+            target_scope=island,
+            removed_program_ids=removed_program_ids,
         )
         if artifacts and retained_program_id is not None:
             self.db.store_artifacts(child_id, artifacts)

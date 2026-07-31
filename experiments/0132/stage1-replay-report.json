@@ -1,0 +1,1819 @@
+{
+  "declared_native_differences": [
+    "Stock does not enforce Noema's immutable EVOLVE-BLOCK boundary.",
+    "Stock admits evaluator-error metric records; Noema rejects them.",
+    "A provider exception terminates Noema's run after tracing the request; Stock records the failed request and continues its controller loop."
+  ],
+  "network_calls": 0,
+  "out_of_order": {
+    "stock": {
+      "summary": {
+        "attempts": [
+          {
+            "admission": "inserted",
+            "boundary_status": "not_enforced",
+            "child_id": "ff49bc99-fe33-4f2d-a87d-c8850ab82fa6",
+            "completed_mutation_request": true,
+            "completion_index": 0,
+            "evaluator_status": "succeeded",
+            "inspiration_ids": [],
+            "latency_s": 0.013149023056030273,
+            "metrics": {
+              "combined_score": 0.3,
+              "value": 3.0
+            },
+            "no_diff": false,
+            "parent_id": "051857a4-d4b7-4a1d-bf78-24de7c08efbc",
+            "parse_status": "succeeded",
+            "prompt": {
+              "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+              "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+            },
+            "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+            "removed_program_ids": [],
+            "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 3\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+            "response_status": "received",
+            "schema_version": 1,
+            "source_island": 0,
+            "submission_index": 2,
+            "system": "stock_openevolve",
+            "target_island": 0
+          },
+          {
+            "admission": "inserted",
+            "boundary_status": "not_enforced",
+            "child_id": "59e132d7-4544-4d9e-b3ae-e4e2018518b0",
+            "completed_mutation_request": true,
+            "completion_index": 1,
+            "evaluator_status": "succeeded",
+            "inspiration_ids": [],
+            "latency_s": 0.001920938491821289,
+            "metrics": {
+              "combined_score": 0.5,
+              "value": 5.0
+            },
+            "no_diff": false,
+            "parent_id": "051857a4-d4b7-4a1d-bf78-24de7c08efbc",
+            "parse_status": "succeeded",
+            "prompt": {
+              "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+              "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+            },
+            "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+            "removed_program_ids": [],
+            "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 5\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+            "response_status": "received",
+            "schema_version": 1,
+            "source_island": 0,
+            "submission_index": 4,
+            "system": "stock_openevolve",
+            "target_island": 0
+          },
+          {
+            "admission": "inserted",
+            "boundary_status": "not_enforced",
+            "child_id": "a4b50930-2fb0-4567-ac87-f66457975ad8",
+            "completed_mutation_request": true,
+            "completion_index": 2,
+            "evaluator_status": "succeeded",
+            "inspiration_ids": [],
+            "latency_s": 0.10458898544311523,
+            "metrics": {
+              "combined_score": 0.4,
+              "value": 4.0
+            },
+            "no_diff": false,
+            "parent_id": "051857a4-d4b7-4a1d-bf78-24de7c08efbc",
+            "parse_status": "succeeded",
+            "prompt": {
+              "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+              "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+            },
+            "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+            "removed_program_ids": [],
+            "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 4\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+            "response_status": "received",
+            "schema_version": 1,
+            "source_island": 0,
+            "submission_index": 3,
+            "system": "stock_openevolve",
+            "target_island": 0
+          },
+          {
+            "admission": "inserted",
+            "boundary_status": "not_enforced",
+            "child_id": "2d52f343-12f0-456f-afde-403522ba9639",
+            "completed_mutation_request": true,
+            "completion_index": 3,
+            "evaluator_status": "succeeded",
+            "inspiration_ids": [],
+            "latency_s": 0.20639610290527344,
+            "metrics": {
+              "combined_score": 0.2,
+              "value": 2.0
+            },
+            "no_diff": false,
+            "parent_id": "051857a4-d4b7-4a1d-bf78-24de7c08efbc",
+            "parse_status": "succeeded",
+            "prompt": {
+              "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+              "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+            },
+            "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+            "removed_program_ids": [],
+            "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+            "response_status": "received",
+            "schema_version": 1,
+            "source_island": 0,
+            "submission_index": 1,
+            "system": "stock_openevolve",
+            "target_island": 0
+          }
+        ],
+        "raised": null,
+        "requested_mutations": 4,
+        "scenario": "out_of_order",
+        "state": {
+          "island_sizes": [
+            5
+          ],
+          "program_count": 5,
+          "programs": [
+            {
+              "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+              "has_parent": false,
+              "island": 0,
+              "metrics": {
+                "combined_score": 0.1,
+                "value": 1.0
+              }
+            },
+            {
+              "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+              "has_parent": true,
+              "island": 0,
+              "metrics": {
+                "combined_score": 0.2,
+                "value": 2.0
+              }
+            },
+            {
+              "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 3\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+              "has_parent": true,
+              "island": 0,
+              "metrics": {
+                "combined_score": 0.3,
+                "value": 3.0
+              }
+            },
+            {
+              "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 4\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+              "has_parent": true,
+              "island": 0,
+              "metrics": {
+                "combined_score": 0.4,
+                "value": 4.0
+              }
+            },
+            {
+              "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 5\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+              "has_parent": true,
+              "island": 0,
+              "metrics": {
+                "combined_score": 0.5,
+                "value": 5.0
+              }
+            }
+          ]
+        },
+        "system": "stock_openevolve"
+      }
+    }
+  },
+  "scenarios": {
+    "boundary_destroyed": {
+      "noema": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "failed",
+          "evaluator": "not_reached",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": null,
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": "mutation broke the EVOLVE-BLOCK boundary: only code inside EVOLVE-BLOCK-START/END may change (F_imm is immutable)",
+              "evaluation": null,
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.4781951904296875e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350780.952859
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "immutable_boundary_violation",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 99\nVALUE = 2\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350780.953166
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "boundary_destroyed",
+          "selections": [],
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "not_enforced",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "inserted",
+              "boundary_status": "not_enforced",
+              "child_id": "4489b829-f27e-4da0-bf44-2a4bbbef78a2",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "evaluator_status": "succeeded",
+              "inspiration_ids": [],
+              "latency_s": 0.0018260478973388672,
+              "metrics": {
+                "combined_score": 0.2,
+                "value": 2.0
+              },
+              "no_diff": false,
+              "parent_id": "57946015-56a1-4103-a2d6-efb3d195a592",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "removed_program_ids": [],
+              "response": "```python\nIMMUTABLE = 99\nVALUE = 2\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "source_island": 0,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "boundary_destroyed",
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 99\nVALUE = 2\n\n\ndef score():\n    return VALUE",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.2,
+                  "value": 2.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "evaluation_failure": {
+      "noema": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "passed",
+          "evaluator": "failed",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nRAISE_EVAL = True\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "id": "it000000"
+              },
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": "fixture evaluator failure",
+              "evaluation": {
+                "artifacts": {
+                  "attempt": 1,
+                  "failure_stage": "evaluation",
+                  "stderr": "fixture evaluator failure",
+                  "traceback": "Traceback (most recent call last):\n  File \"/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openevolve/evaluator.py\", line 168, in evaluate_program\n    result = await self._direct_evaluate(temp_file_path)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openevolve/evaluator.py\", line 354, in _direct_evaluate\n    result = await asyncio.wait_for(run_evaluation(), timeout=self.config.timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/tasks.py\", line 489, in wait_for\n    return fut.result()\n           ^^^^^^^^^^^^\n  File \"/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openevolve/evaluator.py\", line 351, in run_evaluation\n    return await loop.run_in_executor(None, self.evaluate_function, program_path)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.15/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/archiebrown/noema-evolve/experiments/0132/replay-fixtures/evaluator.py\", line 7, in evaluate\n    raise RuntimeError(\"fixture evaluator failure\")\nRuntimeError: fixture evaluator failure\n"
+                },
+                "metrics": {
+                  "error": 0.0
+                }
+              },
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.3113021850585938e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350782.983614
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "evaluation_failure",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nRAISE_EVAL = True\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350782.986728
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "evaluation_failure",
+          "selections": [],
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "not_enforced",
+          "evaluator": "failed",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "inserted",
+              "boundary_status": "not_enforced",
+              "child_id": "02241af8-462b-420c-8335-884312a22838",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "evaluator_status": "failed",
+              "inspiration_ids": [],
+              "latency_s": 0.002850770950317383,
+              "metrics": {
+                "error": 0.0
+              },
+              "no_diff": false,
+              "parent_id": "adcff9e3-6db9-4841-b0e6-03d4d7b84a35",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "removed_program_ids": [],
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nRAISE_EVAL = True\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "source_island": 0,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "evaluation_failure",
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nRAISE_EVAL = True\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "error": 0.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "malformed": {
+      "noema": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "not_reached",
+          "evaluator": "not_reached",
+          "parse": "failed",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": null,
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": "no parseable code block found in the response",
+              "evaluation": null,
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 2.4080276489257812e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350778.9130151
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "unparseable_response",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350778.913376
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "malformed",
+          "selections": [],
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "not_enforced",
+          "evaluator": "not_reached",
+          "parse": "failed",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "not_reached",
+              "boundary_status": "not_enforced",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "error": "No valid code found in response",
+              "error_stage": "parse",
+              "evaluator_status": "not_reached",
+              "inspiration_ids": [],
+              "parent_id": "5bf2bd5a-ed4a-4806-9ad2-cf49c7855104",
+              "parse_status": "failed",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "response": "",
+              "response_status": "received",
+              "schema_version": 1,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "malformed",
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "no_diff": {
+      "noema": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "passed",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "id": "it000000"
+              },
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": null,
+              "evaluation": {
+                "artifacts": null,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 2.002716064453125e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350776.8675709
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "accepted",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350776.868203
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "no_diff",
+          "selections": [
+            {
+              "admission": "inserted",
+              "error": null,
+              "iteration": 0,
+              "program_id": "it000000",
+              "removed_program_ids": [],
+              "run_id": "noema",
+              "schema_version": 1,
+              "selected_attempt_id": "noema:000000:00",
+              "status": "accepted",
+              "target_scope": 0,
+              "timestamp": 1785350776.8683462
+            }
+          ],
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "not_enforced",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "inserted",
+              "boundary_status": "not_enforced",
+              "child_id": "3f883aee-fcae-4315-a828-1b9e33239bd3",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "evaluator_status": "succeeded",
+              "inspiration_ids": [],
+              "latency_s": 0.0018010139465332031,
+              "metrics": {
+                "combined_score": 0.1,
+                "value": 1.0
+              },
+              "no_diff": false,
+              "parent_id": "9cad78d4-8001-4031-ab23-411aecd1f0f2",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "removed_program_ids": [],
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "source_island": 0,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "no_diff",
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "over_length": {
+      "noema": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "passed",
+          "evaluator": "not_reached",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": {
+                "code_length": 751,
+                "id": "it000000"
+              },
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": "generated code length 751 exceeds max 300",
+              "evaluation": null,
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.6927719116210938e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350787.123529
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "over_length",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nPADDING = \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350787.123849
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "over_length",
+          "selections": [],
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "not_enforced",
+          "evaluator": "not_reached",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "not_reached",
+              "boundary_status": "not_enforced",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "error": "Generated code exceeds maximum length (750 > 300)",
+              "error_stage": "over_length",
+              "evaluator_status": "not_reached",
+              "inspiration_ids": [],
+              "parent_id": "61a0baa0-0659-4309-9ccd-05982eaef085",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\nPADDING = \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "over_length",
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "provider_failure": {
+      "noema": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "not_reached",
+          "evaluator": "not_reached",
+          "parse": "not_reached",
+          "response": "failed"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": null,
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": "RuntimeError('fixture provider failure')",
+              "evaluation": null,
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 0,
+                  "cost": 0.0,
+                  "error": "RuntimeError('fixture provider failure')",
+                  "estimated": true,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.3828277587890625e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 0,
+                  "reasoning_tokens": 0,
+                  "succeeded": false,
+                  "tag": "mutate",
+                  "timestamp": 1785350785.0638149
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "provider_failure",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": null,
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350785.064023
+            }
+          ],
+          "raised": "RuntimeError: fixture provider failure",
+          "requested_mutations": 1,
+          "scenario": "provider_failure",
+          "selections": [],
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "not_reached",
+          "boundary": "not_enforced",
+          "evaluator": "not_reached",
+          "parse": "not_reached",
+          "response": "failed"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "not_reached",
+              "boundary_status": "not_enforced",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "error": "LLM generation failed: fixture provider failure",
+              "error_stage": "provider",
+              "evaluator_status": "not_reached",
+              "inspiration_ids": [],
+              "parent_id": "11283ad9-9965-44a0-9e6f-b855add8f65f",
+              "parse_status": "not_reached",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "response": null,
+              "response_status": "failed",
+              "schema_version": 1,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "provider_failure",
+          "state": {
+            "island_sizes": [
+              1
+            ],
+            "program_count": 1,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "valid_improvement": {
+      "noema": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "passed",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "id": "it000000"
+              },
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": null,
+              "evaluation": {
+                "artifacts": null,
+                "metrics": {
+                  "combined_score": 0.2,
+                  "value": 2.0
+                }
+              },
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.811981201171875e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350772.51778
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "accepted",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350772.518432
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "valid_improvement",
+          "selections": [
+            {
+              "admission": "inserted",
+              "error": null,
+              "iteration": 0,
+              "program_id": "it000000",
+              "removed_program_ids": [],
+              "run_id": "noema",
+              "schema_version": 1,
+              "selected_attempt_id": "noema:000000:00",
+              "status": "accepted",
+              "target_scope": 0,
+              "timestamp": 1785350772.518584
+            }
+          ],
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.2,
+                  "value": 2.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "not_enforced",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "inserted",
+              "boundary_status": "not_enforced",
+              "child_id": "b524772b-839d-401e-908d-9ba6b2956576",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "evaluator_status": "succeeded",
+              "inspiration_ids": [],
+              "latency_s": 0.0016219615936279297,
+              "metrics": {
+                "combined_score": 0.2,
+                "value": 2.0
+              },
+              "no_diff": false,
+              "parent_id": "ab9256ca-373f-4a80-8671-078951e50903",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "removed_program_ids": [],
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "source_island": 0,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "valid_improvement",
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 2\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.2,
+                  "value": 2.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    },
+    "valid_regression": {
+      "noema": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "passed",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "arm": "null",
+              "attempt": 0,
+              "attempt_id": "noema:000000:00",
+              "candidate": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "id": "it000000"
+              },
+              "config_sha256": "17f224abc711a4866e4e633ab8cc9478f77df51865884a90d6b9573dbcab8278",
+              "coordination": {
+                "attribution": {},
+                "ledger_call_ids": [],
+                "mode": "none",
+                "prompt_block": "",
+                "system_block": ""
+              },
+              "error": null,
+              "evaluation": {
+                "artifacts": null,
+                "metrics": {
+                  "combined_score": 0.0,
+                  "value": 0.0
+                }
+              },
+              "generation": 0,
+              "git": {
+                "dirty": null,
+                "dirty_sha256": null,
+                "revision": null
+              },
+              "inspirations": [],
+              "iteration": 0,
+              "ledger_call_ids": [
+                "call-000000"
+              ],
+              "ledger_calls": [
+                {
+                  "account": "mutation",
+                  "attempts": 1,
+                  "call_id": "call-000000",
+                  "completion_tokens": 7,
+                  "cost": 0.0,
+                  "error": "",
+                  "estimated": false,
+                  "finish_reason": "",
+                  "iteration": 0,
+                  "latency_s": 1.7881393432617188e-05,
+                  "model": "task-0132-replay",
+                  "prompt_tokens": 11,
+                  "reasoning_tokens": 0,
+                  "succeeded": true,
+                  "tag": "mutate",
+                  "timestamp": 1785350774.7826402
+                }
+              ],
+              "operator": {
+                "honored": "legacy",
+                "ignored": null,
+                "name": "legacy",
+                "requested": null
+              },
+              "outcome": "accepted",
+              "parent": {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "generation": 0,
+                "id": "initial",
+                "iteration_found": 0,
+                "metadata": {
+                  "island": 0
+                },
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                },
+                "parent_id": null
+              },
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "run_id": "noema",
+              "schema_version": 1,
+              "seed": 42,
+              "selection": {
+                "honored": {},
+                "ignored": {},
+                "requested": {}
+              },
+              "source_scope": 0,
+              "substrate": "islands",
+              "target_scope": 0,
+              "timestamp": 1785350774.783257
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "valid_regression",
+          "selections": [
+            {
+              "admission": "inserted",
+              "error": null,
+              "iteration": 0,
+              "program_id": "it000000",
+              "removed_program_ids": [],
+              "run_id": "noema",
+              "schema_version": 1,
+              "selected_attempt_id": "noema:000000:00",
+              "status": "accepted",
+              "target_scope": 0,
+              "timestamp": 1785350774.7833989
+            }
+          ],
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.0,
+                  "value": 0.0
+                }
+              }
+            ]
+          },
+          "system": "noema"
+        }
+      },
+      "stock": {
+        "classification": {
+          "admission": "inserted",
+          "boundary": "not_enforced",
+          "evaluator": "succeeded",
+          "parse": "succeeded",
+          "response": "received"
+        },
+        "summary": {
+          "attempts": [
+            {
+              "admission": "inserted",
+              "boundary_status": "not_enforced",
+              "child_id": "c93e53db-2d9a-4c52-b748-2695bf9e1cb0",
+              "completed_mutation_request": true,
+              "completion_index": 0,
+              "evaluator_status": "succeeded",
+              "inspiration_ids": [],
+              "latency_s": 0.001990079879760742,
+              "metrics": {
+                "combined_score": 0.0,
+                "value": 0.0
+              },
+              "no_diff": false,
+              "parent_id": "2a679c88-9df0-484b-9c3e-4df2b28f4dd5",
+              "parse_status": "succeeded",
+              "prompt": {
+                "system": "You are an expert software developer tasked with iteratively improving a codebase.\nYour goal is to maximize the FITNESS SCORE while exploring diverse solutions across feature dimensions.\nThe system maintains a collection of diverse programs - both high fitness AND diversity are valuable.",
+                "user": "# Current Program Information\n- Fitness: 0.1000\n- Feature coordinates: \n- Focus areas: - Fitness unchanged at 0.1000\n- No feature coordinates\n\n\n\n# Program Evolution History\n## Previous Attempts\n\n### Attempt 1\n- Changes: Unknown changes\n- Metrics: combined_score: 0.1000, value: 1.0000\n- Outcome: Improvement in all metrics\n\n## Top Performing Programs\n\n### Program 1 (Score: 0.1000)\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\nKey features: Performs well on combined_score (0.1000), Performs well on value (1.0000)\n\n\n\n# Current Program\n```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n\n```\n\n# Task\nRewrite the program to improve its FITNESS SCORE.\nThe system maintains diversity across these dimensions: complexity, diversity\nDifferent solutions with similar fitness but different features are valuable.\nProvide the complete new program code.\n\nIMPORTANT: Make sure your rewritten program maintains the same inputs and outputs\nas the original program, but with improved internal implementation.\n\n```python\n# Your rewritten program here\n```"
+              },
+              "prompt_hash": "fdf92fdcd63ef8bc4c7f44b43ec100942214632137f7e2a3bbe3a69e2ea5d218",
+              "removed_program_ids": [],
+              "response": "```python\nIMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n```",
+              "response_status": "received",
+              "schema_version": 1,
+              "source_island": 0,
+              "submission_index": 1,
+              "system": "stock_openevolve",
+              "target_island": 0
+            }
+          ],
+          "raised": null,
+          "requested_mutations": 1,
+          "scenario": "valid_regression",
+          "state": {
+            "island_sizes": [
+              2
+            ],
+            "program_count": 2,
+            "programs": [
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 1\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE\n",
+                "has_parent": false,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.1,
+                  "value": 1.0
+                }
+              },
+              {
+                "code": "IMMUTABLE = 10\n\n# EVOLVE-BLOCK-START\nVALUE = 0\n# EVOLVE-BLOCK-END\n\n\ndef score():\n    return VALUE",
+                "has_parent": true,
+                "island": 0,
+                "metrics": {
+                  "combined_score": 0.0,
+                  "value": 0.0
+                }
+              }
+            ]
+          },
+          "system": "stock_openevolve"
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "verified": true
+}

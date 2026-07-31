@@ -1,0 +1,20 @@
+{
+  "files": {
+    "diff_user.txt": "3fcfc9592b4f019eb07085b0c02855a0218007df15e3e6adeb301deff4124be7",
+    "evaluation.txt": "0dc5fa60ea984a35110c497a04c4fa80bf4ddae0ead5e3084591f1f909dc5005",
+    "evaluator_system_message.txt": "50d7870cf713b7591ac366030ee162d4d843a6d989f150ed857f5e1b25987c8c",
+    "evolution_history.txt": "df9abe02a19f637bd9e13b531c415b3d224137b747563dedab801774d81a4454",
+    "fragments.json": "e8f2711169d3067e6e09e1054b3b7609281bf9ee5e6f24d407b3829491b639b7",
+    "full_rewrite_user.txt": "622af139dad58a7d05f54c2248f213b229c471e58c0df5db9cb3a7faa7400dd9",
+    "inspiration_program.txt": "a51813f4db9f257028ef0252c44095ab4765ad0cae8da46cbb052b530f8bbd04",
+    "inspirations_section.txt": "5718dd856b6738731dcef52f57a7560f1e4a6104efb542191536bdfa43e7ab38",
+    "previous_attempt.txt": "536016d4c23e1b1e194144286b8533dd1cde4d82f7f2f71d48b0a0d778b9932a",
+    "system_message.txt": "d66ec30775d611aca71538742ff9201e8d1ce4cb3e5b076847aa2d8a32610e65",
+    "system_message_changes_description.txt": "a1d66563b1f5c5c80f0d737959e9474a21a7fdf54cadab4bbd39df03da95d8bd",
+    "system_message_with_changes_description.txt": "29ff342517ed8e3a8e120d7214048ab1f6cbfc76c9ab0791a5e99e26211af13c",
+    "top_program.txt": "dfb73d280a94db990f033c271ff54564f6ff286645ae8217f70584616a2ca137",
+    "user_message_with_changes_description.txt": "078720fffc876a4cd532c3a98ff0bf2bf19f6572233eab66183a3ca4ce06eaae"
+  },
+  "source_bundle": "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openevolve/prompts/defaults",
+  "source_module": "/Users/archiebrown/noema-evolve/.venv/lib/python3.11/site-packages/openevolve/prompt/templates.py"
+}

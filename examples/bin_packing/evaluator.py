@@ -30,6 +30,8 @@ class TimeoutError(Exception):
 
 def set_memory_limit(memory_limit_mb):
     """Set an address-space rlimit for the subprocess (bytes)."""
+    if sys.platform == "darwin":
+        return  # RLIMIT_AS unsupported on macOS; timeout still guards runaway processes
     limit = memory_limit_mb * 1024 * 1024
     resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
 
@@ -45,14 +47,8 @@ def run_with_resource_limits(program_path, timeout_seconds=30, memory_limit_mb=5
         script = f"""
 import os
 import pickle
-import resource
+import sys
 import traceback
-
-def set_memory_limit_mb(mb):
-    limit = mb * 1024 * 1024
-    resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
-
-set_memory_limit_mb({memory_limit_mb})
 
 try:
     import importlib.util
@@ -108,6 +104,7 @@ def _timeout_metrics(reason):
     return {
         "combined_score": 0.0,
         "mean_excess": float("inf"),
+        "mean_excess_bins": float("inf"),
         "bins_used": float("inf"),
         "lower_bound": 0.0,
         "num_instances": 0,
@@ -129,6 +126,7 @@ def evaluate(program_path):
             return _timeout_metrics("no instances returned")
 
         excesses = []
+        excess_bins = []
         total_bins = 0
         total_lb = 0
         for bins_used, lower_bound in results:
@@ -136,10 +134,12 @@ def evaluate(program_path):
                 # A packing below the material lower bound is impossible → invalid.
                 return {**_timeout_metrics("invalid packing"), "validity": 0.0}
             excesses.append((bins_used - lower_bound) / lower_bound)
+            excess_bins.append(bins_used - lower_bound)
             total_bins += bins_used
             total_lb += lower_bound
 
         mean_excess = float(np.mean(excesses))
+        mean_excess_bins = float(np.mean(excess_bins))
         combined_score = 1.0 / (1.0 + mean_excess)
 
         print(
@@ -150,6 +150,7 @@ def evaluate(program_path):
         return {
             "combined_score": float(combined_score),
             "mean_excess": mean_excess,
+            "mean_excess_bins": mean_excess_bins,
             "bins_used": float(total_bins),
             "lower_bound": float(total_lb),
             "num_instances": len(results),

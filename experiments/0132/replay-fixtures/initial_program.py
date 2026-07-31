@@ -1,0 +1,9 @@
+IMMUTABLE = 10
+
+# EVOLVE-BLOCK-START
+VALUE = 1
+# EVOLVE-BLOCK-END
+
+
+def score():
+    return VALUE

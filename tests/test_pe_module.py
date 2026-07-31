@@ -11,6 +11,7 @@ import noema.coordination.pe.module as pe_module
 from noema.coordination import MODULE_REGISTRY, build_coordination_module
 from noema.coordination.base import GenerationContext, Intervention, PopulationSnapshot
 from noema.evolution.views import ProgramView
+from noema.coordination.pe.prompts import extract_signature_from_code, get_function_signature
 
 def _scaffold(body: str) -> str:
     return (
@@ -32,6 +33,20 @@ class FakeLLM:
 
     async def generate(self, prompt, **kw):
         self.calls.append(kw.get("tag"))
+        return CODE_BLOCK % len(self.calls)
+
+
+class FailingParadigmLLM:
+    """Fails to return valid markdown on paradigm shift, succeeds on variants."""
+
+    def __init__(self):
+        self.calls = []
+
+    async def generate(self, prompt, **kw):
+        tag = kw.get("tag")
+        self.calls.append(tag)
+        if tag == "pe.paradigm_shift":
+            return ""
         return CODE_BLOCK % len(self.calls)
 
 
@@ -143,6 +158,29 @@ class TestPunctuatedEquilibrium(unittest.TestCase):
         # nothing PE doesn't own.
         after = pe.state_dict()
         self.assertEqual(set(before) | {"trigger_count"}, set(after))
+
+    def test_paradigm_shift_failure_falls_back_to_anchor_for_variants(self):
+        llm = FailingParadigmLLM()
+        pe = make_pe(llm, n_variants=2)
+        interv = asyncio.run(pe.on_generation_end(ctx(10)))
+        
+        origins = [p.origin for p in interv.proposals]
+        self.assertNotIn("paradigm_shift", origins)
+        self.assertEqual(origins.count("variant"), 2)
+        self.assertEqual(len(interv.proposals), 2)
+
+    def test_extract_signature_from_code(self):
+        code = "def my_func(a: int, b: str) -> bool:\n    pass"
+        self.assertEqual(extract_signature_from_code(code), "def my_func(a: int, b: str) -> bool:")
+        self.assertIsNone(extract_signature_from_code("a = 1\nreturn a"))
+
+    def test_get_function_signature(self):
+        inner = "a = 1\nreturn a"
+        scaffold = "def scaffold_func(x):\n# EVOLVE-BLOCK-START\n{body}\n# EVOLVE-BLOCK-END\n"
+        self.assertEqual(get_function_signature(inner, scaffold), "def scaffold_func(x):")
+        
+        with self.assertRaises(ValueError):
+            get_function_signature("a = 1", "b = 2")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,117 @@
+2026-07-14 02:09:12,032 - INFO - Froze run config to runs/0086/attention-hifo-boltzmann/config.yaml (sha256=0796f3401775efca1f1c6b5a4a7ebb2fc5150768374fd3967f4db4f2ba3239b0)
+2026-07-14 02:09:12,032 - INFO - Initialized program database with 0 programs
+2026-07-14 02:09:12,051 - INFO - Successfully loaded evaluation function from /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:09:12,051 - INFO - Initialized evaluator with /Users/archiebrown/noema-evolve/examples/attention_optimization/evaluator.py
+2026-07-14 02:09:12,053 - INFO - Initialized prompt sampler
+2026-07-14 02:09:12,082 - INFO - Evaluating and adding initial program
+2026-07-14 02:09:12,381 - INFO - Evaluated program initial in 0.30s: error=0.1000, speedup=1.3284, runtime=7.5280, compile_time=0.2942, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:09:12,382 - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-07-14 02:09:17,202 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:09:27,537 - INFO - Evaluated program it000000 in 0.29s: error=0.1000, speedup=1.3908, runtime=7.1903, compile_time=0.2851, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:09:27,537 - WARNING - Iteration 0: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:09:31,851 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:09:47,777 - INFO - Evaluated program it000001 in 0.34s: error=0.1000, speedup=1.3784, runtime=7.2549, compile_time=0.3384, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4101
+2026-07-14 02:09:47,778 - WARNING - Iteration 1: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:09:51,124 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:10:24,450 - INFO - Evaluated program it000002 in 0.31s: error=0.1000, speedup=1.3225, runtime=7.5616, compile_time=0.3060, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:10:24,450 - WARNING - Iteration 2: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:10:27,290 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:10:37,284 - INFO - Evaluated program it000003 in 0.30s: error=0.1000, speedup=1.4946, runtime=6.6906, compile_time=0.2935, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:10:37,284 - WARNING - Iteration 3: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:10:38,948 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:10:42,744 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:10:59,868 - INFO - Evaluated program it000004 in 0.25s: error=0.1000, speedup=1.4859, runtime=6.7299, compile_time=0.2420, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:10:59,868 - WARNING - Iteration 4: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:10:59,869 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_4
+2026-07-14 02:10:59,871 - INFO - Saved checkpoint at iteration 4 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_4
+2026-07-14 02:11:02,272 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:11:27,232 - INFO - Evaluated program it000005 in 0.35s: error=0.1000, speedup=1.6213, runtime=6.1679, compile_time=0.3399, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:11:27,232 - WARNING - Iteration 5: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:11:30,045 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:11:50,481 - INFO - Evaluated program it000006 in 0.31s: error=0.1000, speedup=1.4957, runtime=6.6860, compile_time=0.3001, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:11:50,482 - WARNING - Iteration 6: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:11:52,115 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:05,949 - INFO - Evaluated program it000007 in 0.34s: error=0.1000, speedup=1.4487, runtime=6.9027, compile_time=0.3242, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:12:05,949 - WARNING - Iteration 7: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:12:07,653 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:14,642 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:27,775 - INFO - Evaluated program it000008 in 0.30s: error=0.1000, speedup=1.3915, runtime=7.1867, compile_time=0.2943, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:12:27,775 - WARNING - Iteration 8: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:12:29,192 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:36,948 - INFO - Evaluated program it000009 in 0.05s: error=0.1000, speedup=1.4190, runtime=7.0471, compile_time=0.0457, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:12:36,948 - WARNING - Iteration 9: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:12:36,949 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_9
+2026-07-14 02:12:36,951 - INFO - Saved checkpoint at iteration 9 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_9
+2026-07-14 02:12:38,244 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:47,980 - INFO - Evaluated program it000010 in 0.36s: error=0.1378, speedup=1.3108, runtime=7.6289, compile_time=0.3461, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3101
+2026-07-14 02:12:47,980 - WARNING - Iteration 10: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:12:50,711 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:12:59,751 - INFO - Evaluated program it000011 in 0.35s: error=0.1000, speedup=1.3910, runtime=7.1892, compile_time=0.3218, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:12:59,751 - WARNING - Iteration 11: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:13:01,602 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:13:09,964 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:13:33,342 - INFO - Evaluated program it000012 in 0.29s: error=0.1000, speedup=1.5131, runtime=6.6088, compile_time=0.2838, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:13:33,343 - WARNING - Iteration 12: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:13:36,102 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:15:29,036 - INFO - Evaluated program it000013 in 0.33s: error=0.1000, speedup=1.4820, runtime=6.7477, compile_time=0.3165, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:15:29,036 - WARNING - Iteration 13: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:15:30,893 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:15:56,482 - INFO - Evaluated program it000014 in 0.33s: error=0.1000, speedup=1.5671, runtime=6.3811, compile_time=0.3224, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:15:56,482 - WARNING - Iteration 14: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:15:56,483 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_14
+2026-07-14 02:15:56,486 - INFO - Saved checkpoint at iteration 14 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_14
+2026-07-14 02:16:06,558 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:16:43,186 - INFO - Evaluated program it000015 in 0.29s: error=0.1000, speedup=1.4193, runtime=7.0458, compile_time=0.2882, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:16:43,186 - WARNING - Iteration 15: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:16:45,235 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:17:05,588 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:17:27,744 - INFO - Evaluated program it000016 in 0.31s: error=0.1000, speedup=1.3723, runtime=7.2873, compile_time=0.3053, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:17:27,744 - WARNING - Iteration 16: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:17:29,488 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:18:01,247 - INFO - Evaluated program it000017 in 0.26s: error=0.1000, speedup=1.5053, runtime=6.6432, compile_time=0.2561, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:18:01,247 - WARNING - Iteration 17: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:18:01,967 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:18:18,660 - INFO - Evaluated program it000018 in 0.33s: error=0.1000, speedup=1.3881, runtime=7.2043, compile_time=0.3214, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:18:18,660 - WARNING - Iteration 18: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:18:19,977 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:18:47,846 - INFO - Evaluated program it000019 in 1.43s: error=0.1000, speedup=1.4017, runtime=7.1342, compile_time=1.4231, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:18:47,847 - WARNING - Iteration 19: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:18:47,851 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_19
+2026-07-14 02:18:47,868 - INFO - Saved checkpoint at iteration 19 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_19
+2026-07-14 02:18:49,656 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:19:10,874 - INFO - Evaluated program it000020 in 0.32s: error=3.4144, speedup=1.0924, runtime=9.1544, compile_time=0.3141, method=ir_analysis, size_ratio=0.9798, optimization_score=1.1101
+2026-07-14 02:19:10,875 - WARNING - Iteration 20: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:19:12,669 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:19:34,740 - INFO - Evaluated program it000021 in 0.33s: error=0.1000, speedup=1.4098, runtime=7.0932, compile_time=0.3272, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:19:34,741 - WARNING - Iteration 21: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:19:36,686 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:19:55,883 - INFO - Evaluated program it000022 in 0.32s: error=0.1000, speedup=1.6314, runtime=6.1296, compile_time=0.3112, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:19:55,884 - WARNING - Iteration 22: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:19:57,543 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:20:18,115 - INFO - Evaluated program it000023 in 0.05s: error=0.1000, speedup=1.5346, runtime=6.5163, compile_time=0.0381, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:20:18,115 - WARNING - Iteration 23: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:20:21,105 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:20:35,421 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:20:46,334 - INFO - Evaluated program it000024 in 0.32s: error=0.1000, speedup=1.4966, runtime=6.6819, compile_time=0.3112, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:20:46,335 - WARNING - Iteration 24: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:20:46,336 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_24
+2026-07-14 02:20:46,339 - INFO - Saved checkpoint at iteration 24 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_24
+2026-07-14 02:20:48,238 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:12,246 - INFO - Evaluated program it000025 in 0.32s: error=0.1000, speedup=1.4012, runtime=7.1366, compile_time=0.3164, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:21:12,247 - WARNING - Iteration 25: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:21:14,033 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:26,361 - INFO - Evaluated program it000026 in 0.33s: error=0.1000, speedup=1.6143, runtime=6.1945, compile_time=0.3234, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:21:26,361 - WARNING - Iteration 26: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:21:27,405 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:44,951 - INFO - Evaluated program it000027 in 0.06s: error=0.1000, speedup=1.3742, runtime=7.2769, compile_time=0.0550, method=ir_analysis, size_ratio=0.9798, optimization_score=1.3601
+2026-07-14 02:21:44,952 - WARNING - Iteration 27: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:21:46,857 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:21:54,646 - INFO - Evaluated program it000028 in 0.05s: error=0.1000, speedup=1.6080, runtime=6.2188, compile_time=0.0447, method=ir_analysis, size_ratio=0.9798, optimization_score=1.5601
+2026-07-14 02:21:54,647 - WARNING - Iteration 28: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:21:55,513 - INFO - HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-14 02:22:24,010 - INFO - Evaluated program it000029 in 0.33s: error=0.1000, speedup=1.4937, runtime=6.6950, compile_time=0.3299, method=ir_analysis, size_ratio=0.9798, optimization_score=1.4601
+2026-07-14 02:22:24,010 - WARNING - Iteration 29: evaluation failed (attempt 1): evaluation failed: unknown error
+2026-07-14 02:22:24,012 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_29
+2026-07-14 02:22:24,015 - INFO - Saved checkpoint at iteration 29 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_29
+2026-07-14 02:22:24,015 - INFO - Saved database with 1 programs to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_29
+2026-07-14 02:22:24,017 - INFO - Saved checkpoint at iteration 29 to runs/0086/attention-hifo-boltzmann/checkpoints/checkpoint_29
