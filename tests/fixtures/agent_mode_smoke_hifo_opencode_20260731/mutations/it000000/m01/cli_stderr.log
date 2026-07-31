@@ -1,0 +1,104 @@
+[0m
+> build · deepseek/deepseek-v4-pro
+[0m
+[0m→ [0mRead /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+[0m→ [0mRead /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/parent.py
+[0m
+[0m← [0mEdit /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+Index: /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+===================================================================
+--- /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
++++ /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+@@ -3,36 +3,54 @@
+ import numpy as np
+ 
+ 
+ def search_algorithm(iterations=1000, bounds=(-5, 5)):
+-    """
+-    A simple random search algorithm that often gets stuck in local minima.
++    lo, hi = bounds
++    best_x = np.random.uniform(lo, hi)
++    best_y = np.random.uniform(lo, hi)
++    best_val = evaluate_function(best_x, best_y)
+ 
+-    Args:
+-        iterations: Number of iterations to run
+-        bounds: Bounds for the search space (min, max)
++    n_restarts = max(3, iterations // 120)
++    budget = iterations // n_restarts
++    span = hi - lo
+ 
+-    Returns:
+-        Tuple of (best_x, best_y, best_value)
+-    """
+-    # Initialize with a random point
+-    best_x = np.random.uniform(bounds[0], bounds[1])
+-    best_y = np.random.uniform(bounds[0], bounds[1])
+-    best_value = evaluate_function(best_x, best_y)
++    for ri in range(n_restarts):
++        if ri % 3 == 0:
++            x, y = best_x, best_y
++        elif ri % 3 == 1:
++            x = lo + span * ((ri * 0.37) % 1.0)
++            y = lo + span * ((ri * 0.61) % 1.0)
++        else:
++            x = lo + span * np.random.random()
++            y = lo + span * np.random.random()
+ 
+-    for _ in range(iterations):
+-        # Simple random search
+-        x = np.random.uniform(bounds[0], bounds[1])
+-        y = np.random.uniform(bounds[0], bounds[1])
+-        value = evaluate_function(x, y)
++        vx = vy = 0.0
+ 
+-        if value < best_value:
+-            best_value = value
+-            best_x, best_y = x, y
++        for t in range(budget):
++            val = evaluate_function(x, y)
++            if val < best_val:
++                best_x, best_y, best_val = x, y, val
+ 
+-    return best_x, best_y, best_value
++            frac = t / budget
++            lr = 0.1 * np.exp(-4.0 * frac) + 0.002
+ 
++            gx = np.cos(x) * np.cos(y) + y * np.cos(x * y) + x / 10.0
++            gy = -np.sin(x) * np.sin(y) + x * np.cos(x * y) + y / 10.0
+ 
++            vx = 0.85 * vx - lr * gx
++            vy = 0.85 * vy - lr * gy
++
++            x = np.clip(x + vx, lo, hi)
++            y = np.clip(y + vy, lo, hi)
++
++            if x == lo or x == hi:
++                vx *= -0.5
++            if y == lo or y == hi:
++                vy *= -0.5
++
++    return best_x, best_y, best_val
++
++
+ # EVOLVE-BLOCK-END
+ 
+ 
+ # This part remains fixed (not evolved)
+
+[0m
+[0m→ [0mRead /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+[0m
+[0m$ [0mpython3 /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py
+Traceback (most recent call last):
+  File "/tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+[0m
+[0m$ [0mpip3 install numpy 2>&1 | tail -3
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+[0m
+[0m$ [0mpython3 -c "import ast; ast.parse(open('/tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000000/m01/child.py').read()); print('Syntax OK')"
+Syntax OK
+[0m

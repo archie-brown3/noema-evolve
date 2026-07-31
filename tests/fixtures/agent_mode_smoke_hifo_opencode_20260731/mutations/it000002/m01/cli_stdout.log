@@ -1,0 +1,7 @@
+NumPy isn't available in this sandbox but syntax compiles clean. The deliverable is written at `child.py`.
+
+Summary of changes from the parent program:
+- **Eliminated the separate refine loop** — merged exploration and exploitation into a single annealed gradient descent pass (momentum increases from 0.85→0.92, learning rate decays from 0.15→0.0002)
+- **Simplified restart seeding** from 5 strategies to 3: best-so-far, golden-ratio quasi-random, and uniform random
+- **Replaced velocity noise with position perturbation** for stall escape — jumps back near the current best with small Gaussian perturbation, resetting momentum
+- **Reduced code length** — ~25% shorter, no duplicated gradient/boundary/update logic

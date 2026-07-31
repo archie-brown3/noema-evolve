@@ -1,0 +1,23 @@
+{
+  "run_id": "noema-agent-burst-fm-hifo-opencode",
+  "captured_at": "2026-07-31T18:31:04+01:00",
+  "driver": "scripts/run_agent_mode_smoke.py",
+  "cli": "opencode",
+  "opencode_version": "1.17.20",
+  "mutation_model": "deepseek/deepseek-v4-pro",
+  "arm": "hifo",
+  "example": "function_minimization",
+  "stop_children": 3,
+  "random_seed": 42,
+  "timeout_s": 600,
+  "verbose": true,
+  "final_status": {
+    "children_accepted": 3,
+    "stop_children": 3,
+    "stopped": true,
+    "generation": 3,
+    "tokens_spent": 0
+  },
+  "source_tmp": "/tmp/noema-agent-burst-fm-hifo-opencode",
+  "vault_diagnostic": "[[NoemaAgent Host — Task 0163 Live Smoke Diagnostic (2026-07-31)]]"
+}

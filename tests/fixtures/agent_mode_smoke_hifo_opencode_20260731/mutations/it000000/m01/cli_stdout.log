@@ -1,0 +1,7 @@
+The program is written. The replacement replaces pure random search with a multi-start gradient descent algorithm:
+
+- **Analytical gradients** of `f(x,y)` for efficient local optimization
+- **Multi-start** with diverse initialization (best-so-far warm restart, quasi-random, and random)
+- **Momentum** (0.85) to accelerate through flat regions and shallow local minima
+- **Exponential learning rate decay** for coarse-to-fine convergence
+- **Boundary bouncing** on constraint violation

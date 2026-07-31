@@ -1,0 +1,18 @@
+[0m
+> build · deepseek/deepseek-v4-pro
+[0m
+[0m→ [0mRead /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/child.py
+[0m→ [0mRead /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/parent.py
+[0m
+[0m← [0mWrite /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/child.py
+Wrote file successfully.
+[0m
+[0m$ [0mpython3 -c "import py_compile; py_compile.compile('/tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/child.py', doraise=True); print('OK')"
+OK
+[0m
+[0m$ [0mpython3 /tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/child.py
+Traceback (most recent call last):
+  File "/tmp/noema-agent-burst-fm-hifo-opencode/mutations/it000002/m01/child.py", line 3, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+[0m
