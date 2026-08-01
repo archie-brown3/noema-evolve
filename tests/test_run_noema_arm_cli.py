@@ -76,6 +76,17 @@ class TestRunNoemaArmSubstrateSelectionFlags(unittest.TestCase):
         config = self._run_with([])
         self.assertEqual(config.llm.mutation.api_key, "none")
 
+    def test_evolution_stays_diff_based(self):
+        # Two things are pinned to this being True and break silently if it
+        # flips: SYSTEM_MESSAGE tells the model to emit a SEARCH/REPLACE block
+        # (a full_rewrite parse of that output yields nothing), and
+        # config_openevolve_null_baseline.yaml is the stock-OpenEvolve
+        # comparison matched to this runner's null-arm defaults in every field
+        # but the two its header names.
+        config = self._run_with([])
+        self.assertTrue(config.diff_based_evolution)
+        self.assertIn("SEARCH/REPLACE", self.module.SYSTEM_MESSAGE)
+
 
 if __name__ == "__main__":
     unittest.main()
