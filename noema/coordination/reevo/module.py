@@ -12,6 +12,8 @@ NOEMA adaptations:
     program with deterministic id tie-break (donor draws two parents).
   - Memoryless: no checkpoint state; one reflection call per eligible mutation.
   - Reflection is injected as ``[Reflection]`` advice, not donor crossover.
+  - A mutation is only eligible when both filtered snippets are non-empty, so a
+    degenerate comparison never spends the metered coordination budget.
 
 This module deliberately does not select parents, crossover, evaluate, or
 admit programs.  It observes Noema's already-selected parent and a local
@@ -78,14 +80,28 @@ class ReEvoShortTermModule(CoordinationModule):
         if self.llm is None:
             raise RuntimeError("reevo requires the host-provided coordination LLM")
 
+        worse_code = reflection_code(parent.code)
+        better_code = reflection_code(better.code)
+        if not worse_code.strip() or not better_code.strip():
+            return Advice(
+                attribution={
+                    "reevo": {
+                        "status": "skipped",
+                        "reason": "empty_reflection_code",
+                        "parent_id": parent.id,
+                        "better_id": better.id,
+                    }
+                }
+            )
+
         prompt = render_short_term_reflection_prompt(
             domain_context=str(self.config.get("domain_context", "")),
             function_name=str(
                 self.config.get("function_name", self.config.get("func_name", "evolvable"))
             ),
             func_desc=str(self.config.get("func_desc", "")),
-            worse_code=reflection_code(parent.code),
-            better_code=reflection_code(better.code),
+            worse_code=worse_code,
+            better_code=better_code,
         )
         reflection = (
             await self.llm.generate_with_context(

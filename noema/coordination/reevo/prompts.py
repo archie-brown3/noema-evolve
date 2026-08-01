@@ -15,10 +15,13 @@ NOEMA adaptations (not in donor short-term path):
   - ``extract_evolve_block`` applied before ``donor_filter_code`` (host scaffold).
   - Config keys ``domain_context`` / ``function_name`` map to donor
     ``problem_desc`` / ``func_name``.
+  - ``donor_filter_code`` matches its keywords on a word boundary rather than
+    with the donor's bare ``str.startswith`` (see that function's docstring).
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from noema.coordination.pe.prompts import extract_evolve_block
@@ -28,15 +31,25 @@ _GOLDEN_DIR = Path(__file__).resolve().parent / "golden" / "prompts" / "common"
 SYSTEM_REFLECTOR = (_GOLDEN_DIR / "system_reflector.txt").read_text()
 USER_REFLECTOR_ST_TEMPLATE = (_GOLDEN_DIR / "user_reflector_st.txt").read_text()
 
+_SKIP_KEYWORD_RE = re.compile(r"(?:def|import|from)\b")
+_STOP_KEYWORD_RE = re.compile(r"return\b")
+
 
 def donor_filter_code(code: str) -> str:
-    """Apply ReEvo's intentionally column-zero-sensitive code filter."""
+    """Apply ReEvo's intentionally column-zero-sensitive code filter.
+
+    The donor tests each line with bare ``str.startswith``, so a column-zero
+    binding whose name merely begins with a keyword (``default_size = 10``,
+    ``from_index = 0``) is dropped from the snippet without warning.  Matching
+    on a word boundary keeps the donor's intent of acting only on column-zero
+    keywords while leaving such names intact.
+    """
     filtered: list[str] = []
     for line in code.splitlines():
-        if line.startswith("def") or line.startswith("import") or line.startswith("from"):
+        if _SKIP_KEYWORD_RE.match(line):
             continue
         filtered.append(line)
-        if line.startswith("return"):
+        if _STOP_KEYWORD_RE.match(line):
             break
     return "\n".join(filtered)
 
