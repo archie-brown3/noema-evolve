@@ -3,6 +3,10 @@
 Drives null vs ``reevo`` through a real ``NoemaController.run()`` to verify
 prompt suffix identity, ledger accounting, advice attribution, paired-config
 identity, and stateless checkpoint resume.
+
+Parent selection is pinned (see ``_pin_lowest_fitness_parent``) so the runs are
+reproducible and the reflection arm is always eligible; everything else —
+evaluation, admission, prompt assembly, metering — is the real loop.
 """
 
 from __future__ import annotations
@@ -22,6 +26,7 @@ from noema.config import CoordinationConfig, NoemaConfig
 from noema.controller import NoemaController
 from noema.coordination import NullCoordination, build_coordination_module
 from noema.coordination.reevo.module import REFLECTION_TAG
+from noema.evolution.prompts import COORDINATION_HEADER
 from tests.test_noema_controller import EVAL_SCRIPT, INITIAL_PROGRAM, make_config
 
 REFLECTION_TEXT = "improve the boundary rule"
@@ -58,6 +63,35 @@ def reevo_coordination_client(response=REFLECTION_TEXT):
     return SimpleNamespace(
         chat=SimpleNamespace(completions=SimpleNamespace(create=create))
     ), calls
+
+
+def _pin_lowest_fitness_parent(controller):
+    """Make parent selection deterministic for the whole run.
+
+    OpenEvolve draws its parent from ``list(island_set)``, so which program it
+    returns depends on the interpreter's string hash seed.  The reevo arm only
+    fires when the parent is not the fittest program on its island, which made
+    every reflection assertion in this file pass or fail with
+    ``PYTHONHASHSEED``.  These tests cover prompt and ledger plumbing, not
+    sampling, so the draw is pinned to the island's lowest-fitness program:
+    reproducible, and identical for both arms of the pair.
+    """
+    db = controller.db._db
+
+    def sample_from_island(island_id, num_inspirations=5):
+        island = db.islands[island_id % len(db.islands)]
+        # Mirror openevolve's fallback to the whole population for an empty island.
+        pool = [pid for pid in island if pid in db.programs] or list(db.programs)
+        ranked = sorted(
+            (db.programs[pid] for pid in pool),
+            key=lambda program: (controller.db.fitness(program), program.id),
+        )
+        parent = ranked[0]
+        inspirations = [p for p in reversed(ranked) if p.id != parent.id][:num_inspirations]
+        return parent, inspirations
+
+    db.sample_from_island = sample_from_island
+    return controller
 
 
 def _build_controller(tmp, arm, iterations=6, coordination_client=None):
@@ -130,32 +164,51 @@ def _build_controller(tmp, arm, iterations=6, coordination_client=None):
         coordination=coordination,
         ledger=ledger,
     )
-    return controller, ledger, mut_calls, coordination
+    return _pin_lowest_fitness_parent(controller), ledger, mut_calls, coordination
 
 
 class TestReEvoController(unittest.TestCase):
     def test_reflection_suffix_on_null_prefix(self):
+        iterations = 6
         with tempfile.TemporaryDirectory() as tmp_off, tempfile.TemporaryDirectory() as tmp_on:
-            null_c, ledger_off, mut_off, _ = _build_controller(tmp_off, "null")
-            reevo_c, ledger_on, mut_on, _ = _build_controller(tmp_on, "reevo")
+            # Each controller re-seeds the global RNG that openevolve samples
+            # from, so build-then-run one arm at a time to keep the pair on the
+            # same stream instead of letting the first run offset the second.
+            null_c, ledger_off, mut_off, _ = _build_controller(tmp_off, "null", iterations)
             asyncio.run(null_c.run())
+            reevo_c, ledger_on, mut_on, _ = _build_controller(tmp_on, "reevo", iterations)
             asyncio.run(reevo_c.run())
 
-            self.assertEqual(len(mut_off), len(mut_on))
+            # Exact counts, not just parity between the arms: one mutation call
+            # per iteration, so an extra retry on either side fails loudly.
+            self.assertEqual(len(mut_off), iterations)
+            self.assertEqual(len(mut_on), iterations)
             self.assertEqual(ledger_off.spent("coordination"), 0)
             self.assertGreater(ledger_on.spent("coordination"), 0)
             self.assertEqual(ledger_off.spent("mutation"), ledger_on.spent("mutation"))
 
-            reflection_prompts = [
-                call["messages"][-1]["content"]
-                for call in mut_on
-                if "[Reflection]" in call["messages"][-1]["content"]
+            reevo_status = [
+                program.metadata.get("coordination", {}).get("reevo", {}).get("status")
+                for program in sorted(
+                    (p for p in reevo_c.db._db.programs.values() if p.parent_id is not None),
+                    key=lambda program: program.id,
+                )
             ]
-            self.assertTrue(reflection_prompts, "reevo never injected a reflection")
-            for user_on in reflection_prompts:
-                self.assertIn(REFLECTION_TEXT, user_on)
-            for call in mut_off:
-                self.assertNotIn("[Reflection]", call["messages"][-1]["content"])
+            self.assertEqual(len(reevo_status), iterations)
+            self.assertIn("generated", reevo_status, "reevo never injected a reflection")
+
+            # Pinned selection makes the two arms walk identical trajectories,
+            # so every mutation prompt is the null prompt, byte for byte, plus
+            # the reflection suffix exactly when the module generated one.
+            suffix = f"{COORDINATION_HEADER}[Reflection]\n{REFLECTION_TEXT}"
+            for status, off_call, on_call in zip(reevo_status, mut_off, mut_on):
+                user_off = off_call["messages"][-1]["content"]
+                user_on = on_call["messages"][-1]["content"]
+                self.assertNotIn("[Reflection]", user_off)
+                if status == "generated":
+                    self.assertEqual(user_on, user_off + suffix)
+                else:
+                    self.assertEqual(user_on, user_off)
 
     def test_reflection_tag_and_prompt_identity(self):
         with tempfile.TemporaryDirectory() as tmp:
