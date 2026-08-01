@@ -131,7 +131,7 @@ def main():
         max_iterations=args.iterations,
         checkpoint_interval=5,
         random_seed=args.seed,
-        diff_based_evolution=False,
+        diff_based_evolution=True,
         mutation_operators=mutation_operators,
         retry_enabled=args.retry_enabled,
         retry_cap=args.retry_cap,
