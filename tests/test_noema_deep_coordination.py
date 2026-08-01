@@ -12,7 +12,7 @@ from unittest.mock import patch
 from noema.agenthost.config import AgentCliConfig, AgentConfig
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.reasoning import DeepCoordinationLLM
-from noema.budget.cli_runner import CliRunner, CliRunResult
+from noema.budget.cli_runner import CliRunResult
 from noema.budget.ledger import COORDINATION_ACCOUNT, TokenLedger
 from noema.budget.llm import BudgetedLLM
 from noema.config import CoordinationConfig, LLMClientConfig, LLMRolesConfig, NoemaConfig
@@ -191,7 +191,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             )
             llm.generation = 1
             tips_before = len(module.insight_pool.tips)
-            with patch.object(CliRunner, "run", fake_run):
+            with patch("noema.agenthost.reasoning.CliRunner.run", fake_run):
                 asyncio.run(module.on_generation_end(make_hifo_ctx()))
             self.assertGreater(len(module.insight_pool.tips), tips_before)
             self.assertIn(
