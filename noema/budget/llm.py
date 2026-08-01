@@ -182,7 +182,7 @@ class BudgetedLLM(LLMInterface):
             CallRecord(
                 account=self.account,
                 tag=tag,
-                model=self.model,
+                model=kwargs.get("model") or self.model,
                 prompt_tokens=0,
                 completion_tokens=0,
                 attempts=call_state["attempts_started"],
@@ -261,7 +261,7 @@ class BudgetedLLM(LLMInterface):
                         CallRecord(
                             account=self.account,
                             tag=tag,
-                            model=self.model,
+                            model=call_model,
                             prompt_tokens=0,
                             completion_tokens=0,
                             attempts=attempt + 1,
@@ -284,7 +284,7 @@ class BudgetedLLM(LLMInterface):
                     CallRecord(
                         account=self.account,
                         tag=tag,
-                        model=self.model,
+                        model=call_model,
                         prompt_tokens=0,
                         completion_tokens=0,
                         attempts=attempt + 1,
@@ -294,7 +294,7 @@ class BudgetedLLM(LLMInterface):
                         succeeded=False,
                         error=repr(e),
                     )
-                    )
+                )
                 raise
 
             if _call_state["abandoned"]:

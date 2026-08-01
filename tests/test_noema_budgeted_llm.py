@@ -163,6 +163,29 @@ class TestBudgetedLLM(unittest.TestCase):
         self.assertEqual(client.calls[0]["model"], "strong-model")
         self.assertEqual(ledger.records[0].model, "strong-model")
 
+    def test_retry_exhaustion_charges_the_escalated_model(self):
+        # An escalated call that fails every attempt must be attributable to the
+        # model that actually failed, or failure triage against the ledger blames
+        # the base model for the strong model's outage.
+        client = FakeClient([RuntimeError("a"), RuntimeError("b")])
+        llm, ledger = self._llm(client, retries=1)
+
+        with self.assertRaises(RuntimeError):
+            asyncio.run(
+                llm.generate_with_context(
+                    "s", [{"role": "user", "content": "u"}], model="strong-model"
+                )
+            )
+        self.assertEqual(ledger.records[0].model, "strong-model")
+
+    def test_retry_exhaustion_without_override_charges_configured_model(self):
+        client = FakeClient([RuntimeError("a")])
+        llm, ledger = self._llm(client, retries=0)
+
+        with self.assertRaises(RuntimeError):
+            asyncio.run(llm.generate_with_context("s", [{"role": "user", "content": "u"}]))
+        self.assertEqual(ledger.records[0].model, "test-model")
+
     def test_model_kwarg_none_is_unchanged_behaviour(self):
         # A module that never escalates (or explicitly passes model=None) must
         # be byte-for-byte identical to today's behaviour.
@@ -332,6 +355,19 @@ class TestTotalDeadline(unittest.TestCase):
         self.assertTrue(ledger.records[0].estimated)
         self.assertFalse(ledger.records[0].succeeded)
 
+    def test_deadline_expiry_charges_the_escalated_model(self):
+        client = HangingClient()
+        llm, ledger = make_llm(client, retries=0, total_deadline_s=0.05)
+
+        result = asyncio.run(
+            llm.generate_with_context(
+                "s", [{"role": "user", "content": "u"}], model="strong-model"
+            )
+        )
+
+        self.assertEqual(result, "")
+        self.assertEqual(ledger.records[0].model, "strong-model")
+
     def test_total_deadline_default_does_not_cut_off_fast_calls(self):
         client = FakeClient([fake_response()])
         llm, ledger = make_llm(client)  # default total_deadline_s=600
@@ -361,6 +397,24 @@ class TestFatalProviderError(unittest.TestCase):
         self.assertTrue(record.estimated)
         self.assertFalse(record.succeeded)
         self.assertIn("status 402", record.error)
+        self.assertEqual(record.model, "test-model")
+
+    def test_fatal_status_charges_the_escalated_model(self):
+        # A quota error raised by the strong model must not be recorded against
+        # the base model.
+        from noema.budget.llm import FatalProviderError
+
+        client = FakeClient([FatalStatusError(402)])
+        llm, ledger = make_llm(client, retries=3)
+
+        with self.assertRaises(FatalProviderError):
+            asyncio.run(
+                llm.generate_with_context(
+                    "s", [{"role": "user", "content": "u"}], model="strong-model"
+                )
+            )
+
+        self.assertEqual(ledger.records[0].model, "strong-model")
 
     def test_non_fatal_status_still_retries(self):
         # A transient 500-style error is not in FATAL_STATUS_CODES -> normal retry path
