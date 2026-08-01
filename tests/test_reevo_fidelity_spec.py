@@ -81,6 +81,17 @@ class TestReEvoGoldenSourceFidelity(unittest.TestCase):
         )
         self.assertEqual(donor_filter_code(code), "    value = 1\nreturn value")
 
+    def test_donor_filter_deviates_on_keyword_prefixed_identifiers(self):
+        """Documented deviation: the donor's bare ``startswith`` drops these.
+
+        Upstream ``filter_code`` would discard every line below because each
+        one starts with a filter keyword as a bare string prefix.  Noema
+        matches on a word boundary so column-zero bindings survive; the
+        donor's column-zero sensitivity itself is unchanged.
+        """
+        code = "default_size = 10\nimport_count = 1\nfrom_index = 0"
+        self.assertEqual(donor_filter_code(code), code)
+
 
 if __name__ == "__main__":
     unittest.main()

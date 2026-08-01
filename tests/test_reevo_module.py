@@ -64,6 +64,14 @@ class TestReEvoShortTermModule(unittest.TestCase):
         code = "import x\nfrom y import z\ndef f():\n    value = 1\nreturn value\nignored = 2"
         self.assertEqual(donor_filter_code(code), "    value = 1\nreturn value")
 
+    def test_donor_filter_keeps_names_that_merely_start_with_a_keyword(self):
+        code = "default_size = 10\nimport_count = 1\nfrom_index = 0\nreturn_value = 2"
+        self.assertEqual(donor_filter_code(code), code)
+
+    def test_donor_filter_stops_on_column_zero_return_without_space(self):
+        code = "return(0)\nignored = 1"
+        self.assertEqual(donor_filter_code(code), "return(0)")
+
     def test_reflection_code_uses_existing_evolve_block_extractor(self):
         code = "header\n# EVOLVE-BLOCK-START\ndef f():\n    return 7\n# EVOLVE-BLOCK-END\nfooter"
         self.assertEqual(reflection_code(code), "    return 7")
