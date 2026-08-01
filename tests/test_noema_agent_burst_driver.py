@@ -4,6 +4,7 @@ import asyncio
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 
@@ -13,6 +14,7 @@ from noema.agenthost.mutation import FakeMutationBackend
 from noema.agenthost.session import AgentSession
 from noema.budget.ledger import TokenLedger
 from noema.config import BudgetConfig, SubstrateConfig
+from noema.evolution.iteration_runner import IterationRunner
 from tests.test_noema_agent_arm_sweep import (
     INITIAL_PROGRAM,
     SEED_CHILDREN,
@@ -120,6 +122,33 @@ class TestRunAgentMode(unittest.TestCase):
             asyncio.run(scenario())
             self.assertNotIn("on_generation_end", spy.calls)
             self.assertEqual(session.children_accepted, 1)
+
+    def test_no_accepted_child_is_bounded_by_max_iterations(self):
+        config = make_config(max_iterations=2)
+        calls = 0
+
+        async def reject_without_raising(_session, _iteration):
+            nonlocal calls
+            calls += 1
+            if calls > config.max_iterations:
+                raise AssertionError("run_agent_mode exceeded its no-accept bound")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            session, _ = make_burst_session(
+                tmp,
+                "null",
+                [],
+                stop_children=1,
+                config=config,
+            )
+            with patch.object(IterationRunner, "run_iteration", reject_without_raising):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "failed to accept a child after 2 attempts",
+                ):
+                    asyncio.run(session.run_agent_mode())
+
+        self.assertEqual(calls, config.max_iterations)
 
 
 class TestRunAgentModeSubstrateSmoke(unittest.TestCase):

@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import random
+import sys
 import tempfile
 import unittest
 from types import SimpleNamespace
@@ -70,7 +71,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
                 ),
             ),
             coordination_depth="deep",
-            coordination_cli=AgentCliConfig(kind="opencode"),
+            coordination_cli=AgentCliConfig(kind="opencode", binary=sys.executable),
         )
 
     def test_deep_llm_spawn_records_tags(self):
@@ -98,6 +99,40 @@ class TestDeepCoordinationLLM(unittest.TestCase):
 
         asyncio.run(run())
         self.assertEqual(calls, ["pes.plan", "hifo.extract_insights"])
+
+    def test_timeout_raises_with_diagnostic(self):
+        llm = DeepCoordinationLLM(
+            self._inner(),
+            cli=AgentCliConfig(kind="opencode", binary=sys.executable, timeout_s=3.0),
+            output_dir=tempfile.mkdtemp(),
+        )
+        result = CliRunResult(
+            exit_code=-1,
+            stdout="",
+            stderr="timed out",
+            wall_s=3.0,
+            timed_out=True,
+        )
+        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+            with self.assertRaisesRegex(TimeoutError, "timed out after 3.0s"):
+                asyncio.run(llm.generate("extract", tag="hifo.extract_insights"))
+
+    def test_nonzero_exit_raises_with_diagnostic(self):
+        llm = DeepCoordinationLLM(
+            self._inner(),
+            cli=AgentCliConfig(kind="opencode", binary=sys.executable),
+            output_dir=tempfile.mkdtemp(),
+        )
+        result = CliRunResult(
+            exit_code=7,
+            stdout="",
+            stderr="provider failed",
+            wall_s=0.1,
+            timed_out=False,
+        )
+        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+            with self.assertRaisesRegex(RuntimeError, "exited with code 7"):
+                asyncio.run(llm.generate("extract", tag="hifo.extract_insights"))
 
     def test_factory_deep_wraps_coordination_llm(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -155,13 +190,10 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             stdout_path = kwargs["stdout_path"]
             stderr_path = kwargs["stderr_path"]
             advice = {
-                "prompt_block": "",
-                "attribution": {
-                    "insights": [
-                        "Exploit sparse matrix structure to skip redundant work entirely",
-                        "Cache intermediate scoring results across neighborhood evaluations",
-                    ],
-                },
+                "response": (
+                    "- Exploit sparse matrix structure to skip redundant work entirely\n"
+                    "- Cache intermediate scoring results across neighborhood evaluations"
+                )
             }
             (cwd / "ADVICE.json").write_text(json.dumps(advice))
             stdout_path.write_text("")

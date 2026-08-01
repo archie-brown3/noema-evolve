@@ -112,8 +112,16 @@ class DeepCoordinationLLM:
             stdout_path=stdout_path,
             stderr_path=stderr_path,
         )
-        if result.timed_out or result.exit_code != 0:
-            return ""
+        if result.timed_out:
+            raise TimeoutError(
+                f"deep coordination CLI {self._cli.kind!r} timed out after "
+                f"{self._cli.timeout_s}s; see {stderr_path}"
+            )
+        if result.exit_code != 0:
+            raise RuntimeError(
+                f"deep coordination CLI {self._cli.kind!r} exited with code "
+                f"{result.exit_code}; see {stderr_path}"
+            )
         text = coordination_response(work, tag)
         if text is not None:
             return text
