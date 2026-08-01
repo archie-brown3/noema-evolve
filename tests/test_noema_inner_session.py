@@ -563,9 +563,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
                         ),
                     )
                     asyncio.run(session.begin_run())
-                    text = asyncio.run(
-                        session.coordination.llm.generate("brief", tag="pes.plan")
-                    )
+                    text = asyncio.run(session.coordination.llm.generate("brief", tag="pes.plan"))
                     self.assertEqual(text, "ok")
 
             for kind in ("claude", "codex", "opencode", "agent"):

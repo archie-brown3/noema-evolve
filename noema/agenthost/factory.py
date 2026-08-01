@@ -21,7 +21,7 @@ def _build_coordination(
     output_dir: str,
 ) -> CoordinationModule:
     noema = config.noema
-    coordination_llm: BudgetedLLM | DeepCoordinationLLM = build_budgeted_llm(
+    coordination_llm = build_budgeted_llm(
         noema.llm.coordination,
         ledger=ledger,
         account=COORDINATION_ACCOUNT,

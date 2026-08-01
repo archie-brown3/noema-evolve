@@ -110,9 +110,7 @@ def build_cli_user_message(
     parent_path: Path,
 ) -> str:
     user = prompt.get("user", "")
-    return user + "\n\n" + deliverable_envelope(
-        deliverable=deliverable, parent_path=parent_path
-    )
+    return user + "\n\n" + deliverable_envelope(deliverable=deliverable, parent_path=parent_path)
 
 
 def resolve_cli_binary(kind: str, binary: Optional[str] = None) -> str:
@@ -123,9 +121,7 @@ def resolve_cli_binary(kind: str, binary: Optional[str] = None) -> str:
     name = binary or _DEFAULT_BINARIES[kind]
     path = shutil.which(name) if os_path_is_bare(name) else name
     if path is None:
-        raise FileNotFoundError(
-            f"mutation CLI {kind!r} binary not found on PATH: {name}"
-        )
+        raise FileNotFoundError(f"mutation CLI {kind!r} binary not found on PATH: {name}")
     return path
 
 

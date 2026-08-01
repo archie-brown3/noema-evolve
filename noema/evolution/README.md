@@ -18,6 +18,8 @@ See the [noema package guide](../README.md) for the complete package map.
 - [`diff.py`](./diff.py) applies indentation-tolerant SEARCH/REPLACE patches.
 - [`boundary.py`](./boundary.py) preserves immutable benchmark code.
 - [`evaluator.py`](./evaluator.py) constructs the ledger-safe evaluator adapter.
+- [`iteration_runner.py`](./iteration_runner.py) owns the shared iteration body
+  used by the controller and optional agent host.
 - [`views.py`](./views.py) exposes immutable program views to coordination code.
 
 These modules do not own population storage, arm state, or token accounting.

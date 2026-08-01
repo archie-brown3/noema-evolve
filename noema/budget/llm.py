@@ -76,9 +76,7 @@ class FatalProviderError(Exception):
         self.status_code = status_code
         self.tag = tag
         self.original = original
-        super().__init__(
-            f"Fatal provider error (status {status_code}) on '{tag}': {original}"
-        )
+        super().__init__(f"Fatal provider error (status {status_code}) on '{tag}': {original}")
 
 
 class BudgetedLLM(LLMInterface):
@@ -222,8 +220,7 @@ class BudgetedLLM(LLMInterface):
                 estimated=True,
                 succeeded=False,
                 error=(
-                    f"total deadline exceeded after {elapsed:.3f}s "
-                    f"(limit {total_deadline}s)"
+                    f"total deadline exceeded after {elapsed:.3f}s " f"(limit {total_deadline}s)"
                 ),
             )
         )

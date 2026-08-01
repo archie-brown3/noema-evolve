@@ -12,7 +12,7 @@ import warnings
 from collections import deque
 from typing import Any, Dict, List, Optional
 
-from openevolve.database import Program
+from openevolve.database import Program  # type: ignore[import-untyped]
 
 from noema.agenthost.mutation import MutationBackend
 from noema.agenthost.mutation_transport import AgentMutationTransport, MutationTransport

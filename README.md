@@ -24,8 +24,9 @@ or a local submodule in this repository.
 
 - Borrowed from OpenEvolve: evaluator, program database, prompt sampler, and related
   utility modules accessed through `noema/` adapters.
-- Not borrowed: OpenEvolve's top-level iteration orchestration. noema runs its own
-  controller loop in `noema/controller.py`.
+- Not borrowed: OpenEvolve's top-level iteration orchestration. noema runs its
+  own shared iteration runner in `noema/evolution/iteration_runner.py`, hosted
+  by `noema/controller.py` and the optional agent host.
 - Dependency pin: `openevolve @ git+https://github.com/codelion/openevolve@80945ed`
   (defined in `pyproject.toml`).
 
@@ -35,9 +36,11 @@ mechanism comparison.
 
 ## What this repository provides
 
-- A standalone controller loop in `noema/controller.py`
+- A standalone controller in `noema/controller.py`
+- An optional agent host in `noema/agenthost/` that runs the same iteration
+  semantics through nested coding CLIs
 - Pluggable coordination modules behind `noema/coordination/base.py`
-- Shared token metering for all LLM calls via `noema/budget/`
+- Shared token metering for in-process LLM calls via `noema/budget/`
 - Checkpoint/resume support including controller, DB, ledger, and coordination state
 - Tests that protect prompt identity, metering integrity, and determinism
 
@@ -165,7 +168,7 @@ Noema attempt and selection traces.
 ## Guarantees enforced by tests
 
 - **Prompt identity across arms**: shared prompt prefix stays byte-identical
-- **No unmetered LLM calls**: mutation and coordination usage flows through the ledger
+- **No unmetered in-process LLM calls**: mutation and coordination usage flows through the ledger
 - **Determinism controls**: deterministic IDs and isolated coordination RNG stream
 
 For cross-process bit-identical reruns, pin `PYTHONHASHSEED`.
@@ -191,6 +194,7 @@ Borrowed files include provenance headers; local changes are marked with `NOEMA:
 ```text
 noema/
   budget/        token accounting and metered LLM access
+  agenthost/     optional nested-CLI mutation host
   coordination/  experiment arms and their shared interface
   evolution/     mutation, prompts, boundaries, diffs, and evaluation
   selection/     store-neutral parent-selection policies
