@@ -12,12 +12,13 @@ deliverable read/write) stay in ``noema.agenthost.mutation``.
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 SUPPORTED_MUTATION_CLIS = ("claude", "codex", "opencode", "agent")
 
@@ -145,9 +146,8 @@ def build_mutation_cli_command(
 ) -> List[str]:
     """Build argv for a headless mutation CLI in ``work_dir``.
 
-    ``mcp_config_path`` attaches the inner-session MCP server (0179). Only the
-    claude CLI takes it as a flag; other kinds fall back to the file contract
-    (``tools/snapshot.json`` + deliverable) unless given flags via extra_args.
+    ``mcp_config_path`` attaches the inner-session MCP server (0179) using the
+    supported configuration mechanism for the requested CLI.
     """
     exe = resolve_cli_binary(kind, binary)
     extra = list(extra_args or ())
@@ -183,6 +183,8 @@ def build_mutation_cli_command(
             "workspace-write",
             "--dangerously-bypass-approvals-and-sandbox",
         ]
+        if mcp_config_path is not None:
+            cmd.extend(_codex_mcp_config_args(mcp_config_path))
         if model:
             cmd.extend(["-m", model])
         cmd.extend(extra)
@@ -197,6 +199,8 @@ def build_mutation_cli_command(
         return cmd
 
     if kind == "opencode":
+        if mcp_config_path is not None:
+            _write_opencode_project_config(work_dir, mcp_config_path)
         # `--file` is an array flag and will swallow following positionals unless
         # the message is protected by `--` (or placed before `--file`).
         cmd = [
@@ -215,6 +219,8 @@ def build_mutation_cli_command(
         return cmd
 
     if kind == "agent":
+        if mcp_config_path is not None:
+            _write_cursor_project_mcp_config(work_dir, mcp_config_path)
         cmd = [
             exe,
             "-p",
@@ -223,6 +229,8 @@ def build_mutation_cli_command(
             "--workspace",
             work,
         ]
+        if mcp_config_path is not None:
+            cmd.append("--approve-mcps")
         if model:
             cmd.extend(["--model", model])
         cmd.extend(extra)
@@ -236,6 +244,71 @@ def build_mutation_cli_command(
         return cmd
 
     raise ValueError(f"unsupported mutation CLI {kind!r}")
+
+
+def _load_mcp_servers(config_path: Path) -> Dict[str, Dict[str, Any]]:
+    config = json.loads(config_path.read_text())
+    servers = config.get("mcpServers")
+    if not isinstance(servers, dict) or not servers:
+        raise ValueError(f"MCP config has no mcpServers: {config_path}")
+    return servers
+
+
+def _codex_mcp_config_args(config_path: Path) -> List[str]:
+    args: List[str] = []
+    for name, server in _load_mcp_servers(config_path).items():
+        command = server.get("command")
+        server_args = server.get("args", [])
+        if not isinstance(command, str) or not command:
+            raise ValueError(f"MCP server {name!r} has no stdio command")
+        if not isinstance(server_args, list) or not all(
+            isinstance(item, str) for item in server_args
+        ):
+            raise ValueError(f"MCP server {name!r} args must be a list of strings")
+        key = f"mcp_servers.{name}"
+        args.extend(["-c", f"{key}.command={json.dumps(command)}"])
+        args.extend(["-c", f"{key}.args={json.dumps(server_args)}"])
+        args.extend(["-c", f"{key}.enabled=true"])
+        args.extend(["-c", f"{key}.required=true"])
+        args.extend(["-c", f'{key}.default_tools_approval_mode="approve"'])
+    return args
+
+
+def _write_opencode_project_config(work_dir: Path, config_path: Path) -> Path:
+    servers = {}
+    for name, server in _load_mcp_servers(config_path).items():
+        command = server.get("command")
+        server_args = server.get("args", [])
+        if not isinstance(command, str) or not command:
+            raise ValueError(f"MCP server {name!r} has no stdio command")
+        if not isinstance(server_args, list) or not all(
+            isinstance(item, str) for item in server_args
+        ):
+            raise ValueError(f"MCP server {name!r} args must be a list of strings")
+        entry: Dict[str, Any] = {
+            "type": "local",
+            "command": [command, *server_args],
+            "enabled": True,
+        }
+        if isinstance(server.get("env"), dict):
+            entry["environment"] = server["env"]
+        servers[name] = entry
+    path = work_dir / "opencode.json"
+    path.write_text(
+        json.dumps(
+            {"$schema": "https://opencode.ai/config.json", "mcp": servers},
+            indent=2,
+        )
+    )
+    return path
+
+
+def _write_cursor_project_mcp_config(work_dir: Path, config_path: Path) -> Path:
+    cursor_dir = work_dir / ".cursor"
+    cursor_dir.mkdir(parents=True, exist_ok=True)
+    path = cursor_dir / "mcp.json"
+    path.write_text(config_path.read_text())
+    return path
 
 
 def detect_available_mutation_cli() -> Optional[str]:

@@ -536,38 +536,68 @@ class TestInnerMcpAttachment(unittest.TestCase):
             self.assertEqual(cmd[-1], "mutate")
 
     def test_deep_coordination_spawn_attaches_inner_mcp(self):
-        captured = {}
+        captures = {}
+        current_kind = None
 
         def fake_run(_self, argv, **kwargs):
-            captured["argv"] = argv
-            captured["cwd"] = kwargs["cwd"]
+            captures[current_kind] = {
+                "argv": argv,
+                "cwd": kwargs["cwd"],
+            }
             kwargs["stdout_path"].write_text("")
             kwargs["stderr_path"].write_text("")
             (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
             return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
 
         with tempfile.TemporaryDirectory() as tmp:
-            session = _deep_session(
-                tmp,
-                coordination_cli=AgentCliConfig(kind="claude", binary="/usr/bin/claude"),
-            )
-            asyncio.run(session.begin_run())
             with patch.object(CliRunner, "run", fake_run):
-                text = asyncio.run(session.coordination.llm.generate("brief", tag="pes.plan"))
+                for kind in ("claude", "codex", "opencode", "agent"):
+                    current_kind = kind
+                    kind_tmp = Path(tmp) / kind
+                    kind_tmp.mkdir()
+                    session = _deep_session(
+                        str(kind_tmp),
+                        coordination_cli=AgentCliConfig(
+                            kind=kind,
+                            binary=f"/usr/bin/{kind}",
+                        ),
+                    )
+                    asyncio.run(session.begin_run())
+                    text = asyncio.run(
+                        session.coordination.llm.generate("brief", tag="pes.plan")
+                    )
+                    self.assertEqual(text, "ok")
 
-            work = captured["cwd"]
-            self.assertEqual(text, "ok")
-            self.assertEqual((work / "BRIEF.md").read_text(), "brief")
-            self.assertIn("submit_coordination", (work / "SYSTEM.md").read_text())
-            self.assertTrue((work / "tools" / "snapshot.json").is_file())
-            self.assertTrue((work / "tools" / MCP_CONFIG_NAME).is_file())
-            self.assertIn("--mcp-config", captured["argv"])
+            for kind in ("claude", "codex", "opencode", "agent"):
+                with self.subTest(kind=kind):
+                    captured = captures[kind]
+                    work = captured["cwd"]
+                    self.assertEqual((work / "BRIEF.md").read_text(), "brief")
+                    self.assertIn("submit_coordination", (work / "SYSTEM.md").read_text())
+                    self.assertTrue((work / "tools" / "snapshot.json").is_file())
+                    self.assertTrue((work / "tools" / MCP_CONFIG_NAME).is_file())
+                    if kind == "claude":
+                        self.assertIn("--mcp-config", captured["argv"])
+                    elif kind == "codex":
+                        self.assertIn(
+                            "mcp_servers.noema.required=true",
+                            captured["argv"],
+                        )
+                    elif kind == "opencode":
+                        opencode = json.loads((work / "opencode.json").read_text())
+                        self.assertTrue(opencode["mcp"]["noema"]["enabled"])
+                    else:
+                        self.assertTrue((work / ".cursor" / "mcp.json").is_file())
+                        self.assertIn("--approve-mcps", captured["argv"])
 
     def test_cli_mutation_backend_attaches_inner_mcp_when_session_bound(self):
-        captured = {}
+        captures = {}
 
         def fake_run(_self, argv, **kwargs):
-            captured["argv"] = argv
+            captures[kwargs["cwd"].parent.name] = {
+                "argv": argv,
+                "cwd": kwargs["cwd"],
+            }
             kwargs["stdout_path"].write_text("")
             kwargs["stderr_path"].write_text("")
             (kwargs["cwd"] / "child.py").write_text("def f():\n    return 99\n")
@@ -576,23 +606,40 @@ class TestInnerMcpAttachment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             session = _deep_session(tmp)
             asyncio.run(session.begin_run())
-            work = Path(tmp) / "mut"
-            backend = CliMutationBackend(kind="claude", binary="/usr/bin/claude")
-            backend.bind_session(session)
-            request = MutationRequest(
-                prompt={"system": "sys", "user": "improve"},
-                parent_code=INITIAL_PROGRAM,
-                work_dir=work,
-                deliverable_path=work / "child.py",
-                timeout_s=5.0,
-            )
             with patch.object(CliRunner, "run", fake_run):
-                result = backend.run(request)
+                for kind in ("claude", "codex", "opencode", "agent"):
+                    work = Path(tmp) / kind / "mut"
+                    backend = CliMutationBackend(kind=kind, binary=f"/usr/bin/{kind}")
+                    backend.bind_session(session)
+                    request = MutationRequest(
+                        prompt={"system": "sys", "user": "improve"},
+                        parent_code=INITIAL_PROGRAM,
+                        work_dir=work,
+                        deliverable_path=work / "child.py",
+                        timeout_s=5.0,
+                    )
+                    result = backend.run(request)
+                    self.assertTrue(result.ok)
 
-            self.assertTrue(result.ok)
-            self.assertTrue((work / "tools" / "snapshot.json").is_file())
-            self.assertTrue((work / "tools" / MCP_CONFIG_NAME).is_file())
-            self.assertIn("--mcp-config", captured["argv"])
+            for kind in ("claude", "codex", "opencode", "agent"):
+                with self.subTest(kind=kind):
+                    captured = captures[kind]
+                    work = captured["cwd"]
+                    self.assertTrue((work / "tools" / "snapshot.json").is_file())
+                    self.assertTrue((work / "tools" / MCP_CONFIG_NAME).is_file())
+                    if kind == "claude":
+                        self.assertIn("--mcp-config", captured["argv"])
+                    elif kind == "codex":
+                        self.assertIn(
+                            "mcp_servers.noema.required=true",
+                            captured["argv"],
+                        )
+                    elif kind == "opencode":
+                        opencode = json.loads((work / "opencode.json").read_text())
+                        self.assertTrue(opencode["mcp"]["noema"]["enabled"])
+                    else:
+                        self.assertTrue((work / ".cursor" / "mcp.json").is_file())
+                        self.assertIn("--approve-mcps", captured["argv"])
 
     def test_cli_mutation_backend_without_session_writes_no_mcp_config(self):
         def fake_run(_self, argv, **kwargs):
