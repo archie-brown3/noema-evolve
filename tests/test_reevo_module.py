@@ -122,6 +122,15 @@ class TestReEvoShortTermModule(unittest.TestCase):
         self.assertEqual(advice.attribution["reevo"]["reason"], "no_strictly_fitter_local_exemplar")
         self.assertEqual(llm.calls, [])
 
+    def test_empty_filtered_snippet_skips_without_calling_llm(self):
+        parent = program("parent", 0.5, "def f():")
+        better = program("better", 0.8, "def f():\n    return 2")
+        llm = FakeLLM()
+        advice = asyncio.run(self.make_module(llm).advise(context(parent, [parent, better])))
+        self.assertEqual(advice.prompt_block, "")
+        self.assertEqual(advice.attribution["reevo"]["reason"], "empty_reflection_code")
+        self.assertEqual(llm.calls, [])
+
     def test_empty_response_is_not_injected(self):
         parent, better = program("parent", 0.5), program("better", 0.7)
         advice = asyncio.run(

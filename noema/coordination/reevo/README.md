@@ -22,6 +22,8 @@ pinned reflector templates and code-filter helpers.
 The registry constructs the module for `coordination.module: "reevo"`.
 `advise` observes the host-selected parent and a local population snapshot,
 selects a strictly fitter local comparator, and makes one coordination LLM call.
+A mutation is only eligible when the donor code filter leaves both programs with
+a non-empty snippet, so a blank comparison never reaches the metered call.
 The reflection is injected as a `[Reflection]` suffix on the shared mutation
 prompt. `report_result` and `on_generation_end` are no-ops; the arm is
 memoryless.
