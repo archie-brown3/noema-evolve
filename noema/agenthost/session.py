@@ -55,6 +55,7 @@ class AgentSession:
             log_path=config.budget.log_path or os.path.join(output_dir, "llm_calls.jsonl"),
         )
         self.substrate = build_substrate_runtime(config)
+        random.seed(config.random_seed)
         self.store = self.substrate.store
         self.evaluator = make_evaluator(
             config.evaluator, evaluation_file, suffix=config.file_suffix

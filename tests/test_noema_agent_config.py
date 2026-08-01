@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import warnings
 from pathlib import Path
+from unittest import mock
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig
 
@@ -193,6 +194,44 @@ class TestCreateAgentSession(unittest.TestCase):
             warnings.simplefilter("ignore")
             session = self._session(tmp, config)
         self.assertIsInstance(session.coordination.llm, DeepCoordinationLLM)
+
+    def test_factory_bootstraps_escalation_model_from_coordination_seat(self):
+        noema = NoemaConfig(
+            coordination=CoordinationConfig(module="bandit"),
+            llm=LLMRolesConfig(
+                coordination=LLMClientConfig(model="coord-model", api_key="fake-key"),
+            ),
+        )
+        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
+            "openai.AsyncOpenAI"
+        ):
+            warnings.simplefilter("ignore")
+            session = self._session(tmp, AgentConfig(noema=noema))
+        self.assertIs(session.config, noema)
+        self.assertEqual(session.coordination.config["escalation_model"], "coord-model")
+
+    def test_factory_wires_pe_alternate_tier_models(self):
+        noema = NoemaConfig(
+            coordination=CoordinationConfig(
+                module="pe",
+                params={
+                    "paradigm_model": "heavy-model",
+                    "variant_model": "light-model",
+                },
+            ),
+            llm=LLMRolesConfig(
+                coordination=LLMClientConfig(model="base-model", api_key="fake-key"),
+            ),
+        )
+        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
+            "openai.AsyncOpenAI"
+        ):
+            warnings.simplefilter("ignore")
+            session = self._session(tmp, AgentConfig(noema=noema))
+        self.assertIs(session.config, noema)
+        self.assertEqual(session.coordination._paradigm_llm.model, "heavy-model")
+        self.assertEqual(session.coordination._variant_llm.model, "light-model")
+        self.assertEqual(session.coordination.llm.model, "base-model")
 
     def test_shallow_mutation_builds_unbound_cli_backend(self):
         with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings():

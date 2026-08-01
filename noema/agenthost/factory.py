@@ -35,11 +35,55 @@ def _build_coordination(
         )
     params = dict(noema.coordination.params)
     params.setdefault("domain_context", noema.prompt.system_message)
-    return build_coordination_module(
+    params.setdefault("escalation_model", noema.llm.coordination.model)
+    coordination = build_coordination_module(
         noema.coordination.module,
         params,
         llm=coordination_llm,
         rng=random.Random(noema.coordination.seed),
+    )
+    _wire_alternate_tier(
+        coordination,
+        "set_paradigm_llm",
+        params.get("paradigm_model"),
+        config,
+        ledger,
+        tag=f"{noema.coordination.module}.paradigm",
+    )
+    _wire_alternate_tier(
+        coordination,
+        "set_variant_llm",
+        params.get("variant_model"),
+        config,
+        ledger,
+        tag=f"{noema.coordination.module}.variant",
+    )
+    return coordination
+
+
+def _wire_alternate_tier(
+    coordination: CoordinationModule,
+    setter_name: str,
+    model_name: Optional[str],
+    config: AgentConfig,
+    ledger: TokenLedger,
+    *,
+    tag: str,
+) -> None:
+    noema = config.noema
+    if not model_name or model_name == noema.llm.coordination.model:
+        return
+    setter = getattr(coordination, setter_name, None)
+    if setter is None:
+        return
+    setter(
+        build_budgeted_llm(
+            noema.llm.coordination,
+            ledger=ledger,
+            account=COORDINATION_ACCOUNT,
+            tag=tag,
+            model=model_name,
+        )
     )
 
 

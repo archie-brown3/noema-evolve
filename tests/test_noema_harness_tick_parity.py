@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+import random
 import tempfile
 import unittest
 
@@ -141,6 +142,60 @@ class TestHarnessTickParity(unittest.TestCase):
 
 class TestHarnessStoreParity(unittest.TestCase):
     """Shallow/shallow agent host must land the same population as the controller."""
+
+    def test_agent_and_controller_restore_same_global_selection_seed(self):
+        config = make_controller_config(
+            max_iterations=1,
+            random_seed=9173,
+            database=DatabaseConfig(
+                in_memory=True,
+                num_islands=2,
+                population_size=50,
+                random_seed=42,
+            ),
+            substrate=SubstrateConfig(kind="islands"),
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(CTRL_EVAL)
+
+            AgentSession(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "agent_output"),
+                coordination=NullCoordination(),
+                ledger=TokenLedger(total_budget_tokens=1_000_000),
+                stop_children=1,
+                mutation_backend=FakeMutationBackend(producer=lambda _req: INITIAL_PROGRAM),
+            )
+            agent_draw = random.random()
+
+            ledger = TokenLedger(total_budget_tokens=1_000_000)
+            NoemaController(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "ctrl_output"),
+                mutation_llm=BudgetedLLM(
+                    model="fake-model",
+                    ledger=ledger,
+                    account="mutation",
+                    tag="mutate",
+                    client=CyclingFakeClient(),
+                    retries=0,
+                    retry_delay=0.0,
+                ),
+                coordination=NullCoordination(),
+                ledger=ledger,
+            )
+            controller_draw = random.random()
+
+        expected_draw = random.Random(config.random_seed).random()
+        self.assertEqual(agent_draw, expected_draw)
+        self.assertEqual(controller_draw, expected_draw)
 
     def test_store_state_is_identical(self):
         stop = 6
