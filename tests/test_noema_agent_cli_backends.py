@@ -1,5 +1,6 @@
 """Unit tests for headless mutation CLI adapters (claude / codex / opencode)."""
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -43,6 +44,61 @@ class TestCliCommandBuilders(unittest.TestCase):
                     )
                     self.assertIn(flags[kind], command)
                     self.assertIn("strong-model", command)
+
+    def test_every_supported_cli_attaches_mcp_config(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            system = work / "SYSTEM.md"
+            system.write_text("sys")
+            mcp = work / "tools" / "mcp.json"
+            mcp.parent.mkdir()
+            mcp.write_text(
+                json.dumps(
+                    {
+                        "mcpServers": {
+                            "noema": {
+                                "type": "stdio",
+                                "command": "/usr/bin/python3",
+                                "args": ["-m", "noema.agenthost.inner_session_mcp"],
+                            }
+                        }
+                    }
+                )
+            )
+            for kind in SUPPORTED_MUTATION_CLIS:
+                with self.subTest(kind=kind):
+                    command = build_mutation_cli_command(
+                        kind,
+                        work_dir=work,
+                        system_path=system,
+                        user_message="mutate",
+                        binary=f"/usr/bin/{kind}",
+                        mcp_config_path=mcp,
+                    )
+                    if kind == "claude":
+                        self.assertIn("--mcp-config", command)
+                        self.assertIn(str(mcp), command)
+                    elif kind == "codex":
+                        self.assertIn(
+                            'mcp_servers.noema.command="/usr/bin/python3"',
+                            command,
+                        )
+                        self.assertIn("mcp_servers.noema.required=true", command)
+                    elif kind == "opencode":
+                        config = json.loads((work / "opencode.json").read_text())
+                        self.assertEqual(
+                            config["mcp"]["noema"]["command"],
+                            [
+                                "/usr/bin/python3",
+                                "-m",
+                                "noema.agenthost.inner_session_mcp",
+                            ],
+                        )
+                        self.assertTrue(config["mcp"]["noema"]["enabled"])
+                    else:
+                        cursor_config = work / ".cursor" / "mcp.json"
+                        self.assertTrue(cursor_config.is_file())
+                        self.assertIn("--approve-mcps", command)
 
     def test_claude_argv_uses_print_and_system_file(self):
         with tempfile.TemporaryDirectory() as tmp:
