@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Optional
 
-from openevolve.utils.code_utils import extract_diffs, parse_full_rewrite
+from openevolve.utils.code_utils import (  # type: ignore[import-untyped]
+    extract_diffs,
+    parse_full_rewrite,
+)
 
 from noema.evolution.diff import apply_diff_lenient as apply_diff
 

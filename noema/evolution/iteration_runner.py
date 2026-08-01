@@ -14,13 +14,13 @@ from dataclasses import asdict
 from dataclasses import replace as dataclass_replace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, Tuple, runtime_checkable
 
-from openevolve.database import Program
-from openevolve.utils.code_utils import (
+from openevolve.database import Program  # type: ignore[import-untyped]
+from openevolve.utils.code_utils import (  # type: ignore[import-untyped]
     extract_diffs,
     format_diff_summary,
     parse_full_rewrite,
 )
-from openevolve.utils.metrics_utils import get_fitness_score
+from openevolve.utils.metrics_utils import get_fitness_score  # type: ignore[import-untyped]
 
 from noema.budget.ledger import BudgetExhausted
 from noema.coordination import GenerationContext, Outcome, SelectionContext
