@@ -38,6 +38,37 @@ def _consume_task_result(task: asyncio.Task) -> None:
         pass
 
 
+def build_budgeted_llm(
+    client_config,
+    *,
+    ledger: "TokenLedger",
+    account: str,
+    tag: str,
+    model: Optional[str] = None,
+) -> "BudgetedLLM":
+    """Build a ``BudgetedLLM`` from an ``LLMClientConfig`` seat.
+
+    ``model`` overrides the seat's model for alternate-tier clients (task 0110).
+    """
+    return BudgetedLLM(
+        model=model or client_config.model,
+        ledger=ledger,
+        account=account,
+        tag=tag,
+        api_base=client_config.api_base,
+        api_key=client_config.api_key,
+        temperature=client_config.temperature,
+        top_p=client_config.top_p,
+        max_tokens=client_config.max_tokens,
+        seed=client_config.seed,
+        timeout=client_config.timeout,
+        retries=client_config.retries,
+        retry_delay=client_config.retry_delay,
+        total_deadline_s=client_config.total_deadline_s,
+        disable_reasoning=client_config.disable_reasoning,
+    )
+
+
 class FatalProviderError(Exception):
     """A provider error retrying cannot fix (401/402/403). Not retried."""
 
