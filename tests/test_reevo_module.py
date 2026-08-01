@@ -9,6 +9,7 @@ from noema.coordination.base import GenerationContext
 from noema.coordination.reevo.module import REFLECTION_TAG, select_better_exemplar
 from noema.coordination.reevo.prompts import (
     SYSTEM_REFLECTOR,
+    USER_REFLECTOR_ST_TEMPLATE,
     donor_filter_code,
     reflection_code,
     render_short_term_reflection_prompt,

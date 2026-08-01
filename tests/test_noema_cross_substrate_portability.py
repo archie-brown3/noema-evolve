@@ -34,12 +34,14 @@ from noema.coordination.base import (
     NullCoordination,
     SelectionContext,
 )
+from noema.evolution.views import ProgramView
+from noema.substrates.base import PopulationSnapshot
 from noema.substrates.islands import IslandsStore
 from tests.fixture_substrates import FixtureCVTStore, seed_store
 
 SCORES = {0: [0.30, 0.55, 0.71], 1: [0.42, 0.68], 2: [0.10, 0.25, 0.60]}
 
-MODULE_KEYS = ["null", "hifo", "pes-faithful"]
+MODULE_KEYS = ["null", "hifo", "pes-faithful", "reevo"]
 
 
 def make_islands_store() -> IslandsStore:
@@ -114,7 +116,14 @@ def make_fake_llm():
 
 
 def build(key, llm=None):
-    return build_coordination_module(key, {}, llm=llm, rng=random.Random(0))
+    if key == "reevo" and llm is None:
+        llm, _ = make_fake_llm()
+    return build_coordination_module(
+        key,
+        {"domain_context": "test problem", "function_name": "heuristic"},
+        llm=llm,
+        rng=random.Random(0),
+    )
 
 
 class TestModulesRunOnBothSubstrates(unittest.TestCase):
@@ -177,12 +186,52 @@ class TestSubstrateIdentityAloneChangesNothing(unittest.TestCase):
                 )
 
 
+class TestReEvoSubstrateNeutrality(unittest.TestCase):
+    def _semantic_ctx(self, topology: str) -> GenerationContext:
+        parent = ProgramView(id="parent", code="def f():\n    return 1", fitness=0.5)
+        better = ProgramView(id="better", code="def f():\n    return 2", fitness=0.8)
+        snapshot = PopulationSnapshot(
+            scope=0,
+            top_programs=(parent, better),
+            fitnesses=(0.5, 0.8),
+            topology=topology,
+        )
+        return GenerationContext(
+            iteration=3,
+            generation=1,
+            scope_id=0,
+            parent=parent,
+            local_population=snapshot,
+            global_population=snapshot,
+        )
+
+    def test_identical_semantic_roles_yield_identical_advice(self):
+        llm, _ = make_fake_llm()
+        module = build("reevo", llm=llm)
+        island_advice = asyncio.run(module.advise(self._semantic_ctx("islands")))
+        cvt_advice = asyncio.run(module.advise(self._semantic_ctx("cvt_regions")))
+        self.assertEqual(island_advice.prompt_block, cvt_advice.prompt_block)
+        self.assertNotIn("topology_adaptation", island_advice.attribution)
+        self.assertNotIn("topology_adaptation", cvt_advice.attribution)
+
+    def test_topology_traced_without_changing_advice(self):
+        llm, _ = make_fake_llm()
+        for topology in ("islands", "cvt_regions"):
+            with self.subTest(topology=topology):
+                module = build("reevo", llm=llm)
+                advice = asyncio.run(module.advise(self._semantic_ctx(topology)))
+                self.assertTrue(advice.prompt_block)
+                self.assertEqual(advice.attribution["reevo"]["topology"], topology)
+                self.assertNotIn("topology_adaptation", advice.attribution)
+
+
 class TestNoConcreteSubstrateReachesCoordination(unittest.TestCase):
     def test_modules_never_import_a_concrete_store(self):
         import noema.coordination.hifo.module as hifo_mod
         import noema.coordination.pes.planner as pes_planner
+        import noema.coordination.reevo.module as reevo_mod
 
-        for module in (hifo_mod, pes_planner):
+        for module in (hifo_mod, pes_planner, reevo_mod):
             source = inspect.getsource(module)
             with self.subTest(module=module.__name__):
                 self.assertNotIn("from noema.substrates.islands", source)

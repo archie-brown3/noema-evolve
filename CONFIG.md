@@ -77,7 +77,7 @@ key plus a bundle of sub-options.
 
 | Name | Description | Usage |
 |---|---|---|
-| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `null` (OFF arm), `hifo`, `pes-custom`, `pes-faithful`. Default `"null"`. Unknown keys raise `ValueError` listing the registry. |
+| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `null` (OFF arm), `hifo`, `pes-custom`, `pes-faithful`, `reevo`. Default `"null"`. Unknown keys raise `ValueError` listing the registry. |
 | ⚠️ `coordination.module: "pes"` | **Deprecated alias** for `pes-custom` (predates the arm split; kept so existing run configs keep working). Resolves to `pes-custom` with unchanged behavior and logs a deprecation warning. | Works, but prefer `pes-custom` in new configs. |
 | ✅ `coordination.params` | Free-form dict of mechanism-specific params, handed to the module's constructor. Valid keys depend entirely on the selected module (§2.1, §2.2). | `params: {tips_per_prompt: 3}` — dict. Default `{}`. |
 | ✅ `coordination.seed` | Seed for the module's own RNG. | `seed: 43` — int or `null`. Default `null` → `random_seed + 1`. |
@@ -147,6 +147,19 @@ HiFo-Prompt values.
 | ✅ `min_tip_length` | Minimum character length for an extracted tip to be accepted into the pool. | `min_tip_length: 10` — int. Default `10`. |
 
 The `null` arm (`NullCoordination`) takes **no params**.
+
+### 2.3 ReEvo module params (`coordination.module: "reevo"`)
+
+Read in `ReEvoShortTermModule.advise` (`noema/coordination/reevo/module.py`). This is a
+coordination-only ablation arm: paired runs against `null` must differ **only** in
+`coordination.module`.
+
+| Name | Description | Usage |
+|---|---|---|
+| ✅ `domain_context` | Problem description passed to the short-term reflector (`problem_desc` in the donor template). | `domain_context: "maximize packing quality"` — str. Default `""`; the controller also `setdefault`s this from `prompt.system_message`. |
+| ✅ `function_name` | Evolvable function name in the reflector prompt (`func_name` in the donor template). | `function_name: "heuristic"` — str. Default `"evolvable"`. |
+| ⚠️ `func_name` | Deprecated alias for `function_name`. | Prefer `function_name` in new configs. |
+| ✅ `func_desc` | Optional function-description line in the donor template (blank when omitted). | `func_desc: "Minimize total cost."` — str. Default `""`. |
 
 ---
 

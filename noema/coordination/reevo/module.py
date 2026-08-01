@@ -1,5 +1,18 @@
 """ReEvo-derived short-term reflection, adapted as a coordination-only arm.
 
+BORROWED CODE — Short-term reflection mechanism from ReEvo (MIT).
+Source: https://github.com/ai4co/reevo
+  reevo.py (``gen_short_term_reflection_prompt``, ``short_term_reflection``)
+  prompts/common/system_reflector.txt, prompts/common/user_reflector_st.txt
+  utils/utils.py (``filter_code``)
+  pinned at commit 6dce18257da5e11db2d138e417a2fffc5c72d05f
+
+NOEMA adaptations:
+  - Host-selected parent is fixed; comparator is the strictly-fitter local
+    program with deterministic id tie-break (donor draws two parents).
+  - Memoryless: no checkpoint state; one reflection call per eligible mutation.
+  - Reflection is injected as ``[Reflection]`` advice, not donor crossover.
+
 This module deliberately does not select parents, crossover, evaluate, or
 admit programs.  It observes Noema's already-selected parent and a local
 population snapshot, then contributes one donor-shaped verbal gradient to the
@@ -70,6 +83,7 @@ class ReEvoShortTermModule(CoordinationModule):
             function_name=str(
                 self.config.get("function_name", self.config.get("func_name", "evolvable"))
             ),
+            func_desc=str(self.config.get("func_desc", "")),
             worse_code=reflection_code(parent.code),
             better_code=reflection_code(better.code),
         )

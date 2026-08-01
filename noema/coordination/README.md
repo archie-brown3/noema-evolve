@@ -25,6 +25,7 @@ The builder constructs an arm from `NoemaConfig.coordination.module`.
 - [`hifo/`](./hifo/README.md) supplies insight-pool and navigator guidance.
 - [`pe/`](./pe/README.md) proposes periodic paradigm shifts and variants.
 - [`pes/`](./pes/README.md) plans mutations and reflects on their outcomes.
+- [`reevo/`](./reevo/README.md) contributes short-term reflection hints before mutation.
 
 The registry also provides the `null` control arm.
 

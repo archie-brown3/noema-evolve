@@ -1,20 +1,32 @@
 """Prompt and code-filter helpers for ReEvo short-term reflection.
 
-The wording below is the short-term reflector template available in the local
-LLM4AD ReEvo implementation.  Task 0149 pins the authoritative upstream
-ai4co/reevo source and requires its final golden-source check before completion.
-This module keeps that small donor-shaped surface isolated from Noema's host
-mutation prompts.
+BORROWED CODE — Short-term reflector templates and ``filter_code`` semantics,
+ported from ReEvo (MIT). Source: https://github.com/ai4co/reevo
+  prompts/common/system_reflector.txt
+  prompts/common/user_reflector_st.txt
+  utils/utils.py (``filter_code``)
+  pinned at commit 6dce18257da5e11db2d138e417a2fffc5c72d05f
+
+Golden copies live under ``noema/coordination/reevo/golden/`` (mirrored in
+``tests/fixtures/reevo/``).  This module keeps that small donor-shaped surface
+isolated from Noema's host mutation prompts.
+
+NOEMA adaptations (not in donor short-term path):
+  - ``extract_evolve_block`` applied before ``donor_filter_code`` (host scaffold).
+  - Config keys ``domain_context`` / ``function_name`` map to donor
+    ``problem_desc`` / ``func_name``.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from noema.coordination.pe.prompts import extract_evolve_block
 
-SYSTEM_REFLECTOR = (
-    "You are an expert in the domain of optimization heuristics. "
-    "Your task is to give hints to design better heuristics."
-)
+_GOLDEN_DIR = Path(__file__).resolve().parent / "golden" / "prompts" / "common"
+
+SYSTEM_REFLECTOR = (_GOLDEN_DIR / "system_reflector.txt").read_text()
+USER_REFLECTOR_ST_TEMPLATE = (_GOLDEN_DIR / "user_reflector_st.txt").read_text()
 
 
 def donor_filter_code(code: str) -> str:
@@ -38,18 +50,15 @@ def render_short_term_reflection_prompt(
     *,
     domain_context: str,
     function_name: str,
+    func_desc: str = "",
     worse_code: str,
     better_code: str,
 ) -> str:
-    """Render the ReEvo short-term comparison with worse code first."""
-    return (
-        f"Below are two {function_name} functions for {domain_context}.\n"
-        "You are provided with two code versions below, where the second version "
-        "performs better than the first one.\n"
-        "[Worse code]\n"
-        f"{worse_code}\n"
-        "[Better code]\n"
-        f"{better_code}\n"
-        "You respond with some hints for designing better heuristics, based on the "
-        "two code versions and using less than 20 words."
+    """Render the pinned ReEvo short-term comparison with worse code first."""
+    return USER_REFLECTOR_ST_TEMPLATE.format(
+        func_name=function_name,
+        problem_desc=domain_context,
+        func_desc=func_desc,
+        worse_code=worse_code,
+        better_code=better_code,
     )
