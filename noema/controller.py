@@ -1,5 +1,5 @@
 """
-The noema controller loop.
+The noema single-process controller.
 
 Single-process, strictly sequential: sample → advise → prompt → mutate → parse →
 evaluate → add → report → generation tick → checkpoint. Coordination state lives
@@ -64,8 +64,9 @@ def _decode_rng_state(encoded) -> tuple:
 
 class NoemaController:
     """
-    Owns the evolution loop; borrows OpenEvolve's database/evaluator/prompt
-    sampler via the substrate adapters and calls the coordination hooks.
+    Hosts the shared iteration runner in-process; borrows OpenEvolve's
+    database/evaluator/prompt sampler via the substrate adapters and calls the
+    coordination hooks.
 
     Args:
         config: Experiment configuration.

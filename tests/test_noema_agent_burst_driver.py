@@ -127,7 +127,7 @@ class TestRunAgentMode(unittest.TestCase):
         config = make_config(max_iterations=2)
         calls = 0
 
-        async def reject_without_raising(_session, _iteration):
+        async def reject_without_raising(_session, _iteration, **_kwargs):
             nonlocal calls
             calls += 1
             if calls > config.max_iterations:

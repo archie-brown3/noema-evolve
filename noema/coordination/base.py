@@ -22,8 +22,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional
 
-from noema.substrates.base import PopulationSnapshot
 from noema.evolution.views import ProgramView
+from noema.substrates.base import PopulationSnapshot
 
 
 class Outcome(str, Enum):
@@ -39,9 +39,9 @@ class Outcome(str, Enum):
     which is why null/hifo/pes are unaffected.
     """
 
-    ACCEPTED = "accepted"        # a real evaluated child (may still have scored worse)
-    NO_PROGRAM = "no_program"    # unparseable response or over-length code — never evaluated
-    EVAL_ERROR = "eval_error"    # applyable code that errored/produced no metrics at evaluation
+    ACCEPTED = "accepted"  # a real evaluated child (may still have scored worse)
+    NO_PROGRAM = "no_program"  # unparseable response or over-length code — never evaluated
+    EVAL_ERROR = "eval_error"  # applyable code that errored/produced no metrics at evaluation
 
 
 @dataclass(frozen=True, init=False)
@@ -111,6 +111,7 @@ class GenerationContext:
         object.__setattr__(self, "diversity_history", tuple(diversity_history))
         object.__setattr__(self, "operator", operator)
 
+
 @dataclass(frozen=True)
 class SelectionContext:
     iteration: int
@@ -161,7 +162,7 @@ class ProposedProgram:
     """
 
     code: str
-    origin: str = "coordination"     # provenance tag, e.g. "paradigm_shift" / "variant"
+    origin: str = "coordination"  # provenance tag, e.g. "paradigm_shift" / "variant"
     parent_id: Optional[str] = None
 
 
@@ -244,12 +245,10 @@ class CoordinationModule(ABC):
         """Per-generation JSON for the run log; override for mechanism-specific fields"""
         return {}
 
-    async def retry_advice(
-        self, ctx: GenerationContext, error_text: str, attempt: int
-    ) -> str:
+    async def retry_advice(self, ctx: GenerationContext, error_text: str, attempt: int) -> str:
         """Text to append to a retry's mutation prompt (default: none).
 
-        Called by the controller's retry loop after a failed attempt, before
+        Called by the shared iteration runner after a failed attempt, before
         re-issuing the mutation call. "" means the retry uses raw error only.
         Non-abstract on purpose: NullCoordination, HiFo, and s1 inherit this
         no-op; only PES overrides it (the sanctioned second-consumer case).

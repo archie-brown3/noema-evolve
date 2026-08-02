@@ -1,9 +1,9 @@
 """Inner-session read snapshot for deep CLI sessions (task 0175 / option-2 fix).
 
 Serializes the store's canonical ``PopulationSnapshot`` (same projection the
-controller loop hands to coordination) plus an explicit lineage adjacency map
-built from ``Program.parent_id``. ``ProgramView`` stays frozen — lineage is a
-deep-arm side channel, not a forged metadata key.
+shared iteration runner hands to coordination) plus an explicit lineage
+adjacency map built from ``Program.parent_id``. ``ProgramView`` stays frozen —
+lineage is a deep-arm side channel, not a forged metadata key.
 """
 
 from __future__ import annotations

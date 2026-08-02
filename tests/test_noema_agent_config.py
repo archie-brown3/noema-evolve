@@ -15,9 +15,9 @@ from openevolve.config import DatabaseConfig, EvaluatorConfig
 from noema.agenthost.cli_bootstrap import build_agent_config, parse_entry_args
 from noema.agenthost.config import AgentCliConfig, AgentConfig, validate_agent_config
 from noema.agenthost.factory import create_agent_session
+from noema.agenthost.inner_session_mcp import MCP_CONFIG_NAME, TOOLS_DIRNAME
 from noema.agenthost.mutation import CliMutationBackend, FakeMutationBackend
 from noema.agenthost.reasoning import DeepCoordinationLLM
-from noema.agenthost.inner_session_mcp import MCP_CONFIG_NAME, TOOLS_DIRNAME
 from noema.agenthost.submit import ADVICE_FILENAME
 from noema.budget.cli_runner import CliRunner, CliRunResult
 from noema.budget.llm import BudgetedLLM
@@ -208,8 +208,10 @@ class TestCreateAgentSession(unittest.TestCase):
                 coordination=LLMClientConfig(model="coord-model", api_key="fake-key"),
             ),
         )
-        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
-            "openai.AsyncOpenAI"
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            warnings.catch_warnings(),
+            mock.patch("openai.AsyncOpenAI"),
         ):
             warnings.simplefilter("ignore")
             session = self._session(tmp, AgentConfig(noema=noema))
@@ -229,8 +231,10 @@ class TestCreateAgentSession(unittest.TestCase):
                 coordination=LLMClientConfig(model="base-model", api_key="fake-key"),
             ),
         )
-        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
-            "openai.AsyncOpenAI"
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            warnings.catch_warnings(),
+            mock.patch("openai.AsyncOpenAI"),
         ):
             warnings.simplefilter("ignore")
             session = self._session(tmp, AgentConfig(noema=noema))
@@ -257,8 +261,10 @@ class TestCreateAgentSession(unittest.TestCase):
             coordination_depth="deep",
             coordination_cli=AgentCliConfig(kind="opencode", binary=sys.executable),
         )
-        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
-            "openai.AsyncOpenAI"
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            warnings.catch_warnings(),
+            mock.patch("openai.AsyncOpenAI"),
         ):
             warnings.simplefilter("ignore")
             session = self._session(tmp, config)
@@ -285,7 +291,7 @@ class TestCreateAgentSession(unittest.TestCase):
             with mock.patch.object(CliRunner, "run", fake_run):
                 result = asyncio.run(
                     session.coordination._paradigm_llm.generate("prompt", tag="pe.paradigm_shift")
-            )
+                )
 
             self.assertEqual(result, "ok")
             self.assertIn("-m", captured["argv"])
@@ -313,8 +319,10 @@ class TestCreateAgentSession(unittest.TestCase):
                 model="cli-model",
             ),
         )
-        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
-            "openai.AsyncOpenAI"
+        with (
+            tempfile.TemporaryDirectory() as tmp,
+            warnings.catch_warnings(),
+            mock.patch("openai.AsyncOpenAI"),
         ):
             warnings.simplefilter("ignore")
             session = self._session(tmp, config)
