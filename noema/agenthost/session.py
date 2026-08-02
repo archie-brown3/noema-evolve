@@ -29,6 +29,7 @@ from noema.evolution.evaluator import make_evaluator
 from noema.evolution.iteration_runner import IterationRunner
 from noema.evolution.operators import OperatorSpec
 from noema.evolution.prompts import make_prompt_sampler
+from noema.logging import setup_run_logging
 from noema.substrates.registry import build_substrate_runtime
 from noema.trace import AttemptTraceWriter
 
@@ -53,11 +54,14 @@ class AgentSession:
         mutation_backend: Optional[MutationBackend] = None,
         mutation_timeout_s: float = 120.0,
         attempt_trace_callback: Optional[Callable[[dict], None]] = None,
+        mutation_via: str = "cli/shallow",
     ):
         self.config = config
         self.task = task or config.prompt.system_message
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
+        self.run_logging = setup_run_logging(config.logging, output_dir)
+        self.mutation_via = mutation_via
 
         self.ledger = ledger or TokenLedger(
             total_budget_tokens=config.budget.total_tokens,

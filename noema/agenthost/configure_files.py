@@ -111,6 +111,16 @@ def _cli_from_mapping(data: Optional[dict]) -> "AgentCliConfig":
     )
 
 
+def _host_log_verbosity(value: Any) -> str:
+    """Map legacy monitor values onto the shared host-log view."""
+
+    if value == "accepted":
+        return "normal"
+    if value == "full":
+        return "debug"
+    return value or "normal"
+
+
 def load_noema_and_agent(path: Path | str) -> "AgentConfig":
     """Load YAML: strip ``agent:``, build ``NoemaConfig`` + ``AgentConfig`` transport."""
 
@@ -133,7 +143,7 @@ def load_noema_and_agent(path: Path | str) -> "AgentConfig":
         mutation_depth=agent_data.get("mutation_depth", "shallow"),
         coordination_cli=_cli_from_mapping(agent_data.get("coordination_cli")),
         coordination_depth=agent_data.get("coordination_depth", "shallow"),
-        host_log_verbosity=agent_data.get("host_log_verbosity", "accepted"),
+        host_log_verbosity=_host_log_verbosity(agent_data.get("host_log_verbosity")),
     )
 
 

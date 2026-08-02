@@ -70,7 +70,7 @@ def _agent_sections(
             {
                 "id": "host_log_verbosity",
                 "kind": "closed",
-                "choices": ["accepted", "full"],
+                "choices": ["normal", "debug"],
                 "value": config.host_log_verbosity,
             },
             {

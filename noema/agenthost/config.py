@@ -35,7 +35,7 @@ class AgentConfig:
     mutation_depth: Literal["shallow", "deep"] = "shallow"
     coordination_cli: AgentCliConfig = field(default_factory=AgentCliConfig)
     coordination_depth: Literal["shallow", "deep"] = "shallow"
-    host_log_verbosity: Literal["accepted", "full"] = "accepted"
+    host_log_verbosity: Literal["normal", "debug"] = "normal"
 
     def __post_init__(self) -> None:
         validate_agent_config(self)
@@ -57,9 +57,9 @@ def validate_agent_config(config: AgentConfig) -> None:
         raise ValueError(
             "coordination_depth must be 'shallow' or 'deep', " f"got {config.coordination_depth!r}"
         )
-    if config.host_log_verbosity not in ("accepted", "full"):
+    if config.host_log_verbosity not in ("normal", "debug"):
         raise ValueError(
-            "host_log_verbosity must be 'accepted' or 'full', " f"got {config.host_log_verbosity!r}"
+            "host_log_verbosity must be 'normal' or 'debug', " f"got {config.host_log_verbosity!r}"
         )
     _validate_active_cli("mutation_cli", config.mutation_cli)
     if config.coordination_depth == "deep":

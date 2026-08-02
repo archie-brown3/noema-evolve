@@ -193,6 +193,7 @@ def create_agent_session(
         mutation_backend=mutation_backend,
         mutation_timeout_s=config.mutation_cli.timeout_s,
         attempt_trace_callback=attempt_trace_callback,
+        mutation_via=f"cli/{config.mutation_depth}",
     )
     if built_coordination:
         _wire_alternate_tiers(

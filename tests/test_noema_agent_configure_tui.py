@@ -100,8 +100,8 @@ class TestModuleClosedField(unittest.TestCase):
             host_log = next(
                 field for field in sections["agent"] if field["id"] == "host_log_verbosity"
             )
-            self.assertEqual(host_log["choices"], ["accepted", "full"])
-            self.assertEqual(host_log["value"], "accepted")
+            self.assertEqual(host_log["choices"], ["normal", "debug"])
+            self.assertEqual(host_log["value"], "normal")
 
     def test_apply_never_writes_python_none_for_module(self):
         walk = ConfigureWalk(
@@ -116,7 +116,7 @@ class TestModuleClosedField(unittest.TestCase):
                     {"id": "mutation_cli.kind", "value": "claude"},
                     {"id": "mutation_depth", "value": "shallow"},
                     {"id": "coordination_depth", "value": "shallow"},
-                    {"id": "host_log_verbosity", "value": "full"},
+                    {"id": "host_log_verbosity", "value": "debug"},
                     {"id": "stop_children", "value": ""},
                     {"id": "mutation_cli.model", "value": ""},
                 ],
@@ -129,7 +129,7 @@ class TestModuleClosedField(unittest.TestCase):
         )
         config, _, output_dir = _apply_walk_to_config(walk, AgentConfig())
         self.assertEqual(config.noema.coordination.module, "null")
-        self.assertEqual(config.host_log_verbosity, "full")
+        self.assertEqual(config.host_log_verbosity, "debug")
         self.assertEqual(output_dir, Path("/tmp/example/example_output").resolve())
 
 

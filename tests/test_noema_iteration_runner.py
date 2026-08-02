@@ -52,6 +52,44 @@ class TestChooseOperator(unittest.TestCase):
 
 
 class TestGenerationTick(unittest.TestCase):
+    def test_accepted_child_emits_shared_host_heartbeat(self):
+        config = make_config(max_iterations=1)
+        with tempfile.TemporaryDirectory() as tmp:
+            eval_path = os.path.join(tmp, "evaluator.py")
+            with open(eval_path, "w") as f:
+                f.write(EVAL_SCRIPT)
+            session = AgentSession(
+                config=config,
+                evaluation_file=eval_path,
+                initial_program_code=INITIAL_PROGRAM,
+                output_dir=os.path.join(tmp, "output"),
+                coordination=NullCoordination(),
+                ledger=TokenLedger(total_budget_tokens=1_000_000),
+                stop_children=1,
+                mutation_backend=FakeMutationBackend(
+                    producer=lambda _req: _scaffold("def f():\n    return 2\n")
+                ),
+            )
+            session.store.add(
+                Program(
+                    id="initial",
+                    code=INITIAL_PROGRAM,
+                    language="python",
+                    metrics={"combined_score": 0.1},
+                ),
+                iteration=0,
+            )
+
+            async def scenario():
+                await IterationRunner.run_iteration(session, 0)
+
+            with self.assertLogs("noema.host", level="INFO") as logs:
+                asyncio.run(scenario())
+            self.assertTrue(
+                any("Child it000000 from parent initial" in line for line in logs.output)
+            )
+            self.assertTrue(any("via cli/shallow" in line for line in logs.output))
+
     def test_generation_tick_fires_on_generation_end(self):
         spy = SpyCoordination(NullCoordination())
         config = make_config()

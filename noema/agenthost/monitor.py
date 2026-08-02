@@ -1,14 +1,14 @@
 """Textual configure flow and live three-pane agency run monitor.
 
 The monitor owns the interactive terminal from configuration through the end of
-an agency run. Coding CLIs paint into role-owned PTYs; the host log remains a
-compact projection of existing attempt provenance.
+an agency run. Coding CLIs paint into role-owned PTYs; the host log consumes
+compact records from the shared host logger.
 """
 
 from __future__ import annotations
 
 import asyncio
-import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -29,36 +29,7 @@ from noema.agenthost.configure_walk import ConfigureWalk
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.session import AgentSessionAborted
 from noema.budget.cli_runner import CliPtyRunner
-
-
-def format_attempt_trace(record: dict[str, Any]) -> str:
-    """Turn one persisted attempt record into the monitor's compact host line."""
-
-    iteration = int(record.get("iteration", 0))
-    attempt = int(record.get("attempt", 0))
-    outcome = str(record.get("outcome", "unknown"))
-    evaluation = record.get("evaluation") or {}
-    candidate = record.get("candidate") or {}
-    metrics = evaluation.get("metrics") or candidate.get("metrics") or evaluation
-    score = metrics.get("combined_score") if isinstance(metrics, dict) else None
-    if score is not None:
-        detail = f"score={float(score):.4g}"
-    elif record.get("error"):
-        detail = str(record["error"]).replace("\n", " ")[:96]
-    else:
-        detail = ""
-    suffix = f"  {detail}" if detail else ""
-    return f"it{iteration:06d} m{attempt:02d}  {outcome}{suffix}"
-
-
-def format_host_log_record(record: dict[str, Any], *, verbosity: str) -> Optional[str]:
-    """Render one persisted attempt record at the configured detail level."""
-
-    if verbosity == "accepted":
-        return format_attempt_trace(record) if record.get("outcome") == "accepted" else None
-    if verbosity == "full":
-        return json.dumps(record, sort_keys=True)
-    raise ValueError(f"unknown host log verbosity: {verbosity!r}")
+from noema.logging import host_logger
 
 
 class RoleTranscript:
@@ -162,27 +133,32 @@ class RolePane(RichLog):
 
 
 class HostLogPane(RichLog):
-    """Live projection of attempt_trace records at the chosen detail level."""
+    """Live view of compact records emitted by the shared host logger."""
 
     can_focus = True
 
     def __init__(self, *, verbosity: str) -> None:
         super().__init__(highlight=False, markup=False, wrap=True, id="host-log")
-        self.border_title = "host log · attempt_trace"
+        self.border_title = "host log"
         self._verbosity = verbosity
 
-    def append_record(self, record: dict[str, Any]) -> None:
-        line = format_host_log_record(record, verbosity=self._verbosity)
-        if line is None:
-            return
+    def append_line(self, line: str) -> None:
         self.write(line)
         self.scroll_end(animate=False)
 
-    def append_event(self, event: dict[str, Any]) -> None:
-        if self._verbosity != "full":
-            return
-        self.write(json.dumps(event, sort_keys=True))
-        self.scroll_end(animate=False)
+
+class HostLogHandler(logging.Handler):
+    """Forward shared host-log records to a Textual pane."""
+
+    def __init__(self, append_line, *, verbosity: str) -> None:
+        super().__init__(level=logging.DEBUG if verbosity == "debug" else logging.INFO)
+        self._append_line = append_line
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            self._append_line(record.getMessage())
+        except Exception:
+            self.handleError(record)
 
 
 class ConfirmScreen(ModalScreen):
@@ -390,6 +366,8 @@ class MonitorScreen(Screen):
         self._session = None
         self._worker = None
         self._frozen = False
+        self._host_log_handler: Optional[HostLogHandler] = None
+        self._run_logging = None
 
     def compose(self) -> ComposeResult:
         yield Vertical(
@@ -403,6 +381,9 @@ class MonitorScreen(Screen):
             self._coordination.set_idle("coordination · idle · shallow")
         if self._start_run_enabled:
             self.call_after_refresh(self._start_run)
+
+    def on_unmount(self) -> None:
+        self._detach_host_logging()
 
     def on_key(self, event: Key) -> None:
         if self._frozen:
@@ -437,40 +418,25 @@ class MonitorScreen(Screen):
             on_coordination_session_start=lambda label: self.app.call_from_thread(
                 self._begin_coordination_session, label
             ),
-            attempt_trace_callback=lambda record: self.app.call_from_thread(
-                self._host_log.append_record, record
-            ),
         )
-        self._host_log.write("run started")
+        self._run_logging = getattr(self._session, "run_logging", None)
+        if self._run_logging is not None:
+            self._run_logging.suspend_console()
+        self._host_log_handler = HostLogHandler(
+            lambda line: self.app.call_from_thread(self._host_log.append_line, line),
+            verbosity=self._agent_config.host_log_verbosity,
+        )
+        host_logger().addHandler(self._host_log_handler)
+        host_logger().info("run started")
         self._worker = self.app.run_worker(self._run_host, thread=True, exit_on_error=False)
 
     def _begin_mutation_session(self, label: str) -> None:
         self._mutation.begin_session(label)
-        self._host_log.append_event(
-            {
-                "schema_version": 1,
-                "event": "mutation_session_started",
-                "role": "mutation",
-                "label": label,
-                "cli_stdout_log": str(
-                    (self._output_dir / "mutations" / label / "cli_stdout.log").resolve()
-                ),
-            }
-        )
+        host_logger().debug("mutation CLI session started: %s", label)
 
     def _begin_coordination_session(self, label: str) -> None:
         self._coordination.begin_session(label)
-        self._host_log.append_event(
-            {
-                "schema_version": 1,
-                "event": "coordination_session_started",
-                "role": "coordination",
-                "label": label,
-                "cli_stdout_log": str(
-                    (self._output_dir / "coordination" / label / "cli_stdout.log").resolve()
-                ),
-            }
-        )
+        host_logger().debug("coordination CLI session started: %s", label)
 
     def _run_host(self) -> None:
         assert self._session is not None
@@ -484,7 +450,7 @@ class MonitorScreen(Screen):
 
     def _abort_if_confirmed(self, confirmed: bool) -> None:
         if confirmed and self._session is not None:
-            self._host_log.write("abort requested")
+            host_logger().info("abort requested")
             self._session.abort()
 
     def _freeze(self, status: Optional[dict[str, Any]], error: Optional[str]) -> None:
@@ -494,12 +460,20 @@ class MonitorScreen(Screen):
         self.app.outcome.status = status
         self.app.outcome.error = error
         if error:
-            self._host_log.write(f"run failed  {error}")
+            host_logger().error("run failed: %s", error)
         elif status and status.get("aborted"):
-            self._host_log.write("run aborted")
+            host_logger().warning("run aborted")
         else:
-            self._host_log.write("run complete")
-        self._host_log.write("frozen · press any key to return to shell")
+            host_logger().info("run complete")
+        host_logger().info("frozen · press any key to return to shell")
+
+    def _detach_host_logging(self) -> None:
+        if self._host_log_handler is not None:
+            host_logger().removeHandler(self._host_log_handler)
+            self._host_log_handler.close()
+            self._host_log_handler = None
+        if self._run_logging is not None:
+            self._run_logging.restore_console()
 
 
 class NoemaApp(App):
