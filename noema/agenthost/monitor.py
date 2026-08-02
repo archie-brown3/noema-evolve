@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -385,6 +386,14 @@ class MonitorScreen(Screen):
     def on_unmount(self) -> None:
         self._detach_host_logging()
 
+    def _append_host_log(self, line: str) -> None:
+        """Append from either the run worker or the Textual event loop."""
+
+        if self.app._thread_id == threading.get_ident():
+            self._host_log.append_line(line)
+        else:
+            self.app.call_from_thread(self._host_log.append_line, line)
+
     def on_key(self, event: Key) -> None:
         if self._frozen:
             self.app.finish()
@@ -423,7 +432,7 @@ class MonitorScreen(Screen):
         if self._run_logging is not None:
             self._run_logging.suspend_console()
         self._host_log_handler = HostLogHandler(
-            lambda line: self.app.call_from_thread(self._host_log.append_line, line),
+            self._append_host_log,
             verbosity=self._agent_config.host_log_verbosity,
         )
         host_logger().addHandler(self._host_log_handler)

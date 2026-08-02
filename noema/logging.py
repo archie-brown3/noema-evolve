@@ -40,24 +40,24 @@ class RunLoggingHandle:
     level: int
     console_handler: Optional[logging.Handler] = None
     file_handler: Optional[logging.Handler] = None
-    _console_was_disabled: Optional[bool] = None
+    _console_previous_level: Optional[int] = None
 
     def suspend_console(self) -> None:
         """Temporarily disable this run's stdio handler for Textual rendering."""
 
         if self.console_handler is None:
             return
-        if self._console_was_disabled is None:
-            self._console_was_disabled = self.console_handler.disabled
-        self.console_handler.disabled = True
+        if self._console_previous_level is None:
+            self._console_previous_level = self.console_handler.level
+        self.console_handler.setLevel(logging.CRITICAL + 1)
 
     def restore_console(self) -> None:
         """Restore the console handler state captured by ``suspend_console``."""
 
-        if self.console_handler is None or self._console_was_disabled is None:
+        if self.console_handler is None or self._console_previous_level is None:
             return
-        self.console_handler.disabled = self._console_was_disabled
-        self._console_was_disabled = None
+        self.console_handler.setLevel(self._console_previous_level)
+        self._console_previous_level = None
 
     def detach(self) -> None:
         """Remove and close only the handlers owned by this run."""
