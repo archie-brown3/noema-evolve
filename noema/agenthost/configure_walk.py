@@ -8,12 +8,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-
 SECTION_ORDER: tuple[str, ...] = (
     "paths",
     "agent",
     "coordination",
-    "advanced",
+    "substrate",
+    "selection",
+    "evolution",
+    "overview",
     "write_and_run",
 )
 
@@ -31,6 +33,7 @@ class ConfigureWalk:
     armed: bool = False
     dirty: bool = False
     sections: dict[str, list[dict[str, Any]]] = field(default_factory=_empty_sections)
+    draft_values: dict[str, Any] = field(default_factory=dict)
     _draft: Any = None
 
     @property
@@ -66,6 +69,8 @@ class ConfigureWalk:
 
     def arm(self) -> None:
         if not self.fields():
+            return
+        if self.current_field().get("kind") == "readonly":
             return
         self.armed = True
         self._draft = self.current_field().get("value")

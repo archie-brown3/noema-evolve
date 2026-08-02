@@ -11,14 +11,108 @@ import select
 import sys
 import termios
 import tty
+from copy import deepcopy
+from dataclasses import fields as dataclass_fields
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional, Union, get_args, get_origin, get_type_hints
+
+import yaml
 
 from noema.agenthost.config import AgentCliConfig, AgentConfig
 from noema.agenthost.configure import commit_and_maybe_run
 from noema.agenthost.configure_files import ExamplePaths
+from noema.agenthost.configure_schema import (
+    advanced_field_groups,
+    coordination_param_specs,
+)
+from noema.agenthost.configure_schema import display_config_value as _display_value
+from noema.agenthost.configure_schema import make_field as _make_field
 from noema.agenthost.configure_walk import SECTION_ORDER, ConfigureWalk
 from noema.coordination import MODULE_REGISTRY
+
+
+def render_config_overview(
+    config: AgentConfig,
+    *,
+    config_path: Path,
+    output_dir: Path,
+    action: str,
+) -> str:
+    """Render a read-only summary of the effective configuration."""
+
+    noema = config.noema
+    lines = [
+        f"config: {Path(config_path)}",
+        f"output: {Path(output_dir)}",
+        (
+            "mutation_cli: "
+            f"kind={config.mutation_cli.kind}, model={config.mutation_cli.model or '-'}, "
+            f"depth={config.mutation_depth}, timeout_s={config.mutation_cli.timeout_s:g}"
+        ),
+        (
+            "coordination_cli: "
+            f"model={config.coordination_cli.model or '-'}, depth={config.coordination_depth}"
+        ),
+        f"coordination.module: {noema.coordination.module}",
+    ]
+    for name, value in noema.coordination.params.items():
+        lines.append(f"  {name}: {_display_value(value)}")
+    lines.extend(
+        [
+            f"substrate.kind: {noema.substrate.kind}",
+            f"  steps_per_generation: {_display_value(noema.substrate.steps_per_generation)}",
+        ]
+    )
+    if noema.substrate.kind == "cvt":
+        lines.extend(
+            [
+                f"  cvt_n_centroids: {noema.substrate.cvt_n_centroids}",
+                (
+                    "  cvt_behavior_features: "
+                    f"{_display_value(noema.substrate.cvt_behavior_features)}"
+                ),
+                f"  cvt_num_regions: {_display_value(noema.substrate.cvt_num_regions)}",
+            ]
+        )
+    lines.extend(
+        [
+            f"selection.policy: {noema.selection.policy}",
+            f"  seed: {_display_value(noema.selection.seed)}",
+        ]
+    )
+    if noema.selection.policy == "boltzmann":
+        lines.extend(
+            [
+                ("  boltzmann_temperature: " f"{noema.selection.boltzmann_temperature:g}"),
+                (
+                    "  boltzmann_exploration_rate: "
+                    f"{noema.selection.boltzmann_exploration_rate:g}"
+                ),
+            ]
+        )
+    elif noema.selection.policy == "uct":
+        lines.extend(
+            [
+                f"  initial_exploration: {noema.selection.initial_exploration:g}",
+                f"  widening_alpha: {noema.selection.widening_alpha:g}",
+            ]
+        )
+    lines.extend(
+        [
+            f"max_iterations: {noema.max_iterations}",
+            f"checkpoint_interval: {noema.checkpoint_interval}",
+            f"random_seed: {noema.random_seed}",
+            f"diff_based_evolution: {_display_value(noema.diff_based_evolution)}",
+            f"retry_enabled: {_display_value(noema.retry_enabled)}",
+            f"retry_cap: {noema.retry_cap}",
+            f"retry_on: {noema.retry_on}",
+            f"num_inspirations: {noema.num_inspirations}",
+            f"num_top_programs: {noema.num_top_programs}",
+            f"num_previous_programs: {noema.num_previous_programs}",
+            f"action: {action}",
+        ]
+    )
+    return "\n".join(lines)
 
 
 def _resolve_user_path(value: str, base: Path) -> Path:
@@ -29,8 +123,19 @@ def _resolve_user_path(value: str, base: Path) -> Path:
 
 
 def _agent_sections(
-    config: AgentConfig, paths: ExamplePaths, output_dir: Path
+    config: AgentConfig,
+    paths: ExamplePaths,
+    output_dir: Path,
+    draft_values: Optional[dict[str, Any]] = None,
 ) -> dict[str, list[dict[str, Any]]]:
+    drafts = draft_values or {}
+
+    def field(field_id: str, value: Any, **kwargs: Any) -> dict[str, Any]:
+        result = _make_field(field_id, value, **kwargs)
+        if field_id in drafts:
+            result["value"] = drafts[field_id]
+        return result
+
     candidates = [p.name for p in paths.config_candidates] + ["(new) config.yaml"]
     if not candidates:
         candidates = ["(new) config.yaml"]
@@ -38,9 +143,27 @@ def _agent_sections(
         paths.preferred_config.name if paths.preferred_config is not None else "(new) config.yaml"
     )
     module_choices = sorted(MODULE_REGISTRY)
-    module_value = config.noema.coordination.module or "null"
+    module_value = drafts.get("coordination.module", config.noema.coordination.module or "null")
     if module_value not in module_choices:
         module_value = "null"
+    coordination_fields = [
+        field(
+            "coordination.module",
+            module_value,
+            choices=tuple(module_choices),
+        ),
+        field("coordination.seed", config.noema.coordination.seed, value_type="optional_int"),
+    ]
+    for spec in coordination_param_specs(module_value, main=True):
+        coordination_fields.append(
+            field(
+                spec.path,
+                config.noema.coordination.params.get(spec.name, spec.default),
+                value_type=spec.value_type,
+                choices=spec.choices if spec.writable else (),
+                kind="open" if spec.writable else "readonly",
+            )
+        )
     return {
         "paths": [
             {"id": "config", "kind": "closed", "choices": candidates, "value": preferred},
@@ -49,57 +172,139 @@ def _agent_sections(
             {"id": "output", "kind": "open", "value": str(output_dir)},
         ],
         "agent": [
-            {
-                "id": "mutation_cli.kind",
-                "kind": "closed",
-                "choices": ["claude", "codex", "opencode", "agent"],
-                "value": config.mutation_cli.kind,
-            },
-            {
-                "id": "mutation_depth",
-                "kind": "closed",
-                "choices": ["shallow", "deep"],
-                "value": config.mutation_depth,
-            },
-            {
-                "id": "coordination_depth",
-                "kind": "closed",
-                "choices": ["shallow", "deep"],
-                "value": config.coordination_depth,
-            },
-            {
-                "id": "host_log_verbosity",
-                "kind": "closed",
-                "choices": ["standard"],
-                "value": config.host_log_verbosity,
-            },
-            {
-                "id": "stop_children",
-                "kind": "open",
-                "value": "" if config.stop_children is None else str(config.stop_children),
-            },
-            {
-                "id": "mutation_cli.model",
-                "kind": "open",
-                "value": config.mutation_cli.model or "",
-            },
+            field(
+                "mutation_cli.kind",
+                config.mutation_cli.kind,
+                choices=("claude", "codex", "opencode", "agent"),
+            ),
+            field(
+                "mutation_depth",
+                config.mutation_depth,
+                choices=("shallow", "deep"),
+            ),
+            field("mutation_cli.model", config.mutation_cli.model, value_type="optional_str"),
+            field("mutation_cli.timeout_s", config.mutation_cli.timeout_s, value_type="float"),
+            field(
+                "coordination_depth",
+                config.coordination_depth,
+                choices=("shallow", "deep"),
+            ),
+            field(
+                "coordination_cli.model",
+                config.coordination_cli.model,
+                value_type="optional_str",
+            ),
+            field("stop_children", config.stop_children, value_type="optional_int"),
         ],
-        "coordination": [
-            {
-                "id": "module",
-                "kind": "closed",
-                "choices": module_choices,
-                "value": module_value,
-            },
+        "coordination": coordination_fields,
+        "substrate": [
+            field(
+                "substrate.kind",
+                config.noema.substrate.kind,
+                choices=("islands", "tree", "cvt", "flat"),
+            ),
+            field(
+                "substrate.steps_per_generation",
+                config.noema.substrate.steps_per_generation,
+                value_type="optional_int",
+            ),
+            *(
+                [
+                    field(
+                        "substrate.cvt_n_centroids",
+                        config.noema.substrate.cvt_n_centroids,
+                        value_type="int",
+                    ),
+                    field(
+                        "substrate.cvt_behavior_features",
+                        config.noema.substrate.cvt_behavior_features,
+                        value_type="optional_list",
+                    ),
+                    field(
+                        "substrate.cvt_num_regions",
+                        config.noema.substrate.cvt_num_regions,
+                        value_type="optional_int",
+                    ),
+                ]
+                if drafts.get("substrate.kind", config.noema.substrate.kind) == "cvt"
+                else []
+            ),
         ],
-        "advanced": [
-            {"id": "max_iterations", "kind": "open", "value": str(config.noema.max_iterations)},
-            {
-                "id": "diff_based_evolution",
-                "kind": "closed",
-                "choices": ["true", "false"],
-                "value": "true" if config.noema.diff_based_evolution else "false",
-            },
+        "selection": [
+            field(
+                "selection.policy",
+                config.noema.selection.policy,
+                choices=(
+                    "substrate_default",
+                    "stock_openevolve",
+                    "boltzmann",
+                    "uct",
+                    "cvt_ucb",
+                    "hifo_prob_rank",
+                ),
+            ),
+            field("selection.seed", config.noema.selection.seed, value_type="optional_int"),
+            *(
+                [
+                    field(
+                        "selection.boltzmann_temperature",
+                        config.noema.selection.boltzmann_temperature,
+                        value_type="float",
+                    ),
+                    field(
+                        "selection.boltzmann_exploration_rate",
+                        config.noema.selection.boltzmann_exploration_rate,
+                        value_type="float",
+                    ),
+                ]
+                if drafts.get("selection.policy", config.noema.selection.policy) == "boltzmann"
+                else []
+            ),
+            *(
+                [
+                    field(
+                        "selection.initial_exploration",
+                        config.noema.selection.initial_exploration,
+                        value_type="float",
+                    ),
+                    field(
+                        "selection.widening_alpha",
+                        config.noema.selection.widening_alpha,
+                        value_type="float",
+                    ),
+                ]
+                if drafts.get("selection.policy", config.noema.selection.policy) == "uct"
+                else []
+            ),
+        ],
+        "evolution": [
+            field("max_iterations", config.noema.max_iterations, value_type="int"),
+            field("checkpoint_interval", config.noema.checkpoint_interval, value_type="int"),
+            field("random_seed", config.noema.random_seed, value_type="int"),
+            field(
+                "diff_based_evolution",
+                config.noema.diff_based_evolution,
+                value_type="bool",
+                choices=("true", "false"),
+            ),
+            field(
+                "retry_enabled",
+                config.noema.retry_enabled,
+                value_type="bool",
+                choices=("true", "false"),
+            ),
+            field("retry_cap", config.noema.retry_cap, value_type="int"),
+            field(
+                "retry_on",
+                config.noema.retry_on,
+                choices=("failure", "non_improvement"),
+            ),
+            field("num_inspirations", config.noema.num_inspirations, value_type="int"),
+            field("num_top_programs", config.noema.num_top_programs, value_type="int"),
+            field("num_previous_programs", config.noema.num_previous_programs, value_type="int"),
+        ],
+        "overview": [
+            field("summary", "Review the effective configuration before writing.", kind="readonly")
         ],
         "write_and_run": [
             {
@@ -112,35 +317,141 @@ def _agent_sections(
     }
 
 
+def refresh_dynamic_sections(
+    walk: ConfigureWalk,
+    config: AgentConfig,
+    paths: ExamplePaths,
+    output_dir: Path,
+) -> None:
+    """Rebuild visible fields while retaining inactive values in the session draft."""
+
+    for section_fields in walk.sections.values():
+        for field in section_fields:
+            walk.draft_values[field["id"]] = field.get("value")
+    walk.sections = _agent_sections(
+        config,
+        paths,
+        output_dir,
+        draft_values=walk.draft_values,
+    )
+    fields = walk.fields()
+    walk.field_index = min(walk.field_index, max(0, len(fields) - 1))
+    effective = deepcopy(config)
+    effective, config_path, effective_output = _apply_walk_to_config(walk, effective)
+    action = str(walk.draft_values.get("action", "write_and_run"))
+    walk.sections["overview"][0]["value"] = render_config_overview(
+        effective,
+        config_path=config_path,
+        output_dir=effective_output,
+        action=action,
+    )
+
+
+def _parse_field_value(field: dict[str, Any]) -> Any:
+    raw = field.get("value")
+    value_type = field.get("value_type", "str")
+    optional = value_type.startswith("optional_")
+    base_type = value_type.removeprefix("optional_")
+    if optional and raw in (None, ""):
+        return None
+    if base_type == "str":
+        return "" if raw is None else str(raw)
+    if base_type == "bool":
+        if isinstance(raw, bool):
+            return raw
+        value = str(raw).strip().lower()
+        if value not in ("true", "false"):
+            raise ValueError(f"{field['id']} must be true or false, got {raw!r}")
+        return value == "true"
+    if raw is None:
+        raise ValueError(f"{field['id']} may not be blank")
+    if base_type == "int":
+        return int(raw)
+    if base_type == "float":
+        return float(raw)
+    if base_type in ("list", "dict"):
+        parsed = raw if isinstance(raw, (list, dict)) else yaml.safe_load(str(raw))
+        if base_type == "list" and isinstance(parsed, str):
+            parsed = [item.strip() for item in parsed.split(",") if item.strip()]
+        expected = list if base_type == "list" else dict
+        if not isinstance(parsed, expected):
+            raise ValueError(f"{field['id']} must be a {base_type}, got {raw!r}")
+        return parsed
+    raise ValueError(f"unsupported configure value type {value_type!r} for {field['id']}")
+
+
+def _set_config_path(config: AgentConfig, path: str, value: Any) -> None:
+    parts = path.split(".")
+    agent_fields = {item.name for item in dataclass_fields(AgentConfig)}
+    current: Any = config if parts[0] in agent_fields and parts[0] != "noema" else config.noema
+    for part in parts[:-1]:
+        current = getattr(current, part)
+    attribute = parts[-1]
+    annotation = get_type_hints(type(current)).get(attribute, Any)
+    args = get_args(annotation)
+    if get_origin(annotation) is Union and type(None) in args:
+        annotation = next(arg for arg in args if arg is not type(None))
+    if value is not None and (annotation is set or get_origin(annotation) is set):
+        value = set(value)
+    setattr(current, attribute, value)
+
+
 def _apply_walk_to_config(
     walk: ConfigureWalk, config: AgentConfig
 ) -> tuple[AgentConfig, Path, Path]:
     """Push walk field values back onto config; return (config, config_path, output_dir)."""
 
-    def _val(section: str, field_id: str) -> Any:
-        for fld in walk.sections.get(section, []):
-            if fld["id"] == field_id:
-                return fld.get("value")
-        return None
+    for section_fields in walk.sections.values():
+        for field in section_fields:
+            walk.draft_values[field["id"]] = field.get("value")
+    fields_by_id = {
+        field["id"]: field for section_fields in walk.sections.values() for field in section_fields
+    }
 
-    config.mutation_cli.kind = _val("agent", "mutation_cli.kind") or config.mutation_cli.kind
-    config.mutation_depth = _val("agent", "mutation_depth") or config.mutation_depth
-    config.coordination_depth = _val("agent", "coordination_depth") or config.coordination_depth
-    config.host_log_verbosity = _val("agent", "host_log_verbosity") or config.host_log_verbosity
-    model = _val("agent", "mutation_cli.model")
-    config.mutation_cli.model = model or None
-    sc = _val("agent", "stop_children")
-    config.stop_children = int(sc) if sc not in (None, "") else None
+    def _raw(field_id: str, fallback: Any = None) -> Any:
+        field = fields_by_id.get(field_id)
+        return fallback if field is None else field.get("value")
 
-    mod = _val("coordination", "module")
-    config.noema.coordination.module = mod if mod not in (None, "") else "null"
+    module_raw = _raw("coordination.module", _raw("module", "null"))
+    module = str(module_raw) if module_raw not in (None, "") else "null"
+    config.noema.coordination.module = module
 
-    mi = _val("advanced", "max_iterations")
-    if mi not in (None, ""):
-        config.noema.max_iterations = int(mi)
-    dbe = _val("advanced", "diff_based_evolution")
-    if dbe is not None:
-        config.noema.diff_based_evolution = dbe == "true"
+    for group_fields in advanced_field_groups(config, current_section=walk.section_id).values():
+        for field in group_fields:
+            if field["id"] in walk.draft_values and field["id"] not in fields_by_id:
+                field["value"] = walk.draft_values[field["id"]]
+                fields_by_id[field["id"]] = field
+
+    agent_names = {item.name for item in dataclass_fields(AgentConfig)}
+    noema_names = {item.name for item in dataclass_fields(type(config.noema))}
+    for field_id, field in fields_by_id.items():
+        if field.get("kind") == "readonly" or field_id.startswith("coordination.params."):
+            continue
+        if field_id in {
+            "config",
+            "programme",
+            "evaluator",
+            "output",
+            "action",
+            "summary",
+            "module",
+        }:
+            continue
+        first = field_id.split(".", 1)[0]
+        if first not in agent_names and first not in noema_names:
+            continue
+        _set_config_path(config, field_id, _parse_field_value(field))
+
+    specs = coordination_param_specs(module)
+    writable = {spec.name: spec for spec in specs if spec.writable}
+    params = {
+        name: value for name, value in config.noema.coordination.params.items() if name in writable
+    }
+    for name, spec in writable.items():
+        parameter_field = fields_by_id.get(spec.path)
+        if parameter_field is not None:
+            params[name] = _parse_field_value(parameter_field)
+    config.noema.coordination.params = params
 
     if config.coordination_depth == "deep" and config.coordination_cli == AgentCliConfig():
         config.coordination_cli = AgentCliConfig(
@@ -148,14 +459,14 @@ def _apply_walk_to_config(
             model=config.mutation_cli.model,
         )
 
-    cfg_name = _val("paths", "config") or "config.yaml"
-    cwd = Path(_val("paths", "programme") or ".").resolve().parent
+    cfg_name = _raw("config", "config.yaml") or "config.yaml"
+    cwd = Path(_raw("programme", ".") or ".").resolve().parent
     if cfg_name == "(new) config.yaml":
         config_path = cwd / "config.yaml"
     else:
         config_path = cwd / cfg_name
 
-    raw_out = _val("paths", "output")
+    raw_out = _raw("output")
     if raw_out in (None, ""):
         output_dir = cwd / "noema_agent_output"
     else:
@@ -315,14 +626,12 @@ def run_configure_tui(
             # Application-cursor (SS3) → CSI so one branch handles both.
             if key in ("\x1bOA", "\x1bOB", "\x1bOC", "\x1bOD"):
                 key = "\x1b[" + key[-1]
-            if key in ("w", "W") or (
-                walk.section_id == "write_and_run" and key in ("\r", "\n") and not walk.armed
-            ):
+            if key in ("w", "W"):
                 agent_config, config_path, output_dir = _apply_walk_to_config(walk, agent_config)
                 run = True
-                if walk.section_id == "write_and_run":
-                    action = walk.fields()[0].get("value") if walk.fields() else "write_and_run"
-                    run = action == "write_and_run"
+                action_fields = walk.sections.get("write_and_run", [])
+                action = action_fields[0].get("value") if action_fields else "write_and_run"
+                run = action == "write_and_run"
                 if run:
                     ans = _cooked_prompt(fd, old, "\nRun now? [Y/n] ").strip().lower()
                     if ans in ("n", "no"):

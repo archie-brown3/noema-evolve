@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import threading
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
@@ -18,14 +19,20 @@ import pyte
 from pyte.screens import HistoryScreen
 from rich.text import Text
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical
+from textual.binding import Binding
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.events import Key
 from textual.screen import ModalScreen, Screen
 from textual.widgets import RichLog, Static
 
 from noema.agenthost.config import AgentConfig
 from noema.agenthost.configure_files import ExamplePaths, save_noema_and_agent
-from noema.agenthost.configure_tui import _agent_sections, _apply_walk_to_config
+from noema.agenthost.configure_schema import advanced_field_groups
+from noema.agenthost.configure_tui import (
+    _agent_sections,
+    _apply_walk_to_config,
+    refresh_dynamic_sections,
+)
 from noema.agenthost.configure_walk import ConfigureWalk
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.session import AgentSessionAborted
@@ -186,6 +193,143 @@ class ConfirmScreen(ModalScreen):
         event.stop()
 
 
+class AdvancedSettingsScreen(ModalScreen[dict[str, Any]]):
+    """Global grouped editor for settings omitted from the main wizard."""
+
+    CSS = """
+    AdvancedSettingsScreen { align: center middle; }
+    #advanced-panel { width: 92%; height: 92%; border: round $accent; padding: 1 2; }
+    #advanced-title { height: 2; text-style: bold; }
+    #advanced-scroll { height: 1fr; overflow-y: auto; }
+    #advanced-help { height: 2; }
+    """
+
+    def __init__(self, groups: dict[str, list[dict[str, Any]]]) -> None:
+        super().__init__()
+        self._groups = groups
+        self._fields = [field for fields in groups.values() for field in fields]
+        self._initial_values = {field["id"]: field.get("value") for field in self._fields}
+        self._field_index = 0
+        self._armed = False
+        self._original: Any = None
+
+    def compose(self) -> ComposeResult:
+        yield Vertical(
+            Static("Advanced settings", id="advanced-title"),
+            VerticalScroll(
+                Static(id="advanced-fields", markup=False),
+                id="advanced-scroll",
+            ),
+            Static(id="advanced-help"),
+            id="advanced-panel",
+        )
+
+    def on_mount(self) -> None:
+        self._render_view()
+
+    def on_key(self, event: Key) -> None:
+        if self._editing_open_field():
+            self._handle_open_edit(event)
+            event.stop()
+            return
+        if event.key in ("escape", "ctrl+p") and not self._armed:
+            self.dismiss(
+                {
+                    field["id"]: field.get("value")
+                    for field in self._fields
+                    if field.get("value") != self._initial_values[field["id"]]
+                }
+            )
+        elif event.key == "up" and not self._armed:
+            self._field_index = max(0, self._field_index - 1)
+        elif event.key == "down" and not self._armed:
+            self._field_index = min(len(self._fields) - 1, self._field_index + 1)
+        elif event.key in ("left", "right") and self._armed:
+            self._cycle_value(-1 if event.key == "left" else 1)
+        elif event.key == "enter":
+            if self._armed:
+                self._armed = False
+                self._original = None
+            else:
+                self._arm()
+        elif event.key == "escape" and self._armed:
+            self._current_field()["value"] = self._original
+            self._armed = False
+            self._original = None
+        else:
+            return
+        self._render_view()
+        event.stop()
+
+    def _current_field(self) -> dict[str, Any]:
+        return self._fields[self._field_index]
+
+    def _arm(self) -> None:
+        if not self._fields or self._current_field().get("kind") == "readonly":
+            return
+        self._armed = True
+        self._original = self._current_field().get("value")
+
+    def _cycle_value(self, delta: int) -> None:
+        field = self._current_field()
+        choices = list(field.get("choices") or [])
+        if field.get("kind") != "closed" or not choices:
+            return
+        try:
+            index = choices.index(field.get("value"))
+        except ValueError:
+            index = 0
+        field["value"] = choices[(index + delta) % len(choices)]
+
+    def _editing_open_field(self) -> bool:
+        return bool(self._fields) and self._armed and self._current_field().get("kind") == "open"
+
+    def _handle_open_edit(self, event: Key) -> None:
+        field = self._current_field()
+        if event.key == "escape":
+            field["value"] = self._original
+            self._armed = False
+            self._original = None
+        elif event.key == "enter":
+            self._armed = False
+            self._original = None
+        elif event.key == "backspace":
+            field["value"] = str(field.get("value") or "")[:-1]
+        elif event.character and event.character.isprintable():
+            field["value"] = str(field.get("value") or "") + event.character
+        self._render_view()
+
+    def _render_view(self) -> None:
+        rows = []
+        offset = 0
+        selected_row = 0
+        for group, fields in self._groups.items():
+            rows.append(f"[{group}]")
+            for local_index, field in enumerate(fields):
+                index = offset + local_index
+                marker = "▸" if index == self._field_index else " "
+                armed = "  *" if self._armed and index == self._field_index else ""
+                rows.append(f"{marker} {field['id']:<42} {field.get('value', '')}{armed}")
+                if index == self._field_index:
+                    selected_row = len(rows) - 1
+            offset += len(fields)
+        self.query_one("#advanced-fields", Static).update("\n".join(rows))
+        fields_view = self.query_one("#advanced-scroll", VerticalScroll)
+        viewport_height = max(1, fields_view.size.height)
+        fields_view.scroll_to(
+            y=max(0, selected_row - viewport_height + 2),
+            animate=False,
+            force=True,
+        )
+        if self._editing_open_field():
+            hint = "type  Enter accept  Esc discard  Backspace delete"
+        elif self._armed:
+            hint = "←/→ cycle  Enter accept  Esc discard"
+        else:
+            hint = "↑/↓ field  Enter edit  Ctrl-P/Esc close"
+        self.query_one("#advanced-help", Static).update(hint)
+
+
 @dataclass
 class RunOutcome:
     wrote: Optional[Path] = None
@@ -201,7 +345,10 @@ class RunOutcome:
 class ConfigureScreen(Screen):
     """Textual port of the shipped ConfigureWalk section interaction."""
 
-    BINDINGS = [("q", "quit", "Quit")]
+    BINDINGS = [
+        Binding("ctrl+p", "advanced_settings", "Advanced", priority=True),
+        Binding("q", "quit", "Quit"),
+    ]
 
     def __init__(
         self,
@@ -217,6 +364,7 @@ class ConfigureScreen(Screen):
         self._agent_config = agent_config
         self._output_dir = output_dir
         self._walk = ConfigureWalk(sections=_agent_sections(agent_config, paths, output_dir))
+        refresh_dynamic_sections(self._walk, agent_config, paths, output_dir)
 
     def compose(self) -> ComposeResult:
         yield Static(id="configure-title")
@@ -229,6 +377,39 @@ class ConfigureScreen(Screen):
     def action_quit(self) -> None:
         self._quit()
 
+    def action_advanced_settings(self) -> None:
+        refresh_dynamic_sections(
+            self._walk,
+            self._agent_config,
+            self._paths,
+            self._output_dir,
+        )
+        effective = deepcopy(self._agent_config)
+        effective, _, _ = _apply_walk_to_config(self._walk, effective)
+        groups = advanced_field_groups(
+            effective,
+            current_section=self._walk.section_id,
+        )
+        for fields in groups.values():
+            for field in fields:
+                if field["id"] in self._walk.draft_values:
+                    field["value"] = self._walk.draft_values[field["id"]]
+        self.app.push_screen(AdvancedSettingsScreen(groups), self._advanced_settings_closed)
+
+    def _advanced_settings_closed(self, values: Optional[dict[str, Any]]) -> None:
+        if values is None:
+            return
+        changed = bool(values)
+        self._walk.draft_values.update(values)
+        self._walk.dirty = self._walk.dirty or changed
+        refresh_dynamic_sections(
+            self._walk,
+            self._agent_config,
+            self._paths,
+            self._output_dir,
+        )
+        self._render_view()
+
     def on_key(self, event: Key) -> None:
         key = event.key
         if self._editing_open_field():
@@ -238,9 +419,7 @@ class ConfigureScreen(Screen):
 
         if key in ("q", "ctrl+c"):
             self._quit()
-        elif key in ("w",) or (
-            self._walk.section_id == "write_and_run" and key == "enter" and not self._walk.armed
-        ):
+        elif key in ("w",):
             self._write_and_maybe_run()
         elif key == "up" and not self._walk.armed:
             self._walk.move_field(-1)
@@ -251,7 +430,16 @@ class ConfigureScreen(Screen):
         elif key == "left":
             self._walk.cycle_value(-1) if self._walk.armed else self._walk.move_section(-1)
         elif key == "enter":
-            self._walk.disarm(discard=False) if self._walk.armed else self._walk.arm()
+            if self._walk.armed:
+                self._walk.disarm(discard=False)
+                refresh_dynamic_sections(
+                    self._walk,
+                    self._agent_config,
+                    self._paths,
+                    self._output_dir,
+                )
+            else:
+                self._walk.arm()
         elif key == "escape" and self._walk.armed:
             self._walk.disarm(discard=True)
         else:
@@ -272,6 +460,12 @@ class ConfigureScreen(Screen):
             self._walk.disarm(discard=True)
         elif event.key == "enter":
             self._walk.disarm(discard=False)
+            refresh_dynamic_sections(
+                self._walk,
+                self._agent_config,
+                self._paths,
+                self._output_dir,
+            )
         elif event.key == "backspace":
             field["value"] = str(field.get("value") or "")[:-1]
         elif event.character and event.character.isprintable():
@@ -293,7 +487,8 @@ class ConfigureScreen(Screen):
         )
         save_noema_and_agent(self._config_path, self._agent_config)
         self.app.outcome.wrote = self._config_path.resolve()
-        action = self._walk.fields()[0].get("value") if self._walk.fields() else "write_and_run"
+        action_fields = self._walk.sections.get("write_and_run", [])
+        action = action_fields[0].get("value") if action_fields else "write_and_run"
         if action == "write":
             self.app.finish()
             return
@@ -488,6 +683,8 @@ class MonitorScreen(Screen):
 
 class NoemaApp(App):
     """One alternate-screen Textual session from configure to monitor exit."""
+
+    ENABLE_COMMAND_PALETTE = False
 
     CSS = """
     Screen { padding: 1 2; }

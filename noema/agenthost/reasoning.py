@@ -12,7 +12,6 @@ from noema.agenthost.config import AgentCliConfig
 from noema.agenthost.inner_session_mcp import prepare_inner_mcp
 from noema.agenthost.submit import ADVICE_FILENAME, coordination_response
 from noema.budget.cli_runner import CliPtyRunner, build_mutation_cli_command
-from noema.budget.llm import BudgetedLLM
 
 SpawnFn = Callable[[str, str, str], str]
 
@@ -26,19 +25,24 @@ _COORDINATION_DELIVERABLE_HINT = (
 
 
 class DeepCoordinationLLM:
-    """BudgetedLLM-shaped adapter: all generate* calls spawn a coding CLI."""
+    """BudgetedLLM-shaped adapter: all generate* calls spawn a coding CLI.
+
+    Deep seats are CLI-only. Do not wrap a ``BudgetedLLM`` here — HTTP seat
+    construction belongs to shallow coordination only. Ledger booking for CLI
+    spend is deferred to task 0170 (budgeted CLI).
+    """
 
     def __init__(
         self,
-        inner: BudgetedLLM,
         *,
         cli: AgentCliConfig,
         output_dir: str,
+        model: str,
+        tag: str = "",
         spawn: Optional[SpawnFn] = None,
         runner: Optional[CliPtyRunner] = None,
         on_session_start: Optional[Callable[[str], None]] = None,
     ) -> None:
-        self._inner = inner
         self._cli = cli
         self._output_dir = output_dir
         self._spawn = spawn
@@ -47,9 +51,9 @@ class DeepCoordinationLLM:
         self._session = None
         self._attempts: Dict[str, int] = defaultdict(int)
         self.generation = 0
-        self.iteration = inner.iteration
-        self.model = inner.model
-        self.tag = inner.tag
+        self.iteration: int = -1
+        self.model = model
+        self.tag = tag
 
     def bind_session(self, session) -> None:
         self._session = session
