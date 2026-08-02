@@ -22,7 +22,7 @@ from noema.agenthost.monitor import (
     RunOutcome,
 )
 from noema.agenthost.session import AgentSessionAborted
-from noema.logging import host_logger
+from noema.logging import LoggingConfig, host_logger, setup_run_logging
 
 
 class TestHostLogHandler(unittest.TestCase):
@@ -132,6 +132,7 @@ class TestTextualScreens(unittest.TestCase):
             def __init__(self) -> None:
                 self.started = threading.Event()
                 self.abort_called = threading.Event()
+                self.run_logging = None
 
             async def run_agent_mode(self):
                 self.started.set()
@@ -183,6 +184,10 @@ class TestTextualScreens(unittest.TestCase):
                 app = Harness(session, evaluator, program, root / "output")
 
                 def create_fake_session(*_args, **kwargs):
+                    session.run_logging = setup_run_logging(
+                        LoggingConfig(file=False),
+                        kwargs["output_dir"],
+                    )
                     return session
 
                 with patch(
@@ -198,6 +203,12 @@ class TestTextualScreens(unittest.TestCase):
                             "Iteration 0: Child child from parent parent",
                             "\n".join(line.text for line in host_log.lines),
                         )
+                        self.assertIsNotNone(session.run_logging.console_handler)
+                        assert session.run_logging.console_handler is not None
+                        self.assertGreater(
+                            session.run_logging.console_handler.level,
+                            logging.CRITICAL,
+                        )
 
                         await pilot.press("ctrl+c")
                         await pilot.press("enter")
@@ -205,6 +216,11 @@ class TestTextualScreens(unittest.TestCase):
 
                         self.assertTrue(session.abort_called.is_set())
                         self.assertTrue(app.screen._frozen)
+                        app.screen._detach_host_logging()
+                        self.assertEqual(
+                            session.run_logging.console_handler.level,
+                            logging.INFO,
+                        )
 
         asyncio.run(scenario())
 

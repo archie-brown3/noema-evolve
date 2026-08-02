@@ -58,6 +58,28 @@ class TestRunLogging(unittest.TestCase):
             second.detach()
         root.removeHandler(foreign)
 
+    def test_console_suspension_and_restoration_preserve_handler_level(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            handle = setup_run_logging(
+                LoggingConfig(level="INFO", file=False),
+                tmp,
+            )
+            self.assertIsNotNone(handle.console_handler)
+            assert handle.console_handler is not None
+            handle.console_handler.setLevel(logging.WARNING)
+
+            handle.suspend_console()
+            self.assertGreater(handle.console_handler.level, logging.CRITICAL)
+
+            handle.restore_console()
+            self.assertEqual(handle.console_handler.level, logging.WARNING)
+
+            handle.suspend_console()
+            handle.suspend_console()
+            handle.restore_console()
+            self.assertEqual(handle.console_handler.level, logging.WARNING)
+            handle.detach()
+
     def test_format_matches_openevolve_shape_and_delta(self):
         line = format_accepted_child_line(
             iteration=12,
