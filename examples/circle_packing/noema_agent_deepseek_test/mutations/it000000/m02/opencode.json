@@ -1,0 +1,20 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "noema": {
+      "type": "local",
+      "command": [
+        "/opt/miniconda3/bin/python3.13",
+        "-m",
+        "noema.agenthost.inner_session_mcp",
+        "--snapshot",
+        "/Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_deepseek_test/mutations/it000000/m02/tools/snapshot.json",
+        "--mode",
+        "mutation",
+        "--deliverable",
+        "/Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_deepseek_test/mutations/it000000/m02/child.py"
+      ],
+      "enabled": true
+    }
+  }
+}

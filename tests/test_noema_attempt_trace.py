@@ -82,6 +82,34 @@ class TestAttemptTraceWriter(unittest.TestCase):
             {"__noema_bytes_base64__": "AP8="},
         )
 
+    def test_live_callback_receives_the_persisted_attempt_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            seen = []
+            writer = AttemptTraceWriter(
+                os.path.join(tmp, "attempt_trace.jsonl"), on_write=seen.append
+            )
+            writer.write(iteration=3, attempt=2, outcome="accepted", evaluation={"score": 1})
+
+        self.assertEqual(len(seen), 1)
+        self.assertEqual(seen[0]["attempt_id"].split(":")[-2:], ["000003", "02"])
+        self.assertEqual(seen[0]["outcome"], "accepted")
+
+    def test_live_callback_uses_the_same_json_safe_shape_as_the_trace_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "attempt_trace.jsonl")
+            seen = []
+            writer = AttemptTraceWriter(path, on_write=seen.append)
+            writer.write(
+                iteration=0,
+                attempt=0,
+                outcome="evaluation_failure",
+                evaluation={"artifacts": {"coverage": b"\x00\xff"}},
+            )
+            with open(path) as f:
+                persisted = json.loads(f.readline())
+
+        self.assertEqual(seen, [persisted])
+
     def test_dirty_digest_changes_when_dirty_contents_change(self):
         with tempfile.TemporaryDirectory() as tmp:
             subprocess.run(["git", "init"], cwd=tmp, check=True, capture_output=True)

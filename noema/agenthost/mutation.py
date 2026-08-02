@@ -18,7 +18,7 @@ from typing import Callable, Dict, List, Optional, Protocol, Sequence, Union
 from noema.agenthost.inner_session_mcp import prepare_inner_mcp
 from noema.budget.cli_runner import (
     SUPPORTED_MUTATION_CLIS,
-    CliRunner,
+    CliPtyRunner,
     build_cli_user_message,
     build_mutation_cli_command,
 )
@@ -195,6 +195,8 @@ class CliMutationBackend:
         binary: Optional[str] = None,
         model: Optional[str] = None,
         extra_args: Optional[Sequence[str]] = None,
+        runner: Optional[CliPtyRunner] = None,
+        on_session_start: Optional[Callable[[str], None]] = None,
     ):
         if command is None and kind is None:
             raise ValueError("CliMutationBackend requires kind= or command=")
@@ -209,11 +211,18 @@ class CliMutationBackend:
         self.binary = binary
         self.model = model
         self.extra_args = list(extra_args or ())
+        self._runner = runner or CliPtyRunner()
+        self._on_session_start = on_session_start
         self._session = None
 
     def bind_session(self, session) -> None:
         """Source for the inner-session MCP snapshot; unbound means file contract only."""
         self._session = session
+
+    def abort(self) -> None:
+        """Stop an in-flight CLI session when its enclosing agency run is aborted."""
+
+        self._runner.abort()
 
     def run(self, request: MutationRequest) -> MutationResult:
         layout = request.layout
@@ -284,8 +293,14 @@ class CliMutationBackend:
                 mcp_config_path=mcp_config,
             )
 
-        runner = CliRunner()
-        cli_result = runner.run(
+        if self._on_session_start is not None:
+            label = (
+                f"it{layout.iteration:06d}/m{layout.attempt:02d}"
+                if layout is not None
+                else work.name
+            )
+            self._on_session_start(label)
+        cli_result = self._runner.run(
             argv,
             cwd=work,
             env=env,

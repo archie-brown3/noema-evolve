@@ -1,12 +1,13 @@
 """Unit tests for noema.budget.cli_runner transport primitive."""
 
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from noema.budget.cli_runner import CliRunner
+from noema.budget.cli_runner import CliPtyRunner, CliRunner
 
 
 class TestCliRunner(unittest.TestCase):
@@ -86,6 +87,53 @@ class TestCliRunner(unittest.TestCase):
             self.assertIsNone(result.exit_code)
             self.assertIn("partial", stdout_path.read_text())
             self.assertIn("timeout stderr", stderr_path.read_text())
+
+
+class TestCliPtyRunner(unittest.TestCase):
+    def test_run_streams_merged_terminal_paint_to_callback_and_log(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            stdout_path = work / "cli_stdout.log"
+            stderr_path = work / "cli_stderr.log"
+            chunks = []
+            result = CliPtyRunner(on_output=chunks.append).run(
+                [
+                    sys.executable,
+                    "-c",
+                    "import os; os.write(1, b'\\x1b[32mstdout\\x1b[0m\\n'); "
+                    "os.write(2, b'stderr\\n')",
+                ],
+                cwd=work,
+                env={},
+                timeout_s=5.0,
+                stdout_path=stdout_path,
+                stderr_path=stderr_path,
+            )
+
+            self.assertEqual(result.exit_code, 0)
+            self.assertFalse(result.timed_out)
+            self.assertIn("stdout", result.stdout)
+            self.assertIn("stderr", result.stdout)
+            self.assertIn("\x1b[32m", result.stdout)
+            self.assertEqual(result.stderr, "")
+            self.assertEqual(stdout_path.read_bytes().decode(), result.stdout)
+            self.assertEqual(stderr_path.read_text(), "")
+            self.assertIn(b"stdout", b"".join(chunks))
+
+    def test_run_times_out_and_reaps_the_cli_process_group(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            result = CliPtyRunner().run(
+                [sys.executable, "-c", "import time; time.sleep(30)"],
+                cwd=work,
+                env={},
+                timeout_s=0.1,
+                stdout_path=work / "cli_stdout.log",
+                stderr_path=work / "cli_stderr.log",
+            )
+
+            self.assertTrue(result.timed_out)
+            self.assertIsNone(result.exit_code)
 
 
 if __name__ == "__main__":

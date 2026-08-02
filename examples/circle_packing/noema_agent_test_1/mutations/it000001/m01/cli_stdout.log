@@ -1,0 +1,588 @@
+[0m
+> build · minimax/minimax-m2.5
+[0m
+Let me analyze the current program and improve it. The key insight is that the current greedy random sampling is inefficient - AlphaEvolve achieved 2.635 sum_radii vs current 1.3996.
+[0m
+[0m→ [0mRead child.py
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,57 +48,61 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Greedy circle packing with iterative refinement for n=26 circles.
+-    Places circles one at a time in positions that maximize total radius.
++    Optimized circle packing with hex initialization and simulated annealing.
+     """
+     n = 26
+-    np.random.seed(42)
+-    centers = []
+-    radii = []
+ 
+-    for i in range(n):
+-        best_pos = None
+-        best_r = 0.0
++    best_centers = None
++    best_radii = None
++    best_sum = 0.0
+ 
+-        for _ in range(200):
+-            x = np.random.uniform(0.02, 0.98)
+-            y = np.random.uniform(0.02, 0.98)
+-            r = min(x, y, 1 - x, 1 - y)
++    for seed in [42, 123, 456]:
++        np.random.seed(seed)
++        centers = []
+ 
+-            for j, (c, rad) in enumerate(zip(centers, radii)):
+-                d = np.sqrt((x - c[0])**2 + (y - c[1])**2)
+-                r = min(r, d - rad)
++        hex_spacing = 0.12
++        for i in range(n):
++            row = i // 5
++            col = i % 5
++            x = 0.1 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
++            y = 0.1 + row * hex_spacing * 0.866
++            x += np.random.uniform(-0.02, 0.02)
++            y += np.random.uniform(-0.02, 0.02)
++            centers.append([np.clip(x, 0.02, 0.98), np.clip(y, 0.02, 0.98)])
+ 
+-            if r > best_r:
+-                best_r = r
+-                best_pos = (x, y)
++        centers = np.array(centers)
+ 
+-        if best_pos and best_r > 0.01:
+-            centers.append(np.array(best_pos))
+-            radii.append(best_r)
+-        else:
+-            centers.append(np.array([0.5, 0.5]))
+-            radii.append(0.01)
++        for iteration in range(400):
++            temp = 0.01 * (1 - iteration / 400)
++            for i in range(n):
++                for _ in range(20):
++                    old_pos = centers[i].copy()
++                    dx = np.random.uniform(-0.03, 0.03)
++                    dy = np.random.uniform(-0.03, 0.03)
++                    centers[i] += np.array([dx, dy])
++                    centers[i] = np.clip(centers[i], 0.01, 0.99)
++                    new_radii = compute_max_radii(centers)
++                    old_radii = compute_max_radii(centers[i - 1:i + 1] if i > 0 else centers[:1]) if False else compute_max_radii(centers)
+ 
+-    centers = np.array(centers)
+-    radii = np.array(radii)
++                    delta = np.sum(new_radii) - np.sum(compute_max_radii(np.concatenate([centers[:i], [old_pos], centers[i + 1:]])) if i > 0 else [old_pos])
+ 
+-    for _ in range(50):
+-        for i in range(n):
+-            for _ in range(30):
+-                old_pos = centers[i].copy()
+-                dx = np.random.uniform(-0.02, 0.02)
+-                dy = np.random.uniform(-0.02, 0.02)
+-                centers[i] += np.array([dx, dy])
+-                centers[i] = np.clip(centers[i], 0.01, 0.99)
+-                new_radii = compute_max_radii(centers)
+-                if np.sum(new_radii) > np.sum(radii):
+-                    radii = new_radii
+-                else:
+-                    centers[i] = old_pos
++                    if np.sum(new_radii) > np.sum(old_radii) or np.random.random() < np.exp(delta / temp):
++                        radii = new_radii
++                    else:
++                        centers[i] = old_pos
+ 
++            radii = compute_max_radii(centers)
++
++        sum_radii = np.sum(radii)
++        if sum_radii > best_sum:
++            best_sum = sum_radii
++            best_centers = centers.copy()
++            best_radii = radii.copy()
++
++    centers = best_centers
++    radii = best_radii
+     sum_radii = np.sum(radii)
+     return centers, radii, sum_radii
+ 
+ 
+
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,9 +48,9 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Optimized circle packing with hex initialization and simulated annealing.
++    Optimized circle packing with hex initialization and multi-start refinement.
+     """
+     n = 26
+ 
+     best_centers = None
+@@ -75,23 +75,23 @@
+ 
+         for iteration in range(400):
+             temp = 0.01 * (1 - iteration / 400)
+             for i in range(n):
++                old_pos = centers[i].copy()
++                old_radii = compute_max_radii(centers)
++                old_sum = np.sum(old_radii)
++
+                 for _ in range(20):
+-                    old_pos = centers[i].copy()
+-                    dx = np.random.uniform(-0.03, 0.03)
+-                    dy = np.random.uniform(-0.03, 0.03)
+-                    centers[i] += np.array([dx, dy])
++                    centers[i] = old_pos + np.random.uniform(-0.03, 0.03, 2)
+                     centers[i] = np.clip(centers[i], 0.01, 0.99)
+                     new_radii = compute_max_radii(centers)
+-                    old_radii = compute_max_radii(centers[i - 1:i + 1] if i > 0 else centers[:1]) if False else compute_max_radii(centers)
++                    new_sum = np.sum(new_radii)
+ 
+-                    delta = np.sum(new_radii) - np.sum(compute_max_radii(np.concatenate([centers[:i], [old_pos], centers[i + 1:]])) if i > 0 else [old_pos])
++                    if new_sum > old_sum or np.random.random() < np.exp((new_sum - old_sum) / temp):
++                        old_sum = new_sum
++                        old_pos = centers[i].copy()
+ 
+-                    if np.sum(new_radii) > np.sum(old_radii) or np.random.random() < np.exp(delta / temp):
+-                        radii = new_radii
+-                    else:
+-                        centers[i] = old_pos
++                centers[i] = old_pos
+ 
+             radii = compute_max_radii(centers)
+ 
+         sum_radii = np.sum(radii)
+
+[0m
+[0m$ [0mcd /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01 && wc -c child.py && python -c "exec(open('child.py').read()); c,r,s=run_packing(); print(f'sum_radii: {s:.4f}')"
+4860 child.py
+
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+The code is timing out. Let me simplify drastically to reduce computation:
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,61 +48,37 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Optimized circle packing with hex initialization and multi-start refinement.
++    Optimized circle packing with hex initialization and fast refinement.
+     """
+     n = 26
+ 
+-    best_centers = None
+-    best_radii = None
+-    best_sum = 0.0
++    hex_spacing = 0.13
++    centers = []
++    for i in range(n):
++        row = i // 5
++        col = i % 5
++        x = 0.12 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
++        y = 0.12 + row * hex_spacing * 0.866
++        centers.append([np.clip(x, 0.05, 0.95), np.clip(y, 0.05, 0.95)])
+ 
+-    for seed in [42, 123, 456]:
+-        np.random.seed(seed)
+-        centers = []
++    centers = np.array(centers)
+ 
+-        hex_spacing = 0.12
+-        for i in range(n):
+-            row = i // 5
+-            col = i % 5
+-            x = 0.1 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
+-            y = 0.1 + row * hex_spacing * 0.866
+-            x += np.random.uniform(-0.02, 0.02)
+-            y += np.random.uniform(-0.02, 0.02)
+-            centers.append([np.clip(x, 0.02, 0.98), np.clip(y, 0.02, 0.98)])
++    np.random.seed(42)
++    for _ in range(200):
++        i = np.random.randint(n)
++        old_pos = centers[i].copy()
++        centers[i] += np.random.uniform(-0.04, 0.04, 2)
++        centers[i] = np.clip(centers[i], 0.01, 0.99)
++        new_radii = compute_max_radii(centers)
++        old_radii = compute_max_radii(np.concatenate([centers[:i], [old_pos], centers[i + 1:]]) if i > 0 else [old_pos])
++        if np.sum(new_radii) > np.sum(old_radii):
++            radii = new_radii
++        else:
++            centers[i] = old_pos
+ 
+-        centers = np.array(centers)
+-
+-        for iteration in range(400):
+-            temp = 0.01 * (1 - iteration / 400)
+-            for i in range(n):
+-                old_pos = centers[i].copy()
+-                old_radii = compute_max_radii(centers)
+-                old_sum = np.sum(old_radii)
+-
+-                for _ in range(20):
+-                    centers[i] = old_pos + np.random.uniform(-0.03, 0.03, 2)
+-                    centers[i] = np.clip(centers[i], 0.01, 0.99)
+-                    new_radii = compute_max_radii(centers)
+-                    new_sum = np.sum(new_radii)
+-
+-                    if new_sum > old_sum or np.random.random() < np.exp((new_sum - old_sum) / temp):
+-                        old_sum = new_sum
+-                        old_pos = centers[i].copy()
+-
+-                centers[i] = old_pos
+-
+-            radii = compute_max_radii(centers)
+-
+-        sum_radii = np.sum(radii)
+-        if sum_radii > best_sum:
+-            best_sum = sum_radii
+-            best_centers = centers.copy()
+-            best_radii = radii.copy()
+-
+-    centers = best_centers
+-    radii = best_radii
++    radii = compute_max_radii(centers)
+     sum_radii = np.sum(radii)
+     return centers, radii, sum_radii
+ 
+ 
+
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -62,23 +62,25 @@
+     y = 0.12 + row * hex_spacing * 0.866
+     centers.append([np.clip(x, 0.05, 0.95), np.clip(y, 0.05, 0.95)])
+ 
+ centers = np.array(centers)
++radii = compute_max_radii(centers)
+ 
+ np.random.seed(42)
+-for _ in range(200):
++for _ in range(300):
+     i = np.random.randint(n)
+     old_pos = centers[i].copy()
++    old_sum = np.sum(radii)
++
+     centers[i] += np.random.uniform(-0.04, 0.04, 2)
+     centers[i] = np.clip(centers[i], 0.01, 0.99)
+     new_radii = compute_max_radii(centers)
+-    old_radii = compute_max_radii(np.concatenate([centers[:i], [old_pos], centers[i + 1:]]) if i > 0 else [old_pos])
+-    if np.sum(new_radii) > np.sum(old_radii):
++
++    if np.sum(new_radii) > old_sum:
+         radii = new_radii
+     else:
+         centers[i] = old_pos
+ 
+-radii = compute_max_radii(centers)
+ sum_radii = np.sum(radii)
+ return centers, radii, sum_radii
+ 
+ 
+
+[0m
+[0m$ [0mcd /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01 && python -c "exec(open('child.py').read()); c,r,s=run_packing(); print(f'sum_radii: {s:.4f}')"
+Sum of radii: 1.401071371685857
+sum_radii: 1.4011
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,39 +48,45 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Optimized circle packing with hex initialization and fast refinement.
++    Force-directed circle packing with iterative repulsion.
+     """
+     n = 26
+ 
+-    hex_spacing = 0.13
++    hex_spacing = 0.15
+     centers = []
+     for i in range(n):
+         row = i // 5
+         col = i % 5
+-        x = 0.12 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
+-        y = 0.12 + row * hex_spacing * 0.866
+-        centers.append([np.clip(x, 0.05, 0.95), np.clip(y, 0.05, 0.95)])
++        x = 0.15 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
++        y = 0.15 + row * hex_spacing * 0.866
++        centers.append([x, y])
+ 
+-    centers = np.array(centers)
+-    radii = compute_max_radii(centers)
++    centers = np.array(centers, dtype=np.float64)
+ 
+-    np.random.seed(42)
+-    for _ in range(300):
+-        i = np.random.randint(n)
+-        old_pos = centers[i].copy()
+-        old_sum = np.sum(radii)
++    for iteration in range(300):
++        forces = np.zeros_like(centers)
+ 
+-        centers[i] += np.random.uniform(-0.04, 0.04, 2)
+-        centers[i] = np.clip(centers[i], 0.01, 0.99)
+-        new_radii = compute_max_radii(centers)
++        for i in range(n):
++            for j in range(i + 1, n):
++                diff = centers[i] - centers[j]
++                dist = np.linalg.norm(diff)
++                if dist > 0.001:
++                    force = diff / dist * (0.02 / (dist + 0.01))
++                    forces[i] += force
++                    forces[j] -= force
+ 
+-        if np.sum(new_radii) > old_sum:
+-            radii = new_radii
+-        else:
+-            centers[i] = old_pos
++        for i in range(n):
++            dist_to_edge = min(centers[i][0], centers[i][1], 1 - centers[i][0], 1 - centers[i][1])
++            if dist_to_edge < 0.05:
++                push = np.array([0.5 - centers[i][0], 0.5 - centers[i][1]]) * 0.1
++                forces[i] += push / (dist_to_edge + 0.01)
+ 
++        centers += forces * 0.5
++        centers = np.clip(centers, 0.02, 0.98)
++
++    radii = compute_max_radii(centers)
+     sum_radii = np.sum(radii)
+     return centers, radii, sum_radii
+ 
+ 
+
+[0m
+The improvement is minimal (1.4011 vs 1.3996). Need a more aggressive approach. Let me try force-directed relaxation:
+[0m
+[0m$ [0mcd /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01 && python -c "exec(open('child.py').read()); c,r,s=run_packing(); print(f'sum_radii: {s:.4f}')"
+Sum of radii: 0.0
+sum_radii: 0.0000
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,13 +48,13 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Force-directed circle packing with iterative repulsion.
++    Circle packing with physics-based spreading then radii optimization.
+     """
+     n = 26
+ 
+-    hex_spacing = 0.15
++    hex_spacing = 0.12
+     centers = []
+     for i in range(n):
+         row = i // 5
+         col = i % 5
+@@ -63,30 +63,48 @@
+         centers.append([x, y])
+ 
+     centers = np.array(centers, dtype=np.float64)
+ 
+-    for iteration in range(300):
+-        forces = np.zeros_like(centers)
+-
++    for _ in range(150):
+         for i in range(n):
+-            for j in range(i + 1, n):
+-                diff = centers[i] - centers[j]
+-                dist = np.linalg.norm(diff)
+-                if dist > 0.001:
+-                    force = diff / dist * (0.02 / (dist + 0.01))
+-                    forces[i] += force
+-                    forces[j] -= force
++            for j in range(n):
++                if i != j:
++                    diff = centers[i] - centers[j]
++                    dist = np.linalg.norm(diff)
++                    if dist > 0.01:
++                        force = diff / dist * 0.015 / dist
++                        centers[i] += force
+ 
+         for i in range(n):
+-            dist_to_edge = min(centers[i][0], centers[i][1], 1 - centers[i][0], 1 - centers[i][1])
+-            if dist_to_edge < 0.05:
+-                push = np.array([0.5 - centers[i][0], 0.5 - centers[i][1]]) * 0.1
+-                forces[i] += push / (dist_to_edge + 0.01)
++            margin = 0.03
++            if centers[i][0] < margin:
++                centers[i][0] += (margin - centers[i][0]) * 0.2
++            if centers[i][0] > 1 - margin:
++                centers[i][0] += (1 - margin - centers[i][0]) * 0.2
++            if centers[i][1] < margin:
++                centers[i][1] += (margin - centers[i][1]) * 0.2
++            if centers[i][1] > 1 - margin:
++                centers[i][1] += (1 - margin - centers[i][1]) * 0.2
+ 
+-        centers += forces * 0.5
+-        centers = np.clip(centers, 0.02, 0.98)
++    centers = np.clip(centers, 0.02, 0.98)
+ 
+     radii = compute_max_radii(centers)
++
++    np.random.seed(42)
++    for _ in range(500):
++        i = np.random.randint(n)
++        old_pos = centers[i].copy()
++        old_sum = np.sum(radii)
++
++        centers[i] += np.random.uniform(-0.03, 0.03, 2)
++        centers[i] = np.clip(centers[i], 0.01, 0.99)
++        new_radii = compute_max_radii(centers)
++
++        if np.sum(new_radii) > old_sum:
++            radii = new_radii
++        else:
++            centers[i] = old_pos
++
+     sum_radii = np.sum(radii)
+     return centers, radii, sum_radii
+ 
+ 
+
+[0m
+[0m$ [0mcd /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01 && python -c "exec(open('child.py').read()); c,r,s=run_packing(); print(f'sum_radii: {s:.4f}')"
+Sum of radii: 1.22379687924483
+sum_radii: 1.2238
+[0m
+[0m← [0mEdit child.py
+Index: /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+===================================================================
+--- /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
++++ /Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_test_1/mutations/it000001/m01/child.py
+@@ -48,63 +48,56 @@
+ # placed, as long as construct_packing() keeps returning (centers, radii,
+ # sum_of_radii) — the I/O contract run_packing() (F_imm, above) depends on.
+ def construct_packing():
+     """
+-    Circle packing with physics-based spreading then radii optimization.
++    Greedy placement with aggressive local search.
+     """
+     n = 26
+-
+-    hex_spacing = 0.12
++    np.random.seed(42)
+     centers = []
++    radii = []
++
+     for i in range(n):
+-        row = i // 5
+-        col = i % 5
+-        x = 0.15 + col * hex_spacing + (row % 2) * hex_spacing * 0.5
+-        y = 0.15 + row * hex_spacing * 0.866
+-        centers.append([x, y])
++        best_pos = None
++        best_r = 0.0
+ 
+-    centers = np.array(centers, dtype=np.float64)
++        for _ in range(500):
++            x = np.random.uniform(0.02, 0.98)
++            y = np.random.uniform(0.02, 0.98)
++            r = min(x, y, 1 - x, 1 - y)
+ 
+-    for _ in range(150):
+-        for i in range(n):
+-            for j in range(n):
+-                if i != j:
+-                    diff = centers[i] - centers[j]
+-                    dist = np.linalg.norm(diff)
+-                    if dist > 0.01:
+-                        force = diff / dist * 0.015 / dist
+-                        centers[i] += force
++            for j, (c, rad) in enumerate(zip(centers, radii)):
++                d = np.sqrt((x - c[0])**2 + (y - c[1])**2)
++                r = min(r, d - rad)
+ 
+-        for i in range(n):
+-            margin = 0.03
+-            if centers[i][0] < margin:
+-                centers[i][0] += (margin - centers[i][0]) * 0.2
+-            if centers[i][0] > 1 - margin:
+-                centers[i][0] += (1 - margin - centers[i][0]) * 0.2
+-            if centers[i][1] < margin:
+-                centers[i][1] += (margin - centers[i][1]) * 0.2
+-            if centers[i][1] > 1 - margin:
+-                centers[i][1] += (1 - margin - centers[i][1]) * 0.2
++            if r > best_r:
++                best_r = r
++                best_pos = (x, y)
+ 
+-    centers = np.clip(centers, 0.02, 0.98)
++        if best_pos and best_r > 0.01:
++            centers.append(np.array(best_pos))
++            radii.append(best_r)
++        else:
++            centers.append(np.array([0.5, 0.5]))
++            radii.append(0.01)
+ 
+-    radii = compute_max_radii(centers)
++    centers = np.array(centers)
++    radii = np.array(radii)
+ 
+-    np.random.seed(42)
+-    for _ in range(500):
+-        i = np.random.randint(n)
+-        old_pos = centers[i].copy()
+-        old_sum = np.sum(radii)
++    for _ in range(100):
++        for i in range(n):
++            for _ in range(50):
++                old_pos = centers[i].copy()
++                dx = np.random.uniform(-0.02, 0.02)
++                dy = np.random.uniform(-0.02, 0.02)
++                centers[i] += np.array([dx, dy])
++                centers[i] = np.clip(centers[i], 0.01, 0.99)
++                new_radii = compute_max_radii(centers)
++                if np.sum(new_radii) > np.sum(radii):
++                    radii = new_radii
++                else:
++                    centers[i] = old_pos
+ 
+-        centers[i] += np.random.uniform(-0.03, 0.03, 2)
+-        centers[i] = np.clip(centers[i], 0.01, 0.99)
+-        new_radii = compute_max_radii(centers)
+-
+-        if np.sum(new_radii) > old_sum:
+-            radii = new_radii
+-        else:
+-            centers[i] = old_pos
+-
+     sum_radii = np.sum(radii)
+     return centers, radii, sum_radii
+ 
+ 
+
+[0m

@@ -113,7 +113,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             wall_s=3.0,
             timed_out=True,
         )
-        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+        with patch("noema.agenthost.reasoning.CliPtyRunner.run", return_value=result):
             with self.assertRaisesRegex(TimeoutError, "timed out after 3.0s"):
                 asyncio.run(llm.generate("extract", tag="hifo.extract_insights"))
 
@@ -130,7 +130,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             wall_s=0.1,
             timed_out=False,
         )
-        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+        with patch("noema.agenthost.reasoning.CliPtyRunner.run", return_value=result):
             with self.assertRaisesRegex(RuntimeError, "exited with code 7"):
                 asyncio.run(llm.generate("extract", tag="hifo.extract_insights"))
 
@@ -153,7 +153,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             wall_s=0.0,
             timed_out=False,
         )
-        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+        with patch("noema.agenthost.reasoning.CliPtyRunner.run", return_value=result):
             with patch(
                 "noema.agenthost.reasoning.asyncio.to_thread",
                 side_effect=run_in_thread,
@@ -251,7 +251,7 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             )
             llm.generation = 1
             tips_before = len(module.insight_pool.tips)
-            with patch("noema.agenthost.reasoning.CliRunner.run", fake_run):
+            with patch("noema.agenthost.reasoning.CliPtyRunner.run", fake_run):
                 asyncio.run(module.on_generation_end(make_hifo_ctx()))
             self.assertGreater(len(module.insight_pool.tips), tips_before)
             self.assertIn(

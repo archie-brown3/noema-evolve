@@ -12,27 +12,51 @@ from pathlib import Path
 from typing import Optional
 
 from noema.agenthost.config import AgentCliConfig, AgentConfig
+from noema.agenthost.configure_files import load_noema_and_agent
 from noema.agenthost.factory import create_agent_session
-from noema.config import NoemaConfig
 
 
 def build_agent_config(args: argparse.Namespace) -> AgentConfig:
-    noema = NoemaConfig.from_yaml(args.config) if args.config else NoemaConfig()
-    mutation_cli = AgentCliConfig(
-        kind=args.mutation_cli,
-        model=args.mutation_model,
-    )
-    coordination_cli = (
-        copy.deepcopy(mutation_cli) if args.coordination_depth == "deep" else AgentCliConfig()
-    )
-    return AgentConfig(
-        noema=noema,
-        stop_children=args.stop_children,
-        mutation_cli=mutation_cli,
-        mutation_depth=args.mutation_depth,
-        coordination_cli=coordination_cli,
-        coordination_depth=args.coordination_depth,
-    )
+    if args.config:
+        config = load_noema_and_agent(args.config)
+    else:
+        config = AgentConfig()
+
+    if args.stop_children is not None:
+        config.stop_children = args.stop_children
+
+    kind = args.mutation_cli
+    model = args.mutation_model
+    mutation_depth = args.mutation_depth
+    coordination_depth = args.coordination_depth
+
+    if not args.config:
+        kind = kind or os.environ.get("NOEMA_MUTATION_CLI", "opencode")
+        model = model if model is not None else os.environ.get("NOEMA_MUTATION_MODEL")
+        mutation_depth = mutation_depth or "shallow"
+        coordination_depth = coordination_depth or "shallow"
+        config.mutation_cli = AgentCliConfig(kind=kind, model=model)
+        config.mutation_depth = mutation_depth
+        config.coordination_depth = coordination_depth
+        config.coordination_cli = (
+            copy.deepcopy(config.mutation_cli)
+            if coordination_depth == "deep"
+            else AgentCliConfig()
+        )
+        return config
+
+    # With --config: YAML agent: is base; overlay only explicitly passed flags.
+    if kind is not None:
+        config.mutation_cli.kind = kind
+    if model is not None:
+        config.mutation_cli.model = model
+    if mutation_depth is not None:
+        config.mutation_depth = mutation_depth
+    if coordination_depth is not None:
+        config.coordination_depth = coordination_depth
+        if coordination_depth == "deep":
+            config.coordination_cli = copy.deepcopy(config.mutation_cli)
+    return config
 
 
 def parse_entry_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
@@ -66,24 +90,24 @@ def parse_entry_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--mutation-cli",
-        default=os.environ.get("NOEMA_MUTATION_CLI", "opencode"),
+        default=None,
         choices=("claude", "codex", "opencode", "agent"),
         help="Nested mutation CLI kind (also used for deep coordination CLI).",
     )
     parser.add_argument(
         "--mutation-model",
-        default=os.environ.get("NOEMA_MUTATION_MODEL"),
+        default=None,
         help="Optional model override for nested CLIs.",
     )
     parser.add_argument(
         "--mutation-depth",
-        default="shallow",
+        default=None,
         choices=("shallow", "deep"),
         help="Mutation CLI access: file-only (shallow) or inner MCP (deep).",
     )
     parser.add_argument(
         "--coordination-depth",
-        default="shallow",
+        default=None,
         choices=("shallow", "deep"),
         help="Coordination transport: BudgetedLLM (shallow) or CLI (deep).",
     )

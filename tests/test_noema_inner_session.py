@@ -36,7 +36,7 @@ from noema.agenthost.inner_session_mcp import (
 from noema.agenthost.mutation import CliMutationBackend, MutationRequest
 from noema.agenthost.read_tools import build_snapshot
 from noema.agenthost.submit import ADVICE_FILENAME, coordination_response
-from noema.budget.cli_runner import CliRunner, CliRunResult, build_mutation_cli_command
+from noema.budget.cli_runner import CliPtyRunner, CliRunResult, build_mutation_cli_command
 from noema.config import CoordinationConfig, LLMClientConfig, LLMRolesConfig, NoemaConfig
 from noema.substrates.cvt import CVTStore
 from noema.substrates.flat import FlatPopulationStore
@@ -104,7 +104,7 @@ class TestInnerSession(unittest.TestCase):
             )
             session.generation = 3
             asyncio.run(session.begin_run())
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 result = asyncio.run(
                     session.coordination.llm.generate("prompt", tag="hifo.extract_insights")
                 )
@@ -584,7 +584,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
             return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
 
         with tempfile.TemporaryDirectory() as tmp:
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 for kind in ("claude", "codex", "opencode", "agent"):
                     current_kind = kind
                     kind_tmp = Path(tmp) / kind
@@ -638,7 +638,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             session = _deep_session(tmp)
             asyncio.run(session.begin_run())
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 for kind in ("claude", "codex", "opencode", "agent"):
                     work = Path(tmp) / kind / "mut"
                     backend = CliMutationBackend(kind=kind, binary=f"/usr/bin/{kind}")
@@ -690,7 +690,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
                 deliverable_path=work / "child.py",
                 timeout_s=5.0,
             )
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 backend.run(request)
 
             self.assertFalse((work / "tools" / MCP_CONFIG_NAME).exists())

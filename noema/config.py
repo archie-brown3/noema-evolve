@@ -398,9 +398,26 @@ class NoemaConfig:
             )
         return data
 
+    @staticmethod
+    def _normalise_coordination_module(data: Dict[str, Any]) -> Dict[str, Any]:
+        """YAML ``module: null`` is None; the OFF arm is the string ``\"null\"``."""
+
+        coordination = data.get("coordination")
+        if (
+            isinstance(coordination, dict)
+            and "module" in coordination
+            and coordination["module"] is None
+        ):
+            return {
+                **data,
+                "coordination": {**coordination, "module": "null"},
+            }
+        return data
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "NoemaConfig":
         data = cls._normalise_llm_section(data)
+        data = cls._normalise_coordination_module(data)
         cls._reject_unknown_keys(data)
         return dacite.from_dict(
             data_class=cls,
