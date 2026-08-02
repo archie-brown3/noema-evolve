@@ -170,7 +170,11 @@ class AgentSession:
                         f"iteration {iteration} failed to accept a child after "
                         f"{self.config.max_iterations} attempts"
                     )
-                await IterationRunner.run_iteration(self, iteration)
+                await IterationRunner.run_iteration(
+                    self,
+                    iteration,
+                    attempt_offset=self._driver_mutation_attempts,
+                )
                 attempts_without_acceptance += 1
             if (iteration + 1) % self.substrate.steps_per_generation == 0:
                 await IterationRunner.generation_tick(self, iteration)

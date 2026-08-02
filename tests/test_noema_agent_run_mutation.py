@@ -120,6 +120,11 @@ def trace_rows(session):
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
+def selection_rows(session):
+    path = Path(session.output_dir) / "selection_trace.jsonl"
+    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+
+
 def child_of(session):
     return next(p for p in session.store.population() if p.id != "initial")
 
@@ -159,6 +164,12 @@ class TestRunMutationRejectAndRetry(unittest.TestCase):
                     ("report_result", child.id, False, Outcome.ACCEPTED),
                 ],
             )
+            traces = trace_rows(session)
+            self.assertEqual([row["attempt"] for row in traces], [0, 1])
+            self.assertNotEqual(traces[0]["attempt_id"], traces[1]["attempt_id"])
+            selection = selection_rows(session)[0]
+            self.assertEqual(selection["selected_attempt_id"], traces[1]["attempt_id"])
+            self.assertEqual(child.metadata["source_attempt_id"], traces[1]["attempt_id"])
 
 
 class TestRunMutationBackendFailure(unittest.TestCase):

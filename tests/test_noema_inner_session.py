@@ -21,6 +21,7 @@ from noema.agenthost.config import (
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.inner_session_mcp import (
     MCP_CONFIG_NAME,
+    TOOLS_DIRNAME,
     build_server,
     get_best_programs,
     get_children_by_parent,
@@ -72,7 +73,10 @@ class TestInnerSession(unittest.TestCase):
 
     def test_build_snapshot(self):
         with tempfile.TemporaryDirectory() as tmp:
-            session = self._session(tmp)
+            session = _deep_session(
+                tmp,
+                coordination_cli=AgentCliConfig(kind="opencode", binary=sys.executable),
+            )
             asyncio.run(session.begin_run())
             snapshot = build_snapshot(session)
             self.assertIn("programs", snapshot)
@@ -81,6 +85,36 @@ class TestInnerSession(unittest.TestCase):
             self.assertGreaterEqual(len(snapshot["programs"]), 1)
             self.assertIn("initial", snapshot["programs"])
             json.dumps(snapshot)
+
+    def test_deep_coordination_uses_bound_session_generation_and_mcp(self):
+        captured = {}
+
+        def fake_run(_self, argv, **kwargs):
+            captured["argv"] = argv
+            captured["cwd"] = kwargs["cwd"]
+            kwargs["stdout_path"].write_text("")
+            kwargs["stderr_path"].write_text("")
+            (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
+            return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            session = _deep_session(
+                tmp,
+                coordination_cli=AgentCliConfig(kind="opencode", binary=sys.executable),
+            )
+            session.generation = 3
+            asyncio.run(session.begin_run())
+            with patch.object(CliRunner, "run", fake_run):
+                result = asyncio.run(
+                    session.coordination.llm.generate("prompt", tag="hifo.extract_insights")
+                )
+
+            self.assertEqual(result, "ok")
+            self.assertIn("gen0003", str(captured["cwd"]))
+            mcp_path = captured["cwd"] / TOOLS_DIRNAME / MCP_CONFIG_NAME
+            self.assertTrue(mcp_path.is_file())
+            opencode = json.loads((captured["cwd"] / "opencode.json").read_text())
+            self.assertTrue(opencode["mcp"]["noema"]["enabled"])
 
     def test_module_help_is_warning_clean(self):
         completed = subprocess.run(

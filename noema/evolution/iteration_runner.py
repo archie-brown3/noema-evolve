@@ -116,7 +116,7 @@ class IterationRunner:
         return OPERATOR_MENU[name]
 
     @staticmethod
-    async def run_iteration(host, iteration: int) -> None:
+    async def run_iteration(host, iteration: int, *, attempt_offset: int = 0) -> None:
         island = host.substrate.target_scope(iteration)
         selection_ctx = SelectionContext(
             iteration=iteration,
@@ -204,7 +204,7 @@ class IterationRunner:
             IterationRunner._write_attempt_trace(
                 host,
                 iteration,
-                0,
+                attempt_offset,
                 ctx,
                 selection,
                 operator,
@@ -284,6 +284,7 @@ class IterationRunner:
         parent_fitness = ctx.parent.fitness if ctx.parent is not None else 0.0
 
         for attempt in range(retry_cap + 1):
+            attempt_number = attempt_offset + attempt
             # Reset per attempt so the LAST attempt's failure category is the one
             # reported (task 0090); the eval-error branch below upgrades it.
             failure_outcome = Outcome.NO_PROGRAM
@@ -303,7 +304,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -321,7 +322,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -353,7 +354,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -390,7 +391,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -421,7 +422,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -443,7 +444,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -476,7 +477,7 @@ class IterationRunner:
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
-                    attempt,
+                    attempt_number,
                     ctx,
                     selection,
                     operator,
@@ -509,7 +510,7 @@ class IterationRunner:
                         "response": response,
                         "prompt": current_prompt,
                         "fitness": child_fitness,
-                        "attempt": attempt,
+                        "attempt": attempt_number,
                     }
                 if child_fitness <= parent_fitness and attempt < retry_cap:
                     error_text = (
@@ -523,7 +524,7 @@ class IterationRunner:
                     IterationRunner._write_attempt_trace(
                         host,
                         iteration,
-                        attempt,
+                        attempt_number,
                         ctx,
                         selection,
                         operator,
@@ -537,10 +538,10 @@ class IterationRunner:
                         ledger_start,
                     )
                     continue
-                selected = best_attempt is not None and best_attempt["attempt"] == attempt
+                selected = best_attempt is not None and best_attempt["attempt"] == attempt_number
                 if selected and child_fitness > parent_fitness:
                     accepted_trace = {
-                        "attempt": attempt,
+                        "attempt": attempt_number,
                         "prompt": current_prompt,
                         "response": response,
                         "candidate": {"id": child_id, "code": child_code},
@@ -551,7 +552,7 @@ class IterationRunner:
                     IterationRunner._write_attempt_trace(
                         host,
                         iteration,
-                        attempt,
+                        attempt_number,
                         ctx,
                         selection,
                         operator,
@@ -566,7 +567,7 @@ class IterationRunner:
                     )
             else:
                 accepted_trace = {
-                    "attempt": attempt,
+                    "attempt": attempt_number,
                     "prompt": current_prompt,
                     "response": response,
                     "candidate": {"id": child_id, "code": child_code},
@@ -587,7 +588,7 @@ class IterationRunner:
             current_prompt = best_attempt["prompt"]
             source_attempt_id = host.attempt_tracer.attempt_id(iteration, best_attempt["attempt"])
         elif child_code is not None:
-            source_attempt_id = host.attempt_tracer.attempt_id(iteration, attempt)
+            source_attempt_id = host.attempt_tracer.attempt_id(iteration, attempt_offset + attempt)
 
         # Keep optional budget-aware selection policies checkpoint-exact even
         # when the final attempt is rejected or no subsequent selection occurs.

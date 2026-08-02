@@ -1,6 +1,9 @@
 """Canonical config composition and agent-host factory tests."""
 
+import asyncio
+import json
 import os
+import sys
 import tempfile
 import unittest
 import warnings
@@ -14,6 +17,9 @@ from noema.agenthost.config import AgentCliConfig, AgentConfig, validate_agent_c
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.mutation import CliMutationBackend, FakeMutationBackend
 from noema.agenthost.reasoning import DeepCoordinationLLM
+from noema.agenthost.inner_session_mcp import MCP_CONFIG_NAME, TOOLS_DIRNAME
+from noema.agenthost.submit import ADVICE_FILENAME
+from noema.budget.cli_runner import CliRunner, CliRunResult
 from noema.budget.llm import BudgetedLLM
 from noema.config import (
     BudgetConfig,
@@ -232,6 +238,59 @@ class TestCreateAgentSession(unittest.TestCase):
         self.assertEqual(session.coordination._paradigm_llm.model, "heavy-model")
         self.assertEqual(session.coordination._variant_llm.model, "light-model")
         self.assertEqual(session.coordination.llm.model, "base-model")
+
+    def test_factory_deep_pe_alternate_tiers_use_bound_cli_transport(self):
+        noema = NoemaConfig(
+            coordination=CoordinationConfig(
+                module="pe",
+                params={
+                    "paradigm_model": "heavy-model",
+                    "variant_model": "light-model",
+                },
+            ),
+            llm=LLMRolesConfig(
+                coordination=LLMClientConfig(model="base-model", api_key="fake-key"),
+            ),
+        )
+        config = AgentConfig(
+            noema=noema,
+            coordination_depth="deep",
+            coordination_cli=AgentCliConfig(kind="opencode", binary=sys.executable),
+        )
+        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
+            "openai.AsyncOpenAI"
+        ):
+            warnings.simplefilter("ignore")
+            session = self._session(tmp, config)
+
+            self.assertIsInstance(session.coordination.llm, DeepCoordinationLLM)
+            self.assertIsInstance(session.coordination._paradigm_llm, DeepCoordinationLLM)
+            self.assertIsInstance(session.coordination._variant_llm, DeepCoordinationLLM)
+            self.assertIs(session.coordination.llm._session, session)
+            self.assertIs(session.coordination._paradigm_llm._session, session)
+            self.assertIs(session.coordination._variant_llm._session, session)
+            self.assertEqual(session.coordination._paradigm_llm.model, "heavy-model")
+            self.assertEqual(session.coordination._variant_llm.model, "light-model")
+
+            captured = {}
+
+            def fake_run(_self, argv, **kwargs):
+                captured["argv"] = argv
+                captured["cwd"] = kwargs["cwd"]
+                kwargs["stdout_path"].write_text("")
+                kwargs["stderr_path"].write_text("")
+                (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
+                return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
+
+            with mock.patch.object(CliRunner, "run", fake_run):
+                result = asyncio.run(
+                    session.coordination._paradigm_llm.generate("prompt", tag="pe.paradigm_shift")
+            )
+
+            self.assertEqual(result, "ok")
+            self.assertTrue((captured["cwd"] / TOOLS_DIRNAME / MCP_CONFIG_NAME).is_file())
+            opencode = json.loads((captured["cwd"] / "opencode.json").read_text())
+            self.assertTrue(opencode["mcp"]["noema"]["enabled"])
 
     def test_shallow_mutation_builds_unbound_cli_backend(self):
         with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings():

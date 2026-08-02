@@ -71,10 +71,11 @@ class DeepCoordinationLLM:
     def _run_cli(self, tag: str, system_message: str, user_message: str) -> str:
         self._attempts[tag] += 1
         attempt = self._attempts[tag]
+        generation = self._session.generation if self._session is not None else self.generation
         work = (
             Path(self._output_dir)
             / "coordination"
-            / f"gen{self.generation:04d}"
+            / f"gen{generation:04d}"
             / tag
             / f"a{attempt:02d}"
         )
