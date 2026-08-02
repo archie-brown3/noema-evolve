@@ -178,6 +178,12 @@ class HostLogPane(RichLog):
         self.write(line)
         self.scroll_end(animate=False)
 
+    def append_event(self, event: dict[str, Any]) -> None:
+        if self._verbosity != "full":
+            return
+        self.write(json.dumps(event, sort_keys=True))
+        self.scroll_end(animate=False)
+
 
 class ConfirmScreen(ModalScreen):
     """Small keyboard-only confirmation used for quitting and aborting."""
@@ -426,10 +432,10 @@ class MonitorScreen(Screen):
             mutation_runner=mutation_runner,
             coordination_runner=coordination_runner,
             on_mutation_session_start=lambda label: self.app.call_from_thread(
-                self._mutation.begin_session, label
+                self._begin_mutation_session, label
             ),
             on_coordination_session_start=lambda label: self.app.call_from_thread(
-                self._coordination.begin_session, label
+                self._begin_coordination_session, label
             ),
             attempt_trace_callback=lambda record: self.app.call_from_thread(
                 self._host_log.append_record, record
@@ -437,6 +443,34 @@ class MonitorScreen(Screen):
         )
         self._host_log.write("run started")
         self._worker = self.app.run_worker(self._run_host, thread=True, exit_on_error=False)
+
+    def _begin_mutation_session(self, label: str) -> None:
+        self._mutation.begin_session(label)
+        self._host_log.append_event(
+            {
+                "schema_version": 1,
+                "event": "mutation_session_started",
+                "role": "mutation",
+                "label": label,
+                "cli_stdout_log": str(
+                    (self._output_dir / "mutations" / label / "cli_stdout.log").resolve()
+                ),
+            }
+        )
+
+    def _begin_coordination_session(self, label: str) -> None:
+        self._coordination.begin_session(label)
+        self._host_log.append_event(
+            {
+                "schema_version": 1,
+                "event": "coordination_session_started",
+                "role": "coordination",
+                "label": label,
+                "cli_stdout_log": str(
+                    (self._output_dir / "coordination" / label / "cli_stdout.log").resolve()
+                ),
+            }
+        )
 
     def _run_host(self) -> None:
         assert self._session is not None

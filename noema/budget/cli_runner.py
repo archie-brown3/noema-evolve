@@ -16,9 +16,9 @@ import errno
 import json
 import os
 import pty
+import select
 import shutil
 import signal
-import select
 import subprocess
 import threading
 import time
@@ -166,6 +166,8 @@ class CliPtyRunner:
         with self._lock:
             self._active_pid = pid
 
+        stdout_path.parent.mkdir(parents=True, exist_ok=True)
+        stderr_path.parent.mkdir(parents=True, exist_ok=True)
         output = bytearray()
         timed_out = False
         child_status: Optional[int] = None
@@ -173,46 +175,52 @@ class CliPtyRunner:
         deadline = started + timeout_s
         termination_started: Optional[float] = None
         try:
-            while child_status is None or not eof:
-                if child_status is None:
-                    waited_pid, status = os.waitpid(pid, os.WNOHANG)
-                    if waited_pid == pid:
-                        child_status = status
-
-                now = time.monotonic()
-                if child_status is None and termination_started is None and now >= deadline:
-                    timed_out = True
-                    self._terminate_process_group(pid, signal.SIGTERM)
-                    termination_started = now
-                    deadline = now + 0.25
-                elif child_status is None and termination_started is not None and now >= deadline:
-                    self._terminate_process_group(pid, signal.SIGKILL)
-                    deadline = now + 0.25
-
-                if not eof:
-                    wait_s = 0.05
+            stderr_path.write_text("")
+            with stdout_path.open("wb") as stdout_log:
+                while child_status is None or not eof:
                     if child_status is None:
-                        wait_s = max(0.0, min(wait_s, deadline - time.monotonic()))
-                    readable, _, _ = select.select([master_fd], [], [], wait_s)
-                    if readable:
-                        try:
-                            chunk = os.read(master_fd, 65536)
-                        except OSError as exc:
-                            if exc.errno not in (errno.EIO, errno.EBADF):
-                                raise
-                            chunk = b""
-                        if chunk:
-                            output.extend(chunk)
-                            if self._on_output is not None:
-                                try:
-                                    self._on_output(chunk)
-                                except Exception:
-                                    # UI repaint failures must not alter the study run.
-                                    pass
-                        else:
-                            eof = True
-                else:
-                    time.sleep(0.01)
+                        waited_pid, status = os.waitpid(pid, os.WNOHANG)
+                        if waited_pid == pid:
+                            child_status = status
+
+                    now = time.monotonic()
+                    if child_status is None and termination_started is None and now >= deadline:
+                        timed_out = True
+                        self._terminate_process_group(pid, signal.SIGTERM)
+                        termination_started = now
+                        deadline = now + 0.25
+                    elif (
+                        child_status is None and termination_started is not None and now >= deadline
+                    ):
+                        self._terminate_process_group(pid, signal.SIGKILL)
+                        deadline = now + 0.25
+
+                    if not eof:
+                        wait_s = 0.05
+                        if child_status is None:
+                            wait_s = max(0.0, min(wait_s, deadline - time.monotonic()))
+                        readable, _, _ = select.select([master_fd], [], [], wait_s)
+                        if readable:
+                            try:
+                                chunk = os.read(master_fd, 65536)
+                            except OSError as exc:
+                                if exc.errno not in (errno.EIO, errno.EBADF):
+                                    raise
+                                chunk = b""
+                            if chunk:
+                                output.extend(chunk)
+                                stdout_log.write(chunk)
+                                stdout_log.flush()
+                                if self._on_output is not None:
+                                    try:
+                                        self._on_output(chunk)
+                                    except Exception:
+                                        # UI repaint failures must not alter the study run.
+                                        pass
+                            else:
+                                eof = True
+                    else:
+                        time.sleep(0.01)
         finally:
             try:
                 os.close(master_fd)
@@ -223,8 +231,6 @@ class CliPtyRunner:
                     self._active_pid = None
 
         merged = output.decode(errors="replace")
-        stdout_path.write_text(merged)
-        stderr_path.write_text("")
         return CliRunResult(
             exit_code=None if timed_out else _wait_status_exit_code(child_status),
             stdout=merged,
