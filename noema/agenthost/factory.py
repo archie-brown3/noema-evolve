@@ -27,22 +27,25 @@ def _build_coordination_seat(
     on_session_start: Optional[Callable[[str], None]] = None,
 ):
     noema = config.noema
-    seat = build_budgeted_llm(
+    resolved_model = model or noema.llm.coordination.model
+    # Deep seats are CLI-only — never construct BudgetedLLM (OpenAI client).
+    # CLI spend → TokenLedger booking is deferred to task 0170.
+    if config.coordination_depth == "deep":
+        return DeepCoordinationLLM(
+            cli=config.coordination_cli,
+            output_dir=output_dir,
+            model=resolved_model,
+            tag=tag,
+            runner=cli_runner,
+            on_session_start=on_session_start,
+        )
+    return build_budgeted_llm(
         noema.llm.coordination,
         ledger=ledger,
         account=COORDINATION_ACCOUNT,
         tag=tag,
-        model=model,
+        model=resolved_model,
     )
-    if config.coordination_depth == "deep":
-        return DeepCoordinationLLM(
-            seat,
-            cli=config.coordination_cli,
-            output_dir=output_dir,
-            runner=cli_runner,
-            on_session_start=on_session_start,
-        )
-    return seat
 
 
 def _build_coordination(
