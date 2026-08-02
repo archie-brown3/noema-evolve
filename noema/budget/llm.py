@@ -15,7 +15,7 @@ component with an internal ensemble is ever reused.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from openevolve.llm.base import LLMInterface
 
@@ -38,6 +38,37 @@ def _consume_task_result(task: asyncio.Task) -> None:
         pass
 
 
+def build_budgeted_llm(
+    client_config,
+    *,
+    ledger: "TokenLedger",
+    account: str,
+    tag: str,
+    model: Optional[str] = None,
+) -> "BudgetedLLM":
+    """Build a ``BudgetedLLM`` from an ``LLMClientConfig`` seat.
+
+    ``model`` overrides the seat's model for alternate-tier clients (task 0110).
+    """
+    return BudgetedLLM(
+        model=model or client_config.model,
+        ledger=ledger,
+        account=account,
+        tag=tag,
+        api_base=client_config.api_base,
+        api_key=client_config.api_key,
+        temperature=client_config.temperature,
+        top_p=client_config.top_p,
+        max_tokens=client_config.max_tokens,
+        seed=client_config.seed,
+        timeout=client_config.timeout,
+        retries=client_config.retries,
+        retry_delay=client_config.retry_delay,
+        total_deadline_s=client_config.total_deadline_s,
+        disable_reasoning=client_config.disable_reasoning,
+    )
+
+
 class FatalProviderError(Exception):
     """A provider error retrying cannot fix (401/402/403). Not retried."""
 
@@ -45,9 +76,7 @@ class FatalProviderError(Exception):
         self.status_code = status_code
         self.tag = tag
         self.original = original
-        super().__init__(
-            f"Fatal provider error (status {status_code}) on '{tag}': {original}"
-        )
+        super().__init__(f"Fatal provider error (status {status_code}) on '{tag}': {original}")
 
 
 class BudgetedLLM(LLMInterface):
@@ -153,7 +182,7 @@ class BudgetedLLM(LLMInterface):
         zero-token call and returns "" (existing NO_PROGRAM path).
         """
         total_deadline = kwargs.get("total_deadline_s", self.total_deadline_s)
-        call_state = {"attempts_started": 0, "abandoned": False}
+        call_state: Dict[str, Any] = {"attempts_started": 0, "abandoned": False}
         start = time.time()
         task = asyncio.create_task(
             self._generate_with_context_inner(
@@ -191,8 +220,7 @@ class BudgetedLLM(LLMInterface):
                 estimated=True,
                 succeeded=False,
                 error=(
-                    f"total deadline exceeded after {elapsed:.3f}s "
-                    f"(limit {total_deadline}s)"
+                    f"total deadline exceeded after {elapsed:.3f}s " f"(limit {total_deadline}s)"
                 ),
             )
         )
@@ -207,7 +235,7 @@ class BudgetedLLM(LLMInterface):
         self,
         system_message: str,
         messages: List[Dict[str, str]],
-        _call_state: Dict[str, object],
+        _call_state: Dict[str, Any],
         **kwargs,
     ) -> str:
         formatted_messages = []
@@ -353,4 +381,5 @@ class BudgetedLLM(LLMInterface):
             )
             return content
 
+        assert last_exception is not None
         raise last_exception  # unreachable, kept for type-checkers

@@ -1,5 +1,5 @@
 """
-The noema controller loop.
+The noema single-process controller.
 
 Single-process, strictly sequential: sample → advise → prompt → mutate → parse →
 evaluate → add → report → generation tick → checkpoint. Coordination state lives
@@ -8,31 +8,20 @@ joblib subprocess copies), and the coordination-OFF vs
 coordination-ON arms differ ONLY in which CoordinationModule is plugged in.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
 import os
 import random
-import re
 import time
 from collections import deque
 from dataclasses import asdict
-from dataclasses import replace as dataclass_replace
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from openevolve.database import Program
 from openevolve.evolution_trace import EvolutionTracer
-from openevolve.utils.code_utils import (
-    extract_diffs,
-    format_diff_summary,
-    parse_full_rewrite,
-)
-from openevolve.utils.metrics_utils import get_fitness_score
-
-# Indentation-aware SEARCH/REPLACE application: openevolve's apply_diff requires
-# a byte-exact match on the SEARCH block, so an LLM that re-indents the snippet
-# silently produces a no-op diff. apply_diff_lenient tolerates that.
-from noema.evolution.diff import apply_diff_lenient as apply_diff
 
 from noema.budget.ledger import (
     COORDINATION_ACCOUNT,
@@ -40,22 +29,23 @@ from noema.budget.ledger import (
     BudgetExhausted,
     TokenLedger,
 )
-from noema.budget.llm import BudgetedLLM, FatalProviderError
+from noema.budget.llm import BudgetedLLM, FatalProviderError, build_budgeted_llm
 from noema.config import NoemaConfig
 from noema.coordination import (
     CoordinationModule,
     GenerationContext,
-    Outcome,
-    SelectionContext,
     build_coordination_module,
 )
 from noema.coordination.escalation import EscalationContext, EscalationPolicy
-from noema.evolution.boundary import enforce_immutable_boundary
-from noema.substrates.registry import build_substrate_runtime
-from noema.evolution.operators import OPERATOR_MENU, OperatorSpec
 from noema.evolution.evaluator import make_evaluator
-from noema.evolution.prompts import build_mutation_prompt, inject_advice, make_prompt_sampler
+from noema.evolution.iteration_runner import IterationRunner
+from noema.evolution.operators import OperatorSpec
+from noema.evolution.prompts import make_prompt_sampler
+from noema.substrates.registry import build_substrate_runtime
 from noema.trace import AttemptTraceWriter, git_provenance, sha256_file
+
+if TYPE_CHECKING:
+    from noema.agenthost.mutation_transport import MutationTransport
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +64,9 @@ def _decode_rng_state(encoded) -> tuple:
 
 class NoemaController:
     """
-    Owns the evolution loop; borrows OpenEvolve's database/evaluator/prompt
-    sampler via the substrate adapters and calls the coordination hooks.
+    Hosts the shared iteration runner in-process; borrows OpenEvolve's
+    database/evaluator/prompt sampler via the substrate adapters and calls the
+    coordination hooks.
 
     Args:
         config: Experiment configuration.
@@ -145,43 +136,21 @@ class NoemaController:
         # sequence (task 0027).
         self.mutation_operator_rng = random.Random(config.mutation_operator_seed)
 
-        self.mutation_llm = mutation_llm or BudgetedLLM(
-            model=config.llm.mutation.model,
+        self.mutation_llm = mutation_llm or build_budgeted_llm(
+            config.llm.mutation,
             ledger=self.ledger,
             account=MUTATION_ACCOUNT,
             tag="mutate",
-            api_base=config.llm.mutation.api_base,
-            api_key=config.llm.mutation.api_key,
-            temperature=config.llm.mutation.temperature,
-            top_p=config.llm.mutation.top_p,
-            max_tokens=config.llm.mutation.max_tokens,
-            seed=config.llm.mutation.seed,
-            timeout=config.llm.mutation.timeout,
-            retries=config.llm.mutation.retries,
-            retry_delay=config.llm.mutation.retry_delay,
-            total_deadline_s=config.llm.mutation.total_deadline_s,
-            disable_reasoning=config.llm.mutation.disable_reasoning,
         )
 
         if coordination is not None:
             self.coordination = coordination
         else:
-            coordination_llm = BudgetedLLM(
-                model=config.llm.coordination.model,
+            coordination_llm = build_budgeted_llm(
+                config.llm.coordination,
                 ledger=self.ledger,
                 account=COORDINATION_ACCOUNT,
                 tag=f"{config.coordination.module}.coordination",
-                api_base=config.llm.coordination.api_base,
-                api_key=config.llm.coordination.api_key,
-                temperature=config.llm.coordination.temperature,
-                top_p=config.llm.coordination.top_p,
-                max_tokens=config.llm.coordination.max_tokens,
-                seed=config.llm.coordination.seed,
-                timeout=config.llm.coordination.timeout,
-                retries=config.llm.coordination.retries,
-                retry_delay=config.llm.coordination.retry_delay,
-                total_deadline_s=config.llm.coordination.total_deadline_s,
-                disable_reasoning=config.llm.coordination.disable_reasoning,
             )
             # Domain constraints (e.g. "explicit constructor, not iterative
             # search") are problem context, not search mechanics — safe for a
@@ -212,12 +181,16 @@ class NoemaController:
             # that names no override is unaffected (both tiers stay the
             # already-injected coordination_llm — PR #61 behaviour).
             self._wire_alternate_tier(
-                "set_paradigm_llm", coordination_params.get("paradigm_model"),
-                config, tag=f"{config.coordination.module}.paradigm",
+                "set_paradigm_llm",
+                coordination_params.get("paradigm_model"),
+                config,
+                tag=f"{config.coordination.module}.paradigm",
             )
             self._wire_alternate_tier(
-                "set_variant_llm", coordination_params.get("variant_model"),
-                config, tag=f"{config.coordination.module}.variant",
+                "set_variant_llm",
+                coordination_params.get("variant_model"),
+                config,
+                tag=f"{config.coordination.module}.variant",
             )
 
         self.initial_program_code = initial_program_code
@@ -258,6 +231,19 @@ class NoemaController:
             "honored": None,
             "ignored": None,
         }
+        self._current_advice_call_ids: List[str] = []
+
+    @property
+    def mutation_transport(self) -> MutationTransport:
+        return self.mutation_llm
+
+    @property
+    def population_store(self):
+        return self.db
+
+    @property
+    def run_iteration_limit(self) -> int:
+        return self.config.max_iterations
 
     def _wire_alternate_tier(
         self, setter_name: str, model_name: Optional[str], config: NoemaConfig, *, tag: str
@@ -270,24 +256,15 @@ class NoemaController:
         setter = getattr(self.coordination, setter_name, None)
         if setter is None:
             return
-        alt_llm = BudgetedLLM(
-            model=model_name,
-            ledger=self.ledger,
-            account=COORDINATION_ACCOUNT,
-            tag=tag,
-            api_base=config.llm.coordination.api_base,
-            api_key=config.llm.coordination.api_key,
-            temperature=config.llm.coordination.temperature,
-            top_p=config.llm.coordination.top_p,
-            max_tokens=config.llm.coordination.max_tokens,
-            seed=config.llm.coordination.seed,
-            timeout=config.llm.coordination.timeout,
-            retries=config.llm.coordination.retries,
-            retry_delay=config.llm.coordination.retry_delay,
-            total_deadline_s=config.llm.coordination.total_deadline_s,
-            disable_reasoning=config.llm.coordination.disable_reasoning,
+        setter(
+            build_budgeted_llm(
+                config.llm.coordination,
+                ledger=self.ledger,
+                account=COORDINATION_ACCOUNT,
+                tag=tag,
+                model=model_name,
+            )
         )
-        setter(alt_llm)
 
     @staticmethod
     def _freeze_config(output_dir: str, config: NoemaConfig) -> None:
@@ -366,793 +343,46 @@ class NoemaController:
     # ------------------------------------------------------------ iteration
 
     def _choose_operator(self, requested: Optional[str] = None) -> OperatorSpec:
-        """Choose this iteration's mutation operator once (reused across every
-        retry attempt, never redrawn per attempt). None config = legacy path,
-        byte-identical to today's diff_based_evolution toggle (task 0027).
-
-        `requested` is a coordination pre-selection hint (the bandit arm, task
-        0073). It is honored only when the menu is on and the name is one of the
-        configured operators; otherwise it is ignored and the incumbent RNG draw
-        runs. **When `requested is None` the RNG draw is byte-identical to before
-        this parameter existed** — that is the invariant that keeps every other
-        arm unchanged. A honored request draws NO operator RNG (only the bandit
-        takes this path). The requested/honored/ignored trace is recorded for the
-        run log beside the substrate's own selection trace."""
-        if self.config.mutation_operators is None:
-            self._last_operator_trace = {
-                "requested": requested,
-                "honored": "legacy",
-                "ignored": requested,  # menu off: a request cannot be honored
-            }
-            return OperatorSpec(
-                name="legacy",
-                template_key=(
-                    "diff_user" if self.config.diff_based_evolution else "full_rewrite_user"
-                ),
-                parse_mode="diff" if self.config.diff_based_evolution else "full_rewrite",
-                arity=1,
-                has_thought=False,
-            )
-        if requested is not None and requested in self.config.mutation_operators:
-            self._last_operator_trace = {
-                "requested": requested,
-                "honored": requested,
-                "ignored": None,
-            }
-            return OPERATOR_MENU[requested]
-        name = self.mutation_operator_rng.choice(self.config.mutation_operators)
-        self._last_operator_trace = {
-            "requested": requested,
-            "honored": name,
-            "ignored": requested,  # None when there was no request
-        }
-        return OPERATOR_MENU[name]
+        return IterationRunner.choose_operator(self, requested)
 
     async def _run_iteration(self, iteration: int) -> None:
-        island = self.substrate.target_scope(iteration)
-        selection_ctx = SelectionContext(
-            iteration=iteration,
-            generation=self.generation,
-            scope_id=island,
-            local_population=self.db.snapshot(
-                island, limit=self.config.num_top_programs
-            ),
-            global_population=self.db.snapshot(
-                None, limit=self.config.num_top_programs
-            ),
-        )
-        request = self.coordination.sampling_request(selection_ctx)
-        # Partition the pre-selection request (task 0073): the "operator" key
-        # steers the mutation operator and must NOT reach the parent-selection
-        # policy (else it would log as an ignored selection hint); every other
-        # key is a selection-policy hint owned by the runtime.
-        operator_hint = request.hints.get("operator")
-        policy_hints = {k: v for k, v in request.hints.items() if k != "operator"}
-        self.substrate.set_tokens_spent(self.ledger.spent())
-        selection = self.substrate.select(
-            target_scope=island,
-            num_inspirations=self.config.num_inspirations,
-            hints=policy_hints,
-        )
-        parent = selection.parent
-        inspirations = list(selection.inspirations)
-        parent_island = selection.source_scope
+        await IterationRunner.run_iteration(self, iteration)
 
-        operator = self._choose_operator(requested=operator_hint)
-        parent2: Optional[Program] = None
-        if operator.arity == 2:
-            if inspirations:
-                parent2 = self.mutation_operator_rng.choice(inspirations)
-            else:
-                # Early iterations before an island fills up: no second parent
-                # available yet. Fall back to arity-1 behavior rather than crash.
-                logger.debug(
-                    f"Iteration {iteration}: operator {operator.name} wants a second "
-                    "parent but inspirations is empty; falling back to arity-1"
-                )
-
-        top_programs = self.db.top_programs(
-            self.config.num_top_programs, scope=parent_island
-        )
-        previous_programs = self.db.top_programs(
-            self.config.num_previous_programs, scope=parent_island
-        )
-
-        ctx = self._make_context(
-            iteration,
-            parent_island,
-            parent,
-            inspirations,
-            # Decision #51: the drawn operator's name rides the context so a
-            # module can pick operator-specific prompt wording. The legacy
-            # no-menu path stays None (there is no EoH operator to name).
-            operator=operator.name if self.config.mutation_operators is not None else None,
-        )
-        # Provenance on ledger records (BudgetedLLM only; injected fakes may not have it).
-        # Set this before advice so coordination calls are attributed to this iteration.
-        if hasattr(self.mutation_llm, "iteration"):
-            self.mutation_llm.iteration = iteration
-        if hasattr(self.coordination.llm, "iteration"):
-            self.coordination.llm.iteration = iteration
-        advice_ledger_start = len(self.ledger.records)
-        try:
-            advice = await self.coordination.advise(ctx)  # coordination hook 1
-        except Exception as exc:
-            self._current_advice_call_ids = [
-                record.call_id for record in self.ledger.records[advice_ledger_start:]
-            ]
-            outcome = (
-                "budget_exhausted"
-                if isinstance(exc, BudgetExhausted)
-                else "provider_failure"
-            )
-            self._write_attempt_trace(
-                iteration,
-                0,
-                ctx,
-                selection,
-                operator,
-                None,
-                None,
-                None,
-                None,
-                None,
-                outcome,
-                repr(exc),
-                advice_ledger_start,
-            )
-            raise
-        self._current_advice_call_ids = [
-            record.call_id for record in self.ledger.records[advice_ledger_start:]
-        ]
-
-        # Model escalation (task 0107, "B"): layer the controller-owned policy on
-        # the arm's Advice. Built from state the host already holds; sets
-        # advice.model, which the mutation call below forwards to BudgetedLLM.
-        # No-op when escalation is off, so every arm is byte-identical then.
-        if self.escalation is not None:
-            advice.model = self.escalation.step(self._build_escalation_context(iteration))
-
-        if advice.attribution.get("full_executor_prompt"):
-            # Directive-mode fidelity anchor (task 0065, Decision #25 scoped
-            # exemption): the advice IS the full prompt — the plan is the
-            # mutation call's primary instruction, not a suffix appended to
-            # openevolve's own template. Skip build_mutation_prompt/inject_advice
-            # entirely and force full-rewrite parsing (the template asks for a
-            # full ```python``` block, never a SEARCH/REPLACE diff).
-            base_prompt = {"system": advice.system_block, "user": advice.prompt_block}
-            prompt = base_prompt
-            operator = dataclass_replace(operator, parse_mode="full_rewrite")
-        else:
-            base_prompt = build_mutation_prompt(
-                self.sampler,
-                parent=parent,
-                top_programs=top_programs,
-                previous_programs=previous_programs,
-                inspirations=inspirations,
-                language=self.config.language,
-                iteration=iteration,
-                diff_based_evolution=self.config.diff_based_evolution,
-                feature_dimensions=self.db.feature_dimensions,
-                template_key=operator.template_key,
-                parent2=parent2,
-                metric_fields=self.config.prompt_metric_fields,
-            )
-            prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
-
-        # BudgetExhausted propagates to run() and stops the loop cleanly.
-        # Retry loop: parse/eval failures feed their real error back to
-        # the mutation LLM and retry before the iteration counts as spent.
-        child_id = f"it{iteration:06d}"
-        child_code = None
-        changes_summary = None
-        metrics = None
-        artifacts = None
-        eval_failed = True
-        error_text = None
-        # Which failure category the LAST attempt hit, if the iteration produces
-        # no accepted child (task 0090). Defaults to NO_PROGRAM; the eval-error
-        # branch upgrades it. Only read when child_code is None below.
-        failure_outcome = Outcome.NO_PROGRAM
-        retry_cap = self.config.retry_cap if self.config.retry_enabled else 0
-        # Best valid attempt across rounds (retry_on="non_improvement" only)
-        best_attempt: Optional[Dict[str, Any]] = None
-        accepted_trace: Optional[Dict[str, Any]] = None
-        source_attempt_id: Optional[str] = None
-        parent_fitness = ctx.parent.fitness if ctx.parent is not None else 0.0
-
-        for attempt in range(retry_cap + 1):
-            # Reset per attempt so the LAST attempt's failure category is the one
-            # reported (task 0090); the eval-error branch below upgrades it.
-            failure_outcome = Outcome.NO_PROGRAM
-            ledger_start = len(self.ledger.records)
-            current_prompt = prompt
-            try:
-                if attempt > 0:
-                    current_prompt = await self._build_retry_prompt(
-                        base_prompt, advice, error_text, attempt, ctx
-                    )
-                response = await self.mutation_llm.generate_with_context(
-                    system_message=current_prompt["system"],
-                    messages=[{"role": "user", "content": current_prompt["user"]}],
-                    model=advice.model,  # task 0107: None = unchanged (default mutation model)
-                )
-            except BudgetExhausted as exc:
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, None, None, None, "budget_exhausted",
-                    str(exc), ledger_start,
-                )
-                raise
-            except Exception as exc:
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, None, None, None, "provider_failure",
-                    repr(exc), ledger_start,
-                )
-                raise
-
-            child_code, changes_summary = self._parse_response(response, parent.code, operator)
-            if child_code is None:
-                error_text = "no parseable code block found in the response"
-                logger.warning(
-                    f"Iteration {iteration}: no valid program in LLM response "
-                    f"(attempt {attempt + 1})"
-                )
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, response, None, None, "unparseable_response",
-                    error_text, ledger_start,
-                )
-                continue
-
-            child_code = enforce_immutable_boundary(
-                parent.code,
-                child_code,
-                # PES-faithful directive mode (task 0065): the child is a full
-                # rewrite, so its preamble may need an import F_imm never had.
-                # `advice` is fixed for the whole iteration, so every retry
-                # attempt gets the same treatment.
-                merge_new_imports=bool(advice.attribution.get("full_executor_prompt")),
-            )
-            if child_code is None:
-                error_text = (
-                    "mutation broke the EVOLVE-BLOCK boundary: only code inside "
-                    "EVOLVE-BLOCK-START/END may change (F_imm is immutable)"
-                )
-                changes_summary = None
-                logger.warning(
-                    f"Iteration {iteration}: mutation touched F_imm outside the evolve "
-                    f"block (attempt {attempt + 1})"
-                )
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, response, None, None,
-                    "immutable_boundary_violation", error_text, ledger_start,
-                )
-                continue
-
-            if len(child_code) > self.config.max_code_length:
-                child_length = len(child_code)
-                error_text = (
-                    f"generated code length {child_length} exceeds max "
-                    f"{self.config.max_code_length}"
-                )
-                child_code = None
-                changes_summary = None
-                logger.warning(
-                    f"Iteration {iteration}: generated code exceeds max length "
-                    f"(attempt {attempt + 1}, {child_length} > "
-                    f"{self.config.max_code_length})"
-                )
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, response,
-                    {"id": child_id, "code_length": child_length}, None,
-                    "over_length", error_text, ledger_start,
-                )
-                continue
-
-            try:
-                metrics = await self.evaluator.evaluate_program(child_code, child_id)
-                artifacts = self.evaluator.get_pending_artifacts(child_id)
-            except Exception as exc:
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, response, {"id": child_id, "code": child_code},
-                    None, "evaluation_failure", repr(exc), ledger_start,
-                )
-                raise
-            # "error" is a RESERVED key in the evaluator metrics contract: an
-            # evaluator signals failure by returning {"error": ...} (openevolve
-            # convention). A benchmark must not name a genuine score metric
-            # "error", or it would be misread as a failed evaluation (task 0056
-            # item 4 — documented rather than narrowed, since the convention is
-            # what every evaluator already relies on).
-            eval_failed = (not metrics) or ("error" in metrics)
-            if eval_failed:
-                # Applyable code that failed AT evaluation — distinct from a
-                # non-program failure for outcome-driven credit assignment (0090).
-                failure_outcome = Outcome.EVAL_ERROR
-                error_text = (artifacts or {}).get("stderr",
-                                                     "evaluation failed: unknown error")
-                logger.warning(
-                    f"Iteration {iteration}: evaluation failed "
-                    f"(attempt {attempt + 1}): {error_text[:200]}"
-                )
-                self._write_attempt_trace(
-                    iteration, attempt, ctx, selection, operator, advice,
-                    current_prompt, response, {"id": child_id, "code": child_code},
-                    {"metrics": metrics, "artifacts": artifacts},
-                    "evaluation_failure", error_text, ledger_start,
-                )
-                child_code = None
-                changes_summary = None
-                continue
-
-            if self.config.retry_on == "non_improvement" and retry_cap > 0:
-                child_fitness = get_fitness_score(metrics, self.db.feature_dimensions)
-                # Keep the best valid attempt: LoongFlow stores its best
-                # candidate even when no round beats the parent
-                # (execute_agent_chat.py round semantics), so noema stores the
-                # best attempt as the iteration's child either way — population
-                # dynamics stay comparable across retry_on modes.
-                if best_attempt is None or child_fitness > best_attempt["fitness"]:
-                    best_attempt = {
-                        "child_code": child_code,
-                        "changes_summary": changes_summary,
-                        "metrics": metrics,
-                        "artifacts": artifacts,
-                        "response": response,
-                        "prompt": current_prompt,
-                        "fitness": child_fitness,
-                        "attempt": attempt,
-                    }
-                if child_fitness <= parent_fitness and attempt < retry_cap:
-                    error_text = (
-                        "the program evaluated successfully but did not beat its "
-                        f"parent: fitness {child_fitness:.4f} <= {parent_fitness:.4f}"
-                    )
-                    logger.info(
-                        f"Iteration {iteration}: valid child without improvement "
-                        f"(attempt {attempt + 1}); retrying"
-                    )
-                    self._write_attempt_trace(
-                        iteration, attempt, ctx, selection, operator, advice,
-                        current_prompt, response, {"id": child_id, "code": child_code},
-                        {"metrics": metrics, "artifacts": artifacts},
-                        "non_improvement", error_text, ledger_start,
-                    )
-                    continue
-                selected = best_attempt is not None and best_attempt["attempt"] == attempt
-                if selected and child_fitness > parent_fitness:
-                    accepted_trace = {
-                        "attempt": attempt,
-                        "prompt": current_prompt,
-                        "response": response,
-                        "candidate": {"id": child_id, "code": child_code},
-                        "evaluation": {"metrics": metrics, "artifacts": artifacts},
-                        "ledger_start": ledger_start,
-                    }
-                else:
-                    self._write_attempt_trace(
-                        iteration, attempt, ctx, selection, operator, advice,
-                        current_prompt, response, {"id": child_id, "code": child_code},
-                        {"metrics": metrics, "artifacts": artifacts},
-                        "non_improvement", None, ledger_start,
-                    )
-            else:
-                accepted_trace = {
-                    "attempt": attempt,
-                    "prompt": current_prompt,
-                    "response": response,
-                    "candidate": {"id": child_id, "code": child_code},
-                    "evaluation": {"metrics": metrics, "artifacts": artifacts},
-                    "ledger_start": ledger_start,
-                }
-            break  # success — child_code/metrics/artifacts/changes_summary/current_prompt are set
-
-        if best_attempt is not None:
-            # retry_on="non_improvement": store the best valid attempt seen,
-            # with its own prompt/response provenance (it may or may not have
-            # beaten the parent).
-            child_code = best_attempt["child_code"]
-            changes_summary = best_attempt["changes_summary"]
-            metrics = best_attempt["metrics"]
-            artifacts = best_attempt["artifacts"]
-            response = best_attempt["response"]
-            current_prompt = best_attempt["prompt"]
-            source_attempt_id = self.attempt_tracer.attempt_id(
-                iteration, best_attempt["attempt"]
-            )
-        elif child_code is not None:
-            source_attempt_id = self.attempt_tracer.attempt_id(iteration, attempt)
-
-        # Keep optional budget-aware selection policies checkpoint-exact even
-        # when the final attempt is rejected or no subsequent selection occurs.
-        self.substrate.set_tokens_spent(self.ledger.spent())
-
-        if child_code is None:
-            self.substrate.on_child_rejected(
-                parent=parent, child=None, eval_failed=True
-            )
-            self._record_escalation_signal(valid=False, score=None)
-            self.coordination.report_result(
-                ctx,
-                child=None,
-                attribution=advice.attribution,
-                eval_failed=True,
-                outcome=failure_outcome,
-            )
-            return
-
-        template_key = operator.template_key  # provenance: reuse the draw, don't re-derive
-        child = Program(
-            id=child_id,
-            code=child_code,
-            language=self.config.language,
-            parent_id=parent.id,
-            generation=parent.generation + 1,
-            metrics=metrics,
-            iteration_found=iteration,
-            # Decision #54 (hifo F1 class): the change summary is the program's
-            # one-sentence description — hifo's extraction prefers it over the
-            # truncated-code fallback, and openevolve's evolution-history
-            # rendering picks it up identically for every arm.
-            changes_description=changes_summary or "",
-            metadata={
-                "changes": changes_summary,
-                "parent_metrics": parent.metrics,
-                "coordination": advice.attribution,
-                "island": island,
-                "stderr": (artifacts or {}).get("stderr", ""),
-                "operator": operator.name,
-                "source_attempt_id": source_attempt_id,
-            },
-            prompts=(
-                {
-                    template_key: {
-                        "system": current_prompt["system"],
-                        "user": current_prompt["user"],
-                        "responses": [response],
-                    }
-                }
-                if self.config.database.log_prompts
-                else None
-            ),
-        )
-        retained_program_id = None
-        try:
-            self.substrate.on_child_accepted(
-                parent=parent,
-                child=child,
-                step_size=min(1.0, (iteration + 1) / max(1, self.config.max_iterations)),
-            )
-            retained_program_id = self.db.add(child, iteration=iteration, target_scope=island)
-        except Exception as exc:
-            if accepted_trace is not None:
-                self._write_attempt_trace(
-                    iteration,
-                    accepted_trace["attempt"],
-                    ctx,
-                    selection,
-                    operator,
-                    advice,
-                    accepted_trace["prompt"],
-                    accepted_trace["response"],
-                    accepted_trace["candidate"],
-                    accepted_trace["evaluation"],
-                    "acceptance_failure",
-                    repr(exc),
-                    accepted_trace["ledger_start"],
-                )
-            self.attempt_tracer.write_selection(
-                iteration=iteration,
-                program_id=child.id,
-                selected_attempt_id=source_attempt_id,
-                status="failed",
-                error=repr(exc),
-            )
-            raise
-
-        if accepted_trace is not None:
-            self._write_attempt_trace(
-                iteration,
-                accepted_trace["attempt"],
-                ctx,
-                selection,
-                operator,
-                advice,
-                accepted_trace["prompt"],
-                accepted_trace["response"],
-                accepted_trace["candidate"],
-                accepted_trace["evaluation"],
-                "accepted",
-                None,
-                accepted_trace["ledger_start"],
-            )
-        self.attempt_tracer.write_selection(
-            iteration=iteration,
-            program_id=child.id,
-            selected_attempt_id=source_attempt_id,
-            status="accepted",
-        )
-        if artifacts and retained_program_id is not None:
-            self.db.store_artifacts(child_id, artifacts)
-
-        self._record_escalation_signal(
-            valid=True, score=get_fitness_score(metrics, self.db.feature_dimensions)
-        )
-        self.coordination.report_result(  # coordination hook 2
-            ctx,
-            child=self.db.view(child),
-            attribution=advice.attribution,
-            eval_failed=False,
-            outcome=Outcome.ACCEPTED,
-        )
-        self.evolution_tracer.log_trace(
-            iteration=iteration,
-            parent_program=parent,
-            child_program=child,
-            prompt=current_prompt,
-            llm_response=response,
-            artifacts=artifacts,
-            island_id=island,
-            metadata={
-                "changes": changes_summary,
-                "operator": operator.name,
-                "token_ledger": self._iteration_ledger_metadata(iteration),
-            },
-        )
-
-    def _write_attempt_trace(
-        self,
-        iteration: int,
-        attempt: int,
-        ctx: GenerationContext,
-        selection,
-        operator: OperatorSpec,
-        advice: Optional[Any],
-        prompt: Optional[Dict[str, str]],
-        response: Optional[str],
-        candidate: Optional[Dict[str, Any]],
-        evaluation: Optional[Dict[str, Any]],
-        outcome: str,
-        error: Optional[str],
-        ledger_start: int,
-        ledger_end: Optional[int] = None,
-    ) -> None:
-        records = self.ledger.records[ledger_start:ledger_end]
-        attribution = advice.attribution if advice is not None else {}
-        mode = (
-            "directive"
-            if attribution.get("full_executor_prompt")
-            else "injected"
-            if advice is not None and (advice.system_block or advice.prompt_block)
-            else "none"
-        )
-        self.attempt_tracer.write(
-            iteration=iteration,
-            attempt=attempt,
-            outcome=outcome,
-            generation=self.generation,
-            arm=self.config.coordination.module,
-            substrate=self.config.substrate.kind,
-            seed=self.config.random_seed,
-            target_scope=selection.target_scope,
-            source_scope=selection.source_scope,
-            parent=self._program_trace_snapshot(selection.parent),
-            inspirations=[
-                self._program_trace_snapshot(item) for item in selection.inspirations
-            ],
-            selection=dict(self.substrate.last_selection_trace),
-            operator={"name": operator.name, **self._last_operator_trace},
-            coordination={
-                "system_block": advice.system_block if advice is not None else None,
-                "prompt_block": advice.prompt_block if advice is not None else None,
-                "attribution": attribution,
-                "mode": mode,
-                "ledger_call_ids": self._current_advice_call_ids,
-            },
-            prompt=prompt,
-            response=response,
-            candidate=candidate,
-            evaluation=evaluation,
-            error=error,
-            ledger_call_ids=[record.call_id for record in records],
-            ledger_calls=[asdict(record) for record in records],
-        )
+    def _write_attempt_trace(self, *args, **kwargs) -> None:
+        IterationRunner._write_attempt_trace(self, *args, **kwargs)
 
     @staticmethod
     def _program_trace_snapshot(program: Program) -> Dict[str, Any]:
-        return {
-            "id": program.id,
-            "code": program.code,
-            "metrics": program.metrics,
-            "generation": program.generation,
-            "iteration_found": program.iteration_found,
-            "parent_id": program.parent_id,
-            "metadata": program.metadata,
-        }
+        return IterationRunner._program_trace_snapshot(program)
 
     def _iteration_ledger_metadata(self, iteration: int) -> Dict[str, Any]:
-        records = [r for r in self.ledger.records if r.iteration == iteration]
-        spent_by_account: Dict[str, int] = {}
-        for record in records:
-            spent_by_account[record.account] = (
-                spent_by_account.get(record.account, 0) + record.total_tokens
-            )
-        return {
-            "spent_by_account": spent_by_account,
-            "spent_total": sum(spent_by_account.values()),
-            "calls": [asdict(r) for r in records],
-        }
+        return IterationRunner._iteration_ledger_metadata(self, iteration)
 
     def _build_retry_suffix(self, error_text: str, attempt: int) -> str:
-        return (
-            "\n\n# Retry After Failure\n"
-            f"Your previous attempt failed. Error: {error_text}\n"
-            "Produce a corrected program. Re-output the full code."
+        return IterationRunner._build_retry_suffix(error_text, attempt)
+
+    async def _build_retry_prompt(self, base_prompt, advice, error_text, attempt, ctx):
+        return await IterationRunner._build_retry_prompt(
+            self, base_prompt, advice, error_text, attempt, ctx
         )
 
-    async def _build_retry_prompt(
-        self, base_prompt, advice, error_text, attempt, ctx
-    ) -> Dict[str, str]:
-        if advice.attribution.get("full_executor_prompt"):
-            # Directive mode: re-format the FULL LoongFlow template with
-            # {previous_attempts} populated, not the generic retry suffix.
-            # build_retry_prompt is duck-typed (not part of the
-            # CoordinationModule ABC — base.py stays untouched); only PES
-            # directive mode sets the attribution flag that leads here.
-            build_directive_retry = getattr(self.coordination, "build_retry_prompt", None)
-            if build_directive_retry is not None:
-                directive_prompt = build_directive_retry(ctx, advice.attribution, attempt, error_text)
-                if directive_prompt is not None:
-                    return directive_prompt
-        prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
-        retry_suffix = self._build_retry_suffix(error_text, attempt)
-        reflection_suffix = await self.coordination.retry_advice(ctx, error_text, attempt)
-        prompt["user"] = prompt["user"] + retry_suffix + reflection_suffix
-        return prompt
-
-    def _parse_response(
-        self, response: str, parent_code: str, operator: OperatorSpec
-    ) -> Tuple[Optional[str], Optional[str]]:
-        """Extract child code + a changes summary from the mutation LLM response.
-
-        When operator.has_thought, a brace-delimited thought (if the model
-        produced one) is routed through the returned summary / metadata["changes"]
-        field instead of the generic diff-summary/"Full rewrite" placeholder —
-        that field already reaches future prompts via openevolve's
-        _format_evolution_history, so this reuses an existing channel rather
-        than adding new plumbing (task 0027). A response with no {...} at all,
-        or has_thought=False (m3), falls back to today's exact behavior.
-        """
-        thought = None
-        if operator.has_thought:
-            m = re.search(r"\{(.*?)\}", response, re.DOTALL)
-            thought = m.group(1).strip() if m else None
-
-        if operator.parse_mode == "diff":
-            diff_blocks = extract_diffs(response, self.config.diff_pattern)
-            if not diff_blocks:
-                return None, None
-            child_code = apply_diff(parent_code, response, self.config.diff_pattern)
-            return child_code, thought or format_diff_summary(diff_blocks)
-
-        new_code = parse_full_rewrite(response, self.config.language)
-        if not new_code:
-            return None, None
-        return new_code, thought or "Full rewrite"
-
-    # ----------------------------------------------------------- generation
+    def _parse_response(self, response: str, parent_code: str, operator: OperatorSpec):
+        return IterationRunner._parse_response(self, response, parent_code, operator)
 
     async def _generation_tick(self, iteration: int) -> None:
-        self.generation += 1
-        self._update_histories()
-
-        # The tick is a global event: the module sees the global top programs
-        # and population, not one (possibly still empty) island
-        ctx = self._make_context(
-            iteration,
-            island=self.substrate.target_scope(iteration),
-            parent=None,
-            inspirations=[],
-            global_scope=True,
-        )
-        intervention = await self.coordination.on_generation_end(ctx)  # coordination hook 3
-        if intervention is not None and intervention.proposals:
-            await self._apply_intervention(intervention, iteration)
-        self.db.end_generation()
-
-        self.generation_log.append(
-            {
-                "generation": self.generation,
-                "iteration": iteration,
-                "timestamp": time.time(),
-                "best_fitness": self.best_fitness_history[-1],
-                "avg_fitness": self.avg_fitness_history[-1],
-                "diversity": self.diversity_history[-1],
-                "tokens_spent": self.ledger.spent(),
-                "coordination": self.coordination.log_snapshot(),
-                "selection": self.substrate.log_snapshot(),
-                "operator_selection": dict(self._last_operator_trace),
-            }
-        )
+        await IterationRunner.generation_tick(self, iteration)
 
     async def _apply_intervention(self, intervention, iteration: int) -> None:
-        """Evaluate and insert a coordination module's proposed programs (task 0109).
-
-        The module authored these via its own coordination-account LLM calls
-        (already metered); the host evaluates and inserts them through the same
-        path as ordinary children, so nothing bypasses metering or the store.
-        Evaluation runs the code and costs no tokens, so the equal-token basis is
-        unchanged. A proposal that fails evaluation is dropped, not inserted.
-        """
-        for i, proposal in enumerate(intervention.proposals):
-            child_id = f"it{iteration:06d}-pe{i:03d}"
-            metrics = await self.evaluator.evaluate_program(proposal.code, child_id)
-            artifacts = self.evaluator.get_pending_artifacts(child_id)
-            if (not metrics) or ("error" in metrics):
-                logger.warning(
-                    f"Iteration {iteration}: coordination proposal {child_id} "
-                    f"({proposal.origin}) failed evaluation; dropped"
-                )
-                continue
-            child = Program(
-                id=child_id,
-                code=proposal.code,
-                language=self.config.language,
-                parent_id=proposal.parent_id,
-                generation=self.generation,
-                metrics=metrics,
-                iteration_found=iteration,
-                metadata={
-                    "origin": proposal.origin,
-                    "coordination_proposed": True,
-                },
-            )
-            retained_program_id = self.db.add(child, iteration=iteration)
-            if artifacts and retained_program_id is not None:
-                self.db.store_artifacts(child_id, artifacts)
+        await IterationRunner._apply_intervention(self, intervention, iteration)
 
     def _build_escalation_context(self, iteration: int) -> EscalationContext:
-        """Snapshot the generic signals the escalation policy thresholds, from
-        state the host already maintains (histories, ledger, rolling validity)."""
-        recent = self._esc_recent_valid
-        invalidity_rate = (recent.count(False) / len(recent)) if recent else 0.0
-        return EscalationContext(
-            best_fitness_history=tuple(self.best_fitness_history),
-            recent_scores=tuple(self._esc_recent_scores),
-            invalidity_rate=invalidity_rate,
-            tokens_spent=self.ledger.spent(),
-            tokens_budget=self.config.budget.total_tokens,
-            iteration=iteration,
-        )
+        return IterationRunner._build_escalation_context(self, iteration)
 
     def _record_escalation_signal(self, valid: bool, score: Optional[float]) -> None:
-        """One per-iteration observation feeding the invalidity/diversity triggers."""
-        if self.escalation is None:
-            return
-        self._esc_recent_valid.append(valid)
-        if score is not None:
-            self._esc_recent_scores.append(score)
+        IterationRunner._record_escalation_signal(self, valid, score)
 
     def _update_histories(self) -> None:
-        best = self.db.best_program()
-        self.best_fitness_history.append(self.db.fitness(best) if best else 0.0)
-
-        all_fitnesses = self.db.all_fitnesses()
-        self.avg_fitness_history.append(
-            sum(all_fitnesses) / len(all_fitnesses) if all_fitnesses else 0.0
-        )
-
-        top = self.db.top_programs(10)
-        if top:
-            distinct = len(set(p.code for p in top))
-            self.diversity_history.append(distinct / len(top))
-        else:
-            self.diversity_history.append(0.0)
+        IterationRunner._update_histories(self)
 
     def _make_context(
         self,
@@ -1163,26 +393,13 @@ class NoemaController:
         global_scope: bool = False,
         operator: Optional[str] = None,
     ) -> GenerationContext:
-        local_scope = None if global_scope else island
-        # The generation tick is a population-scale event: modules that
-        # summarize the population (hifo's top-30% extraction slice, Decision
-        # #52 contract) need more than the prompt-sized num_top_programs view.
-        # Per-mutation contexts keep the narrow limit so mutation prompts are
-        # byte-unchanged.
-        limit = None if global_scope else self.config.num_top_programs
-        local_population = self.db.snapshot(local_scope, limit=limit)
-        global_population = self.db.snapshot(None, limit=limit)
-        return GenerationContext(
-            iteration=iteration,
-            generation=self.generation,
-            scope_id=island,
-            parent=self.db.view(parent) if parent else None,
-            inspirations=self.db.views(inspirations),
-            local_population=local_population,
-            global_population=global_population,
-            best_fitness_history=list(self.best_fitness_history),
-            avg_fitness_history=list(self.avg_fitness_history),
-            diversity_history=list(self.diversity_history),
+        return IterationRunner._make_context(
+            self,
+            iteration,
+            island,
+            parent,
+            inspirations,
+            global_scope=global_scope,
             operator=operator,
         )
 
@@ -1205,15 +422,11 @@ class NoemaController:
             "substrate_runtime": self.substrate.state_dict(),
             "global_rng_state": _encode_rng_state(random.getstate()),
             "coordination_rng_state": _encode_rng_state(self.coordination_rng.getstate()),
-            "mutation_operator_rng_state": _encode_rng_state(
-                self.mutation_operator_rng.getstate()
-            ),
+            "mutation_operator_rng_state": _encode_rng_state(self.mutation_operator_rng.getstate()),
         }
         if self.escalation is not None:
             state["escalation"] = self.escalation.state_dict()
-            state["escalation_rng_state"] = _encode_rng_state(
-                self.escalation.rng.getstate()
-            )
+            state["escalation_rng_state"] = _encode_rng_state(self.escalation.rng.getstate())
             state["escalation_recent_valid"] = list(self._esc_recent_valid)
             state["escalation_recent_scores"] = list(self._esc_recent_scores)
         with open(os.path.join(path, NOEMA_STATE_FILE), "w") as f:
@@ -1242,9 +455,7 @@ class NoemaController:
             )
         if self.escalation is not None and "escalation" in state:
             self.escalation.load_state_dict(state["escalation"])
-            self.escalation.rng.setstate(
-                _decode_rng_state(state["escalation_rng_state"])
-            )
+            self.escalation.rng.setstate(_decode_rng_state(state["escalation_rng_state"]))
             self._esc_recent_valid = deque(
                 state["escalation_recent_valid"], maxlen=self._esc_recent_valid.maxlen
             )

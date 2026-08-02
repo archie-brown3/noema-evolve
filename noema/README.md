@@ -15,7 +15,8 @@ See the [repository overview](../README.md) for installation, configuration, and
 [`noema/__init__.py`](./__init__.py) exports the supported top-level API:
 
 - [`NoemaConfig`](./config.py) loads and validates experiment configuration.
-- [`NoemaController`](./controller.py) owns the evolution loop.
+- [`NoemaController`](./controller.py) hosts the shared evolution loop for
+  in-process mutation runs.
 - [`TokenLedger` and `BudgetedLLM`](./budget/README.md) enforce token metering.
 - [`CoordinationModule` and `build_coordination_module`](./coordination/README.md) define and construct coordination arms.
 - `Advice`, `GenerationContext`, and `NullCoordination` support coordination implementations.
@@ -23,6 +24,8 @@ See the [repository overview](../README.md) for installation, configuration, and
 
 ## Package map
 
+- [`agenthost/`](./agenthost/) optionally hosts the shared iteration loop through
+  nested coding CLIs.
 - [`budget/`](./budget/README.md) meters LLM calls and records token use.
 - [`coordination/`](./coordination/README.md) defines the arm interface and registry.
 - [`evolution/`](./evolution/README.md) owns the shared mutation and evaluation path.
@@ -31,17 +34,19 @@ See the [repository overview](../README.md) for installation, configuration, and
 
 ## Composition
 
-The controller builds one shared ledger and one substrate runtime.
-It asks the selection policy for parents before each mutation.
-It then asks the coordination module for structured prompt advice.
-The controller sends each LLM request through a metered client.
-Finally, it reports the evaluated child to the selection and coordination components.
+The controller and optional agent host build one shared ledger and one substrate runtime.
+They ask the selection policy for parents before each mutation.
+They then ask the coordination module for structured prompt advice.
+In-process LLM requests go through a metered client; nested coding-CLI mutation
+calls are transport calls whose token usage is unavailable to the ledger.
+Finally, they report the evaluated child to the selection and coordination components.
 
 ## Guarantee ownership
 
 - The [`budget`](./budget/README.md) package enforces metering integrity.
 - The [`coordination`](./coordination/README.md) interface confines arm-specific inputs and receives a separate random stream.
-- The controller applies deterministic identifiers, ordering, and checkpoint state.
+- The shared iteration runner applies deterministic identifiers and ordering.
+- The controller owns checkpoint state.
 - The [`selection`](./selection/README.md) policies preserve and restore their deterministic state.
 
 The [test suite](../tests/) checks prompt identity, metering integrity, and determinism.
