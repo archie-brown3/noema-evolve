@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol, runtime_checkable
 
 from noema.agenthost.materialize import materialize_child_code
@@ -26,6 +27,10 @@ class MutationTransport(Protocol):
     ) -> str: ...
 
 
+class MutationTransportFailure(RuntimeError):
+    """A retriable failure from the agent mutation transport."""
+
+
 class AgentMutationTransport:
     """Wraps ``mutation_backend`` for ``IterationRunner`` (implements ``MutationTransport``)."""
 
@@ -48,19 +53,20 @@ class AgentMutationTransport:
             raise RuntimeError("parent must be selected before mutation")
 
         prompt = {"system": system_message, "user": messages[0]["content"]}
-        session._mutation_attempts = getattr(session, "_driver_mutation_attempts", 0) + 1
+        session._mutation_attempts = session._driver_mutation_attempts + 1
         session._driver_mutation_attempts = session._mutation_attempts
 
-        layout, mutation, child_code = _spawn_mutation(
+        layout, mutation, child_code = await asyncio.to_thread(
+            _spawn_mutation,
             session,
             prompt=prompt,
             timeout_s=self._timeout_s,
             model=model,
         )
         if not mutation.ok:
-            raise RuntimeError(mutation.error or "mutation backend failed")
+            raise MutationTransportFailure(mutation.error or "mutation backend failed")
         if child_code is None:
-            raise RuntimeError("no parseable code in mutation deliverable")
+            raise MutationTransportFailure("no parseable code in mutation deliverable")
         spec = session._operator_spec
         if spec is None:
             raise RuntimeError("operator must be chosen before mutation")
@@ -95,18 +101,21 @@ def _spawn_mutation(
         file_suffix=session.config.file_suffix,
     )
     layout.work_dir.mkdir(parents=True, exist_ok=True)
-    mutation = session.mutation_backend.run(
-        MutationRequest(
-            prompt=dict(prompt),
-            parent_code=parent.code,
-            work_dir=layout.work_dir,
-            deliverable_path=layout.deliverable_path,
-            timeout_s=timeout_s,
-            model=model,
-            retry_brief=session._retry_brief,
-            layout=layout,
+    try:
+        mutation = session.mutation_backend.run(
+            MutationRequest(
+                prompt=dict(prompt),
+                parent_code=parent.code,
+                work_dir=layout.work_dir,
+                deliverable_path=layout.deliverable_path,
+                timeout_s=timeout_s,
+                model=model,
+                retry_brief=session._retry_brief,
+                layout=layout,
+            )
         )
-    )
+    except Exception as exc:
+        raise MutationTransportFailure(f"mutation backend raised {exc!r}") from exc
     session._last_mutation_layout = layout
     session._last_mutation_trace = dict(mutation.backend_trace)
     if not mutation.ok:

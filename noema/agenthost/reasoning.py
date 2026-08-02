@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 from collections import defaultdict
 from pathlib import Path
@@ -66,9 +67,9 @@ class DeepCoordinationLLM:
         user = messages[-1]["content"] if messages else ""
         if self._spawn is not None:
             return self._spawn(tag, system_message, user)
-        return self._run_cli(tag, system_message, user)
+        return await self._run_cli(tag, system_message, user)
 
-    def _run_cli(self, tag: str, system_message: str, user_message: str) -> str:
+    async def _run_cli(self, tag: str, system_message: str, user_message: str) -> str:
         self._attempts[tag] += 1
         attempt = self._attempts[tag]
         generation = self._session.generation if self._session is not None else self.generation
@@ -105,7 +106,8 @@ class DeepCoordinationLLM:
             extra_args=self._cli.extra_args,
             mcp_config_path=mcp_config,
         )
-        result = CliRunner().run(
+        result = await asyncio.to_thread(
+            CliRunner().run,
             argv,
             cwd=work,
             env=os.environ.copy(),
