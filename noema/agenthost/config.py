@@ -35,7 +35,9 @@ class AgentConfig:
     mutation_depth: Literal["shallow", "deep"] = "shallow"
     coordination_cli: AgentCliConfig = field(default_factory=AgentCliConfig)
     coordination_depth: Literal["shallow", "deep"] = "shallow"
-    host_log_verbosity: Literal["normal", "debug"] = "normal"
+    # Compatibility seam for the monitor.  The CLI exposes one standard host
+    # logging mode; older YAML spellings are normalised at the file boundary.
+    host_log_verbosity: Literal["standard"] = "standard"
 
     def __post_init__(self) -> None:
         validate_agent_config(self)
@@ -57,9 +59,9 @@ def validate_agent_config(config: AgentConfig) -> None:
         raise ValueError(
             "coordination_depth must be 'shallow' or 'deep', " f"got {config.coordination_depth!r}"
         )
-    if config.host_log_verbosity not in ("normal", "debug"):
+    if config.host_log_verbosity != "standard":
         raise ValueError(
-            "host_log_verbosity must be 'normal' or 'debug', " f"got {config.host_log_verbosity!r}"
+            "host_log_verbosity must be 'standard', " f"got {config.host_log_verbosity!r}"
         )
     _validate_active_cli("mutation_cli", config.mutation_cli)
     if config.coordination_depth == "deep":
