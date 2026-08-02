@@ -6,7 +6,7 @@ No UI. No new config type beyond ``NoemaConfig`` / ``AgentConfig``.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any, Optional
 
@@ -48,7 +48,7 @@ def _load_yaml_mapping(path: Path) -> Any:
 
 
 def discover_example(cwd: Path | str) -> ExamplePaths:
-    """Require programme + evaluator in ``cwd``; list Noema-shaped ``*.yaml`` candidates."""
+    """Require programme + evaluator; list loadable YAML config paths in ``cwd``."""
 
     root = Path(cwd).resolve()
     initial_program = root / "initial_program.py"
@@ -72,7 +72,7 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
             data = _load_yaml_mapping(path)
         except (OSError, yaml.YAMLError):
             continue
-        if looks_like_openevolve_yaml(data):
+        if not isinstance(data, dict):
             continue
         candidates.append(path.resolve())
 
@@ -121,8 +121,55 @@ def _host_log_verbosity(value: Any) -> str:
     return value or "normal"
 
 
+def _normalise_openevolve_yaml(raw: dict[str, Any]) -> dict[str, Any]:
+    """Adapt the older OpenEvolve-shaped example YAML to Noema's schema."""
+
+    from noema.config import LLMClientConfig, NoemaConfig
+
+    noema_fields = {field.name for field in fields(NoemaConfig)}
+    sections = {"database", "evaluator", "prompt", "llm", "logging"}
+    data = {key: value for key, value in raw.items() if key in noema_fields and key not in sections}
+    if data.get("random_seed") is None:
+        # Noema's seed is an integer because it derives deterministic child
+        # streams from it.  The legacy OpenEvolve null means "unspecified";
+        # use Noema's canonical default rather than failing during load.
+        data.pop("random_seed", None)
+
+    prompt = dict(raw.get("prompt") or {})
+    # Noema deliberately rejects stochastic prompt templates so the mutation
+    # prompt remains identical across arms.
+    prompt["use_template_stochasticity"] = False
+    data["prompt"] = prompt
+    if "num_top_programs" not in data and "num_top_programs" in prompt:
+        data["num_top_programs"] = prompt["num_top_programs"]
+
+    data["database"] = dict(raw.get("database") or {})
+    if raw.get("random_seed") is not None:
+        data["database"].setdefault("random_seed", raw["random_seed"])
+    data["evaluator"] = dict(raw.get("evaluator") or {})
+
+    llm = dict(raw.get("llm") or {})
+    client_fields = {field.name for field in fields(LLMClientConfig)}
+
+    def client(model: Any) -> dict[str, Any]:
+        result = {key: llm[key] for key in client_fields if key in llm}
+        if model is not None:
+            result["model"] = model
+        return result
+
+    primary_model = llm.get("primary_model", llm.get("model"))
+    secondary_model = llm.get("secondary_model", primary_model)
+    data["llm"] = {
+        "mutation": client(primary_model),
+        "coordination": client(secondary_model),
+    }
+    if "log_level" in raw:
+        data["logging"] = {"level": raw["log_level"]}
+    return data
+
+
 def load_noema_and_agent(path: Path | str) -> "AgentConfig":
-    """Load YAML: strip ``agent:``, build ``NoemaConfig`` + ``AgentConfig`` transport."""
+    """Load Noema or legacy OpenEvolve YAML into canonical agent state."""
 
     from noema.agenthost.config import AgentConfig
     from noema.config import NoemaConfig
@@ -131,9 +178,7 @@ def load_noema_and_agent(path: Path | str) -> "AgentConfig":
     if not isinstance(raw, dict):
         raise ValueError(f"config root must be a mapping: {path}")
     if looks_like_openevolve_yaml(raw):
-        raise ValueError(
-            f"refusing OpenEvolve-shaped config {path}; use a Noema YAML or (new) config.yaml"
-        )
+        raw = _normalise_openevolve_yaml(raw)
     agent_data = dict(raw.pop("agent", None) or {})
     noema = NoemaConfig.from_dict(raw)
     return AgentConfig(

@@ -54,24 +54,22 @@ class TestDiscoverExample(unittest.TestCase):
             self.assertIn((cwd / "noema.yaml").resolve(), found.config_candidates)
             self.assertIn((cwd / "other.yaml").resolve(), found.config_candidates)
 
-    def test_omits_openevolve_shaped_yaml_from_candidates(self):
+    def test_includes_openevolve_shaped_yaml_in_candidates(self):
         with tempfile.TemporaryDirectory() as tmp:
             cwd = Path(tmp)
             _write_minimal_example(cwd, configs=["noema.yaml"])
             _write_openevolve_yaml(cwd / "config_phase_1.yaml")
             found = discover_example(cwd)
             names = {p.name for p in found.config_candidates}
-            self.assertEqual(names, {"noema.yaml"})
-            self.assertNotIn("config_phase_1.yaml", names)
+            self.assertEqual(names, {"noema.yaml", "config_phase_1.yaml"})
             self.assertEqual(found.preferred_config, (cwd / "noema.yaml").resolve())
 
 
 class TestDiscoverSkeleton(unittest.TestCase):
-    def test_no_noema_candidates_signals_create_new_skeleton(self):
+    def test_no_yaml_candidates_signal_create_new_skeleton(self):
         with tempfile.TemporaryDirectory() as tmp:
             cwd = Path(tmp)
             _write_minimal_example(cwd, configs=None)
-            _write_openevolve_yaml(cwd / "config_phase_1.yaml")
             found = discover_example(cwd)
             self.assertEqual(found.config_candidates, ())
             self.assertIsNone(found.preferred_config)
