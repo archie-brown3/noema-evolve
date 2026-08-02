@@ -17,6 +17,7 @@ import yaml
 
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
 from noema.evolution.operators import OPERATOR_MENU
+from noema.logging import LoggingConfig
 
 
 def _default_prompt_config() -> PromptConfig:
@@ -203,6 +204,7 @@ class NoemaConfig:
     coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
     substrate: SubstrateConfig = field(default_factory=SubstrateConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
 
     def __post_init__(self):
         if self.retry_on not in ("failure", "non_improvement"):
@@ -322,6 +324,7 @@ class NoemaConfig:
         "coordination": CoordinationConfig,
         "substrate": SubstrateConfig,
         "selection": SelectionConfig,
+        "logging": LoggingConfig,
     }
 
     @classmethod

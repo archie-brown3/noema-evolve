@@ -109,7 +109,7 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
             self.assertEqual(agent_cfg.stop_children, 3)
             self.assertEqual(agent_cfg.mutation_depth, "deep")
             self.assertEqual(agent_cfg.coordination_depth, "shallow")
-            self.assertEqual(agent_cfg.host_log_verbosity, "full")
+            self.assertEqual(agent_cfg.host_log_verbosity, "debug")
             self.assertEqual(agent_cfg.mutation_cli.kind, "claude")
             self.assertEqual(agent_cfg.mutation_cli.model, "sonnet")
             self.assertEqual(agent_cfg.mutation_cli.timeout_s, 120.0)
@@ -126,7 +126,7 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
                 stop_children=2,
                 mutation_depth="deep",
                 coordination_depth="shallow",
-                host_log_verbosity="full",
+                host_log_verbosity="debug",
                 mutation_cli=AgentCliConfig(kind="codex", model="gpt-5", timeout_s=90.0),
             )
             save_noema_and_agent(path, original)
@@ -137,7 +137,7 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
             self.assertEqual(reloaded.noema.max_iterations, 9)
             self.assertEqual(reloaded.stop_children, 2)
             self.assertEqual(reloaded.mutation_depth, "deep")
-            self.assertEqual(reloaded.host_log_verbosity, "full")
+            self.assertEqual(reloaded.host_log_verbosity, "debug")
             self.assertEqual(reloaded.mutation_cli.kind, "codex")
             self.assertEqual(reloaded.mutation_cli.model, "gpt-5")
             self.assertEqual(reloaded.mutation_cli.timeout_s, 90.0)

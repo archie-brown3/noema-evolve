@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-import json
+import logging
 import tempfile
 import threading
 import unittest
@@ -15,59 +15,42 @@ from textual.app import App
 from noema.agenthost.config import AgentConfig
 from noema.agenthost.configure_files import ExamplePaths
 from noema.agenthost.monitor import (
+    HostLogHandler,
     MonitorScreen,
     NoemaApp,
     RoleTranscript,
     RunOutcome,
-    format_attempt_trace,
-    format_host_log_record,
 )
 from noema.agenthost.session import AgentSessionAborted
-from noema.trace import AttemptTraceWriter
+from noema.logging import host_logger
 
 
-class TestAttemptTraceFormatting(unittest.TestCase):
-    def test_score_is_compact_and_stable(self):
-        line = format_attempt_trace(
-            {
-                "iteration": 2,
-                "attempt": 3,
-                "outcome": "accepted",
-                "evaluation": {"combined_score": 1.23456},
-            }
-        )
-        self.assertEqual(line, "it000002 m03  accepted  score=1.235")
+class TestHostLogHandler(unittest.TestCase):
+    def test_normal_and_debug_filter_shared_host_records(self):
+        lines = []
+        logger = host_logger()
+        previous_level = logger.level
+        logger.setLevel(logging.DEBUG)
+        handler = HostLogHandler(lines.append, verbosity="normal")
+        logger.addHandler(handler)
+        try:
+            logger.debug("hidden debug")
+            logger.info("visible progress")
+            self.assertEqual(lines, ["visible progress"])
+        finally:
+            logger.removeHandler(handler)
+            handler.close()
 
-    def test_error_is_used_when_no_score_exists(self):
-        line = format_attempt_trace(
-            {
-                "iteration": 0,
-                "attempt": 1,
-                "outcome": "evaluation_failure",
-                "error": "evaluator failed\non second line",
-            }
-        )
-        self.assertEqual(
-            line,
-            "it000000 m01  evaluation_failure  evaluator failed on second line",
-        )
-
-    def test_accepted_verbosity_omits_non_accepted_attempts(self):
-        line = format_host_log_record(
-            {"iteration": 0, "attempt": 1, "outcome": "evaluation_failure"},
-            verbosity="accepted",
-        )
-        self.assertIsNone(line)
-
-    def test_full_verbosity_uses_the_jsonl_record_shape(self):
-        record = {
-            "iteration": 0,
-            "attempt": 1,
-            "outcome": "evaluation_failure",
-            "error": "evaluator failed",
-        }
-        line = format_host_log_record(record, verbosity="full")
-        self.assertEqual(json.loads(line), record)
+        lines = []
+        handler = HostLogHandler(lines.append, verbosity="debug")
+        logger.addHandler(handler)
+        try:
+            logger.debug("visible debug")
+            self.assertEqual(lines, ["visible debug"])
+        finally:
+            logger.removeHandler(handler)
+            handler.close()
+            logger.setLevel(previous_level)
 
 
 class TestRoleTranscript(unittest.TestCase):
@@ -86,9 +69,13 @@ class TestRoleTranscript(unittest.TestCase):
 
 
 class TestTextualScreens(unittest.TestCase):
+    def tearDown(self):
+        host_logger().setLevel(logging.NOTSET)
+
     def test_configure_screen_preserves_section_walk_navigation(self):
         async def scenario() -> None:
             with tempfile.TemporaryDirectory() as tmp:
+                host_logger().setLevel(logging.DEBUG)
                 root = Path(tmp)
                 program = root / "initial_program.py"
                 evaluator = root / "evaluator.py"
@@ -145,26 +132,13 @@ class TestTextualScreens(unittest.TestCase):
             def __init__(self) -> None:
                 self.started = threading.Event()
                 self.abort_called = threading.Event()
-                self.trace_written = threading.Event()
-                self._attempt_trace_callback = None
-                self._output_dir = None
 
             async def run_agent_mode(self):
                 self.started.set()
-                assert self._attempt_trace_callback is not None
-                assert self._output_dir is not None
-                self._output_dir.mkdir(parents=True, exist_ok=True)
-                trace_path = self._output_dir / "attempt_trace.jsonl"
-                AttemptTraceWriter(
-                    str(trace_path),
-                    on_write=self._attempt_trace_callback,
-                ).write(
-                    iteration=0,
-                    attempt=0,
-                    outcome="accepted",
-                    evaluation={"metrics": {"combined_score": 1.25}},
+                host_logger().info(
+                    "Iteration 0: Child child from parent parent via cli/shallow "
+                    "in 0.01s. Metrics: combined_score=1.2500 (Δ: +0.2500)"
                 )
-                self.trace_written.set()
                 while not self.abort_called.is_set():
                     await asyncio.sleep(0.01)
                 raise AgentSessionAborted("agency run aborted by operator")
@@ -199,6 +173,7 @@ class TestTextualScreens(unittest.TestCase):
 
         async def scenario() -> None:
             with tempfile.TemporaryDirectory() as tmp:
+                host_logger().setLevel(logging.DEBUG)
                 root = Path(tmp)
                 program = root / "initial_program.py"
                 evaluator = root / "evaluator.py"
@@ -208,8 +183,6 @@ class TestTextualScreens(unittest.TestCase):
                 app = Harness(session, evaluator, program, root / "output")
 
                 def create_fake_session(*_args, **kwargs):
-                    session._attempt_trace_callback = kwargs["attempt_trace_callback"]
-                    session._output_dir = Path(kwargs["output_dir"])
                     return session
 
                 with patch(
@@ -219,14 +192,10 @@ class TestTextualScreens(unittest.TestCase):
                     async with app.run_test(size=(100, 30)) as pilot:
                         await pilot.pause()
                         self.assertTrue(session.started.wait(timeout=0.1))
-                        self.assertTrue(session.trace_written.wait(timeout=0.1))
                         await pilot.pause()
                         host_log = app.screen.query_one("#host-log")
                         self.assertIn(
-                            "run started", "\n".join(line.text for line in host_log.lines)
-                        )
-                        self.assertIn(
-                            "it000000 m00  accepted  score=1.25",
+                            "Iteration 0: Child child from parent parent",
                             "\n".join(line.text for line in host_log.lines),
                         )
 
@@ -236,9 +205,6 @@ class TestTextualScreens(unittest.TestCase):
 
                         self.assertTrue(session.abort_called.is_set())
                         self.assertTrue(app.screen._frozen)
-                        self.assertIn(
-                            "run aborted", "\n".join(line.text for line in host_log.lines)
-                        )
 
         asyncio.run(scenario())
 
