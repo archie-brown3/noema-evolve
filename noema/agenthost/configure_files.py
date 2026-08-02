@@ -112,13 +112,11 @@ def _cli_from_mapping(data: Optional[dict]) -> "AgentCliConfig":
 
 
 def _host_log_verbosity(value: Any) -> str:
-    """Map legacy monitor values onto the shared host-log view."""
+    """Map legacy monitor values onto the single standard host-log mode."""
 
-    if value == "accepted":
-        return "normal"
-    if value == "full":
-        return "debug"
-    return value or "normal"
+    if value in (None, "", "accepted", "full", "normal", "debug"):
+        return "standard"
+    return value
 
 
 def _normalise_openevolve_yaml(raw: dict[str, Any]) -> dict[str, Any]:

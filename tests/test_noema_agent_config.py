@@ -34,7 +34,9 @@ from tests.test_noema_agent_arm_sweep import EVAL_SCRIPT, INITIAL_PROGRAM, _scaf
 
 class TestAgentConfig(unittest.TestCase):
     def test_valid_config_passes(self):
-        validate_agent_config(AgentConfig())
+        config = AgentConfig()
+        validate_agent_config(config)
+        self.assertEqual(config.host_log_verbosity, "standard")
 
     def test_bad_mutation_depth_rejected(self):
         with self.assertRaises(ValueError):
@@ -47,6 +49,11 @@ class TestAgentConfig(unittest.TestCase):
     def test_bad_host_log_verbosity_rejected(self):
         with self.assertRaises(ValueError):
             AgentConfig(host_log_verbosity="invalid")  # type: ignore[arg-type]
+
+    def test_legacy_host_log_verbosity_values_are_not_live_agent_options(self):
+        for value in ("normal", "debug", "accepted", "full"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                AgentConfig(host_log_verbosity=value)  # type: ignore[arg-type]
 
     def test_bad_active_mutation_cli_kind_rejected(self):
         with self.assertRaises(ValueError):

@@ -107,7 +107,7 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
             self.assertEqual(agent_cfg.stop_children, 3)
             self.assertEqual(agent_cfg.mutation_depth, "deep")
             self.assertEqual(agent_cfg.coordination_depth, "shallow")
-            self.assertEqual(agent_cfg.host_log_verbosity, "debug")
+            self.assertEqual(agent_cfg.host_log_verbosity, "standard")
             self.assertEqual(agent_cfg.mutation_cli.kind, "claude")
             self.assertEqual(agent_cfg.mutation_cli.model, "sonnet")
             self.assertEqual(agent_cfg.mutation_cli.timeout_s, 120.0)
@@ -124,7 +124,7 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
                 stop_children=2,
                 mutation_depth="deep",
                 coordination_depth="shallow",
-                host_log_verbosity="debug",
+                host_log_verbosity="standard",
                 mutation_cli=AgentCliConfig(kind="codex", model="gpt-5", timeout_s=90.0),
             )
             save_noema_and_agent(path, original)
@@ -135,7 +135,8 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
             self.assertEqual(reloaded.noema.max_iterations, 9)
             self.assertEqual(reloaded.stop_children, 2)
             self.assertEqual(reloaded.mutation_depth, "deep")
-            self.assertEqual(reloaded.host_log_verbosity, "debug")
+            self.assertEqual(reloaded.host_log_verbosity, "standard")
+            self.assertIn("host_log_verbosity: standard", text)
             self.assertEqual(reloaded.mutation_cli.kind, "codex")
             self.assertEqual(reloaded.mutation_cli.model, "gpt-5")
             self.assertEqual(reloaded.mutation_cli.timeout_s, 90.0)
@@ -153,11 +154,23 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
             self.assertIsNone(loaded.stop_children)
             self.assertEqual(loaded.mutation_depth, defaults.mutation_depth)
             self.assertEqual(loaded.coordination_depth, defaults.coordination_depth)
-            self.assertEqual(loaded.host_log_verbosity, defaults.host_log_verbosity)
+            self.assertEqual(loaded.host_log_verbosity, "standard")
             self.assertEqual(loaded.mutation_cli.kind, defaults.mutation_cli.kind)
             self.assertEqual(loaded.mutation_cli.timeout_s, defaults.mutation_cli.timeout_s)
             self.assertEqual(loaded.coordination_cli, AgentCliConfig())
 
+    def test_legacy_host_log_values_all_load_as_standard(self):
+        from noema.agenthost.configure_files import load_noema_and_agent
+
+        for value in ("accepted", "full", "normal", "debug"):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "config.yaml"
+                path.write_text(
+                    "prompt:\n  use_template_stochasticity: false\n"
+                    f"agent:\n  host_log_verbosity: {value}\n"
+                )
+                loaded = load_noema_and_agent(path)
+                self.assertEqual(loaded.host_log_verbosity, "standard")
 
 if __name__ == "__main__":
     unittest.main()
