@@ -26,27 +26,18 @@ from noema.logging import LoggingConfig, host_logger, setup_run_logging
 
 
 class TestHostLogHandler(unittest.TestCase):
-    def test_normal_and_debug_filter_shared_host_records(self):
+    def test_standard_view_formats_info_and_hides_debug_records(self):
         lines = []
         logger = host_logger()
         previous_level = logger.level
         logger.setLevel(logging.DEBUG)
-        handler = HostLogHandler(lines.append, verbosity="normal")
+        handler = HostLogHandler(lines.append, verbosity="standard")
         logger.addHandler(handler)
         try:
             logger.debug("hidden debug")
             logger.info("visible progress")
-            self.assertEqual(lines, ["visible progress"])
-        finally:
-            logger.removeHandler(handler)
-            handler.close()
-
-        lines = []
-        handler = HostLogHandler(lines.append, verbosity="debug")
-        logger.addHandler(handler)
-        try:
-            logger.debug("visible debug")
-            self.assertEqual(lines, ["visible debug"])
+            self.assertEqual(len(lines), 1)
+            self.assertRegex(lines[0], r"\d{4}-\d{2}-\d{2} .* - INFO - visible progress")
         finally:
             logger.removeHandler(handler)
             handler.close()
@@ -133,9 +124,15 @@ class TestTextualScreens(unittest.TestCase):
                 self.started = threading.Event()
                 self.abort_called = threading.Event()
                 self.run_logging = None
+                self.on_mutation_session_start = None
 
             async def run_agent_mode(self):
                 self.started.set()
+                logging.getLogger("openevolve.evaluator").info(
+                    "Evaluated program initial in 0.01s: combined_score=1.0000"
+                )
+                if self.on_mutation_session_start is not None:
+                    self.on_mutation_session_start("it000000/m01")
                 host_logger().info(
                     "Iteration 0: Child child from parent parent via cli/shallow "
                     "in 0.01s. Metrics: combined_score=1.2500 (Δ: +0.2500)"
@@ -188,6 +185,7 @@ class TestTextualScreens(unittest.TestCase):
                         LoggingConfig(file=False),
                         kwargs["output_dir"],
                     )
+                    session.on_mutation_session_start = kwargs["on_mutation_session_start"]
                     return session
 
                 with patch(
@@ -199,10 +197,7 @@ class TestTextualScreens(unittest.TestCase):
                         self.assertTrue(session.started.wait(timeout=0.1))
                         await pilot.pause()
                         host_log = app.screen.query_one("#host-log")
-                        self.assertIn(
-                            "Iteration 0: Child child from parent parent",
-                            "\n".join(line.text for line in host_log.lines),
-                        )
+                        host_log_text = "\n".join(line.text for line in host_log.lines)
                         self.assertIsNotNone(session.run_logging.console_handler)
                         assert session.run_logging.console_handler is not None
                         self.assertGreater(
@@ -221,6 +216,16 @@ class TestTextualScreens(unittest.TestCase):
                             session.run_logging.console_handler.level,
                             logging.INFO,
                         )
+                        self.assertIn(
+                            "Iteration 0: Child child from parent parent",
+                            host_log_text,
+                        )
+                        self.assertIn(
+                            "INFO - mutation CLI session started: it000000/m01",
+                            host_log_text,
+                        )
+                        self.assertIn("INFO - Evaluated program initial", host_log_text)
+                        self.assertIn("combined_score=1.0000", host_log_text)
 
         asyncio.run(scenario())
 

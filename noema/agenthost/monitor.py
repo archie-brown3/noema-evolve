@@ -30,7 +30,7 @@ from noema.agenthost.configure_walk import ConfigureWalk
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.session import AgentSessionAborted
 from noema.budget.cli_runner import CliPtyRunner
-from noema.logging import host_logger
+from noema.logging import console_log_formatter, host_logger
 
 
 class RoleTranscript:
@@ -152,12 +152,13 @@ class HostLogHandler(logging.Handler):
     """Forward shared host-log records to a Textual pane."""
 
     def __init__(self, append_line, *, verbosity: str) -> None:
-        super().__init__(level=logging.DEBUG if verbosity == "debug" else logging.INFO)
+        super().__init__(level=logging.INFO)
         self._append_line = append_line
+        self.setFormatter(console_log_formatter())
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
-            self._append_line(record.getMessage())
+            self._append_line(self.format(record))
         except Exception:
             self.handleError(record)
 
@@ -435,17 +436,17 @@ class MonitorScreen(Screen):
             self._append_host_log,
             verbosity=self._agent_config.host_log_verbosity,
         )
-        host_logger().addHandler(self._host_log_handler)
+        logging.getLogger().addHandler(self._host_log_handler)
         host_logger().info("run started")
         self._worker = self.app.run_worker(self._run_host, thread=True, exit_on_error=False)
 
     def _begin_mutation_session(self, label: str) -> None:
         self._mutation.begin_session(label)
-        host_logger().debug("mutation CLI session started: %s", label)
+        host_logger().info("mutation CLI session started: %s", label)
 
     def _begin_coordination_session(self, label: str) -> None:
         self._coordination.begin_session(label)
-        host_logger().debug("coordination CLI session started: %s", label)
+        host_logger().info("coordination CLI session started: %s", label)
 
     def _run_host(self) -> None:
         assert self._session is not None
@@ -478,7 +479,7 @@ class MonitorScreen(Screen):
 
     def _detach_host_logging(self) -> None:
         if self._host_log_handler is not None:
-            host_logger().removeHandler(self._host_log_handler)
+            logging.getLogger().removeHandler(self._host_log_handler)
             self._host_log_handler.close()
             self._host_log_handler = None
         if self._run_logging is not None:

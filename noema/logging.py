@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional
 
 _VALID_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
 _HANDLER_TAG = "_noema_run_logging"
+_CONSOLE_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 
 
 @dataclass
@@ -76,6 +77,12 @@ def host_logger() -> logging.Logger:
     return logging.getLogger("noema.host")
 
 
+def console_log_formatter() -> logging.Formatter:
+    """Build the OpenEvolve-style console formatter used by host views."""
+
+    return logging.Formatter(_CONSOLE_FORMAT)
+
+
 def setup_run_logging(config: LoggingConfig, output_dir: str | Path) -> RunLoggingHandle:
     """Install one idempotent Noema console/file logging configuration."""
 
@@ -104,7 +111,7 @@ def setup_run_logging(config: LoggingConfig, output_dir: str | Path) -> RunLoggi
     if config.console:
         console_handler = logging.StreamHandler()
         console_handler.setLevel(level)
-        console_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+        console_handler.setFormatter(console_log_formatter())
         setattr(console_handler, _HANDLER_TAG, True)
         root.addHandler(console_handler)
 
