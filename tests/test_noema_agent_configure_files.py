@@ -172,5 +172,6 @@ class TestLoadNoemaAndAgent(unittest.TestCase):
                 loaded = load_noema_and_agent(path)
                 self.assertEqual(loaded.host_log_verbosity, "standard")
 
+
 if __name__ == "__main__":
     unittest.main()
