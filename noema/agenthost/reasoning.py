@@ -11,7 +11,7 @@ from typing import Callable, Dict, List, Optional
 from noema.agenthost.config import AgentCliConfig
 from noema.agenthost.inner_session_mcp import prepare_inner_mcp
 from noema.agenthost.submit import ADVICE_FILENAME, coordination_response
-from noema.budget.cli_runner import CliRunner, build_mutation_cli_command
+from noema.budget.cli_runner import CliPtyRunner, build_mutation_cli_command
 from noema.budget.llm import BudgetedLLM
 
 SpawnFn = Callable[[str, str, str], str]
@@ -35,11 +35,15 @@ class DeepCoordinationLLM:
         cli: AgentCliConfig,
         output_dir: str,
         spawn: Optional[SpawnFn] = None,
+        runner: Optional[CliPtyRunner] = None,
+        on_session_start: Optional[Callable[[str], None]] = None,
     ) -> None:
         self._inner = inner
         self._cli = cli
         self._output_dir = output_dir
         self._spawn = spawn
+        self._runner = runner or CliPtyRunner()
+        self._on_session_start = on_session_start
         self._session = None
         self._attempts: Dict[str, int] = defaultdict(int)
         self.generation = 0
@@ -49,6 +53,11 @@ class DeepCoordinationLLM:
 
     def bind_session(self, session) -> None:
         self._session = session
+
+    def abort(self) -> None:
+        """Stop the currently active deep-coordination CLI session, if any."""
+
+        self._runner.abort()
 
     async def generate(self, prompt: str, **kwargs) -> str:
         return await self.generate_with_context(
@@ -70,6 +79,8 @@ class DeepCoordinationLLM:
         return await self._run_cli(tag, system_message, user)
 
     async def _run_cli(self, tag: str, system_message: str, user_message: str) -> str:
+        if self._session is not None:
+            self._session.raise_if_aborted()
         self._attempts[tag] += 1
         attempt = self._attempts[tag]
         generation = self._session.generation if self._session is not None else self.generation
@@ -106,8 +117,10 @@ class DeepCoordinationLLM:
             extra_args=self._cli.extra_args,
             mcp_config_path=mcp_config,
         )
+        if self._on_session_start is not None:
+            self._on_session_start(f"gen{generation:04d}/{tag}/a{attempt:02d}")
         result = await asyncio.to_thread(
-            CliRunner().run,
+            self._runner.run,
             argv,
             cwd=work,
             env=os.environ.copy(),
@@ -115,6 +128,8 @@ class DeepCoordinationLLM:
             stdout_path=stdout_path,
             stderr_path=stderr_path,
         )
+        if self._session is not None:
+            self._session.raise_if_aborted()
         if result.timed_out:
             raise TimeoutError(
                 f"deep coordination CLI {self._cli.kind!r} timed out after "

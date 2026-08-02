@@ -19,7 +19,7 @@ from noema.agenthost.inner_session_mcp import MCP_CONFIG_NAME, TOOLS_DIRNAME
 from noema.agenthost.mutation import CliMutationBackend, FakeMutationBackend
 from noema.agenthost.reasoning import DeepCoordinationLLM
 from noema.agenthost.submit import ADVICE_FILENAME
-from noema.budget.cli_runner import CliRunner, CliRunResult
+from noema.budget.cli_runner import CliPtyRunner, CliRunResult
 from noema.budget.llm import BudgetedLLM
 from noema.config import (
     BudgetConfig,
@@ -43,6 +43,10 @@ class TestAgentConfig(unittest.TestCase):
     def test_bad_coordination_depth_rejected(self):
         with self.assertRaises(ValueError):
             AgentConfig(coordination_depth="invalid")  # type: ignore[arg-type]
+
+    def test_bad_host_log_verbosity_rejected(self):
+        with self.assertRaises(ValueError):
+            AgentConfig(host_log_verbosity="invalid")  # type: ignore[arg-type]
 
     def test_bad_active_mutation_cli_kind_rejected(self):
         with self.assertRaises(ValueError):
@@ -121,6 +125,101 @@ class TestAgentConfig(unittest.TestCase):
 
         self.assertEqual(config.noema.to_dict(), canonical.to_dict())
         self.assertEqual(config.resolved_stop_children(), 3)
+
+    def test_cli_bootstrap_reads_agent_block_from_yaml(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.yaml"
+            config_path.write_text(
+                "\n".join(
+                    [
+                        "max_iterations: 11",
+                        "prompt:",
+                        "  use_template_stochasticity: false",
+                        "agent:",
+                        "  mutation_depth: deep",
+                        "  mutation_cli:",
+                        "    kind: claude",
+                        "    model: sonnet",
+                        "",
+                    ]
+                )
+            )
+            args = parse_entry_args(
+                [
+                    "--config",
+                    str(config_path),
+                    "--evaluation-file",
+                    "/tmp/eval.py",
+                    "--initial-program",
+                    "/tmp/init.py",
+                    "--output-dir",
+                    "/tmp/out",
+                ]
+            )
+            config = build_agent_config(args)
+        self.assertEqual(config.noema.max_iterations, 11)
+        self.assertEqual(config.mutation_depth, "deep")
+        self.assertEqual(config.mutation_cli.kind, "claude")
+        self.assertEqual(config.mutation_cli.model, "sonnet")
+
+    def test_cli_bootstrap_loads_deep_coordination_cli_from_yaml(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.yaml"
+            config_path.write_text(
+                "\n".join(
+                    [
+                        "max_iterations: 5",
+                        "prompt:",
+                        "  use_template_stochasticity: false",
+                        "agent:",
+                        "  coordination_depth: deep",
+                        "  mutation_cli:",
+                        "    kind: opencode",
+                        "  coordination_cli:",
+                        "    kind: claude",
+                        "    model: coord-model",
+                        "",
+                    ]
+                )
+            )
+            args = parse_entry_args(
+                [
+                    "--config",
+                    str(config_path),
+                    "--evaluation-file",
+                    "/tmp/eval.py",
+                    "--initial-program",
+                    "/tmp/init.py",
+                    "--output-dir",
+                    "/tmp/out",
+                ]
+            )
+            config = build_agent_config(args)
+        self.assertEqual(config.coordination_depth, "deep")
+        self.assertEqual(config.coordination_cli.kind, "claude")
+        self.assertEqual(config.coordination_cli.model, "coord-model")
+
+    def test_cli_bootstrap_flag_deep_clones_mutation_cli(self):
+        args = parse_entry_args(
+            [
+                "--evaluation-file",
+                "/tmp/eval.py",
+                "--initial-program",
+                "/tmp/init.py",
+                "--output-dir",
+                "/tmp/out",
+                "--mutation-cli",
+                "codex",
+                "--mutation-model",
+                "m1",
+                "--coordination-depth",
+                "deep",
+            ]
+        )
+        config = build_agent_config(args)
+        self.assertEqual(config.coordination_depth, "deep")
+        self.assertEqual(config.coordination_cli.kind, "codex")
+        self.assertEqual(config.coordination_cli.model, "m1")
 
     def test_factory_passes_canonical_config_without_projection(self):
         noema = NoemaConfig(
@@ -288,7 +387,7 @@ class TestCreateAgentSession(unittest.TestCase):
                 (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
                 return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
 
-            with mock.patch.object(CliRunner, "run", fake_run):
+            with mock.patch.object(CliPtyRunner, "run", fake_run):
                 result = asyncio.run(
                     session.coordination._paradigm_llm.generate("prompt", tag="pe.paradigm_shift")
                 )
@@ -335,7 +434,7 @@ class TestCreateAgentSession(unittest.TestCase):
                 (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
                 return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
 
-            with mock.patch.object(CliRunner, "run", fake_run):
+            with mock.patch.object(CliPtyRunner, "run", fake_run):
                 result = asyncio.run(
                     session.coordination._paradigm_llm.generate("prompt", tag="pe.paradigm_shift")
                 )

@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "noema": {
+      "type": "stdio",
+      "command": "/opt/miniconda3/bin/python3.13",
+      "args": [
+        "-m",
+        "noema.agenthost.inner_session_mcp",
+        "--snapshot",
+        "/Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_deepseek_test/mutations/it000000/m01/tools/snapshot.json",
+        "--mode",
+        "mutation",
+        "--deliverable",
+        "/Users/archiebrown/noema-evolve/examples/circle_packing/noema_agent_deepseek_test/mutations/it000000/m01/child.py"
+      ]
+    }
+  }
+}
