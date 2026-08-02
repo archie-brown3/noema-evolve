@@ -101,7 +101,7 @@ class DeepCoordinationLLM:
             system_path=system_path,
             user_message=user_message,
             binary=self._cli.binary,
-            model=self._cli.model,
+            model=self._cli.model or self.model,
             extra_args=self._cli.extra_args,
             mcp_config_path=mcp_config,
         )

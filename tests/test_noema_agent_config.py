@@ -288,9 +288,53 @@ class TestCreateAgentSession(unittest.TestCase):
             )
 
             self.assertEqual(result, "ok")
+            self.assertIn("-m", captured["argv"])
+            self.assertIn("heavy-model", captured["argv"])
             self.assertTrue((captured["cwd"] / TOOLS_DIRNAME / MCP_CONFIG_NAME).is_file())
             opencode = json.loads((captured["cwd"] / "opencode.json").read_text())
             self.assertTrue(opencode["mcp"]["noema"]["enabled"])
+
+    def test_deep_coordination_cli_model_overrides_wrapped_seat_model(self):
+        noema = NoemaConfig(
+            coordination=CoordinationConfig(
+                module="pe",
+                params={"paradigm_model": "heavy-model"},
+            ),
+            llm=LLMRolesConfig(
+                coordination=LLMClientConfig(model="base-model", api_key="fake-key"),
+            ),
+        )
+        config = AgentConfig(
+            noema=noema,
+            coordination_depth="deep",
+            coordination_cli=AgentCliConfig(
+                kind="opencode",
+                binary=sys.executable,
+                model="cli-model",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings(), mock.patch(
+            "openai.AsyncOpenAI"
+        ):
+            warnings.simplefilter("ignore")
+            session = self._session(tmp, config)
+            captured = {}
+
+            def fake_run(_self, argv, **kwargs):
+                captured["argv"] = argv
+                kwargs["stdout_path"].write_text("")
+                kwargs["stderr_path"].write_text("")
+                (kwargs["cwd"] / ADVICE_FILENAME).write_text(json.dumps({"response": "ok"}))
+                return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
+
+            with mock.patch.object(CliRunner, "run", fake_run):
+                result = asyncio.run(
+                    session.coordination._paradigm_llm.generate("prompt", tag="pe.paradigm_shift")
+                )
+
+        self.assertEqual(result, "ok")
+        self.assertIn("cli-model", captured["argv"])
+        self.assertNotIn("heavy-model", captured["argv"])
 
     def test_shallow_mutation_builds_unbound_cli_backend(self):
         with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings():
