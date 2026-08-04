@@ -5,6 +5,7 @@
     <a href="#install">Install</a> ·
     <a href="#minimal-run-example">Run</a> ·
     <a href="#ablation-axes">Ablation axes</a> ·
+    <a href="#example-problems">Examples</a> ·
     <a href="#outputs-and-resume">Outputs</a> ·
     <a href="#guarantees-enforced-by-tests">Guarantees</a> ·
     <a href="#repository-layout">Layout</a>
@@ -128,6 +129,32 @@ compose through one capability-checked interface.
 | `boltzmann` | **implemented** | Boltzmann sampling with adaptive temperature and optional stagnation detection. |
 | `uct` | **implemented** | UCT selection for the tree substrate with token-budget exploration decay. |
 | `cvt_ucb` | **implemented** | UCB selection across CVT regions. |
+
+## Example problems
+
+Benchmark inputs used to compare coordination arms live under `examples/`.
+
+<table>
+  <tr>
+    <td align="center" width="220">
+      <a href="examples/circle_packing"><img src="examples/circle_packing/best_packing.png" width="220" /></a><br />
+      <a href="examples/circle_packing"><b>Circle Packing</b></a><br />
+      <sub>Pack 26 circles in a unit square to maximize the sum of radii.</sub>
+    </td>
+    <td width="24"></td>
+    <td align="center" width="220">
+      <a href="examples/morpion_solitaire"><img src="examples/morpion_solitaire/board_midgame.png" width="220" /></a><br />
+      <a href="examples/morpion_solitaire"><b>Morpion Solitaire</b></a><br />
+      <sub>Grow the longest legal line-drawing sequence on a cross-shaped grid.</sub>
+    </td>
+    <td width="24"></td>
+    <td align="center" width="220">
+      <a href="examples/bin_packing"><img src="examples/bin_packing/packing_result.png" width="220" /></a><br />
+      <a href="examples/bin_packing"><b>Bin Packing</b></a><br />
+      <sub>Pack weighted items into a minimal number of fixed-capacity bins.</sub>
+    </td>
+  </tr>
+</table>
 
 ## Outputs and resume
 
