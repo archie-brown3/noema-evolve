@@ -135,6 +135,33 @@ class TestCliPtyRunner(unittest.TestCase):
             self.assertTrue(result.timed_out)
             self.assertIsNone(result.exit_code)
 
+    def test_run_terminates_when_submit_marker_appears(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            marker = work / "tools" / "mutation_submitted.json"
+            script = (
+                "import os, time\n"
+                "from pathlib import Path\n"
+                "p = Path(os.environ['SUBMIT_MARKER'])\n"
+                "time.sleep(0.05)\n"
+                "p.parent.mkdir(parents=True, exist_ok=True)\n"
+                "p.write_text('{\"status\":\"submitted\"}')\n"
+                "time.sleep(60)\n"
+            )
+            result = CliPtyRunner().run(
+                [sys.executable, "-c", script],
+                cwd=work,
+                env={"SUBMIT_MARKER": str(marker)},
+                timeout_s=5.0,
+                stdout_path=work / "cli_stdout.log",
+                stderr_path=work / "cli_stderr.log",
+                submit_marker_path=marker,
+            )
+
+            self.assertTrue(result.submit_received)
+            self.assertFalse(result.timed_out)
+            self.assertLess(result.wall_s, 2.0)
+
 
 if __name__ == "__main__":
     unittest.main()

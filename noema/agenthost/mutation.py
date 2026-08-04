@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Protocol, Sequence, Union
 
-from noema.agenthost.inner_session_mcp import prepare_inner_mcp
+from noema.agenthost.inner_session_mcp import prepare_inner_mcp, submit_marker_path
 from noema.budget.cli_runner import (
     SUPPORTED_MUTATION_CLIS,
     CliPtyRunner,
@@ -266,10 +266,12 @@ class CliMutationBackend:
             env["MUTATION_RETRY_BRIEF_PATH"] = str(retry_path)
 
         mcp_config = None
+        submit_marker: Optional[Path] = None
         if self._session is not None:
             mcp_config = prepare_inner_mcp(
                 work, self._session, mode="mutation", deliverable=deliverable
             )
+            submit_marker = submit_marker_path(deliverable)
 
         effective_model = request.model if request.model is not None else self.model
         applied_model = effective_model if self.command is None else None
@@ -307,6 +309,7 @@ class CliMutationBackend:
             timeout_s=request.timeout_s,
             stdout_path=stdout_path,
             stderr_path=stderr_path,
+            submit_marker_path=submit_marker,
         )
         wall = cli_result.wall_s
         trace = {
@@ -319,6 +322,7 @@ class CliMutationBackend:
             "deliverable": str(deliverable),
             "argv": argv,
             "model": applied_model,
+            "submit_received": cli_result.submit_received,
         }
 
         if cli_result.timed_out:
@@ -328,7 +332,7 @@ class CliMutationBackend:
                 backend_trace=trace,
             )
 
-        if cli_result.exit_code != 0:
+        if cli_result.exit_code != 0 and not cli_result.submit_received:
             return MutationResult(
                 ok=False,
                 error=f"mutation CLI exited {cli_result.exit_code}",

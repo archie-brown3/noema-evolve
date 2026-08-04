@@ -35,6 +35,60 @@ _DEFAULT_BINARIES = {
     "agent": "agent",
 }
 
+# OpenCode agent profile for deep inner-session MCP spawns (mutation + coordination).
+INNER_SESSION_OPENCODE_AGENT = "noema-inner-session"
+
+# Global ~/.config/opencode/opencode.json often enables extra MCP servers; project
+# config must explicitly disable them so mutation sessions stay Noema-only.
+_STRAY_OPENCODE_MCP_SERVERS = ("pencil", "vault", "noema-agent")
+_STRAY_OPENCODE_MCP_TOOL_GLOBS = tuple(f"{name}_*" for name in _STRAY_OPENCODE_MCP_SERVERS)
+_NOEMA_INNER_SESSION_TOOL_GLOB = "noema_*"
+
+_BUILTIN_DISABLED_OPENCODE_TOOLS: Dict[str, bool] = {
+    "bash": False,
+    "webfetch": False,
+    "grep": False,
+    "glob": False,
+    "task": False,
+    "skill": False,
+    "todowrite": False,
+    "question": False,
+    "read": False,
+    "edit": False,
+    "write": False,
+}
+
+
+def _stray_opencode_mcp_disabled_entries() -> Dict[str, Dict[str, Any]]:
+    return {
+        name: {"type": "local", "enabled": False}
+        for name in _STRAY_OPENCODE_MCP_SERVERS
+    }
+
+
+def _stray_opencode_mcp_tool_disables() -> Dict[str, bool]:
+    return {pattern: False for pattern in _STRAY_OPENCODE_MCP_TOOL_GLOBS}
+
+
+def _inner_session_opencode_agent_tools() -> Dict[str, bool]:
+    """Only Noema inner-session MCP tools plus submit; no global pencil/vault leaks."""
+    tools = dict(_BUILTIN_DISABLED_OPENCODE_TOOLS)
+    tools.update(_stray_opencode_mcp_tool_disables())
+    tools[_NOEMA_INNER_SESSION_TOOL_GLOB] = True
+    return tools
+
+
+def _inner_session_opencode_agent() -> Dict[str, Any]:
+    """Tool surface for one Noema inner session: MCP reads + deliverable write, no shell."""
+    return {
+        "description": (
+            "Noema inner session: use Noema MCP tools for population context and "
+            "the submit tool to finalize the deliverable. No shell, web fetch, or "
+            "repo search tools."
+        ),
+        "tools": _inner_session_opencode_agent_tools(),
+    }
+
 
 @dataclass(frozen=True)
 class CliRunResult:
@@ -43,6 +97,7 @@ class CliRunResult:
     stderr: str
     wall_s: float
     timed_out: bool
+    submit_received: bool = False
 
 
 class CliRunner:
@@ -135,12 +190,14 @@ class CliPtyRunner:
         timeout_s: float,
         stdout_path: Path,
         stderr_path: Path,
+        submit_marker_path: Optional[Path] = None,
     ) -> CliRunResult:
         """Execute ``argv`` on a controlling PTY and return the merged paint."""
 
         if not argv:
             raise ValueError("argv must not be empty")
         started = time.monotonic()
+        submit_received = False
         master_fd, slave_fd = pty.openpty()
         pid = os.fork()
         if pid == 0:  # pragma: no cover - the child immediately execs.
@@ -184,7 +241,17 @@ class CliPtyRunner:
                             child_status = status
 
                     now = time.monotonic()
-                    if child_status is None and termination_started is None and now >= deadline:
+                    if (
+                        child_status is None
+                        and termination_started is None
+                        and submit_marker_path is not None
+                        and submit_marker_path.is_file()
+                    ):
+                        submit_received = True
+                        self._terminate_process_group(pid, signal.SIGTERM)
+                        termination_started = now
+                        deadline = now + 0.25
+                    elif child_status is None and termination_started is None and now >= deadline:
                         timed_out = True
                         self._terminate_process_group(pid, signal.SIGTERM)
                         termination_started = now
@@ -237,6 +304,7 @@ class CliPtyRunner:
             stderr="",
             wall_s=time.monotonic() - started,
             timed_out=timed_out,
+            submit_received=submit_received,
         )
 
     @staticmethod
@@ -264,9 +332,10 @@ def deliverable_envelope(*, deliverable: Path, parent_path: Path) -> str:
         "The host only admits the program written to this exact file path:\n"
         f"  {deliverable}\n"
         "That file is already seeded with the parent program (also saved at "
-        f"{parent_path}). Edit the deliverable in place so it contains the "
-        "complete improved program, save it, then stop. Do not put the program "
-        "only in chat output — stdout is logs, not the payload.\n"
+        f"{parent_path}). Call ``submit_mutation`` with the complete improved "
+        "program to finalize the deliverable and end this session. Do not create "
+        "other files or put the program only in chat output — stdout is logs, not "
+        "the payload.\n"
     )
 
 
@@ -362,7 +431,8 @@ def build_mutation_cli_command(
         return cmd
 
     if kind == "opencode":
-        if mcp_config_path is not None:
+        inner_session = mcp_config_path is not None
+        if inner_session:
             _write_opencode_project_config(work_dir, mcp_config_path)
         # `--file` is an array flag and will swallow following positionals unless
         # the message is protected by `--` (or placed before `--file`).
@@ -375,6 +445,8 @@ def build_mutation_cli_command(
             "--file",
             system_file,
         ]
+        if inner_session:
+            cmd.extend(["--agent", INNER_SESSION_OPENCODE_AGENT])
         if model:
             cmd.extend(["-m", model])
         cmd.extend(extra)
@@ -456,10 +528,20 @@ def _write_opencode_project_config(work_dir: Path, config_path: Path) -> Path:
         if isinstance(server.get("env"), dict):
             entry["environment"] = server["env"]
         servers[name] = entry
+    for name, entry in _stray_opencode_mcp_disabled_entries().items():
+        if name not in servers:
+            servers[name] = entry
     path = work_dir / "opencode.json"
     path.write_text(
         json.dumps(
-            {"$schema": "https://opencode.ai/config.json", "mcp": servers},
+            {
+                "$schema": "https://opencode.ai/config.json",
+                "mcp": servers,
+                "tools": _stray_opencode_mcp_tool_disables(),
+                "agent": {
+                    INNER_SESSION_OPENCODE_AGENT: _inner_session_opencode_agent(),
+                },
+            },
             indent=2,
         )
     )

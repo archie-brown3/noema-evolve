@@ -24,13 +24,37 @@ from noema.agenthost.read_tools import build_snapshot
 TOOLS_DIRNAME = "tools"
 SNAPSHOT_NAME = "snapshot.json"
 MCP_CONFIG_NAME = "mcp.json"
+SUBMIT_MARKER_NAME = "mutation_submitted.json"
 SERVER_NAME = "noema"
 
 INSTRUCTIONS = (
-    "Noema evolution memory for this session. Read tools query the population "
-    "and coordination state. When the deliverable is ready call the submit tool "
-    "once and then stop — the host evaluates and stores it."
+    "Noema evolution memory for this session. Use the read tools "
+    "(get_memory_status, get_best_programs, get_program, etc.) for population "
+    "and run context — do not explore via shell (ls, cat, repo grep) or ad-hoc "
+    "/tmp scripts. List tools return id/fitness catalogs without source; call "
+    "get_program with an id to load full code. When the complete improved "
+    "program is ready, call submit_mutation once with the full program. That "
+    "ends this mutation session; the host evaluates and stores the deliverable."
 )
+
+_CATALOG_FIELDS = (
+    "id",
+    "fitness",
+    "generation",
+    "iteration_found",
+    "metrics",
+    "changes_description",
+)
+
+
+def _as_catalog_entry(program: Dict[str, Any]) -> Dict[str, Any]:
+    """Strip source from list-shaped MCP results; full body is ``get_program`` only."""
+    return {key: program.get(key) for key in _CATALOG_FIELDS}
+
+
+def submit_marker_path(deliverable: Union[str, Path]) -> Path:
+    """Host-polled marker written when ``submit_mutation`` succeeds."""
+    return Path(deliverable).parent / TOOLS_DIRNAME / SUBMIT_MARKER_NAME
 
 
 def prepare_inner_mcp(
@@ -100,7 +124,9 @@ def get_memory_status(snapshot: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_best_programs(snapshot: Dict[str, Any], limit: int = 5) -> Dict[str, Any]:
     top = list((snapshot.get("population") or {}).get("top_programs") or [])
-    return _program_list(top[: max(0, limit)])
+    return _program_list(
+        [_as_catalog_entry(item) for item in top[: max(0, limit)]]
+    )
 
 
 def get_program(snapshot: Dict[str, Any], program_id: str) -> Dict[str, Any]:
@@ -123,7 +149,7 @@ def get_parents_by_child(snapshot: Dict[str, Any], child_id: str, limit: int = 3
         parent = programs.get(parent_id)
         if parent is None:
             break
-        chain.append(parent)
+        chain.append(_as_catalog_entry(parent))
         seen.add(parent_id)
         current_id = parent_id
     return _program_list(chain)
@@ -135,7 +161,7 @@ def get_children_by_parent(
     programs = _programs(snapshot)
     lineage = _lineage(snapshot)
     children = [
-        programs[pid]
+        _as_catalog_entry(programs[pid])
         for pid, pid_parent in lineage.items()
         if pid_parent == parent_id and pid in programs
     ]
@@ -147,10 +173,10 @@ def get_coordination_snapshot(snapshot: Dict[str, Any]) -> Dict[str, Any]:
     return snapshot.get("coordination") or {}
 
 
-# ponytail: stop is prompt-level — the tool response tells the agent to stop. If
-# live runs show agents idling after submit, poll the deliverable in CliRunner
-# and terminate the subprocess.
-_STOP = "Deliverable written. Stop now — the host takes over from here."
+_STOP = (
+    "Deliverable submitted. This mutation session is ending — the host evaluates "
+    "and may start the next attempt."
+)
 
 
 def submit_mutation(deliverable: Union[str, Path], code: str) -> Dict[str, Any]:
@@ -160,6 +186,11 @@ def submit_mutation(deliverable: Union[str, Path], code: str) -> Dict[str, Any]:
     path = Path(deliverable)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(code)
+    marker = submit_marker_path(path)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text(
+        json.dumps({"status": "submitted", "path": str(path), "deliverable": str(path)})
+    )
     return {"status": "submitted", "path": str(path), "next": _STOP}
 
 

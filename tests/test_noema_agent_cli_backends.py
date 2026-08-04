@@ -7,6 +7,7 @@ from pathlib import Path
 
 from noema.agenthost.materialize import materialize_child_code
 from noema.budget.cli_runner import (
+    INNER_SESSION_OPENCODE_AGENT,
     SUPPORTED_MUTATION_CLIS,
     build_cli_user_message,
     build_mutation_cli_command,
@@ -95,6 +96,29 @@ class TestCliCommandBuilders(unittest.TestCase):
                             ],
                         )
                         self.assertTrue(config["mcp"]["noema"]["enabled"])
+                        self.assertIn(
+                            INNER_SESSION_OPENCODE_AGENT,
+                            config["agent"],
+                        )
+                        self.assertFalse(
+                            config["agent"][INNER_SESSION_OPENCODE_AGENT]["tools"]["bash"]
+                        )
+                        self.assertFalse(
+                            config["agent"][INNER_SESSION_OPENCODE_AGENT]["tools"]["write"]
+                        )
+                        self.assertFalse(
+                            config["agent"][INNER_SESSION_OPENCODE_AGENT]["tools"]["pencil_*"]
+                        )
+                        self.assertFalse(
+                            config["agent"][INNER_SESSION_OPENCODE_AGENT]["tools"]["vault_*"]
+                        )
+                        self.assertTrue(
+                            config["agent"][INNER_SESSION_OPENCODE_AGENT]["tools"]["noema_*"]
+                        )
+                        self.assertFalse(config["mcp"]["pencil"]["enabled"])
+                        self.assertFalse(config["mcp"]["vault"]["enabled"])
+                        self.assertIn("--agent", command)
+                        self.assertIn(INNER_SESSION_OPENCODE_AGENT, command)
                     else:
                         cursor_config = work / ".cursor" / "mcp.json"
                         self.assertTrue(cursor_config.is_file())
@@ -160,6 +184,8 @@ class TestCliCommandBuilders(unittest.TestCase):
             self.assertIn("--file", cmd)
             self.assertIn("--", cmd)
             self.assertEqual(cmd[-1], "mutate")
+            self.assertNotIn("--agent", cmd)
+            self.assertFalse((work / "opencode.json").exists())
 
     def test_agent_argv_uses_print_and_workspace(self):
         with tempfile.TemporaryDirectory() as tmp:

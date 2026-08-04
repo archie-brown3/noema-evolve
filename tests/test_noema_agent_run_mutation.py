@@ -442,8 +442,8 @@ class TestMutationLayoutIsHostOwned(unittest.TestCase):
             asyncio.run(session.run_agent_mode())
 
             brief = trace_rows(session)[0]["prompt"]["user"]
-            # Default config is diff_based_evolution=True → SEARCH/REPLACE strategy.
-            self.assertIn("<<<<<<< SEARCH", brief)
+            self.assertIn("one iteration of the outer search loop", brief)
+            self.assertNotIn("<<<<<<< SEARCH", brief)
             self.assertNotIn("child.py", brief)
             self.assertNotIn("MUTATION_DELIVERABLE", brief)
             self.assertIn(RecordingCoordination.PROMPT_BLOCK, brief)
@@ -538,18 +538,11 @@ class TestAgentEscalation(unittest.TestCase):
 
 
 class TestMaterializeThroughRunMutation(unittest.TestCase):
-    """A1: Fake backend can emit SEARCH/REPLACE; admitted child matches parse."""
+    """CLI mutations admit complete deliverable programs (not SEARCH/REPLACE diffs)."""
 
-    def test_diff_deliverable_is_applied_before_admission(self):
-        diff_response = (
-            "<<<<<<< SEARCH\n"
-            "def f():\n    return 1\n"
-            "=======\n"
-            "def f():\n    return 7\n"
-            ">>>>>>> REPLACE\n"
-        )
+    def test_full_program_deliverable_is_admitted(self):
         with tempfile.TemporaryDirectory() as tmp:
-            backend = FakeMutationBackend(code=diff_response)
+            backend = FakeMutationBackend(code="def f():\n    return 7\n")
             session, _ = make_session(tmp, mutation_backend=backend)
 
             asyncio.run(session.run_agent_mode())

@@ -28,6 +28,11 @@ from noema.coordination.escalation import EscalationContext
 from noema.evolution.boundary import enforce_immutable_boundary
 from noema.evolution.diff import apply_diff_lenient as apply_diff
 from noema.evolution.operators import OPERATOR_MENU, OperatorSpec
+from noema.agenthost.cli_prompt import (
+    adapt_prompt_for_cli_mutation,
+    merge_catalog_programs,
+    uses_cli_mutation,
+)
 from noema.evolution.prompts import build_mutation_prompt, inject_advice
 from noema.logging import format_accepted_child_line, host_logger
 
@@ -153,6 +158,13 @@ class IterationRunner:
         parent_island = selection.source_scope
 
         operator = IterationRunner.choose_operator(host, requested=operator_hint)
+        cli_mutation = uses_cli_mutation(host)
+        if cli_mutation:
+            operator = dataclass_replace(
+                operator,
+                template_key="full_rewrite_user",
+                parse_mode="full_rewrite",
+            )
         parent2: Optional[Program] = None
         if operator.arity == 2:
             if inspirations:
@@ -248,6 +260,9 @@ class IterationRunner:
             prompt = base_prompt
             operator = dataclass_replace(operator, parse_mode="full_rewrite")
         else:
+            prompt_diff_flag = (
+                False if cli_mutation else host.config.diff_based_evolution
+            )
             base_prompt = build_mutation_prompt(
                 host.sampler,
                 parent=parent,
@@ -256,13 +271,19 @@ class IterationRunner:
                 inspirations=inspirations,
                 language=host.config.language,
                 iteration=iteration,
-                diff_based_evolution=host.config.diff_based_evolution,
+                diff_based_evolution=prompt_diff_flag,
                 feature_dimensions=host.population_store.feature_dimensions,
                 template_key=operator.template_key,
                 parent2=parent2,
                 metric_fields=host.config.prompt_metric_fields,
             )
             prompt = inject_advice(base_prompt, advice.prompt_block, advice.system_block)
+            if cli_mutation:
+                catalog_programs = merge_catalog_programs(top_programs, inspirations)
+                prompt = adapt_prompt_for_cli_mutation(
+                    prompt,
+                    catalog_programs=catalog_programs,
+                )
 
         # BudgetExhausted propagates to run() and stops the loop cleanly.
         # Retry loop: parse/eval failures feed their real error back to
@@ -297,6 +318,13 @@ class IterationRunner:
                     current_prompt = await IterationRunner._build_retry_prompt(
                         host, base_prompt, advice, error_text, attempt, ctx
                     )
+                    if cli_mutation:
+                        current_prompt = adapt_prompt_for_cli_mutation(
+                            current_prompt,
+                            catalog_programs=merge_catalog_programs(
+                                top_programs, inspirations
+                            ),
+                        )
                 response = await host.mutation_transport.generate_with_context(
                     system_message=current_prompt["system"],
                     messages=[{"role": "user", "content": current_prompt["user"]}],

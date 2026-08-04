@@ -277,6 +277,13 @@ class TestCreateAgentSession(unittest.TestCase):
             **kwargs,
         )
 
+    def test_factory_null_coordination_skips_budgeted_llm(self):
+        noema = NoemaConfig(coordination=CoordinationConfig(module="null"))
+        with tempfile.TemporaryDirectory() as tmp, warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            session = self._session(tmp, AgentConfig(noema=noema))
+        self.assertIsNone(session.coordination.llm)
+
     def test_factory_shallow_coordination_uses_budgeted_llm(self):
         noema = NoemaConfig(
             coordination=CoordinationConfig(module="hifo"),

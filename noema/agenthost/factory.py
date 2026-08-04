@@ -31,7 +31,7 @@ def _build_coordination_seat(
     # Deep seats are CLI-only — never construct BudgetedLLM (OpenAI client).
     # CLI spend → TokenLedger booking is deferred to task 0170.
     if config.coordination_depth == "deep":
-        return DeepCoordinationLLM(
+        seat = DeepCoordinationLLM(
             cli=config.coordination_cli,
             output_dir=output_dir,
             model=resolved_model,
@@ -39,13 +39,15 @@ def _build_coordination_seat(
             runner=cli_runner,
             on_session_start=on_session_start,
         )
-    return build_budgeted_llm(
+        return seat
+    seat = build_budgeted_llm(
         noema.llm.coordination,
         ledger=ledger,
         account=COORDINATION_ACCOUNT,
         tag=tag,
         model=resolved_model,
     )
+    return seat
 
 
 def _build_coordination(
@@ -57,14 +59,18 @@ def _build_coordination(
     on_session_start: Optional[Callable[[str], None]] = None,
 ) -> CoordinationModule:
     noema = config.noema
-    coordination_llm = _build_coordination_seat(
-        config,
-        ledger,
-        output_dir,
-        tag=f"{noema.coordination.module}.coordination",
-        cli_runner=cli_runner,
-        on_session_start=on_session_start,
-    )
+    module_name = noema.coordination.module
+    if module_name == "null":
+        coordination_llm = None
+    else:
+        coordination_llm = _build_coordination_seat(
+            config,
+            ledger,
+            output_dir,
+            tag=f"{module_name}.coordination",
+            cli_runner=cli_runner,
+            on_session_start=on_session_start,
+        )
     params = dict(noema.coordination.params)
     params.setdefault("domain_context", noema.prompt.system_message)
     params.setdefault("escalation_model", noema.llm.coordination.model)
