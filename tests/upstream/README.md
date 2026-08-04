@@ -4,6 +4,29 @@ Raw donor dumps for fidelity review. **Not part of the noema suite** —
 `tests/conftest.py` ignores any path under `upstream/`, and `pyproject.toml`
 sets `testpaths = ["tests"]` plus `--ignore=tests/upstream`.
 
+## Third-party code — attribution and licensing
+
+Everything under this directory is **third-party code, redistributed under its
+own original licence**. It is not Noema's work and is not covered by Noema's
+licence.
+
+Each `<slug>/` holds the donor's `LICENSE`, fetched from that project's
+repository at the exact commit pinned in the table below, alongside an
+`UPSTREAM_SOURCE.txt` recording the source URL, commit SHA, licence and the
+paths copied.
+
+- **MIT**: `eoh`, `hifo-prompt`, `levi`, `mcts-ahd`, `reevo`
+- **Apache License 2.0**: `loongflow`, `openevolve`, `shinkaevolve`
+
+**Statement of changes** (Apache 2.0 §4(b)): the `.py` and data files are
+copied **verbatim and unmodified** from the pinned commits. The only change
+made during vendoring was deleting compiled `__pycache__/` directories and
+`.pyc` artefacts. No donor source file has been edited.
+
+Noema's own tests never modify these files. Where Noema's behaviour
+deliberately differs from a donor, that difference is recorded as a declared
+deviation in Noema's own test suite, not by editing anything here.
+
 | slug | url | commit | paths copied | notes |
 |------|-----|--------|----------------|-------|
 | openevolve | https://github.com/codelion/openevolve | 80945ed82886d5c4ff2f3d22436765d50cb61266 | examples/attention_optimization/tests/,tests/,examples/mlx_metal_kernel_opt/quick_benchmark_test.py,examples/mlx_metal_kernel_opt/test_optimized_attention.py,openevolve/test_regional_endpoint.py | pin 80945ed |
