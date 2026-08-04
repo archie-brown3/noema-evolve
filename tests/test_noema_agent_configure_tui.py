@@ -13,6 +13,7 @@ from noema.agenthost.configure_tui import (
     _apply_walk_to_config,
     _finish_escape,
     _resolve_user_path,
+    refresh_dynamic_sections,
 )
 from noema.agenthost.configure_walk import ConfigureWalk
 from noema.config import NoemaConfig
@@ -131,6 +132,28 @@ class TestModuleClosedField(unittest.TestCase):
         self.assertEqual(config.noema.coordination.module, "null")
         self.assertEqual(config.host_log_verbosity, "standard")
         self.assertEqual(output_dir, Path("/tmp/example/example_output").resolve())
+
+
+class TestPathDrafts(unittest.TestCase):
+    def test_edited_output_path_survives_a_refresh(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paths = ExamplePaths(
+                cwd=root,
+                initial_program=root / "initial_program.py",
+                evaluator=root / "evaluator.py",
+            )
+            config = AgentConfig()
+            walk = ConfigureWalk(sections=_agent_sections(config, paths, root / "out"))
+
+            output = next(field for field in walk.sections["paths"] if field["id"] == "output")
+            output["value"] = str(root / "renamed")
+            refresh_dynamic_sections(walk, config, paths, root / "out")
+
+            refreshed = next(field for field in walk.sections["paths"] if field["id"] == "output")
+            self.assertEqual(refreshed["value"], str(root / "renamed"))
+            _, _, output_dir = _apply_walk_to_config(walk, config)
+            self.assertEqual(output_dir, (root / "renamed").resolve())
 
 
 class TestYamlNullModuleCoerce(unittest.TestCase):

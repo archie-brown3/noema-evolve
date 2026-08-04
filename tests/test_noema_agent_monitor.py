@@ -95,6 +95,44 @@ class TestTextualScreens(unittest.TestCase):
 
         asyncio.run(scenario())
 
+    def test_renamed_output_dir_survives_the_refresh_and_reaches_the_run(self):
+        captured: dict[str, Path] = {}
+
+        async def scenario(root: Path) -> None:
+            (root / "initial_program.py").write_text("def f():\n    return 1\n")
+            (root / "evaluator.py").write_text(
+                "def evaluate(_):\n    return {'combined_score': 1}\n"
+            )
+            paths = ExamplePaths(
+                cwd=root,
+                initial_program=root / "initial_program.py",
+                evaluator=root / "evaluator.py",
+            )
+            app = NoemaApp(
+                paths=paths,
+                config_path=root / "config.yaml",
+                agent_config=AgentConfig(),
+                output_dir=root / "out",
+            )
+            async with app.run_test(size=(110, 38)) as pilot:
+                await pilot.pause()
+                configure = app.screen
+                # paths section: config, programme, evaluator, output
+                await pilot.press("down", "down", "down", "enter")
+                await pilot.press(*list("-renamed"))
+                await pilot.press("enter")
+                await pilot.pause()
+                await pilot.press("w")
+                await pilot.pause()
+                await pilot.press("n")
+                await pilot.pause()
+                captured["output_dir"] = configure._output_dir
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            asyncio.run(scenario(root))
+            self.assertEqual(captured["output_dir"], (root / "out-renamed").resolve())
+
     def test_monitor_keeps_all_three_panes_when_coordination_is_shallow(self):
         class Harness(App):
             def on_mount(self) -> None:

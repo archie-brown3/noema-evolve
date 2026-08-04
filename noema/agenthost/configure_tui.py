@@ -164,12 +164,19 @@ def _agent_sections(
                 kind="open" if spec.writable else "readonly",
             )
         )
+    def path_field(field_id: str, **spec: Any) -> dict[str, Any]:
+        # Path fields bypass _make_field, so drafts have to be re-applied here too.
+        result: dict[str, Any] = {"id": field_id, **spec}
+        if field_id in drafts:
+            result["value"] = drafts[field_id]
+        return result
+
     return {
         "paths": [
-            {"id": "config", "kind": "closed", "choices": candidates, "value": preferred},
-            {"id": "programme", "kind": "open", "value": str(paths.initial_program)},
-            {"id": "evaluator", "kind": "open", "value": str(paths.evaluator)},
-            {"id": "output", "kind": "open", "value": str(output_dir)},
+            path_field("config", kind="closed", choices=candidates, value=preferred),
+            path_field("programme", kind="open", value=str(paths.initial_program)),
+            path_field("evaluator", kind="open", value=str(paths.evaluator)),
+            path_field("output", kind="open", value=str(output_dir)),
         ],
         "agent": [
             field(
