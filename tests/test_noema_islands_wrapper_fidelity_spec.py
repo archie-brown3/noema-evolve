@@ -194,6 +194,36 @@ class TestIslandGenerationBookkeeping(_IslandsWrapperTestCase):
 
         self.assertEqual(results, [False, False, False, False, True, False])
 
+    def test_resuming_a_pre_repair_checkpoint_keeps_migration_cadence(self):
+        """The one path where pre- and post-repair code meet.
+
+        ``load()`` restores island_generations from checkpoint metadata
+        (openevolve/database.py:668), so a checkpoint written before the repair
+        carries the divergent [G, 0, 0] vector into repaired code, which then
+        advances it to [G+1, 1, 1]. Because only max() is behavioural and max
+        continues from G, the firing schedule is unperturbed -- which is what
+        makes "no completed results are invalidated" true across a resume.
+        """
+        import tempfile
+
+        interval = 5
+        divergent = _store(num_islands=3, migration_interval=interval)
+        divergent.add(_program("resume_seed", 0.5), iteration=0, target_scope=0)
+        # Reproduce exactly what a pre-repair run would have persisted.
+        divergent._db.island_generations = [3, 0, 0]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            divergent.save(tmp, iteration=3)
+            resumed = _store(num_islands=3, migration_interval=interval)
+            resumed.load(tmp)
+
+            self.assertEqual(resumed._db.island_generations, [3, 0, 0])
+
+            fired = [sweep for sweep in range(6) if resumed.end_generation()]
+
+        # max was 3 on load, so the interval is reached two sweeps later.
+        self.assertEqual(fired, [1])
+
 
 class TestIslandPlacementThroughWrapper(_IslandsWrapperTestCase):
     """Donor: test_island_child_placement.py 1/2/4/5/6/8,
@@ -423,6 +453,10 @@ class TestIslandTopProgramsThroughWrapper(_IslandsWrapperTestCase):
         island0 = _seed(store, 0, [("prog1", 0.9), ("prog2", 0.7), ("prog3", 0.5)])
         island1 = _seed(store, 1, [("prog4", 0.8), ("prog5", 0.6)],
                         start_iteration=3)
+        # Precondition: MAP-Elites must not have emptied either island, or the
+        # loops and set-intersections below would pass vacuously.
+        self.assertTrue(island0)
+        self.assertTrue(island1)
 
         for program in store.top_programs(2, scope=0):
             self.assertIn(program.id, island0)
@@ -464,6 +498,7 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         selection = store.native_select(0, num_inspirations=5)
 
         self.assertEqual(selection.source_scope, 0)
+        self.assertTrue(selection.inspirations, "loop below would be vacuous")
         for inspiration in selection.inspirations:
             self.assertEqual(inspiration.metadata.get("island"), 0)
 
@@ -476,6 +511,7 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
 
         self.assertEqual(selection.parent.metadata.get("island"), 0)
         self.assertEqual(selection.source_scope, 0)
+        self.assertTrue(selection.inspirations, "loop below would be vacuous")
         for inspiration in selection.inspirations:
             self.assertEqual(inspiration.metadata.get("island"), 0)
 
@@ -491,6 +527,9 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         drawn1 = {store.native_select(1, num_inspirations=0).parent.id
                   for _ in range(50)}
 
+        # Preconditions: empty draw sets would make every claim below trivial.
+        self.assertTrue(drawn0)
+        self.assertTrue(drawn1)
         self.assertTrue(drawn0 <= island0)
         self.assertTrue(drawn1 <= island1)
         self.assertFalse(drawn0 & drawn1)
@@ -513,14 +552,17 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         store.config.exploration_ratio = 1.0
         store.config.exploitation_ratio = 0.0
 
+        # Precondition, asserted rather than branched on: the donor's point is
+        # that exploration spreads, which is only meaningful with >1 candidate.
+        self.assertGreater(len(survivors), 1)
+
         drawn = [store.native_select(0, num_inspirations=0).parent.id
                  for _ in range(200)]
 
         self.assertTrue(set(drawn) <= survivors)
-        if len(survivors) > 1:
-            self.assertGreater(
-                len(set(drawn)), 1, "exploration should not collapse onto one parent"
-            )
+        self.assertGreater(
+            len(set(drawn)), 1, "exploration should not collapse onto one parent"
+        )
 
     def test_weighted_mode_favors_higher_fitness_than_the_island_mean(self):
         """donor: ratios.py:186"""
@@ -682,7 +724,9 @@ class TestIslandMigrationThroughWrapper(_IslandsWrapperTestCase):
 
         _run_to_migration(store)
 
-        for program in store.population(None):
+        survivors = list(store.population(None))
+        self.assertTrue(survivors, "loop below would be vacuous")
+        for program in survivors:
             self.assertEqual(program.code, code)
             self.assertEqual(program.metrics["combined_score"], 0.85)
 
@@ -710,6 +754,12 @@ class TestIslandMigrationThroughWrapper(_IslandsWrapperTestCase):
         _run_to_migration(store)
 
         per_island = [_ids(store.population(i)) for i in range(store.num_islands)]
+        # Precondition: disjointness is trivial unless migration actually spread
+        # programs across at least two islands.
+        self.assertGreaterEqual(
+            sum(1 for island in per_island if island), 2,
+            "expected migration to populate a second island",
+        )
         for left in range(len(per_island)):
             for right in range(left + 1, len(per_island)):
                 self.assertFalse(
