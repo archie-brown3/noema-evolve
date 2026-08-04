@@ -108,7 +108,14 @@ class SubstrateDatabase:
 
         Returns True if a migration happened.
         """
-        self._db.increment_island_generation()
+        # One noema generation is a full round-robin sweep that touched every
+        # island, so every island's counter advances. openevolve's own controller
+        # does the same thing incrementally, passing the island explicitly per
+        # iteration (process_parallel.py: increment_island_generation(island_idx=
+        # island_id)). Calling it bare would default to _db.current_island, which
+        # noema never advances — leaving [G, 0, 0, ...] instead of [G, G, G, ...].
+        for scope in range(self.num_islands):
+            self._db.increment_island_generation(island_idx=scope)
         if self._db.should_migrate():
             logger.info("Migration due — migrating programs between islands")
             self._db.migrate_programs()
