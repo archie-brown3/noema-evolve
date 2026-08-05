@@ -240,11 +240,11 @@ def main():
         "`cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the "
         "matrix executed against — the driver runs first and the artifact is committed "
         "afterwards. The run-against commit is recorded in the stage note; for run 4 "
-        "it was `c054345`, the commit that added the Stage 7 mutants, so the "
+        "it was `27df25f`, the head after the Rule 2 fills landed, so the "
         "population and catalogue measured here ARE the ones that ship.",
         "- **Supersedes run 3** as the dissertation artifact. Stage 7's wrapper "
         "widening changed BOTH axes at once, so run 3's numbers describe neither "
-        "the catalogue nor the population that ships: the catalogue grew 42 -> 71 "
+        "the catalogue nor the population that ships: the catalogue grew 40 -> 69 "
         "(one mutant per new public wrapper capability), and 51 donor tests that "
         "FAILED at run 3's baseline — and were therefore absent from run 3's rows "
         "entirely — are now baseline-green and in the population.",
