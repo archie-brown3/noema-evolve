@@ -15,7 +15,11 @@ from typing import Any, Dict, List, Optional
 from openevolve.database import Program  # type: ignore[import-untyped]
 
 from noema.agenthost.mutation import MutationBackend
-from noema.agenthost.mutation_transport import AgentMutationTransport, MutationTransport
+from noema.agenthost.mutation_transport import (
+    AgentMutationTransport,
+    MutationTransport,
+    MutationTransportFailure,
+)
 from noema.budget.ledger import TokenLedger
 from noema.config import NoemaConfig
 from noema.coordination import CoordinationModule, GenerationContext, NullCoordination
@@ -55,6 +59,7 @@ class AgentSession:
             log_path=config.budget.log_path or os.path.join(output_dir, "llm_calls.jsonl"),
         )
         self.substrate = build_substrate_runtime(config)
+        random.seed(config.random_seed)
         self.store = self.substrate.store
         self.evaluator = make_evaluator(
             config.evaluator, evaluation_file, suffix=config.file_suffix
@@ -97,6 +102,7 @@ class AgentSession:
         self._current_advice_call_ids: List[str] = []
 
         self._mutation_attempts = 0
+        self._driver_mutation_attempts = 0
         self._iteration = 0
         self._target_scope: Optional[int] = None
         self._operator_spec: Optional[OperatorSpec] = None
@@ -163,13 +169,28 @@ class AgentSession:
             self._driver_mutation_attempts = 0
             accepted_before = self.children_accepted
             attempts_without_acceptance = 0
+            last_transport_error: Optional[MutationTransportFailure] = None
             while self.children_accepted == accepted_before:
                 if attempts_without_acceptance >= self.config.max_iterations:
-                    raise RuntimeError(
+                    message = (
                         f"iteration {iteration} failed to accept a child after "
                         f"{self.config.max_iterations} attempts"
                     )
-                await IterationRunner.run_iteration(self, iteration)
+                    if last_transport_error is not None:
+                        raise RuntimeError(
+                            f"{message}: {last_transport_error}"
+                        ) from last_transport_error
+                    raise RuntimeError(message)
+                try:
+                    await IterationRunner.run_iteration(
+                        self,
+                        iteration,
+                        attempt_offset=self._driver_mutation_attempts,
+                    )
+                except MutationTransportFailure as exc:
+                    last_transport_error = exc
+                    attempts_without_acceptance += 1
+                    continue
                 attempts_without_acceptance += 1
             if (iteration + 1) % self.substrate.steps_per_generation == 0:
                 await IterationRunner.generation_tick(self, iteration)

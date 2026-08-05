@@ -120,6 +120,11 @@ def trace_rows(session):
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
+def selection_rows(session):
+    path = Path(session.output_dir) / "selection_trace.jsonl"
+    return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+
+
 def child_of(session):
     return next(p for p in session.store.population() if p.id != "initial")
 
@@ -159,13 +164,54 @@ class TestRunMutationRejectAndRetry(unittest.TestCase):
                     ("report_result", child.id, False, Outcome.ACCEPTED),
                 ],
             )
+            traces = trace_rows(session)
+            self.assertEqual([row["attempt"] for row in traces], [0, 1])
+            self.assertNotEqual(traces[0]["attempt_id"], traces[1]["attempt_id"])
+            selection = selection_rows(session)[0]
+            self.assertEqual(selection["selected_attempt_id"], traces[1]["attempt_id"])
+            self.assertEqual(child.metadata["source_attempt_id"], traces[1]["attempt_id"])
 
 
 class TestRunMutationBackendFailure(unittest.TestCase):
+    def test_backend_failure_retries_within_the_driver_bound(self):
+        class FailingThenSuccessfulBackend:
+            def __init__(self):
+                self.calls = 0
+                self._success = FakeMutationBackend(code="def f():\n    return 7\n")
+
+            def run(self, request):
+                self.calls += 1
+                if self.calls == 1:
+                    return MutationResult(ok=False, error="temporary CLI failure")
+                return self._success.run(request)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            backend = FailingThenSuccessfulBackend()
+            session, _ = make_session(
+                tmp,
+                mutation_backend=backend,
+                config=make_config(max_iterations=2),
+            )
+
+            asyncio.run(session.run_agent_mode())
+
+            child = child_of(session)
+            rows = trace_rows(session)
+            selection = selection_rows(session)[0]
+            self.assertEqual(backend.calls, 2)
+            self.assertEqual([row["outcome"] for row in rows], ["provider_failure", "accepted"])
+            self.assertEqual([row["attempt"] for row in rows], [0, 1])
+            self.assertEqual(selection["selected_attempt_id"], rows[1]["attempt_id"])
+            self.assertEqual(child.metadata["source_attempt_id"], rows[1]["attempt_id"])
+
     def test_backend_failure_does_not_touch_the_store(self):
         with tempfile.TemporaryDirectory() as tmp:
             backend = FakeMutationBackend(fail_error="deliverable missing")
-            session, coordination = make_session(tmp, mutation_backend=backend)
+            session, coordination = make_session(
+                tmp,
+                mutation_backend=backend,
+                config=make_config(max_iterations=1),
+            )
 
             with self.assertRaises(RuntimeError) as raised:
                 asyncio.run(session.run_agent_mode())
@@ -174,6 +220,41 @@ class TestRunMutationBackendFailure(unittest.TestCase):
             self.assertEqual([p.id for p in session.store.population()], ["initial"])
             self.assertEqual(session.children_accepted, 0)
             self.assertNotIn("report_result", [c[0] for c in coordination.calls])
+
+    def test_backend_failures_stop_at_the_driver_bound(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            backend = FakeMutationBackend(fail_error="temporary CLI failure")
+            session, _ = make_session(
+                tmp,
+                mutation_backend=backend,
+                config=make_config(max_iterations=2),
+            )
+
+            with self.assertRaisesRegex(RuntimeError, "failed to accept a child after 2 attempts"):
+                asyncio.run(session.run_agent_mode())
+
+            rows = trace_rows(session)
+            self.assertEqual([row["outcome"] for row in rows], ["provider_failure"] * 2)
+
+    def test_mutation_backend_runs_off_the_event_loop(self):
+        calls = []
+
+        async def run_in_thread(fn, *args, **kwargs):
+            calls.append(fn)
+            return fn(*args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            session, _ = make_session(
+                tmp,
+                mutation_backend=FakeMutationBackend(code="def f():\n    return 7\n"),
+            )
+            with patch(
+                "noema.agenthost.mutation_transport.asyncio.to_thread",
+                side_effect=run_in_thread,
+            ):
+                asyncio.run(session.run_agent_mode())
+
+        self.assertEqual(len(calls), 1)
 
 
 class TestCliMutationBackendContract(unittest.TestCase):
@@ -462,7 +543,11 @@ class TestAttemptTraceAndArtifacts(unittest.TestCase):
     def test_backend_failure_writes_trace_without_population_write(self):
         with tempfile.TemporaryDirectory() as tmp:
             backend = FakeMutationBackend(fail_error="deliverable missing")
-            session, _ = make_session(tmp, mutation_backend=backend)
+            session, _ = make_session(
+                tmp,
+                mutation_backend=backend,
+                config=make_config(max_iterations=1),
+            )
 
             with self.assertRaises(RuntimeError):
                 asyncio.run(session.run_agent_mode())
@@ -477,7 +562,11 @@ class TestAttemptTraceAndArtifacts(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             # Diff mode: a whitespace-only deliverable materializes to nothing.
             backend = FakeMutationBackend(code="   \n")
-            session, _ = make_session(tmp, mutation_backend=backend)
+            session, _ = make_session(
+                tmp,
+                mutation_backend=backend,
+                config=make_config(max_iterations=1),
+            )
 
             with self.assertRaises(RuntimeError):
                 asyncio.run(session.run_agent_mode())

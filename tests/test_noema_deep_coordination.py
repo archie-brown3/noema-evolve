@@ -134,6 +134,34 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "exited with code 7"):
                 asyncio.run(llm.generate("extract", tag="hifo.extract_insights"))
 
+    def test_cli_runs_off_the_event_loop(self):
+        calls = []
+
+        async def run_in_thread(fn, *args, **kwargs):
+            calls.append(fn)
+            return fn(*args, **kwargs)
+
+        llm = DeepCoordinationLLM(
+            self._inner(),
+            cli=AgentCliConfig(kind="opencode", binary=sys.executable),
+            output_dir=tempfile.mkdtemp(),
+        )
+        result = CliRunResult(
+            exit_code=0,
+            stdout="completed",
+            stderr="",
+            wall_s=0.0,
+            timed_out=False,
+        )
+        with patch("noema.agenthost.reasoning.CliRunner.run", return_value=result):
+            with patch(
+                "noema.agenthost.reasoning.asyncio.to_thread",
+                side_effect=run_in_thread,
+            ):
+                self.assertEqual(asyncio.run(llm.generate("extract")), "completed")
+
+        self.assertEqual(len(calls), 1)
+
     def test_factory_deep_wraps_coordination_llm(self):
         with tempfile.TemporaryDirectory() as tmp:
             eval_path = os.path.join(tmp, "evaluator.py")

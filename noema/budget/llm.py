@@ -15,7 +15,7 @@ component with an internal ensemble is ever reused.
 import asyncio
 import logging
 import time
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from openevolve.llm.base import LLMInterface
 
@@ -182,7 +182,7 @@ class BudgetedLLM(LLMInterface):
         zero-token call and returns "" (existing NO_PROGRAM path).
         """
         total_deadline = kwargs.get("total_deadline_s", self.total_deadline_s)
-        call_state = {"attempts_started": 0, "abandoned": False}
+        call_state: Dict[str, Any] = {"attempts_started": 0, "abandoned": False}
         start = time.time()
         task = asyncio.create_task(
             self._generate_with_context_inner(
@@ -235,7 +235,7 @@ class BudgetedLLM(LLMInterface):
         self,
         system_message: str,
         messages: List[Dict[str, str]],
-        _call_state: Dict[str, object],
+        _call_state: Dict[str, Any],
         **kwargs,
     ) -> str:
         formatted_messages = []
@@ -381,4 +381,5 @@ class BudgetedLLM(LLMInterface):
             )
             return content
 
+        assert last_exception is not None
         raise last_exception  # unreachable, kept for type-checkers

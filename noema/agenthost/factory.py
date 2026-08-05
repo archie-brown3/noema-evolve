@@ -11,8 +11,33 @@ from noema.agenthost.mutation import CliMutationBackend, MutationBackend
 from noema.agenthost.reasoning import DeepCoordinationLLM
 from noema.agenthost.session import AgentSession
 from noema.budget.ledger import COORDINATION_ACCOUNT, TokenLedger
-from noema.budget.llm import BudgetedLLM, build_budgeted_llm
+from noema.budget.llm import build_budgeted_llm
 from noema.coordination import CoordinationModule, build_coordination_module
+
+
+def _build_coordination_seat(
+    config: AgentConfig,
+    ledger: TokenLedger,
+    output_dir: str,
+    *,
+    tag: str,
+    model: Optional[str] = None,
+):
+    noema = config.noema
+    seat = build_budgeted_llm(
+        noema.llm.coordination,
+        ledger=ledger,
+        account=COORDINATION_ACCOUNT,
+        tag=tag,
+        model=model,
+    )
+    if config.coordination_depth == "deep":
+        return DeepCoordinationLLM(
+            seat,
+            cli=config.coordination_cli,
+            output_dir=output_dir,
+        )
+    return seat
 
 
 def _build_coordination(
@@ -21,25 +46,74 @@ def _build_coordination(
     output_dir: str,
 ) -> CoordinationModule:
     noema = config.noema
-    coordination_llm = build_budgeted_llm(
-        noema.llm.coordination,
-        ledger=ledger,
-        account=COORDINATION_ACCOUNT,
+    coordination_llm = _build_coordination_seat(
+        config,
+        ledger,
+        output_dir,
         tag=f"{noema.coordination.module}.coordination",
     )
-    if config.coordination_depth == "deep":
-        coordination_llm = DeepCoordinationLLM(
-            coordination_llm,
-            cli=config.coordination_cli,
-            output_dir=output_dir,
-        )
     params = dict(noema.coordination.params)
     params.setdefault("domain_context", noema.prompt.system_message)
+    params.setdefault("escalation_model", noema.llm.coordination.model)
     return build_coordination_module(
         noema.coordination.module,
         params,
         llm=coordination_llm,
         rng=random.Random(noema.coordination.seed),
+    )
+
+
+def _wire_alternate_tiers(
+    coordination: CoordinationModule,
+    config: AgentConfig,
+    ledger: TokenLedger,
+    output_dir: str,
+) -> None:
+    params = config.noema.coordination.params
+    _wire_alternate_tier(
+        coordination,
+        "set_paradigm_llm",
+        params.get("paradigm_model"),
+        config,
+        ledger,
+        output_dir,
+        tag=f"{config.noema.coordination.module}.paradigm",
+    )
+    _wire_alternate_tier(
+        coordination,
+        "set_variant_llm",
+        params.get("variant_model"),
+        config,
+        ledger,
+        output_dir,
+        tag=f"{config.noema.coordination.module}.variant",
+    )
+
+
+def _wire_alternate_tier(
+    coordination: CoordinationModule,
+    setter_name: str,
+    model_name: Optional[str],
+    config: AgentConfig,
+    ledger: TokenLedger,
+    output_dir: str,
+    *,
+    tag: str,
+) -> None:
+    noema = config.noema
+    if not model_name or model_name == noema.llm.coordination.model:
+        return
+    setter = getattr(coordination, setter_name, None)
+    if setter is None:
+        return
+    setter(
+        _build_coordination_seat(
+            config,
+            ledger,
+            output_dir,
+            tag=tag,
+            model=model_name,
+        )
     )
 
 
@@ -70,7 +144,8 @@ def create_agent_session(
         config,
         mutation_is_cli=isinstance(mutation_backend, CliMutationBackend),
     )
-    if coordination is None:
+    built_coordination = coordination is None
+    if built_coordination:
         coordination = _build_coordination(config, ledger, output_dir)
     session = AgentSession(
         config=noema,
@@ -84,8 +159,23 @@ def create_agent_session(
         mutation_backend=mutation_backend,
         mutation_timeout_s=config.mutation_cli.timeout_s,
     )
-    if isinstance(session.coordination.llm, DeepCoordinationLLM):
-        session.coordination.llm.bind_session(session)
+    if built_coordination:
+        _wire_alternate_tiers(session.coordination, config, ledger, output_dir)
+    _bind_deep_coordination(session.coordination, session)
     if config.mutation_depth == "deep" and isinstance(session.mutation_backend, CliMutationBackend):
         session.mutation_backend.bind_session(session)
     return session
+
+
+def _bind_deep_coordination(coordination: CoordinationModule, session: AgentSession) -> None:
+    seen = set()
+    for llm in (
+        getattr(coordination, "llm", None),
+        getattr(coordination, "_paradigm_llm", None),
+        getattr(coordination, "_variant_llm", None),
+    ):
+        if id(llm) in seen:
+            continue
+        seen.add(id(llm))
+        if isinstance(llm, DeepCoordinationLLM):
+            llm.bind_session(session)
