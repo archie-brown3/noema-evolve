@@ -20,6 +20,7 @@ class ExamplePaths:
     cwd: Path
     initial_program: Path
     evaluator: Path
+    file_suffix: str = ".py"
     config_candidates: tuple[Path, ...] = ()
     preferred_config: Optional[Path] = None
     use_skeleton: bool = False
@@ -60,19 +61,29 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
     """Require programme + evaluator; list loadable YAML config paths in ``cwd``."""
 
     root = Path(cwd).resolve()
-    initial_program = root / "initial_program.py"
+    # The seed programme may be in any language (upstream reads the extension
+    # off the discovered path); the evaluator is loaded as a Python module, so
+    # it stays evaluator.py.
+    seeds = sorted((p for p in root.glob("initial_program.*") if p.is_file()), key=lambda p: p.name)
+    if len(seeds) > 1:
+        raise ValueError(
+            "example directory has more than one seed programme: "
+            f"{', '.join(p.name for p in seeds)}. Keep exactly one "
+            f"initial_program.<ext> in {root}"
+        )
     evaluator = root / "evaluator.py"
     missing: list[str] = []
-    if not initial_program.is_file():
-        missing.append("initial_program.py")
+    if not seeds:
+        missing.append("initial_program.<ext>")
     if not evaluator.is_file():
         missing.append("evaluator.py")
     if missing:
         raise ValueError(
             "example directory missing required file(s): "
-            f"{', '.join(missing)}. Need initial_program.py and evaluator.py "
+            f"{', '.join(missing)}. Need initial_program.<ext> and evaluator.py "
             f"in {root}"
         )
+    initial_program = seeds[0]
 
     raw = sorted(root.glob("*.yaml"), key=lambda p: p.name)
     candidates: list[Path] = []
@@ -106,6 +117,7 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
         cwd=root,
         initial_program=initial_program,
         evaluator=evaluator,
+        file_suffix=initial_program.suffix,
         config_candidates=tuple(candidates),
         preferred_config=preferred,
         use_skeleton=len(candidates) == 0,
