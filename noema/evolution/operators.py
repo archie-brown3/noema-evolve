@@ -45,7 +45,8 @@ model), reproduced verbatim below.
 """
 
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List, Optional, Tuple
+import random
 
 
 @dataclass(frozen=True)
@@ -167,6 +168,53 @@ OPERATOR_MENU: Dict[str, OperatorSpec] = {
     "m2": OperatorSpec("m2", "eoh_m2_user", "diff", 1, True),
     "m3": OperatorSpec("m3", "eoh_m3_user", "diff", 1, False),
 }
+
+
+def choose_operator(
+    *,
+    mutation_operators: Optional[List[str]],
+    diff_based_evolution: bool,
+    rng: random.Random,
+    requested: Optional[str] = None,
+) -> Tuple[OperatorSpec, Dict[str, Optional[str]]]:
+    """Select this iteration's mutation operator (shared host seam).
+
+    Same rules as ``NoemaController._choose_operator``: None menu = legacy
+    path from ``diff_based_evolution``; a requested name is honored only when
+    it is on the configured menu; otherwise the RNG draws. When ``requested``
+    is None the RNG path is unchanged.
+    """
+    if mutation_operators is None:
+        trace = {
+            "requested": requested,
+            "honored": "legacy",
+            "ignored": requested,
+        }
+        return (
+            OperatorSpec(
+                name="legacy",
+                template_key=(
+                    "diff_user" if diff_based_evolution else "full_rewrite_user"
+                ),
+                parse_mode="diff" if diff_based_evolution else "full_rewrite",
+                arity=1,
+                has_thought=False,
+            ),
+            trace,
+        )
+    if requested is not None and requested in mutation_operators:
+        return OPERATOR_MENU[requested], {
+            "requested": requested,
+            "honored": requested,
+            "ignored": None,
+        }
+    name = rng.choice(mutation_operators)
+    return OPERATOR_MENU[name], {
+        "requested": requested,
+        "honored": name,
+        "ignored": requested,
+    }
+
 
 # Registered into TemplateManager by make_prompt_sampler() (prompts.py).
 OPERATOR_TEMPLATES: Dict[str, str] = {

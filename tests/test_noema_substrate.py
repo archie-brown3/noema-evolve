@@ -61,14 +61,21 @@ class TestSubstrateDatabase(unittest.TestCase):
         self.assertAlmostEqual(db.fitness(program), 0.9)
 
     def test_island_fitnesses(self):
-        db = make_db(num_islands=1)
+        # TWO islands, both populated: with one island the assertion cannot tell
+        # per-island scoping from a global pool (0188 Stage 5 matrix, Rule 1).
+        db = make_db(num_islands=2)
         # Codes of very different lengths so each lands in its own MAP-Elites
         # complexity cell (same-cell programs replace each other)
         for i, score in enumerate((0.2, 0.5, 0.8)):
             padding = "\n".join(f"    x{j} = {j}" for j in range(i * 20))
-            db.add(make_program(code=f"def f():\n{padding}\n    return {score}\n", score=score))
-        fitnesses = db.island_fitnesses(0)
-        self.assertEqual(sorted(fitnesses), [0.2, 0.5, 0.8])
+            db.add(
+                make_program(code=f"def f():\n{padding}\n    return {score}\n", score=score),
+                target_island=0,
+            )
+        db.add(make_program(code="def g():\n    return 0.95\n", score=0.95), target_island=1)
+
+        self.assertEqual(sorted(db.island_fitnesses(0)), [0.2, 0.5, 0.8])
+        self.assertEqual(sorted(db.island_fitnesses(1)), [0.95])
 
     def test_top_programs_ordering(self):
         db = make_db(num_islands=1)
@@ -136,8 +143,49 @@ class TestMakeEvaluator(unittest.TestCase):
         return path
 
     def test_llm_feedback_rejected(self):
+        """Declared deviation: use_llm_feedback=True is unreachable in noema.
+
+        NOT a flipped default — upstream already defaults it False
+        (installed pkg ``openevolve/config.py:379``,
+        ``use_llm_feedback: bool = False``). noema/evolution/evaluator.py:31-35
+        removes True from the reachable config space, because that path's LLM
+        calls would bypass the token ledger. Justification and scope:
+        vault note "0188 OpenEvolve Fidelity Spec §6 — Scope Table — 2026-08-05"
+        §3.2 (the method note's "flipped default" framing is wrong here).
+        """
         with self.assertRaises(ValueError):
             make_evaluator(EvaluatorConfig(use_llm_feedback=True), "whatever.py")
+
+    def test_default_config_disables_cascade(self):
+        """Declared deviation: the config=None path defaults cascade off.
+
+        Upstream defaults ``cascade_evaluation: bool = True`` (installed pkg
+        ``openevolve/config.py:370``), which warns and falls back unless the
+        eval script defines evaluate_stage1. noema/evolution/evaluator.py:29-30
+        flips that default for library callers who supply no config. Distinct
+        code path from NoemaConfig's own default (noema/config.py:28-31, pinned
+        at tests/test_noema_controller.py:783) — spec §6 §3.3 residue item 2.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            evaluator = make_evaluator(evaluation_file=self._write_eval_file(tmp))
+            self.assertFalse(evaluator.config.cascade_evaluation)
+
+    def test_caller_supplied_config_passes_through_untouched(self):
+        """The deviation above is a DEFAULT, not a forcing — the second path.
+
+        make_evaluator only rewrites cascade_evaluation when ``config is None``
+        (evaluator.py:29-30); a caller-supplied config reaches upstream's
+        Evaluator verbatim. Spec §6 §3.2 corrects the method note's claim that
+        make_evaluator "flips cascade_evaluation to False" unconditionally.
+        The donor suite routed through make_evaluator in
+        tests/test_noema_evaluator_adapter_fidelity_spec.py depends on exactly
+        this: nine of its tests drive cascade_evaluation=True.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            config = EvaluatorConfig(cascade_evaluation=True)
+            evaluator = make_evaluator(config, self._write_eval_file(tmp))
+            self.assertIs(evaluator.config, config)
+            self.assertTrue(evaluator.config.cascade_evaluation)
 
     def test_evaluate_program_end_to_end(self):
         with tempfile.TemporaryDirectory() as tmp:

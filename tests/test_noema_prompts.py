@@ -87,6 +87,76 @@ class TestPromptAssembly(unittest.TestCase):
         self.assertIn("Focus on speed.", injected["system"])
 
 
+    def test_metric_fields_filters_the_parents_metrics(self):
+        """0188 Stage 5, Rule 2 fill — kills
+        prompts.build_mutation_prompt.unfiltered_metrics.
+
+        metric_fields is the arm-comparison filter: a metric outside the named
+        set must not reach the prompt, or arms that differ only in which
+        metrics they expose stop being comparable. Nothing pinned it.
+
+        No metric is rendered by NAME, so the observable is the fitness the
+        sampler derives: with no combined_score, fitness is the average of the
+        metrics it is handed. Filtered to {"kept"} that is 0.2; unfiltered it is
+        the mean of 0.2 and 0.8."""
+        parent = Program(
+            id=str(uuid.uuid4()),
+            code="def f():\n    return 1\n",
+            language="python",
+            metrics={"kept": 0.2, "dropped": 0.8},
+        )
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+
+        prompt = build_mutation_prompt(
+            sampler,
+            parent=parent,
+            top_programs=[],
+            previous_programs=[],
+            inspirations=[],
+            language="python",
+            iteration=3,
+            diff_based_evolution=True,
+            feature_dimensions=[],
+            metric_fields={"kept"},
+        )
+
+        self.assertIn("- Fitness: 0.2000", prompt["user"])
+        self.assertNotIn("- Fitness: 0.5000", prompt["user"])
+
+    def test_metric_fields_filters_the_top_and_previous_program_lists(self):
+        """0188 Stage 5, Rule 2 fill — kills
+        prompts.build_mutation_prompt.unfiltered_program_lists.
+
+        The same filter applies to the program lists. Same observable as above:
+        the previous program's derived fitness, which the sampler renders in the
+        focus-areas delta line."""
+        def scored(pid, metrics):
+            return Program(
+                id=pid,
+                code=f"def {pid}():\n    return 1\n",
+                language="python",
+                metrics=metrics,
+            )
+
+        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+
+        prompt = build_mutation_prompt(
+            sampler,
+            parent=scored("par", {"kept": 0.2}),
+            top_programs=[],
+            previous_programs=[scored("prevp", {"kept": 0.9, "dropped": 0.1})],
+            inspirations=[],
+            language="python",
+            iteration=3,
+            diff_based_evolution=True,
+            feature_dimensions=[],
+            metric_fields={"kept"},
+        )
+
+        self.assertIn("0.9000 → 0.2000", prompt["user"])
+        self.assertNotIn("0.5000 → 0.2000", prompt["user"])
+
+
 class TestOperatorTemplatePassthrough(unittest.TestCase):
     """template_key/parent2 passthrough (task 0027) — must not disturb the
     existing legacy call path (test_prompt_deterministic_across_builds etc.

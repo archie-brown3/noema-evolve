@@ -1,0 +1,8 @@
+url: https://github.com/Challenger-XJTU/HiFo-Prompt
+commit: e64ce9edbfb4c8ebffd652b785b0c87261785586
+license: MIT License
+tests_found: yes
+searched: test dirs (tests,test,testing,__tests__); maxdepth-3 test_*.py
+search_dirs: hifo/src/hifo/test 
+search_files:  
+paths_copied: hifo/src/hifo/test/

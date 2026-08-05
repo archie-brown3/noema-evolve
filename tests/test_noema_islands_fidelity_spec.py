@@ -134,13 +134,16 @@ class IslandsStockFidelitySpec(unittest.TestCase):
             "sample_from_island",
             return_value=delegated_result,
         ) as delegated:
-            actual = store.native_select(0, num_inspirations=2)
+            # Target 2, parent on island 0: source and target must DIFFER, or
+            # "the source scope is the parent's real island" is untestable
+            # (0188 Stage 5 matrix, Rule 1).
+            actual = store.native_select(2, num_inspirations=2)
 
-        delegated.assert_called_once_with(0, num_inspirations=2)
+        delegated.assert_called_once_with(2, num_inspirations=2)
         self.assertIs(actual.parent, delegated_result[0])
         self.assertIs(actual.inspirations[0], delegated_result[1][0])
         self.assertEqual(actual.source_scope, 0)
-        self.assertEqual(actual.target_scope, 0)
+        self.assertEqual(actual.target_scope, 2)
 
     def test_stock_propagates_delegate_failure_without_retry(self):
         store = self._store()
