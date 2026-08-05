@@ -96,7 +96,13 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
             preferred = candidate_names[name]
             break
     if preferred is None and len(candidates) == 1:
-        preferred = candidates[0]
+        sole = candidates[0]
+        try:
+            load_noema_and_agent(sole)
+        except Exception:
+            pass  # not a loadable Noema/OpenEvolve config; do not adopt it
+        else:
+            preferred = sole
 
     new_config_path = (root / "config.yaml").resolve()
     return ExamplePaths(

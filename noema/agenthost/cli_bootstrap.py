@@ -54,8 +54,13 @@ def build_agent_config(args: argparse.Namespace) -> AgentConfig:
         config.mutation_depth = mutation_depth
     if coordination_depth is not None:
         config.coordination_depth = coordination_depth
-        if coordination_depth == "deep":
-            config.coordination_cli = copy.deepcopy(config.mutation_cli)
+    # --mutation-cli / --mutation-model also apply to deep coordination (see
+    # --mutation-cli's help text) even when --coordination-depth is not
+    # repeated on the command line and deep coordination came from the YAML.
+    if config.coordination_depth == "deep" and (
+        coordination_depth == "deep" or kind is not None or model is not None
+    ):
+        config.coordination_cli = copy.deepcopy(config.mutation_cli)
     return config
 
 

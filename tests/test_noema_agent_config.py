@@ -206,6 +206,47 @@ class TestAgentConfig(unittest.TestCase):
         self.assertEqual(config.coordination_cli.kind, "claude")
         self.assertEqual(config.coordination_cli.model, "coord-model")
 
+    def test_cli_bootstrap_mutation_override_reaches_deep_coordination_from_yaml(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "config.yaml"
+            config_path.write_text(
+                "\n".join(
+                    [
+                        "max_iterations: 5",
+                        "prompt:",
+                        "  use_template_stochasticity: false",
+                        "agent:",
+                        "  coordination_depth: deep",
+                        "  mutation_cli:",
+                        "    kind: opencode",
+                        "  coordination_cli:",
+                        "    kind: opencode",
+                        "",
+                    ]
+                )
+            )
+            args = parse_entry_args(
+                [
+                    "--config",
+                    str(config_path),
+                    "--evaluation-file",
+                    "/tmp/eval.py",
+                    "--initial-program",
+                    "/tmp/init.py",
+                    "--output-dir",
+                    "/tmp/out",
+                    "--mutation-cli",
+                    "claude",
+                    "--mutation-model",
+                    "m1",
+                ]
+            )
+            config = build_agent_config(args)
+        self.assertEqual(config.coordination_depth, "deep")
+        self.assertEqual(config.mutation_cli.kind, "claude")
+        self.assertEqual(config.coordination_cli.kind, "claude")
+        self.assertEqual(config.coordination_cli.model, "m1")
+
     def test_cli_bootstrap_flag_deep_clones_mutation_cli(self):
         args = parse_entry_args(
             [
