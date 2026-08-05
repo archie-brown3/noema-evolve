@@ -1,8 +1,10 @@
-# 0188 two-way mutation matrix — reduced-head run 3
+# 0188 two-way mutation matrix — run 3, at the Stage 6 reduced head
 
-- Reduced at commit `6201c6e` on branch `cursor/0186-fidelity-inventory`; the stage note records this as the run-against commit for run 3.
-- **Supersedes run 2** as the dissertation artifact for the reduced population; run 2's numbers describe a test population that no longer exists.
-- Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`).
+<!-- GENERATED FILE — DO NOT EDIT BY HAND. Produced by scripts/mutation_matrix_report.py from artifacts/mutation/runs-3.jsonl.gz; regenerate instead of editing, or your change is silently reverted on the next run. This is dissertation evidence: the caveats below (Rule 1's literal-bar reinterpretation, the unchanged-population statement, the run-against-commit provenance) are load-bearing claims about what the matrix does and does not prove, not prose to be tightened. -->
+
+- Reduced at commit `76c90c2` (HEAD when this report was generated), branch `cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the matrix executed against — the driver runs first and the artifact is committed afterwards. The run-against commit is recorded in the stage note; for run 3 it was `6201c6e`, the Stage 6 reduction commit itself, so the population measured here IS the population that ships.
+- **Supersedes run 2** as the dissertation artifact, per the Stage 6 orchestrator constraint: the two rules must hold on the *reduced* population, and this is that matrix. Run 2's numbers (123 population rows, 35 pinned / 5 incidental) describe a test population that no longer exists.
+- Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at `/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`
 - Mutants: 40 (Option C — wrapper stores + novelty guard + PromptSampler routing)
 - Matrix collection (Scope A, Rule 2 oracle): 1009 nodes, 956 green at baseline
 - Declared population (Scope B, Rule 1 rows): 109 baseline-green nodes
@@ -10,7 +12,7 @@
 
 ## Verdicts
 
-- **Rule 1 — every population test is killed by >=1 mutant:** HOLDS where actionable — 0 unresolved placebo(s), 24 donor-routed and 6 no-mutant-in-scope nodes declared below.
+- **Rule 1 — every population test is killed by >=1 mutant:** HOLDS where actionable — 0 unresolved placebo(s), 24 donor-routed and 6 no-mutant-in-scope nodes declared below. **This is a reinterpretation of the gate's literal bar, not a pass of it as written — the orchestrator owns that call.**
 - **Rule 2 — every mutant is killed by >=1 test:** HOLDS
 
 Rule 2 detail: 34 pinned (killed by a population test), 6 incidentally covered (killed only outside the population, or only by an aggregate guard), 0 coverage holes.
@@ -21,7 +23,7 @@ _None._
 
 ## Rule 1 declared exclusions — unkilled, but not placebos
 
-Rule 1's only resolutions are *rewrite* and *delete*. These nodes admit neither, so they are named here rather than removed from the population.
+Rule 1's only resolutions are *rewrite* and *delete*. These nodes admit neither, so they are named here rather than removed from the population — the population is exactly what the stage note stated before the first run. They are findings about the **catalogue's reach**, which is what a two-way matrix exists to surface.
 
 ### Donor-routed (24)
 

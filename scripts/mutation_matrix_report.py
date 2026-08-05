@@ -147,7 +147,11 @@ def main():
 
     DOCS.mkdir(parents=True, exist_ok=True)
     with (DOCS / "mutation-matrix.csv").open("w", newline="") as handle:
-        writer = csv.writer(handle)
+        # lineterminator="\n": csv defaults to "\r\n", which makes the committed
+        # artifact differ from a fresh regeneration on every line and hides real
+        # diffs in the noise. The matrix is dissertation evidence — regenerating
+        # it must be a no-op when nothing changed.
+        writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["nodeid", "in_population"] + mutants)
         for node in rows:
             writer.writerow(
@@ -180,6 +184,14 @@ def main():
 
     out = [
         "# 0188 two-way mutation matrix — run 3, at the Stage 6 reduced head",
+        "",
+        "<!-- GENERATED FILE — DO NOT EDIT BY HAND. Produced by "
+        "scripts/mutation_matrix_report.py from artifacts/mutation/runs-3.jsonl.gz; "
+        "regenerate instead of editing, or your change is silently reverted on the "
+        "next run. This is dissertation evidence: the caveats below (Rule 1's "
+        "literal-bar reinterpretation, the unchanged-population statement, the "
+        "run-against-commit provenance) are load-bearing claims about what the "
+        "matrix does and does not prove, not prose to be tightened. -->",
         "",
         f"- Reduced at commit `{sha}` (HEAD when this report was generated), branch "
         "`cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the "
