@@ -64,6 +64,44 @@ class AdapterProgramDatabase:
         self._store.load(path)
 
     @property
+    def islands(self):
+        # Derived read-only view, endorsed verbatim by the canonical method
+        # note §3 routing table: db.islands[1] -> {x.id for x in store.population(1)}.
+        # Fresh copies per access: donor reads (membership, sizes) are served;
+        # donor MUTATIONS of the returned sets act on a copy and surface as
+        # loud downstream assertion failures for the triage ledger, never as
+        # silent state divergence.
+        return [
+            {program.id for program in self._store.population(scope)}
+            for scope in self._store.scopes
+        ]
+
+    @property
+    def programs(self):
+        # Same derived-view rule as `islands`: dict rebuilt from the wrapper's
+        # global population on every access, read path only.
+        return {program.id: program for program in self._store.population(None)}
+
+    @property
+    def best_program_id(self):
+        # Derived read: the id of the wrapper's current best, None when empty.
+        best = self._store.best_program()
+        return None if best is None else best.id
+
+    @property
+    def island_best_programs(self):
+        # Derived read-only view (List[Optional[str]], upstream's shape):
+        # per-island best id via the wrapper's own per-scope query. NOTE this
+        # serves the CURRENT best; upstream tracks incrementally and can hold
+        # stale entries — donor tests asserting staleness quirks fail loud
+        # here and are triaged as declared deviations, not silently mimicked.
+        result = []
+        for scope in self._store.scopes:
+            top = self._store.top_programs(1, scope=scope)
+            result.append(top[0].id if top else None)
+        return result
+
+    @property
     def config(self) -> DatabaseConfig:
         # Same object identity as construction arg — donor tests mutate config
         # fields post-construction and expect the store to observe them. This

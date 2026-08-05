@@ -123,8 +123,8 @@ class TestServableSurfaceRoutesThroughStore(unittest.TestCase):
 class TestUnservedSurfaceFailsLoudly(unittest.TestCase):
     UNSERVED_READS = [
         "current_island", "island_generations", "archive", "feature_bins",
-        "island_best_programs", "island_feature_maps", "last_migration_generation",
-        "programs", "islands", "best_program_id", "set_current_island",
+        "island_feature_maps", "last_migration_generation",
+        "set_current_island",
         "log_island_status", "migrate_programs", "should_migrate", "sample",
         "_sample_inspirations", "_validate_migration_results",
         "_calculate_feature_coords", "_fast_code_diversity",
@@ -143,6 +143,20 @@ class TestUnservedSurfaceFailsLoudly(unittest.TestCase):
             db.current_island = 2
         with self.assertRaises(NotImplementedError):
             db.best_program_id = "x"
+
+    def test_islands_and_programs_are_derived_readonly_views(self):
+        # Served per the canonical note's own routing table:
+        # db.islands[i] == ids of store.population(i); db.programs from
+        # population(None). Mutating the returned copies must not leak into
+        # the store.
+        db = AdapterProgramDatabase(_config())
+        db.add(_program("p1", 0.5), target_island=1)
+        self.assertIn("p1", db.islands[1])
+        self.assertEqual(set(db.programs), {"p1"})
+        db.islands[1].discard("p1")
+        db.programs.pop("p1")
+        self.assertIn("p1", db.islands[1])
+        self.assertIn("p1", db.programs)
 
     def test_metric_kwarg_raises_on_both_query_methods(self):
         db = AdapterProgramDatabase(_config())
