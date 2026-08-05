@@ -181,3 +181,10 @@ this session — no need to re-derive)
 - Naive-greedy or random-play baseline scripts (useful later for reporting
   in the dissertation/write-up, not needed to get the evaluator working).
 - Any other game/domain — this handoff is scoped to Morpion Solitaire only.
+
+## Completion log
+- Documentation: updated CONFIG.md to note the agenthost configure CLI derives `language` and `file_suffix` from `initial_program` when the YAML uses defaults.
+- Lint/format checks: attempted local formatting with project tools, but required formatter binaries (black/isort) were not available in this execution environment; see findings below.
+- PR: Not opened from this phase (out-of-scope for the document-phase run). Insert the PR URL here when available.
+
+READY FOR REVIEW
