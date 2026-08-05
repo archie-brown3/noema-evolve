@@ -1,152 +1,73 @@
-agent:
-  coordination_cli:
-    binary: null
-    extra_args: []
-    kind: opencode
-    model: null
-    timeout_s: 600.0
-  coordination_depth: shallow
-  mutation_cli:
-    binary: null
-    extra_args: []
-    kind: opencode
-    model: null
-    timeout_s: 600.0
-  mutation_depth: deep
-  stop_children: 3
-budget:
-  account_caps: {}
-  log_path: null
-  total_tokens: 1000000
+# pes-faithful arm — circle packing (task 0066).
+#
+# The fidelity anchor: near-verbatim LoongFlow math-agent prompts, the plan as
+# the executor's brief, non-improvement retries. Load with
+# NoemaConfig.from_yaml(); this is a CONFIG ONLY — no run is started from it
+# (live runs are launched by the user under the vault's LIVE-RUNS protocol).
+#
+# Pair this against config_pes_custom.yaml: the ONLY field that may differ
+# between the two is coordination.module (verify-run invariant) — with two
+# declared exceptions, both recorded in their tickets rather than treated as
+# incidental config deltas:
+#   1. retry_on/retry_cap below — this arm's declared substrate default
+#      (Decision #28), mirroring LoongFlow's max_rounds=3.
+#   2. evaluator.timeout below (task 0105) — directive mode is a full-program
+#      rewrite; a faithful plan may legitimately propose a heavier numerical
+#      approach than a SEARCH/REPLACE diff would, and 60s isn't enough
+#      headroom (a manually-reconstructed program from the fidelity
+#      investigation needed 84s even with hand-reduced optimizer parameters).
+
+max_iterations: 50
 checkpoint_interval: 5
-coordination:
-  escalation: null
-  module: bandit
-  params: {}
-  seed: 43
-database:
-  archive_size: 25
-  artifact_retention_days: 30
-  artifact_size_threshold: 32768
-  artifacts_base_path: null
-  cleanup_old_artifacts: true
-  db_path: null
-  diversity_metric: edit_distance
-  diversity_reference_size: 20
-  elite_selection_ratio: 0.3
-  embedding_model: null
-  exploitation_ratio: 0.7
-  exploration_ratio: 0.2
-  feature_bins: 10
-  feature_dimensions:
-  - complexity
-  - diversity
-  in_memory: true
-  log_prompts: true
-  max_snapshot_artifacts: 100
-  migration_interval: 50
-  migration_rate: 0.1
-  novelty_llm: null
-  num_islands: 4
-  population_size: 60
-  random_seed: 42
-  similarity_threshold: 0.99
+random_seed: 42
 diff_based_evolution: true
-diff_pattern: <<<<<<< SEARCH\n(.*?)=======\n(.*?)>>>>>>> REPLACE
+num_inspirations: 0
+num_top_programs: 1
+num_previous_programs: 3
+
+# Intra-iteration retries. NOTE: these are SUBSTRATE config (NoemaConfig), not
+# coordination module params — the arm key alone does not set them.
+# Decision #28: the faithful arm retries on non-improvement (a valid child that
+# scores <= its parent), cap 2, mirroring LoongFlow's max_rounds=3.
+retry_enabled: true
+retry_cap: 2
+retry_on: non_improvement
+
+coordination:
+  # Arm identity lives in this key, and only in this key. Passing any
+  # arm-defining knob (prompt_variant, executor_mode, recent_strategies_k) in
+  # params below raises ValueError — see noema/coordination/pes/arms.py.
+  module: pes-faithful
+  params: {}
+
+budget:
+  total_tokens: 1000000
+
+llm:
+  model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+  api_base: http://localhost:8091/v1
+  api_key: none
+  temperature: 0.7
+  top_p: 0.95
+  # Floors apply on top of this: the faithful planner asks for >= 2048 and the
+  # faithful summary >= 1024 completion tokens (three outlines + comparison +
+  # plan; the four-section brief).
+  max_tokens: 4096
+  timeout: 300
+
+database:
+  population_size: 60
+  archive_size: 25
+  num_islands: 4
+  elite_selection_ratio: 0.3
+  exploitation_ratio: 0.7
+
 evaluator:
   cascade_evaluation: false
-  cascade_thresholds:
-  - 0.5
-  - 0.75
-  - 0.9
-  cpu_limit: null
-  distributed: false
-  enable_artifacts: true
-  llm_feedback_weight: 0.1
-  max_artifact_storage: 104857600
-  max_retries: 3
-  memory_limit_mb: null
-  parallel_evaluations: 1
+  # task 0105, declared exception #2 above. 3x headroom over the one proof
+  # point on record (84s); revisit with real shakedown data.
   timeout: 180
-  use_llm_feedback: false
-file_suffix: .py
-language: python
-llm:
-  coordination:
-    api_base: http://localhost:8091/v1
-    api_key: none
-    disable_reasoning: false
-    max_tokens: 4096
-    model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
-    retries: 3
-    retry_delay: 5.0
-    seed: null
-    temperature: 0.7
-    timeout: 300
-    top_p: 0.95
-    total_deadline_s: 600.0
-  mutation:
-    api_base: http://localhost:8091/v1
-    api_key: none
-    disable_reasoning: false
-    max_tokens: 4096
-    model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
-    retries: 3
-    retry_delay: 5.0
-    seed: null
-    temperature: 0.7
-    timeout: 300
-    top_p: 0.95
-    total_deadline_s: 600.0
-max_code_length: 10000
-max_iterations: 10
-mutation_operator_seed: 44
-mutation_operators: null
-num_inspirations: 0
-num_previous_programs: 3
-num_top_programs: 1
+
 prompt:
-  artifact_security_filter: true
-  code_length_threshold: null
-  comprehensive_implementation_min_lines: 50
-  concise_implementation_max_lines: 10
-  diff_summary_max_line_len: 100
-  diff_summary_max_lines: 30
-  evaluator_system_message: evaluator_system_message
-  include_artifacts: false
-  include_changes_under_chars: 100
-  initial_changes_description: ''
-  max_artifact_bytes: 20480
-  meta_prompt_weight: 0.1
-  num_diverse_programs: 2
-  num_top_programs: 3
-  programs_as_changes_description: false
-  suggest_simplification_after_chars: 500
-  system_message: system_message
-  system_message_changes_description: null
-  template_dir: null
-  template_variations: {}
-  use_meta_prompting: false
   use_template_stochasticity: false
-prompt_metric_fields: null
-random_seed: 42
-retry_cap: 2
-retry_enabled: true
-retry_on: non_improvement
-selection:
-  boltzmann_exploration_rate: 0.2
-  boltzmann_temperature: 1.0
-  initial_exploration: 0.1
-  policy: substrate_default
-  seed: 45
-  stagnation_detection_enabled: false
-  stagnation_mode: released
-  widening_alpha: 0.5
-substrate:
-  cvt_behavior_features: null
-  cvt_feature_bounds: null
-  cvt_n_centroids: 256
-  cvt_num_regions: null
-  cvt_seed: 46
-  kind: islands
-  steps_per_generation: null
+  include_artifacts: false

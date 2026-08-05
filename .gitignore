@@ -9,6 +9,9 @@ loop/work-order.json
 examples/**/runs/
 examples/**/openevolve_output*/
 examples/**/noema_*output*/
+# The agency CLI writes its run dir under whatever name the user gives it;
+# every one starts noema_agent_ (default: noema_agent_output).
+examples/**/noema_agent_*/
 examples/**/best_program.py
 examples/**/best_program_info.json
 examples/arc_benchmark/outputs/
