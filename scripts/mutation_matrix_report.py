@@ -136,6 +136,30 @@ def load(path_or_handle):
     return outcomes
 
 
+def reject_incomplete(outcomes, mutants, rows):
+    """Hard-fail a truncated log: every baseline-green row needs an outcome.
+
+    A mutant run that timed out or aborted leaves the tests it never reached
+    with no row at all. Treating those as passing (the old ``.get(n, True)``)
+    fails open — it scores the missing tests as "not killed by this mutant",
+    which can still publish a clean Rule 1 / Rule 2 verdict off a partial log.
+    An unscored test is not evidence; reject the run instead.
+    """
+    gaps = {m: sorted(set(rows) - set(outcomes[m])) for m in mutants}
+    gaps = {m: missing for m, missing in gaps.items() if missing}
+    if gaps:
+        detail = "; ".join(
+            f"{m} ({len(missing)} missing, e.g. {missing[0]})"
+            for m, missing in sorted(gaps.items())
+        )
+        sys.exit(
+            f"incomplete run — {len(gaps)} mutant(s) have no recorded outcome for "
+            f"some baseline-green test (timed out or aborted mid-run): {detail}. "
+            "Re-run scripts/mutation_matrix.sh; a partial log cannot score "
+            "Rule 1 or Rule 2."
+        )
+
+
 def main():
     if RUNS.exists():
         print(f"using raw runs {RUNS}")
@@ -154,10 +178,12 @@ def main():
     rows = sorted(n for n, ok in baseline.items() if ok)  # baseline-green only
     population = [n for n in rows if in_population(n)]
 
-    # killed[mutant] = set of rows that passed at baseline and fail under it
-    killed = {
-        m: {n for n in rows if not outcomes[m].get(n, True)} for m in mutants
-    }
+    reject_incomplete(outcomes, mutants, rows)
+
+    # killed[mutant] = set of rows that passed at baseline and fail under it.
+    # Direct indexing, no default: reject_incomplete has already proved every
+    # cell exists, and a KeyError here beats silently scoring a gap as a pass.
+    killed = {m: {n for n in rows if not outcomes[m][n]} for m in mutants}
 
     DOCS.mkdir(parents=True, exist_ok=True)
     with (DOCS / "mutation-matrix.csv").open("w", newline="") as handle:
