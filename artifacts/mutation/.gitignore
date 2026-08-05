@@ -1,3 +1,1 @@
-
-# Mutation-matrix raw log: the .gz is committed as evidence, the plain file is not.
-artifacts/mutation/runs.jsonl
+runs.jsonl
