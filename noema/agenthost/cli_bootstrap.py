@@ -57,10 +57,14 @@ def build_agent_config(args: argparse.Namespace) -> AgentConfig:
     # --mutation-cli / --mutation-model also apply to deep coordination (see
     # --mutation-cli's help text) even when --coordination-depth is not
     # repeated on the command line and deep coordination came from the YAML.
+    # Only kind/model are shared — coordination's own binary/extra_args/
+    # timeout_s (if set in YAML) are transport details specific to that
+    # seat and must not be clobbered by mutation_cli's values for them.
     if config.coordination_depth == "deep" and (
         coordination_depth == "deep" or kind is not None or model is not None
     ):
-        config.coordination_cli = copy.deepcopy(config.mutation_cli)
+        config.coordination_cli.kind = config.mutation_cli.kind
+        config.coordination_cli.model = config.mutation_cli.model
     return config
 
 
