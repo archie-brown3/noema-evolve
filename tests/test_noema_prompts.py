@@ -13,6 +13,7 @@ from openevolve.database import Program
 
 from noema.budget.ledger import TokenLedger
 from noema.budget.llm import BudgetedLLM
+from noema.config import NoemaConfig
 from noema.coordination.base import GenerationContext
 from noema.coordination.pes.module import PESPlannerModule
 from noema.substrates.base import PopulationSnapshot, RegionSummary
@@ -56,8 +57,12 @@ class TestPromptAssembly(unittest.TestCase):
 
     def test_prompt_deterministic_across_builds(self):
         parent = make_parent()
-        sampler_a = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
-        sampler_b = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler_a = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
+        sampler_b = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         prompt_a = build(sampler_a, parent)
         prompt_b = build(sampler_b, parent)
         self.assertEqual(prompt_a["system"], prompt_b["system"])
@@ -65,7 +70,9 @@ class TestPromptAssembly(unittest.TestCase):
 
     def test_empty_advice_is_byte_identical(self):
         # The coordination-OFF arm: injecting empty blocks must not change a byte
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         prompt = build(sampler, make_parent())
         injected = inject_advice(prompt, prompt_block="", system_block="")
         self.assertEqual(injected["system"], prompt["system"])
@@ -73,7 +80,9 @@ class TestPromptAssembly(unittest.TestCase):
 
     def test_advice_appends_suffix_only(self):
         # The coordination-ON arm: shared prefix stays byte-identical, block is a suffix
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         prompt = build(sampler, make_parent())
         injected = inject_advice(
             prompt, prompt_block="- Use vectorized operations", system_block="Focus on speed."
@@ -86,6 +95,110 @@ class TestPromptAssembly(unittest.TestCase):
         )
         self.assertIn("Focus on speed.", injected["system"])
 
+    def test_num_diverse_programs_positive_is_rejected(self):
+        # Sibling to test_stochasticity_rejected: num_diverse_programs > 0 is
+        # the only knob that arms upstream's global-random.sample "Diverse
+        # Programs" branch (openevolve/prompt/sampler.py:375-386), which voids
+        # the identical-prompts guarantee and perturbs the shared global RNG
+        # stream openevolve's database sampling also draws from (task 0207).
+        with self.assertRaises(ValueError):
+            make_prompt_sampler(
+                PromptConfig(use_template_stochasticity=False, num_diverse_programs=1)
+            )
+
+    def test_diverse_programs_disabled_keeps_prompt_deterministic_across_rng_states(self):
+        # Regression test for task 0207. Feed enough top_programs to exceed
+        # prompt.num_top_programs (default 3) so the buggy branch would have
+        # been armed by default, then build the same prompt twice under
+        # different global random.seed() states. The two builds must be
+        # byte-identical.
+        config = NoemaConfig().prompt
+        sampler_a = make_prompt_sampler(config)
+        sampler_b = make_prompt_sampler(config)
+        # A large remaining pool (beyond num_top_programs) makes two arbitrary
+        # global random states reliably diverge under random.sample, rather
+        # than colliding on the same pick by chance.
+        top_programs = [
+            Program(
+                id=str(uuid.uuid4()),
+                code=f"def f():\n    return {i}\n",
+                language="python",
+                metrics={"combined_score": 0.5},
+            )
+            for i in range(20)
+        ]
+
+        saved_state = random.getstate()
+        try:
+            random.seed(1)
+            prompt_a = build_mutation_prompt(
+                sampler_a,
+                parent=make_parent(),
+                top_programs=top_programs,
+                previous_programs=[],
+                inspirations=[],
+                language="python",
+                iteration=1,
+                diff_based_evolution=True,
+                feature_dimensions=[],
+            )
+            random.seed(2)
+            prompt_b = build_mutation_prompt(
+                sampler_b,
+                parent=make_parent(),
+                top_programs=top_programs,
+                previous_programs=[],
+                inspirations=[],
+                language="python",
+                iteration=1,
+                diff_based_evolution=True,
+                feature_dimensions=[],
+            )
+        finally:
+            random.setstate(saved_state)
+        self.assertEqual(prompt_a["user"], prompt_b["user"])
+        self.assertEqual(prompt_a["system"], prompt_b["system"])
+
+    def test_prompt_construction_preserves_global_rng_state(self):
+        # Regression test for task 0207's second scientific consequence: the
+        # guard must not merely keep prompt bytes stable (the previous test),
+        # it must leave the global random module's state completely untouched,
+        # or database sampling downstream of prompt construction would draw
+        # from a perturbed stream. Checked under two different global RNG
+        # states so a guard that happens to restore state only from one
+        # specific starting point wouldn't pass by coincidence.
+        config = NoemaConfig().prompt
+        top_programs = [
+            Program(
+                id=str(uuid.uuid4()),
+                code=f"def f():\n    return {i}\n",
+                language="python",
+                metrics={"combined_score": 0.5},
+            )
+            for i in range(20)
+        ]
+
+        saved_state = random.getstate()
+        try:
+            for seed in (1, 2):
+                random.seed(seed)
+                state_before = random.getstate()
+                sampler = make_prompt_sampler(config)
+                build_mutation_prompt(
+                    sampler,
+                    parent=make_parent(),
+                    top_programs=top_programs,
+                    previous_programs=[],
+                    inspirations=[],
+                    language="python",
+                    iteration=1,
+                    diff_based_evolution=True,
+                    feature_dimensions=[],
+                )
+                state_after = random.getstate()
+                self.assertEqual(state_before, state_after)
+        finally:
+            random.setstate(saved_state)
 
     def test_metric_fields_filters_the_parents_metrics(self):
         """0188 Stage 5, Rule 2 fill — kills
@@ -105,7 +218,9 @@ class TestPromptAssembly(unittest.TestCase):
             language="python",
             metrics={"kept": 0.2, "dropped": 0.8},
         )
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
 
         prompt = build_mutation_prompt(
             sampler,
@@ -138,7 +253,9 @@ class TestPromptAssembly(unittest.TestCase):
                 metrics=metrics,
             )
 
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
 
         prompt = build_mutation_prompt(
             sampler,
@@ -165,12 +282,16 @@ class TestOperatorTemplatePassthrough(unittest.TestCase):
     def test_make_prompt_sampler_registers_operator_templates(self):
         from noema.evolution.operators import OPERATOR_TEMPLATES
 
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         for template_key in OPERATOR_TEMPLATES:
             self.assertIn(template_key, sampler.template_manager.templates)
 
     def test_arity_two_template_includes_parent2_code(self):
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         parent = make_parent()
         parent2 = Program(
             id="p2", code="def g():\n    return 2\n", language="python", metrics={}
@@ -192,7 +313,9 @@ class TestOperatorTemplatePassthrough(unittest.TestCase):
         self.assertNotIn("{parent2_program}", prompt["user"])
 
     def test_arity_one_template_no_parent2_does_not_error_or_leak_placeholder(self):
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         prompt = build_mutation_prompt(
             sampler,
             parent=make_parent(),
@@ -1225,7 +1348,9 @@ class TestPromptIdentityDecision25Exemption(unittest.TestCase):
     """
 
     def _shared_prefix_prompt(self, advice):
-        sampler = make_prompt_sampler(PromptConfig(use_template_stochasticity=False))
+        sampler = make_prompt_sampler(
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
+        )
         base = build(sampler, make_parent())
         return inject_advice(base, advice.prompt_block, advice.system_block), base
 

@@ -137,6 +137,7 @@ def main():
         evaluator=EvaluatorConfig(cascade_evaluation=False, timeout=60),
         prompt=PromptConfig(
             use_template_stochasticity=False,
+            num_diverse_programs=0,
             include_artifacts=False,
             system_message=SYSTEM_MESSAGE,
         ),
