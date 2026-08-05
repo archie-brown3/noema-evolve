@@ -45,6 +45,15 @@ def looks_like_openevolve_yaml(data: Any) -> bool:
     return False
 
 
+def _has_noema_config_tell(data: dict[str, Any]) -> bool:
+    """True when a mapping carries at least one key only a Noema config has."""
+
+    from noema.config import NoemaConfig
+
+    known = {field.name for field in fields(NoemaConfig)} | {"agent"}
+    return any(key in known for key in data)
+
+
 def _load_yaml_mapping(path: Path) -> Any:
     with open(path) as f:
         return yaml.safe_load(f) or {}
@@ -97,12 +106,17 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
             break
     if preferred is None and len(candidates) == 1:
         sole = candidates[0]
+        # A clean load is not evidence of a config: _normalise_openevolve_yaml
+        # drops every key it does not recognise, so an unrelated mapping loads
+        # fine and is then adopted as the run config *and* rewritten in place
+        # (task 0201).  Adopt an unconventionally named file only on a positive
+        # tell that it really is one.
         try:
-            load_noema_and_agent(sole)
+            if _has_noema_config_tell(_load_yaml_mapping(sole)):
+                load_noema_and_agent(sole)
+                preferred = sole
         except Exception:
             pass  # not a loadable Noema/OpenEvolve config; do not adopt it
-        else:
-            preferred = sole
 
     new_config_path = (root / "config.yaml").resolve()
     return ExamplePaths(
