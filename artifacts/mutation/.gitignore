@@ -1,1 +1,3 @@
 runs.jsonl
+runs-*.jsonl
+!runs-*.jsonl.gz

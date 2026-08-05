@@ -179,14 +179,18 @@ def main():
     ).stdout.strip()
 
     out = [
-        "# 0188 Stage 5 — two-way mutation matrix",
+        "# 0188 two-way mutation matrix — run 3, at the Stage 6 reduced head",
         "",
         f"- Reduced at commit `{sha}` (HEAD when this report was generated), branch "
         "`cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the "
         "matrix executed against — the driver runs first and the artifact is committed "
-        "afterwards. The run-against commit is recorded in the stage note; for the "
-        "final run it was `8edb181`, which differs from this one only by added docs "
-        "and artifacts, no code.",
+        "afterwards. The run-against commit is recorded in the stage note; for run 3 "
+        "it was `6201c6e`, the Stage 6 reduction commit itself, so the population "
+        "measured here IS the population that ships.",
+        "- **Supersedes run 2** as the dissertation artifact, per the Stage 6 "
+        "orchestrator constraint: the two rules must hold on the *reduced* "
+        "population, and this is that matrix. Run 2's numbers (123 population rows, "
+        "35 pinned / 5 incidental) describe a test population that no longer exists.",
         "- Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at "
         "`/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`",
         f"- Mutants: {len(mutants)} (Option C — wrapper stores + novelty guard + PromptSampler routing)",

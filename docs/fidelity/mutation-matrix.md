@@ -1,18 +1,19 @@
-# 0188 Stage 5 — two-way mutation matrix
+# 0188 two-way mutation matrix — run 3, at the Stage 6 reduced head
 
-- Reduced at commit `6b133e6` (HEAD when this report was generated), branch `cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the matrix executed against — the driver runs first and the artifact is committed afterwards. The run-against commit is recorded in the stage note; for the final run it was `8edb181`, which differs from this one only by added docs and artifacts, no code.
+- Reduced at commit `6201c6e` (HEAD when this report was generated), branch `cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the matrix executed against — the driver runs first and the artifact is committed afterwards. The run-against commit is recorded in the stage note; for run 3 it was `6201c6e`, the Stage 6 reduction commit itself, so the population measured here IS the population that ships.
+- **Supersedes run 2** as the dissertation artifact, per the Stage 6 orchestrator constraint: the two rules must hold on the *reduced* population, and this is that matrix. Run 2's numbers (123 population rows, 35 pinned / 5 incidental) describe a test population that no longer exists.
 - Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at `/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`
 - Mutants: 40 (Option C — wrapper stores + novelty guard + PromptSampler routing)
-- Matrix collection (Scope A, Rule 2 oracle): 1023 nodes, 970 green at baseline
-- Declared population (Scope B, Rule 1 rows): 123 baseline-green nodes
+- Matrix collection (Scope A, Rule 2 oracle): 1009 nodes, 956 green at baseline
+- Declared population (Scope B, Rule 1 rows): 109 baseline-green nodes
 - Full per-cell record: `mutation-matrix.csv` (rows = baseline-green tests, columns = mutants, `K` = killed).
 
 ## Verdicts
 
-- **Rule 1 — every population test is killed by >=1 mutant:** HOLDS where actionable — 0 unresolved placebo(s), 24 donor-routed and 7 no-mutant-in-scope nodes declared below. **This is a reinterpretation of the gate's literal bar, not a pass of it as written — the orchestrator owns that call.**
+- **Rule 1 — every population test is killed by >=1 mutant:** HOLDS where actionable — 0 unresolved placebo(s), 24 donor-routed and 6 no-mutant-in-scope nodes declared below. **This is a reinterpretation of the gate's literal bar, not a pass of it as written — the orchestrator owns that call.**
 - **Rule 2 — every mutant is killed by >=1 test:** HOLDS
 
-Rule 2 detail: 35 pinned (killed by a population test), 5 incidentally covered (killed only outside the population, or only by an aggregate guard), 0 coverage holes.
+Rule 2 detail: 34 pinned (killed by a population test), 6 incidentally covered (killed only outside the population, or only by an aggregate guard), 0 coverage holes.
 
 ## Rule 1 violations — tests killed by zero mutants, with no declared reason
 
@@ -51,11 +52,10 @@ Byte-identical donor bodies under `AdapterRouted_*`. Editing one destroys the in
 - `tests/test_noema_islands_adapter_fidelity_spec.py::AdapterRouted_test_sample_from_island_ratios_TestSampleFromIslandRatios::test_sample_from_island_returns_from_correct_island`
 - `tests/test_noema_islands_adapter_fidelity_spec.py::AdapterRouted_test_sample_from_island_ratios_TestSampleFromIslandRatios::test_sample_from_island_with_different_islands`
 
-### Real claim, no mutant in Option C (7)
+### Real claim, no mutant in Option C (6)
 
 - `tests/test_noema_islands_fidelity_spec.py::IslandsStockFidelitySpec::test_omitted_selection_and_old_database_config_mean_stock` — a differential test between two IslandsStore instances — a class-level mutant changes BOTH sides identically, so no mutant of this shape can ever be detected by it
 - `tests/test_noema_islands_fidelity_spec.py::IslandsStockFidelitySpec::test_stock_has_no_numpy_or_program_metadata_side_effects` — an absence claim (no numpy/metadata side effects); every Option C mutant is a wrong RETURN VALUE, none introduces a side effect
-- `tests/test_noema_islands_wrapper_fidelity_spec.py::TestIslandTopProgramsThroughWrapper::test_out_of_range_scope_raises_indexerror` — pinned-as-observed behaviour; killed by spec §7a's fix-shaped mutant islands.top_programs.wrap_scope, which Option C does not include
 - `tests/test_noema_prompts.py::TestPromptAssembly::test_empty_advice_is_byte_identical` — killed by spec §4a's OPTIONAL 7th mutant prompts.inject_advice.always_separator, which Option C does not include
 - `tests/test_noema_prompts.py::TestPromptAssembly::test_prompt_deterministic_across_builds` — no Option C mutant makes the sampler non-deterministic; make_prompt_sampler.allow_stochasticity drops the GUARD, which test_stochasticity_rejected already pins
 - `tests/test_noema_substrate.py::TestSubstrateDatabase::test_fitness_uses_combined_score` — the only fitness mutant (database.fitness.no_feature_exclusion) is identical whenever combined_score is present — by construction, per spec §2b; a mutant that ignores combined_score is not in Option C
@@ -73,37 +73,37 @@ Killed, but only outside the declared population or only by an aggregate guard (
 - `database.fitness.no_feature_exclusion` — 1 killer(s), e.g. `tests/test_noema_fitness_characterization.py::TestCallSiteShapes::test_stores_and_views_pass_their_feature_dimensions_through`
 - `islands.regions.generic_label` — 5 killer(s), e.g. `tests/test_noema_cross_substrate_portability.py::TestPESDeclaresItsTopologyAdaptation::test_faithful_planner_renders_native_labels_per_substrate`
 - `islands.snapshot.regions_always` — 1 killer(s), e.g. `tests/test_noema_region_context.py::TestIslandsStoreRegions::test_regions_ride_on_the_global_snapshot_only`
+- `islands.target_scope.off_by_one` — 2 killer(s), e.g. `tests/test_noema_controller_upstream_fidelity_spec.py::TestControllerBackedOpenEvolveIslandSelection::test_controller_iteration_sampling_uses_the_iteration_target_scope_sequence`
 - `islands.topology.flat` — 4 killer(s), e.g. `tests/test_noema_cross_substrate_portability.py::TestPESDeclaresItsTopologyAdaptation::test_adaptation_is_declared_only_off_islands`
 
 ## Pinned mutants
 
 - `database.all_fitnesses.island_zero` — 1 population killer(s)
-- `database.best_program.island_zero` — 2 population killer(s)
+- `database.best_program.island_zero` — 1 population killer(s)
 - `database.end_generation.always_false` — 13 population killer(s)
 - `database.end_generation.bare_increment` — 2 population killer(s)
 - `database.get.best_fallback` — 1 population killer(s)
 - `database.init.no_novelty_guard` — 1 population killer(s)
-- `database.island_fitnesses.global` — 8 population killer(s)
+- `database.island_fitnesses.global` — 6 population killer(s)
 - `database.last_iteration.off_by_one` — 2 population killer(s)
 - `database.load.reset_generations` — 1 population killer(s)
-- `database.num_islands.off_by_one` — 36 population killer(s)
+- `database.num_islands.off_by_one` — 29 population killer(s)
 - `database.num_programs.off_by_one` — 3 population killer(s)
-- `database.per_island_bests.neg_inf_default` — 4 population killer(s)
+- `database.per_island_bests.neg_inf_default` — 2 population killer(s)
 - `database.sample_from_island.drop_inspirations` — 1 population killer(s)
 - `database.save.iteration_zero` — 1 population killer(s)
 - `database.store_artifacts.noop` — 1 population killer(s)
-- `islands.add.ignore_target_scope` — 27 population killer(s)
-- `islands.capabilities.overclaim` — 2 population killer(s)
+- `islands.add.ignore_target_scope` — 19 population killer(s)
+- `islands.capabilities.overclaim` — 1 population killer(s)
 - `islands.elites.worst_first` — 1 population killer(s)
 - `islands.load_state_dict.ignore_state` — 1 population killer(s)
-- `islands.native_select.source_is_target` — 5 population killer(s)
-- `islands.per_scope_bests.global_best` — 7 population killer(s)
-- `islands.population.ignore_scope` — 21 population killer(s)
+- `islands.native_select.source_is_target` — 3 population killer(s)
+- `islands.per_scope_bests.global_best` — 5 population killer(s)
+- `islands.population.ignore_scope` — 16 population killer(s)
 - `islands.scopes.drop_last` — 13 population killer(s)
 - `islands.snapshot.limit_before_sort` — 1 population killer(s)
 - `islands.state_dict.empty` — 1 population killer(s)
 - `islands.steps_per_generation.one` — 1 population killer(s)
-- `islands.target_scope.off_by_one` — 1 population killer(s)
 - `islands.top_programs.island_wins` — 1 population killer(s)
 - `islands.top_programs.reversed` — 1 population killer(s)
 - `prompts.build_mutation_prompt.drop_parent2` — 1 population killer(s)
