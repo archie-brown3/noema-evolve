@@ -92,6 +92,14 @@ for _filename in _ISLANDS_FILES:
     _export_testcases(_load_pinned_upstream_module(_filename), _filename[:-3])
 
 
+# RUN THIS FILE WITH ``PYTHONHASHSEED=0`` — see the long note in
+# ``tests/test_noema_islands_adapter_fidelity_spec.py``. This file carries the
+# same donor (`test_sample_from_island_ratios.py:186`), and here it runs against
+# the REAL pinned ProgramDatabase, which is what establishes that the ~1-in-25
+# failure is upstream's own under-powered assertion plus set-iteration order,
+# not anything Noema's wrapper does.
+
+
 class TestPinnedDonorSuiteIsFullyCollected(unittest.TestCase):
     """Not a donor test: proves no donor test vanished during re-export."""
 

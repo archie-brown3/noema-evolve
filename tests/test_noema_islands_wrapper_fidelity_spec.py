@@ -847,6 +847,192 @@ class TestIslandConcurrencyThroughWrapper(_IslandsWrapperTestCase):
         )
 
 
+class TestStage7WidenedCapabilities(_IslandsWrapperTestCase):
+    """0188 Stage 7, Rule 2 fills for the widened wrapper.
+
+    Matrix run 4 left nine of the twenty-nine Stage 7 mutants alive, and left
+    four more killed only outside the declared population. Both groups say the
+    same thing: the donor suite that motivated a capability does not necessarily
+    PIN it. Upstream's own tests assert what upstream cared about — that
+    `_calculate_diversity_bin` returns 0 in a cold start, that
+    `log_island_status()` does not raise — and a mutant that always returns 0,
+    or does nothing at all, satisfies exactly those claims.
+
+    So these are Noema's pins, not donor translations, and each names the mutant
+    it kills. They belong here rather than in test_adapter_instrumentation.py
+    because that file's subject is the ADAPTER's routing; the subject here is
+    what the wrapper's own answers must be.
+    """
+
+    def test_best_program_id_is_upstreams_field_not_a_recomputed_best(self):
+        """kills database.best_program_id.recomputed AND
+        database.best_program_id.setter_noop.
+
+        Upstream tracks the best incrementally in a writable field, and its own
+        controller writes it directly (process_parallel.py:661 compares against
+        it). Two things separate that field from "whatever is currently best":
+        it goes STALE when the program it names is deleted (upstream only
+        notices and clears it inside `get_best_program`, database.py:485-492),
+        and it is directly writable (donor test_database.py:535). One test
+        closes both holes, because a recomputing getter and a no-op setter are
+        each invisible except through one of those two.
+        """
+        store = _store()
+        _seed(store, 0, [("bp_low", 0.1), ("bp_high", 0.9)])
+        self.assertEqual(store.best_program_id, "bp_high")
+
+        del store.programs["bp_high"]
+        self.assertEqual(
+            store.best_program_id, "bp_high", "the tracked id stays stale until upstream clears it"
+        )
+
+        store.best_program_id = "bp_low"
+        self.assertEqual(store.best_program_id, "bp_low")
+
+    def test_diversity_bin_tracks_the_value_instead_of_collapsing_to_zero(self):
+        """kills database.diversity_bin.zero.
+
+        The donor's green diversity-bin tests assert a cold start and identical
+        programs, both of which a function returning a constant satisfies. The
+        claim they leave unpinned is that the bin RESPONDS to the value once the
+        running min/max stats have a spread. (The cold-start bin is the MIDDLE
+        one, not 0: with min == max the scaler has no spread to place the value
+        against and returns 0.5.)
+        """
+        store = _store()
+        cold_start = store.diversity_bin(0.0)  # also seeds the running stats at 0.0
+
+        self.assertGreater(
+            store.diversity_bin(1.0),
+            cold_start,
+            "a maximal diversity must not land in the same bin as the cold start",
+        )
+
+    def test_feature_bins_reports_the_configured_resolution(self):
+        """kills database.feature_bins.default_ten."""
+        self.assertEqual(_store(feature_bins=7).feature_bins, 7)
+
+    def test_artifacts_round_trip_through_the_wrapper(self):
+        """kills database.get_artifacts.empty.
+
+        store_artifacts was already pinned (Stage 5), but only by reading back
+        through `_db`. Now that the read side is public it is pinned as a pair,
+        through the wrapper, which is what upstream's controller uses when it
+        builds a worker snapshot (process_parallel.py:466).
+        """
+        store = _store()
+        _seed(store, 0, [("art_0", 0.5)])
+        store.store_artifacts("art_0", {"stderr": "boom"})
+
+        self.assertEqual(store.get_artifacts("art_0"), {"stderr": "boom"})
+
+    def test_log_island_status_actually_emits_upstreams_island_report(self):
+        """kills database.log_island_status.noop.
+
+        The donor's claim (test_island_tracking.py:226) is only "does not
+        raise", which a no-op satisfies perfectly. What Noema needs from a
+        logging passthrough is that the log happens.
+        """
+        store = _store(num_islands=3)
+        _seed(store, 0, [("log_0", 0.5)])
+
+        with self.assertLogs("openevolve.database", level="INFO") as captured:
+            store.log_island_status()
+
+        self.assertIn("Island Status", "\n".join(captured.output))
+
+    def test_validate_migration_results_reports_the_inconsistency_it_finds(self):
+        """kills database.validate_migration_results.noop.
+
+        Upstream's validator only LOGS — it repairs nothing — so a no-op is
+        invisible to every assertion the donor makes about database state
+        afterwards. Its entire observable output is the warning, so that is
+        what has to be pinned.
+        """
+        store = _store()
+        store.islands[1].add("ghost_program")
+
+        with self.assertLogs("openevolve.database", level="WARNING") as captured:
+            store.validate_migration_results()
+
+        self.assertIn("ghost_program", "\n".join(captured.output))
+
+    def test_sample_honours_the_current_island_it_is_pointed_at(self):
+        """kills database.sample.island_zero AND database.current_island.setter_noop.
+
+        `sample()` is upstream's untargeted selection: the island comes from
+        shared mutable state rather than an argument. Noema never uses it that
+        way, which is precisely why nothing pinned it — and a version that
+        always reads island 0 is invisible until someone points it elsewhere.
+        """
+        store = _store(num_islands=3)
+        _seed(store, 0, [("s_zero", 0.5)])
+        _seed(store, 2, [("s_two", 0.5)], start_iteration=1)
+
+        store.current_island = 2
+        self.assertEqual(store.current_island, 2)
+        parent, _ = store.sample(num_inspirations=1)
+
+        self.assertEqual(parent.id, "s_two")
+
+    def test_sample_inspirations_draws_the_islands_cohort_not_just_the_parent(self):
+        """kills database.sample_inspirations.parent_only."""
+        store = _store()
+        survivors = _seed(store, 0, [(f"insp_{i}", 0.1 * i) for i in range(1, 7)])
+        self.assertGreater(len(survivors), 2, "cohort claim needs >2 survivors")
+        parent = store.get(sorted(survivors)[0])
+
+        inspirations = store.sample_inspirations(parent, n=3)
+
+        self.assertGreater(len(inspirations), 1)
+        self.assertTrue({program.id for program in inspirations} <= survivors)
+
+    def test_island_best_programs_keeps_upstreams_stale_entry(self):
+        """kills database.island_best_programs.recomputed.
+
+        Upstream maintains this list incrementally, so deleting the program it
+        names leaves a STALE id behind — asserted by donor
+        test_island_tracking.test_island_best_with_missing_program. Recomputing
+        the current best per island is the nicer answer and the wrong one: it is
+        a divergence from the pin dressed up as an improvement, which is the
+        specific failure mode Stage 7 exists to avoid.
+        """
+        store = _store()
+        _seed(store, 0, [("stale_best", 0.9)])
+        self.assertEqual(store.island_best_programs[0], "stale_best")
+
+        del store.programs["stale_best"]
+
+        self.assertEqual(store.island_best_programs[0], "stale_best")
+
+    def test_island_generations_is_the_live_counter_not_a_snapshot_of_it(self):
+        """kills database.island_generations.copy.
+
+        Upstream's controller advances these in place
+        (process_parallel.py:618). Handing back a copy reads identically and
+        drops every write on the floor.
+        """
+        store = _store(num_islands=3)
+
+        store.island_generations[1] = 5
+
+        self.assertEqual(store.island_generations[1], 5)
+
+    def test_best_program_ranks_by_the_named_metric(self):
+        """kills database.best_program.ignore_metric.
+
+        Noema's own convention is the single fixed `get_fitness_score`, so
+        nothing in Noema passes `metric`. Upstream's suite covers the
+        `get_top_programs` side of it but never `get_best_program(metric=...)`.
+        """
+        store = _store()
+        store.add(_program("m_a", 0.0, metrics={"combined_score": 0.9, "accuracy": 0.1}))
+        store.add(_program("m_b", 0.0, metrics={"combined_score": 0.1, "accuracy": 0.9}))
+
+        self.assertEqual(store.best_program().id, "m_a")
+        self.assertEqual(store.best_program(metric="accuracy").id, "m_b")
+
+
 class TestMutationMatrixCoverageHoles(_IslandsWrapperTestCase):
     """0188 Stage 5, Rule 2 fills.
 

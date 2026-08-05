@@ -26,8 +26,11 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-RUNS = ROOT / "artifacts" / "mutation" / "runs.jsonl"
-RUNS_GZ = ROOT / "artifacts" / "mutation" / "runs-3.jsonl.gz"
+# Pinned to the CURRENT run, not to a generic name: a stale artifacts/mutation/
+# runs.jsonl from an earlier run sat on disk (gitignored, so invisible in review)
+# and would have been preferred silently. Bump both when a new run supersedes.
+RUNS = ROOT / "artifacts" / "mutation" / "runs-4.jsonl"
+RUNS_GZ = ROOT / "artifacts" / "mutation" / "runs-4.jsonl.gz"
 DOCS = ROOT / "docs" / "fidelity"
 
 # --- Scope B: the declared population (stage note, "Matrix test population") ---
@@ -223,10 +226,10 @@ def main():
     ).stdout.strip()
 
     out = [
-        "# 0188 two-way mutation matrix — run 3, at the Stage 6 reduced head",
+        "# 0188 two-way mutation matrix — run 4, at the Stage 7 widened head",
         "",
         "<!-- GENERATED FILE — DO NOT EDIT BY HAND. Produced by "
-        "scripts/mutation_matrix_report.py from artifacts/mutation/runs-3.jsonl.gz; "
+        "scripts/mutation_matrix_report.py from artifacts/mutation/runs-4.jsonl.gz; "
         "regenerate instead of editing, or your change is silently reverted on the "
         "next run. This is dissertation evidence: the caveats below (Rule 1's "
         "literal-bar reinterpretation, the unchanged-population statement, the "
@@ -236,13 +239,15 @@ def main():
         f"- Reduced at commit `{sha}` (HEAD when this report was generated), branch "
         "`cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the "
         "matrix executed against — the driver runs first and the artifact is committed "
-        "afterwards. The run-against commit is recorded in the stage note; for run 3 "
-        "it was `6201c6e`, the Stage 6 reduction commit itself, so the population "
-        "measured here IS the population that ships.",
-        "- **Supersedes run 2** as the dissertation artifact, per the Stage 6 "
-        "orchestrator constraint: the two rules must hold on the *reduced* "
-        "population, and this is that matrix. Run 2's numbers (123 population rows, "
-        "35 pinned / 5 incidental) describe a test population that no longer exists.",
+        "afterwards. The run-against commit is recorded in the stage note; for run 4 "
+        "it was `27df25f`, the head after the Rule 2 fills landed, so the "
+        "population and catalogue measured here ARE the ones that ship.",
+        "- **Supersedes run 3** as the dissertation artifact. Stage 7's wrapper "
+        "widening changed BOTH axes at once, so run 3's numbers describe neither "
+        "the catalogue nor the population that ships: the catalogue grew 40 -> 69 "
+        "(one mutant per new public wrapper capability), and 51 donor tests that "
+        "FAILED at run 3's baseline — and were therefore absent from run 3's rows "
+        "entirely — are now baseline-green and in the population.",
         "- Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at "
         "`/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`",
         f"- Mutants: {len(mutants)} (Option C — wrapper stores + novelty guard + PromptSampler routing)",

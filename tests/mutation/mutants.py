@@ -1,4 +1,4 @@
-"""0188 Stage 5 — the mutant catalogue (Option C: 40 mutants).
+"""0188 Stage 5 — the mutant catalogue (Option C: 69 mutants).
 
 One wrong-but-well-formed mutant per public member of the two wrapper classes,
 plus the declared-deviation novelty guard, plus the PromptSampler routing
@@ -485,3 +485,207 @@ MUTANTS = {
     "prompts.build_mutation_prompt.drop_parent2": _prompts_build_mutation_prompt_drop_parent2,
     "prompts.inject_advice.no_header": _prompts_inject_advice_no_header,
 }
+
+
+# ---------------------------------------------------------------------------
+# §2d — SubstrateDatabase capabilities added by 0188 Stage 7 wrapper widening (29)
+# ---------------------------------------------------------------------------
+# One mutant per NEW public capability, same bar as §2a/§2b: type-correct
+# return, no exception on the happy path, plausibly passes a weakly-written
+# test. These exist to prove the widening is load-bearing — the newly-green
+# donor tests are expected to be the killers, which is the whole reason Stage 7
+# extended the matrix bar rather than leaving the catalogue at 42.
+#
+# Note the shape most of them take. A widened capability's contract is "hand
+# back the state upstream owns", so the sharpest wrong-but-well-formed mutation
+# is usually a COPY or a RECOMPUTATION: it reads correctly, satisfies any test
+# that only looks, and silently drops every write — precisely the failure mode
+# Stage 1's derived views actually had.
+
+
+def _database_sample_island_zero():
+    SubstrateDatabase.sample = lambda self, num_inspirations=None: self._db.sample_from_island(
+        0, num_inspirations=num_inspirations
+    )
+
+
+def _database_get_artifacts_empty():
+    SubstrateDatabase.get_artifacts = lambda self, program_id: {}
+
+
+def _database_programs_copy():
+    SubstrateDatabase.programs = property(lambda self: dict(self._db.programs))
+
+
+def _database_islands_copy():
+    SubstrateDatabase.islands = property(lambda self: [set(ids) for ids in self._db.islands])
+
+
+def _database_archive_empty():
+    SubstrateDatabase.archive = property(lambda self: set())
+
+
+def _database_feature_bins_default_ten():
+    SubstrateDatabase.feature_bins = property(lambda self: 10)
+
+
+def _database_island_feature_maps_share_first():
+    SubstrateDatabase.island_feature_maps = property(
+        lambda self: [self._db.island_feature_maps[0]] * len(self._db.island_feature_maps)
+    )
+
+
+def _database_island_generations_copy():
+    SubstrateDatabase.island_generations = property(
+        lambda self: list(self._db.island_generations),
+        lambda self, generations: setattr(self._db, "island_generations", generations),
+    )
+
+
+def _database_island_generations_setter_noop():
+    SubstrateDatabase.island_generations = property(
+        lambda self: self._db.island_generations,
+        lambda self, generations: None,
+    )
+
+
+def _database_island_best_programs_recomputed():
+    # Stage 1's derived view, restored as a mutant: current best per island
+    # instead of upstream's incrementally-maintained list. Reads plausibly, and
+    # silently corrects upstream's stale-entry behaviour — i.e. diverges from
+    # the pin in the direction that looks like an improvement.
+    def island_best_programs(self):
+        result = []
+        for island in range(self.num_islands):
+            top = self._db.get_top_programs(1, island_idx=island)
+            result.append(top[0].id if top else None)
+        return result
+
+    SubstrateDatabase.island_best_programs = property(island_best_programs)
+
+
+def _database_last_migration_generation_zero():
+    SubstrateDatabase.last_migration_generation = property(lambda self: 0)
+
+
+def _database_best_program_id_recomputed():
+    def best_program_id(self):
+        best = self._db.get_best_program()
+        return None if best is None else best.id
+
+    SubstrateDatabase.best_program_id = property(
+        best_program_id, lambda self, pid: setattr(self._db, "best_program_id", pid)
+    )
+
+
+def _database_best_program_id_setter_noop():
+    SubstrateDatabase.best_program_id = property(
+        lambda self: self._db.best_program_id, lambda self, pid: None
+    )
+
+
+def _database_current_island_zero():
+    SubstrateDatabase.current_island = property(
+        lambda self: 0, lambda self, island: setattr(self._db, "current_island", island)
+    )
+
+
+def _database_current_island_setter_noop():
+    SubstrateDatabase.current_island = property(
+        lambda self: self._db.current_island, lambda self, island: None
+    )
+
+
+def _database_set_current_island_off_by_one():
+    SubstrateDatabase.set_current_island = lambda self, island: self._db.set_current_island(
+        island + 1
+    )
+
+
+def _database_next_island_no_advance():
+    SubstrateDatabase.next_island = lambda self: self._db.current_island
+
+
+def _database_should_migrate_always_false():
+    SubstrateDatabase.should_migrate = lambda self: False
+
+
+def _database_migrate_programs_noop():
+    SubstrateDatabase.migrate_programs = lambda self: None
+
+
+def _database_validate_migration_results_noop():
+    SubstrateDatabase.validate_migration_results = lambda self: None
+
+
+def _database_log_island_status_noop():
+    SubstrateDatabase.log_island_status = lambda self: None
+
+
+def _database_feature_coords_zeros():
+    SubstrateDatabase.feature_coords = lambda self, program: [0] * len(self.feature_dimensions)
+
+
+def _database_feature_coords_to_key_constant():
+    SubstrateDatabase.feature_coords_to_key = lambda self, coords: "-".join(["0"] * len(coords))
+
+
+def _database_complexity_bin_zero():
+    SubstrateDatabase.complexity_bin = lambda self, complexity: 0
+
+
+def _database_diversity_bin_zero():
+    SubstrateDatabase.diversity_bin = lambda self, diversity: 0
+
+
+def _database_code_diversity_constant():
+    SubstrateDatabase.code_diversity = lambda self, code1, code2: 0.5
+
+
+def _database_sample_inspirations_parent_only():
+    SubstrateDatabase.sample_inspirations = lambda self, parent, n=5: [parent]
+
+
+def _database_top_programs_ignore_metric():
+    SubstrateDatabase.top_programs = lambda self, n, island=None, metric=None: (
+        self._db.get_top_programs(n, island_idx=island)
+    )
+
+
+def _database_best_program_ignore_metric():
+    SubstrateDatabase.best_program = lambda self, metric=None: self._db.get_best_program()
+
+
+MUTANTS.update(
+    {
+        "database.sample.island_zero": _database_sample_island_zero,
+        "database.get_artifacts.empty": _database_get_artifacts_empty,
+        "database.programs.copy": _database_programs_copy,
+        "database.islands.copy": _database_islands_copy,
+        "database.archive.empty": _database_archive_empty,
+        "database.feature_bins.default_ten": _database_feature_bins_default_ten,
+        "database.island_feature_maps.share_first": _database_island_feature_maps_share_first,
+        "database.island_generations.copy": _database_island_generations_copy,
+        "database.island_generations.setter_noop": _database_island_generations_setter_noop,
+        "database.island_best_programs.recomputed": _database_island_best_programs_recomputed,
+        "database.last_migration_generation.zero": _database_last_migration_generation_zero,
+        "database.best_program_id.recomputed": _database_best_program_id_recomputed,
+        "database.best_program_id.setter_noop": _database_best_program_id_setter_noop,
+        "database.current_island.zero": _database_current_island_zero,
+        "database.current_island.setter_noop": _database_current_island_setter_noop,
+        "database.set_current_island.off_by_one": _database_set_current_island_off_by_one,
+        "database.next_island.no_advance": _database_next_island_no_advance,
+        "database.should_migrate.always_false": _database_should_migrate_always_false,
+        "database.migrate_programs.noop": _database_migrate_programs_noop,
+        "database.validate_migration_results.noop": _database_validate_migration_results_noop,
+        "database.log_island_status.noop": _database_log_island_status_noop,
+        "database.feature_coords.zeros": _database_feature_coords_zeros,
+        "database.feature_coords_to_key.constant": _database_feature_coords_to_key_constant,
+        "database.complexity_bin.zero": _database_complexity_bin_zero,
+        "database.diversity_bin.zero": _database_diversity_bin_zero,
+        "database.code_diversity.constant": _database_code_diversity_constant,
+        "database.sample_inspirations.parent_only": _database_sample_inspirations_parent_only,
+        "database.top_programs.ignore_metric": _database_top_programs_ignore_metric,
+        "database.best_program.ignore_metric": _database_best_program_ignore_metric,
+    }
+)

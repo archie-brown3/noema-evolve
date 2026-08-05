@@ -50,9 +50,9 @@ class IslandsStore(SubstrateDatabase):
         candidates = self.population(scope)
         return tuple(sorted(candidates, key=self.fitness, reverse=True)[:10])
 
-    def top_programs(self, n: int, scope=None, island=None) -> Sequence[Program]:
+    def top_programs(self, n: int, scope=None, island=None, metric=None) -> Sequence[Program]:
         selected_scope = scope if scope is not None else island
-        return super().top_programs(n, island=selected_scope)
+        return super().top_programs(n, island=selected_scope, metric=metric)
 
     def per_scope_bests(self) -> Sequence[float]:
         return self.per_island_bests()

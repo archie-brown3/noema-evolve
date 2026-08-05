@@ -30,16 +30,13 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Run test suite
-        # tests/test_noema_islands_adapter_fidelity_spec.py is a fidelity
-        # INSTRUMENT, not a passing suite: it runs OpenEvolve's donor island
-        # tests byte-identically through the strict adapter, and 51 of them
-        # fail BY DESIGN — each one a declared deviation naming the Noema
-        # capability it needs (task 0188 Stage 1's triage ledger). Collecting
-        # it here would paint every PR red with expected failures.
+        # tests/test_noema_islands_adapter_fidelity_spec.py runs OpenEvolve's
+        # donor island tests byte-identically through the strict adapter. As
+        # of Stage 7 all 90 of them pass, so the file is collected here like
+        # any other test module.
         #
-        # The deviations stay CI-verified, and more strictly, through
-        # TestTriageLedgerParity in tests/test_adapter_instrumentation.py: that
-        # test runs the whole donor suite itself and asserts the failing set is
-        # EXACTLY those 51, so a deviation that silently starts passing — or a
-        # donor that starts failing for a new reason — fails CI.
-        run: pytest tests/ -v --tb=short --ignore=tests/test_noema_islands_adapter_fidelity_spec.py
+        # TestTriageLedgerParity in tests/test_adapter_instrumentation.py
+        # additionally pins the failing set to empty by running the donor
+        # suite itself and asserting no deviations remain, so a regression
+        # fails CI even if donor collection were ever broken.
+        run: pytest tests/ -v --tb=short

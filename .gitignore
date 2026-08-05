@@ -40,3 +40,7 @@ build/
 # Secrets — never commit
 .env
 .env.*
+
+# tests/mutation/plugin.py defaults NOEMA_MUTANT_LOG to this name in the CWD, so
+# any plugin run without the env var drops it in the repo root.
+mutation-runs.jsonl
