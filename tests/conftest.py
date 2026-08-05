@@ -10,5 +10,10 @@ collect_ignore = ["upstream"]
 
 
 def pytest_ignore_collect(collection_path, config):
-    path = Path(collection_path)
-    return "upstream" in path.parts
+    # Return None, not False, when we have no opinion: this hook is firstresult,
+    # so a literal False here WINS over every other opinion — including pytest's
+    # own handling of --ignore/--ignore-glob, which was silently doing nothing
+    # for the whole suite.
+    if "upstream" in Path(collection_path).parts:
+        return True
+    return None
