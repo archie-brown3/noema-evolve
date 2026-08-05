@@ -87,7 +87,6 @@ class TestServableSurfaceRoutesThroughStore(unittest.TestCase):
         "load": "load",
         "set_current_island": "set_current_island",
         "next_island": "next_island",
-        "increment_island_generation": "increment_island_generation",
         "should_migrate": "should_migrate",
         "migrate_programs": "migrate_programs",
         "log_island_status": "log_island_status",
@@ -161,7 +160,6 @@ class TestServableSurfaceRoutesThroughStore(unittest.TestCase):
             db.sample_from_island(0, num_inspirations=1)
             db.set_current_island(1)
             db.next_island()
-            db.increment_island_generation(island_idx=0)
             db.should_migrate()
             db.migrate_programs()
             db.log_island_status()

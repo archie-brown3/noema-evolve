@@ -25,6 +25,14 @@ fi
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT" || exit 1
 
+# 0188 Stage 7: the matrix's verdicts are only as reproducible as its runs.
+# Donor test_sample_from_island_ratios.py:186 fails ~1 run in 25 under hash
+# randomisation (upstream's weighted sampler iterates a SET, so a fixed RNG draw
+# lands on a different program each process — measured, see the note in
+# tests/test_noema_islands_adapter_fidelity_spec.py). A flaky baseline row would
+# read as "this mutant was killed" for whichever mutant happened to draw it.
+export PYTHONHASHSEED=0
+
 OUT=${1:-artifacts/mutation/runs.jsonl}
 shift || true
 mkdir -p "$(dirname "$OUT")"

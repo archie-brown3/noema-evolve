@@ -196,9 +196,6 @@ class SubstrateDatabase:
     def next_island(self) -> int:
         return self._db.next_island()
 
-    def increment_island_generation(self, island: Optional[int] = None) -> None:
-        self._db.increment_island_generation(island_idx=island)
-
     def should_migrate(self) -> bool:
         return self._db.should_migrate()
 

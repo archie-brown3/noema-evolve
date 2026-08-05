@@ -68,9 +68,6 @@ class AdapterProgramDatabase:
     def next_island(self) -> int:
         return self._store.next_island()
 
-    def increment_island_generation(self, island_idx: Optional[int] = None) -> None:
-        self._store.increment_island_generation(island=island_idx)
-
     def should_migrate(self) -> bool:
         return self._store.should_migrate()
 
