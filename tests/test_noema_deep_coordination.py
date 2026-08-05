@@ -7,15 +7,12 @@ import random
 import sys
 import tempfile
 import unittest
-from types import SimpleNamespace
 from unittest.mock import patch
 
 from noema.agenthost.config import AgentCliConfig, AgentConfig
 from noema.agenthost.factory import create_agent_session
 from noema.agenthost.reasoning import DeepCoordinationLLM
 from noema.budget.cli_runner import CliRunResult
-from noema.budget.ledger import COORDINATION_ACCOUNT, TokenLedger
-from noema.budget.llm import BudgetedLLM
 from noema.config import CoordinationConfig, LLMClientConfig, LLMRolesConfig, NoemaConfig
 from noema.coordination.base import GenerationContext, PopulationSnapshot
 from noema.coordination.hifo.module import HiFoPromptModule
@@ -51,17 +48,6 @@ def make_hifo_ctx(**overrides) -> GenerationContext:
 
 
 class TestDeepCoordinationLLM(unittest.TestCase):
-    def _inner(self) -> BudgetedLLM:
-        return BudgetedLLM(
-            model="fake",
-            ledger=TokenLedger(total_budget_tokens=100_000),
-            account=COORDINATION_ACCOUNT,
-            tag="test.coordination",
-            client=SimpleNamespace(),
-            retries=0,
-            retry_delay=0.0,
-        )
-
     def _agent_cfg_hifo_deep(self) -> AgentConfig:
         return AgentConfig(
             noema=NoemaConfig(
@@ -82,9 +68,9 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             return "ok"
 
         llm = DeepCoordinationLLM(
-            self._inner(),
             cli=AgentCliConfig(kind="opencode"),
             output_dir=tempfile.mkdtemp(),
+            model="fake",
             spawn=spawn,
         )
         llm.generation = 2
@@ -102,9 +88,9 @@ class TestDeepCoordinationLLM(unittest.TestCase):
 
     def test_timeout_raises_with_diagnostic(self):
         llm = DeepCoordinationLLM(
-            self._inner(),
             cli=AgentCliConfig(kind="opencode", binary=sys.executable, timeout_s=3.0),
             output_dir=tempfile.mkdtemp(),
+            model="fake",
         )
         result = CliRunResult(
             exit_code=-1,
@@ -119,9 +105,9 @@ class TestDeepCoordinationLLM(unittest.TestCase):
 
     def test_nonzero_exit_raises_with_diagnostic(self):
         llm = DeepCoordinationLLM(
-            self._inner(),
             cli=AgentCliConfig(kind="opencode", binary=sys.executable),
             output_dir=tempfile.mkdtemp(),
+            model="fake",
         )
         result = CliRunResult(
             exit_code=7,
@@ -142,9 +128,9 @@ class TestDeepCoordinationLLM(unittest.TestCase):
             return fn(*args, **kwargs)
 
         llm = DeepCoordinationLLM(
-            self._inner(),
             cli=AgentCliConfig(kind="opencode", binary=sys.executable),
             output_dir=tempfile.mkdtemp(),
+            model="fake",
         )
         result = CliRunResult(
             exit_code=0,
@@ -188,11 +174,10 @@ class TestDeepCoordinationLLM(unittest.TestCase):
                 return extraction
             return ""
 
-        inner = self._inner()
         llm = DeepCoordinationLLM(
-            inner,
             cli=AgentCliConfig(kind="opencode"),
             output_dir=tempfile.mkdtemp(),
+            model="fake",
             spawn=spawn,
         )
         module = HiFoPromptModule(

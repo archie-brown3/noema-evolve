@@ -11,7 +11,16 @@ class TestConfigureWalkOrder(unittest.TestCase):
     def test_section_order_is_primary_then_advanced_then_write(self):
         self.assertEqual(
             SECTION_ORDER,
-            ("paths", "agent", "coordination", "advanced", "write_and_run"),
+            (
+                "paths",
+                "agent",
+                "coordination",
+                "substrate",
+                "selection",
+                "evolution",
+                "overview",
+                "write_and_run",
+            ),
         )
 
     def test_new_walk_starts_on_paths(self):

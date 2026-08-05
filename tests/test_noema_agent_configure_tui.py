@@ -97,11 +97,9 @@ class TestModuleClosedField(unittest.TestCase):
             self.assertEqual(mod["choices"], sorted(MODULE_REGISTRY))
             self.assertEqual(mod["value"], "null")
             self.assertNotIn("llm", sections)
-            host_log = next(
-                field for field in sections["agent"] if field["id"] == "host_log_verbosity"
-            )
-            self.assertEqual(host_log["choices"], ["standard"])
-            self.assertEqual(host_log["value"], "standard")
+            # Host logging collapsed to the single standard mode, so it is no
+            # longer an editable field.
+            self.assertNotIn("host_log_verbosity", {field["id"] for field in sections["agent"]})
 
     def test_apply_never_writes_python_none_for_module(self):
         walk = ConfigureWalk(

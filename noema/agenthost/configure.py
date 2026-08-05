@@ -110,6 +110,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         config_path = paths.new_config_path or (cwd / "config.yaml")
         agent_config = AgentConfig()
 
+    # Upstream's rule (controller.py): the seed programme's extension sets
+    # file_suffix unless the YAML already names a non-default one.
+    if agent_config.noema.file_suffix == ".py":
+        agent_config.noema.file_suffix = paths.file_suffix
+
     output_dir = args.output_dir or (cwd / "noema_agent_output")
 
     if not args.write_only and sys.stdin.isatty():

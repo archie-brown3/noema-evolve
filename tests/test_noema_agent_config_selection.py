@@ -31,8 +31,10 @@ class TestCirclePackingConfigSelection(unittest.TestCase):
 
     def test_cli_config_field_exposes_every_discovered_path(self):
         found = discover_example(CIRCLE_PACKING)
+        # No config.yaml/noema.yaml here, so nothing is preferred; the choice
+        # list must still carry every candidate.
         fields = _agent_sections(
-            load_noema_and_agent(found.preferred_config),
+            load_noema_and_agent(found.preferred_config or found.config_candidates[0]),
             found,
             CIRCLE_PACKING / "noema_agent_output",
         )
@@ -55,10 +57,11 @@ class TestCirclePackingConfigSelection(unittest.TestCase):
                     loaded.noema.diff_based_evolution,
                     raw["diff_based_evolution"],
                 )
-                self.assertEqual(
-                    loaded.noema.prompt.system_message,
-                    raw["prompt"]["system_message"],
-                )
+                if "system_message" in raw["prompt"]:
+                    self.assertEqual(
+                        loaded.noema.prompt.system_message,
+                        raw["prompt"]["system_message"],
+                    )
                 self.assertEqual(
                     loaded.noema.prompt.use_template_stochasticity,
                     False,

@@ -41,7 +41,7 @@ class TestDiscoverExample(unittest.TestCase):
             with self.assertRaises(ValueError) as ctx:
                 discover_example(cwd)
             msg = str(ctx.exception).lower()
-            self.assertIn("initial_program.py", msg)
+            self.assertIn("initial_program", msg)
             self.assertIn("evaluator.py", msg)
 
     def test_prefers_config_yaml_then_noema_yaml(self):
@@ -63,6 +63,50 @@ class TestDiscoverExample(unittest.TestCase):
             names = {p.name for p in found.config_candidates}
             self.assertEqual(names, {"noema.yaml", "config_phase_1.yaml"})
             self.assertEqual(found.preferred_config, (cwd / "noema.yaml").resolve())
+
+
+class TestDiscoverInitialProgramLanguage(unittest.TestCase):
+    """The seed programme may be in any language; only the evaluator is Python."""
+
+    def _example(self, cwd: Path, *names: str) -> None:
+        (cwd / "evaluator.py").write_text("def evaluate(p):\n    return {'combined_score': 1.0}\n")
+        for name in names:
+            (cwd / name).write_text("// seed\n")
+
+    def test_non_python_initial_program_is_discovered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            self._example(cwd, "initial_program.cpp")
+            found = discover_example(cwd)
+            self.assertEqual(found.initial_program, (cwd / "initial_program.cpp").resolve())
+            self.assertEqual(found.file_suffix, ".cpp")
+
+    def test_python_initial_program_still_discovered(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            self._example(cwd, "initial_program.py")
+            found = discover_example(cwd)
+            self.assertEqual(found.initial_program, (cwd / "initial_program.py").resolve())
+            self.assertEqual(found.file_suffix, ".py")
+
+    def test_ambiguous_initial_programs_rejected_listing_candidates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            self._example(cwd, "initial_program.cpp", "initial_program.py")
+            with self.assertRaises(ValueError) as ctx:
+                discover_example(cwd)
+            msg = str(ctx.exception)
+            self.assertIn("initial_program.cpp", msg)
+            self.assertIn("initial_program.py", msg)
+
+    def test_evaluator_must_still_be_python(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            (cwd / "initial_program.cpp").write_text("// seed\n")
+            (cwd / "evaluator.cpp").write_text("// not a python evaluator\n")
+            with self.assertRaises(ValueError) as ctx:
+                discover_example(cwd)
+            self.assertIn("evaluator.py", str(ctx.exception))
 
 
 class TestDiscoverSkeleton(unittest.TestCase):
