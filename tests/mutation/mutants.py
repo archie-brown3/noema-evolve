@@ -1,4 +1,4 @@
-"""0188 Stage 5 — the mutant catalogue (Option C: 40 mutants).
+"""0188 Stage 5 — the mutant catalogue (Option C: 69 mutants).
 
 One wrong-but-well-formed mutant per public member of the two wrapper classes,
 plus the declared-deviation novelty guard, plus the PromptSampler routing
