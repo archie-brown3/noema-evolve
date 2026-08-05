@@ -6,7 +6,17 @@ Responsibilities:
   can never make embedding/LLM-judge network calls behind the ledger's back;
 - own the island/migration bookkeeping that openevolve's own controller drives
   (increment_island_generation, should_migrate, migrate_programs);
-- expose the narrow read API the noema controller and coordination modules use.
+- expose the read API the noema controller and coordination modules use;
+- since 0188 Stage 7, serve the rest of ProgramDatabase's surface too, so that
+  OpenEvolve's own test suite can run against Noema through a strict adapter
+  that never reaches around this wrapper.
+
+That last responsibility is why this class is no longer the "narrow" wrapper it
+was written as. The widened members are routes, not reimplementations: each one
+hands back the state ProgramDatabase already owns, which is what makes them
+reproduce upstream bug-for-bug — quirks included — rather than approximately.
+Noema's own callers still use only the narrow half; see the "upstream state,
+served live" block below for the boundary and the reasoning.
 """
 
 import logging
