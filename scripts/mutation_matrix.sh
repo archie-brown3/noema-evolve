@@ -8,7 +8,20 @@
 # Usage: scripts/mutation_matrix.sh [out.jsonl] [mutant-id ...]
 set -u
 
-PY=${PY:-/root/noema-evolve/.venv/bin/python3}
+# Respect caller override (PY), prefer repo venv if present, else resolve active python3/sys.executable
+if [ -n "${PY:-}" ]; then
+  : # PY provided by caller
+elif [ -x "/root/noema-evolve/.venv/bin/python3" ]; then
+  PY="/root/noema-evolve/.venv/bin/python3"
+else
+  if command -v python3 >/dev/null 2>&1; then
+    PY=$(python3 -c 'import sys; print(sys.executable)')
+  elif command -v python >/dev/null 2>&1; then
+    PY=$(python -c 'import sys; print(sys.executable)')
+  else
+    PY=python3
+  fi
+fi
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT" || exit 1
 
