@@ -61,14 +61,21 @@ class TestSubstrateDatabase(unittest.TestCase):
         self.assertAlmostEqual(db.fitness(program), 0.9)
 
     def test_island_fitnesses(self):
-        db = make_db(num_islands=1)
+        # TWO islands, both populated: with one island the assertion cannot tell
+        # per-island scoping from a global pool (0188 Stage 5 matrix, Rule 1).
+        db = make_db(num_islands=2)
         # Codes of very different lengths so each lands in its own MAP-Elites
         # complexity cell (same-cell programs replace each other)
         for i, score in enumerate((0.2, 0.5, 0.8)):
             padding = "\n".join(f"    x{j} = {j}" for j in range(i * 20))
-            db.add(make_program(code=f"def f():\n{padding}\n    return {score}\n", score=score))
-        fitnesses = db.island_fitnesses(0)
-        self.assertEqual(sorted(fitnesses), [0.2, 0.5, 0.8])
+            db.add(
+                make_program(code=f"def f():\n{padding}\n    return {score}\n", score=score),
+                target_island=0,
+            )
+        db.add(make_program(code="def g():\n    return 0.95\n", score=0.95), target_island=1)
+
+        self.assertEqual(sorted(db.island_fitnesses(0)), [0.2, 0.5, 0.8])
+        self.assertEqual(sorted(db.island_fitnesses(1)), [0.95])
 
     def test_top_programs_ordering(self):
         db = make_db(num_islands=1)

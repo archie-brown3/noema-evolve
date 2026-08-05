@@ -230,15 +230,24 @@ class TestIslandPlacementThroughWrapper(_IslandsWrapperTestCase):
     test_island_parent_consistency.py:132, test_island_migration.py:47."""
 
     def test_child_inherits_parent_island_when_no_target_specified(self):
-        """donor: child_placement.py:24"""
+        """donor: child_placement.py:24
+
+        Parent on island 2, NOT island 0. Upstream's add() has two branches that
+        both answer 0 for a parent on island 0 (openevolve/database.py:239-246
+        inherit vs :247-257 current_island fallback, and current_island is 0 and
+        is never advanced by noema — spec §5 §5c). With the parent on island 2
+        the inherit branch answers 2 and the fallback answers 0, so the
+        assertion finally discriminates. This test was killed by ZERO mutants in
+        matrix run 1, exactly as spec §5 §5e predicted."""
         store = _store()
-        store.add(_program("parent_0", 0.5), iteration=0, target_scope=0)
+        store.add(_program("parent_0", 0.5), iteration=0, target_scope=2)
 
         child = _program("child_0", 0.6, parent_id="parent_0")
         store.add(child, iteration=1)
 
-        self.assertEqual(child.metadata.get("island"), 0)
-        self.assertIn("child_0", _ids(store.population(0)))
+        self.assertEqual(child.metadata.get("island"), 2)
+        self.assertIn("child_0", _ids(store.population(2)))
+        self.assertNotIn("child_0", _ids(store.population(0)))
 
     def test_child_placed_in_target_island_when_specified(self):
         """donor: child_placement.py:49"""
@@ -366,23 +375,31 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
         self.assertEqual(store.per_scope_bests()[2], 0.0)
 
     def test_better_program_raises_the_island_best(self):
-        """donor: tracking.py:50"""
+        """donor: tracking.py:50
+
+        Island 1 carries a STRICTLY HIGHER program throughout. Without it the
+        assertion cannot tell a per-island best from the global best (0188
+        Stage 5 matrix, Rule 1)."""
         store = _store()
-        store.add(_program("mediocre", 0.5), iteration=0, target_scope=0)
+        store.add(_program("elsewhere", 0.95), iteration=0, target_scope=1)
+        store.add(_program("mediocre", 0.5), iteration=1, target_scope=0)
         self.assertEqual(store.per_scope_bests()[0], 0.5)
 
-        store.add(_program("better", 0.8), iteration=1, target_scope=0)
+        store.add(_program("better", 0.8), iteration=2, target_scope=0)
 
         self.assertEqual(store.per_scope_bests()[0], 0.8)
+        self.assertEqual(store.per_scope_bests()[1], 0.95)
 
     def test_worse_program_does_not_lower_the_island_best(self):
-        """donor: tracking.py:62"""
+        """donor: tracking.py:62 (island 1 higher throughout — see above)"""
         store = _store()
-        store.add(_program("good", 0.8), iteration=0, target_scope=0)
+        store.add(_program("elsewhere", 0.95), iteration=0, target_scope=1)
+        store.add(_program("good", 0.8), iteration=1, target_scope=0)
 
-        store.add(_program("worse", 0.3), iteration=1, target_scope=0)
+        store.add(_program("worse", 0.3), iteration=2, target_scope=0)
 
         self.assertEqual(store.per_scope_bests()[0], 0.8)
+        self.assertEqual(store.per_scope_bests()[1], 0.95)
 
     def test_island_bests_are_tracked_independently(self):
         """donor: tracking.py:76"""
@@ -415,10 +432,11 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
     def test_combined_score_not_raw_score_drives_the_island_best(self):
         """donor: tracking.py:147"""
         store = _store()
+        store.add(_program("cs_elsewhere", 0.95), iteration=0, target_scope=1)
         store.add(
             _program("cs1", 0.0, metrics={"score": 0.5, "other": 0.3,
                                           "combined_score": 0.4}),
-            iteration=0, target_scope=0,
+            iteration=1, target_scope=0,
         )
         self.assertEqual(store.per_scope_bests()[0], 0.4)
 
@@ -426,10 +444,11 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
         store.add(
             _program("cs2", 0.0, metrics={"score": 0.3, "other": 0.7,
                                           "combined_score": 0.5}),
-            iteration=1, target_scope=0,
+            iteration=2, target_scope=0,
         )
 
         self.assertEqual(store.per_scope_bests()[0], 0.5)
+        self.assertEqual(store.per_scope_bests()[1], 0.95)
 
     def test_island_bests_persist_across_later_weaker_additions(self):
         """donor: tracking.py:230"""
@@ -480,8 +499,12 @@ class TestIslandTopProgramsThroughWrapper(_IslandsWrapperTestCase):
     def test_empty_island_yields_no_top_programs(self):
         """donor: tracking.py:260"""
         store = _store()
+        # Island 1 populated: an empty island 0 must stay empty even when the
+        # database is not (0188 Stage 5 matrix, Rule 1).
+        _seed(store, 1, [("tp_off", 0.9)])
 
         self.assertEqual(list(store.top_programs(5, scope=0)), [])
+        self.assertEqual(_ids(store.population(0)), set())
 
 
 class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
@@ -492,28 +515,35 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         _sample_inspirations; the wrapper reaches the same confinement contract
         through native_select."""
         store = _store()
-        _seed(store, 0, [("i0a", 0.9), ("i0b", 0.7)])
-        _seed(store, 1, [("i1a", 0.8), ("i1b", 0.6)], start_iteration=2)
+        _seed(store, 0, [(f"i0_{i}", 0.5 + i * 0.01) for i in range(12)])
+        _seed(store, 1, [("i1a", 0.8), ("i1b", 0.6)], start_iteration=12)
 
-        selection = store.native_select(0, num_inspirations=5)
+        # Exactly two, not upstream's default of five: the requested inspiration
+        # count is part of the contract (0188 Stage 5 matrix, Rule 1).
+        selection = store.native_select(0, num_inspirations=2)
 
         self.assertEqual(selection.source_scope, 0)
-        self.assertTrue(selection.inspirations, "loop below would be vacuous")
+        self.assertEqual(len(selection.inspirations), 2)
         for inspiration in selection.inspirations:
             self.assertEqual(inspiration.metadata.get("island"), 0)
+        # Confinement stated positively: island 0's cohort excludes island 1's
+        # members (0188 Stage 5 matrix, Rule 1).
+        self.assertEqual(_ids(store.population(0)) & {"i1a", "i1b"}, set())
 
     def test_selection_parent_and_inspirations_share_the_requested_island(self):
         """donor: ratios.py:108"""
         store = _store()
         _seed(store, 0, [(f"r0_{i}", 0.5 + i * 0.01) for i in range(20)])
+        _seed(store, 1, [("r1_off", 0.99)], start_iteration=20)
 
-        selection = store.native_select(0, num_inspirations=5)
+        selection = store.native_select(0, num_inspirations=3)
 
         self.assertEqual(selection.parent.metadata.get("island"), 0)
         self.assertEqual(selection.source_scope, 0)
-        self.assertTrue(selection.inspirations, "loop below would be vacuous")
+        self.assertEqual(len(selection.inspirations), 3)
         for inspiration in selection.inspirations:
             self.assertEqual(inspiration.metadata.get("island"), 0)
+        self.assertNotIn("r1_off", _ids(store.population(0)))
 
     def test_different_islands_draw_from_disjoint_parent_sets(self):
         """donor: ratios.py:122"""
@@ -537,18 +567,31 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
     def test_exploitation_mode_still_returns_a_live_program(self):
         """donor: ratios.py:140"""
         store = _store()
-        _seed(store, 0, [(f"x_{i}", 0.5 + i * 0.01) for i in range(20)])
+        # Island 1 first, so `survivors` is computed with it already present:
+        # a scope-ignoring population() would then include x_off and trip the
+        # assertion below (0188 Stage 5 matrix, Rule 1).
+        _seed(store, 1, [("x_off", 0.99)])
+        survivors = _seed(store, 0, [(f"x_{i}", 0.5 + i * 0.01) for i in range(20)],
+                          start_iteration=1)
+        self.assertNotIn("x_off", survivors)
         store.config.exploration_ratio = 0.0
         store.config.exploitation_ratio = 1.0
 
         for _ in range(20):
-            parent = store.native_select(0, num_inspirations=0).parent
-            self.assertIsNotNone(store.get(parent.id))
+            selection = store.native_select(0, num_inspirations=0)
+            self.assertIsNotNone(store.get(selection.parent.id))
+            # Zero requested means zero delivered, not upstream's default five
+            # (0188 Stage 5 matrix, Rule 1).
+            self.assertEqual(len(selection.inspirations), 0)
+            self.assertIn(selection.parent.id, survivors)
 
     def test_exploration_mode_spreads_across_the_island(self):
         """donor: ratios.py:157"""
         store = _store()
-        survivors = _seed(store, 0, [(f"e_{i}", 0.5 + i * 0.01) for i in range(20)])
+        _seed(store, 1, [("e_off", 0.99)])
+        survivors = _seed(store, 0, [(f"e_{i}", 0.5 + i * 0.01) for i in range(20)],
+                          start_iteration=1)
+        self.assertNotIn("e_off", survivors)
         store.config.exploration_ratio = 1.0
         store.config.exploitation_ratio = 0.0
 
@@ -556,10 +599,12 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         # that exploration spreads, which is only meaningful with >1 candidate.
         self.assertGreater(len(survivors), 1)
 
-        drawn = [store.native_select(0, num_inspirations=0).parent.id
-                 for _ in range(200)]
+        selections = [store.native_select(0, num_inspirations=2) for _ in range(200)]
+        drawn = [selection.parent.id for selection in selections]
 
         self.assertTrue(set(drawn) <= survivors)
+        for selection in selections:
+            self.assertEqual(len(selection.inspirations), 2)
         self.assertGreater(
             len(set(drawn)), 1, "exploration should not collapse onto one parent"
         )
@@ -587,6 +632,11 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         selection = store.native_select(1, num_inspirations=0)
 
         self.assertIsNotNone(selection.parent)
+        # The fallback reports the REAL source island, not the requested target.
+        # Without these two the test cannot tell the fallback from a selection
+        # that never left island 1 (0188 Stage 5 matrix, Rule 1).
+        self.assertEqual(selection.source_scope, 0)
+        self.assertEqual(selection.target_scope, 1)
 
     def test_empty_island_fallback_reports_the_real_source_scope(self):
         """donor: child_placement.py:104 -- the Selection pair is what lets the
@@ -605,11 +655,15 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         """donor: ratios.py:267"""
         store = _store()
         store.add(_program("solo", 0.5), iteration=0, target_scope=0)
+        # Island 1 is populated, so "no inspirations" is a CONFINEMENT claim
+        # rather than "the database is empty" (0188 Stage 5 matrix, Rule 1).
+        _seed(store, 1, [(f"co_{i}", 0.5 + i * 0.01) for i in range(3)], start_iteration=1)
 
         selection = store.native_select(0, num_inspirations=5)
 
         self.assertEqual(selection.parent.id, "solo")
         self.assertEqual(len(selection.inspirations), 0)
+        self.assertEqual(_ids(store.population(0)), {"solo"})
 
     def test_scope_beyond_island_count_wraps_around(self):
         """donor: ratios.py:283.
@@ -687,9 +741,11 @@ class TestIslandMigrationThroughWrapper(_IslandsWrapperTestCase):
         _seed(store, 0, [("s0", 0.5)])
         before = store.num_programs
 
-        for _ in range(6):
-            store.end_generation()
+        migrated = [store.end_generation() for _ in range(6)]
 
+        # Migration really did fire — otherwise "never grows by migration" is
+        # true for the uninteresting reason (0188 Stage 5 matrix, Rule 1).
+        self.assertTrue(any(migrated), "no migration fired; the claim is vacuous")
         self.assertEqual(store.num_programs, before)
 
     def test_migration_never_produces_migrant_suffixed_ids(self):
@@ -853,6 +909,10 @@ class TestIslandMapElitesThroughWrapper(_IslandsWrapperTestCase):
         self.assertEqual(
             [p.id for p in store.population(None) if "_migrant" in p.id], []
         )
+        # The count is the sharp half of the claim: a migrant-suffixed COPY
+        # would leave the ids clean and still inflate the database
+        # (0188 Stage 5 matrix, Rule 1).
+        self.assertEqual(store.num_programs, 3)
 
     def test_checkpoint_round_trip_preserves_per_island_placement(self):
         """donor: map_elites.py:173"""
@@ -862,6 +922,9 @@ class TestIslandMapElitesThroughWrapper(_IslandsWrapperTestCase):
         _seed(store, 0, [("cp0", 0.5), ("cp1", 0.6)])
         _seed(store, 1, [("cp2", 0.7)], start_iteration=2)
         before = [_ids(store.population(i)) for i in range(store.num_islands)]
+        # PER-island placement: if every island reported the same membership the
+        # round trip would preserve nothing worth naming (Stage 5 matrix, Rule 1).
+        self.assertNotEqual(before[0], before[1])
 
         with tempfile.TemporaryDirectory() as tmp:
             store.save(tmp, iteration=7)
@@ -871,6 +934,8 @@ class TestIslandMapElitesThroughWrapper(_IslandsWrapperTestCase):
         after = [_ids(restored.population(i)) for i in range(restored.num_islands)]
         self.assertEqual(after, before)
         self.assertEqual(restored.num_programs, store.num_programs)
+        # The checkpoint records the iteration it was written at.
+        self.assertEqual(restored.last_iteration, 7)
 
 
 class TestIslandConcurrencyThroughWrapper(_IslandsWrapperTestCase):
@@ -946,6 +1011,145 @@ class TestIslandConcurrencyThroughWrapper(_IslandsWrapperTestCase):
             [name for name in vars(store) if "current" in name],
             "IslandsStore must hold no current-island state (upstream issue #246)",
         )
+
+
+class TestMutationMatrixCoverageHoles(_IslandsWrapperTestCase):
+    """0188 Stage 5, Rule 2 fills.
+
+    Matrix run 1 left these wrapper members killed by ZERO tests in the whole
+    collection — behaviour the suite asserted nowhere. Each test below names the
+    mutant it exists to kill; the mutant ids are the harness keys in
+    ``tests/mutation/mutants.py``. Grounding: vault note "0188 OpenEvolve
+    Fidelity Spec §5 — Mutation Matrix — 2026-08-05" §2a/§2b, and §2e which
+    predicted three of them (store_artifacts, capabilities, fitness) by grep
+    before the harness existed.
+
+    These are not donor translations. They are Noema's own pins on wrapper
+    members whose upstream semantic claim was unverified.
+    """
+
+    def test_capabilities_are_exactly_what_the_store_serves(self):
+        """kills islands.capabilities.overclaim.
+
+        Every existing `capabilities` assertion in the suite is an `assertIn`
+        or a subset check, and the runtime gate at base.py:150-154 tests
+        `required - capabilities` — so ADDING a capability can never trip it.
+        Only an exact-set assertion can (spec §2e.2)."""
+        self.assertEqual(
+            IslandsStore.capabilities,
+            frozenset(
+                {
+                    "population",
+                    "elites",
+                    "fitness",
+                    "code",
+                    "sampling_weights",
+                    "regions",
+                    "native_stock_selection",
+                }
+            ),
+        )
+
+    def test_elites_are_the_fittest_of_the_scope_in_descending_order(self):
+        """kills islands.elites.worst_first."""
+        store = _store()
+        survivors = _seed(store, 0, [(f"el_{i}", 0.1 * i) for i in range(1, 9)])
+        self.assertGreater(len(survivors), 1, "ordering claim needs >1 survivor")
+
+        elites = store.elites(0)
+        fitnesses = [store.fitness(program) for program in elites]
+
+        self.assertEqual(fitnesses, sorted(fitnesses, reverse=True))
+        self.assertEqual(fitnesses[0], max(store.island_fitnesses(0)))
+
+    def test_snapshot_limit_selects_the_top_n_not_an_arbitrary_n(self):
+        """kills islands.snapshot.limit_before_sort."""
+        store = _store()
+        # Ascending insert order, so an unsorted head is the WORST two.
+        _seed(store, 0, [(f"sn_{i}", 0.1 * i) for i in range(1, 9)])
+        best_two = sorted(store.island_fitnesses(0), reverse=True)[:2]
+
+        snapshot = store.snapshot(scope=0, limit=2)
+
+        self.assertEqual(len(snapshot.top_programs), 2)
+        self.assertEqual([view.fitness for view in snapshot.top_programs], best_two)
+
+    def test_scope_takes_precedence_over_the_legacy_island_alias(self):
+        """kills islands.top_programs.island_wins.
+
+        `scope` is the neutral spelling; `island` survives only as the legacy
+        alias. The precedence is observable only when both are passed and
+        differ, which no production caller does — so nothing pinned it."""
+        store = _store()
+        _seed(store, 0, [("pref_0", 0.5)])
+        _seed(store, 1, [("pref_1", 0.9)], start_iteration=1)
+
+        top = store.top_programs(5, scope=0, island=1)
+
+        self.assertEqual([p.id for p in top], ["pref_0"])
+
+    def test_steps_per_generation_survives_a_checkpoint_round_trip(self):
+        """kills islands.state_dict.empty AND islands.load_state_dict.ignore_state.
+
+        Both are invisible unless the value is first set to something other
+        than the `num_islands` default that `load_state_dict` falls back to
+        (spec §2a) — which is why one test closes two holes."""
+        store = _store(num_islands=3)
+        self.assertEqual(store.steps_per_generation, 3)
+        store.steps_per_generation = 7
+
+        state = store.state_dict()
+        restored = _store(num_islands=3)
+        restored.load_state_dict(state)
+
+        self.assertEqual(state, {"steps_per_generation": 7})
+        self.assertEqual(restored.steps_per_generation, 7)
+
+    def test_all_fitnesses_spans_every_island(self):
+        """kills database.all_fitnesses.island_zero."""
+        store = _store()
+        _seed(store, 0, [("af0", 0.2)])
+        _seed(store, 1, [("af1", 0.5)], start_iteration=1)
+        _seed(store, 2, [("af2", 0.8)], start_iteration=2)
+
+        self.assertEqual(sorted(store.all_fitnesses()), [0.2, 0.5, 0.8])
+
+    def test_get_returns_none_for_an_unknown_id_and_never_substitutes(self):
+        """kills database.get.best_fallback."""
+        store = _store()
+        _seed(store, 0, [("known", 0.9)])
+
+        self.assertIsNone(store.get("no_such_program"))
+        self.assertEqual(store.get("known").id, "known")
+
+    def test_sample_from_island_honours_the_requested_inspiration_count(self):
+        """kills database.sample_from_island.drop_inspirations.
+
+        Reached DIRECTLY, not through native_select: IslandsStore.native_select
+        calls ``self._db.sample_from_island`` (islands.py:76), so the wrapper's
+        own forwarding method is unreachable from the selection path and no
+        selection test can pin it. Upstream defaults the count to 5
+        (openevolve/database.py:396-397), so dropping the kwarg is silent
+        wherever a test happens to ask for 5."""
+        store = _store()
+        _seed(store, 0, [(f"sf_{i}", 0.5 + i * 0.01) for i in range(12)])
+
+        _, inspirations = store.sample_from_island(0, num_inspirations=2)
+
+        self.assertEqual(len(inspirations), 2)
+
+    def test_artifacts_reach_the_upstream_store_and_read_back(self):
+        """kills database.store_artifacts.noop.
+
+        The only artifact assertion in the suite before this one read a test
+        fixture's own dict, never SubstrateDatabase.store_artifacts, so a
+        no-op forward was completely invisible (spec §2e.1)."""
+        store = _store()
+        _seed(store, 0, [("art0", 0.5)])
+
+        store.store_artifacts("art0", {"stderr": "boom"})
+
+        self.assertEqual(store._db.get_artifacts("art0"), {"stderr": "boom"})
 
 
 if __name__ == "__main__":

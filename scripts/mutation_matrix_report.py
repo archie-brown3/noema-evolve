@@ -57,6 +57,55 @@ GUARD_NODES = frozenset(
 )
 
 
+# --- Rule 1 declared exclusions (run-1 findings, mechanism per entry) --------
+# Rule 1's only resolutions are "rewrite the test" or "delete it". These nodes
+# admit neither, so they are declared here rather than silently dropped from the
+# population — the population itself is unchanged from what the stage note
+# stated before the first run.
+DONOR_ROUTED_PREFIX = (
+    "tests/test_noema_islands_adapter_fidelity_spec.py::AdapterRouted_"
+)
+NO_MUTANT_IN_OPTION_C = {
+    "tests/test_noema_substrate.py::TestSubstrateDatabase::test_top_programs_ordering":
+        "base-class SubstrateDatabase.top_programs; spec §1c excludes the shadowed "
+        "base add/top_programs from the catalogue in favour of the IslandsStore "
+        "overrides, so no mutant reaches this call path",
+    "tests/test_noema_substrate.py::TestSubstrateDatabase::test_fitness_uses_combined_score":
+        "the only fitness mutant (database.fitness.no_feature_exclusion) is "
+        "identical whenever combined_score is present — by construction, per "
+        "spec §2b; a mutant that ignores combined_score is not in Option C",
+    "tests/test_noema_prompts.py::TestPromptAssembly::test_empty_advice_is_byte_identical":
+        "killed by spec §4a's OPTIONAL 7th mutant prompts.inject_advice."
+        "always_separator, which Option C does not include",
+    "tests/test_noema_prompts.py::TestPromptAssembly::test_prompt_deterministic_across_builds":
+        "no Option C mutant makes the sampler non-deterministic; "
+        "make_prompt_sampler.allow_stochasticity drops the GUARD, which "
+        "test_stochasticity_rejected already pins",
+    "tests/test_noema_islands_wrapper_fidelity_spec.py::TestIslandTopProgramsThroughWrapper::"
+    "test_out_of_range_scope_raises_indexerror":
+        "pinned-as-observed behaviour; killed by spec §7a's fix-shaped mutant "
+        "islands.top_programs.wrap_scope, which Option C does not include",
+    "tests/test_noema_islands_fidelity_spec.py::IslandsStockFidelitySpec::"
+    "test_stock_has_no_numpy_or_program_metadata_side_effects":
+        "an absence claim (no numpy/metadata side effects); every Option C mutant "
+        "is a wrong RETURN VALUE, none introduces a side effect",
+    "tests/test_noema_islands_fidelity_spec.py::IslandsStockFidelitySpec::"
+    "test_omitted_selection_and_old_database_config_mean_stock":
+        "a differential test between two IslandsStore instances — a class-level "
+        "mutant changes BOTH sides identically, so no mutant of this shape can "
+        "ever be detected by it",
+}
+
+
+def rule1_exclusion(nodeid):
+    if nodeid.startswith(DONOR_ROUTED_PREFIX):
+        return (
+            "donor-routed: the byte-identical donor body cannot be rewritten or "
+            "deleted without destroying the instrument (spec §5 §3.0)"
+        )
+    return NO_MUTANT_IN_OPTION_C.get(nodeid)
+
+
 def in_population(nodeid):
     if nodeid.startswith(POPULATION_EXCLUDE):
         return False
@@ -106,8 +155,13 @@ def main():
                 + ["K" if node in killed[m] else "." for m in mutants]
             )
 
-    # Rule 1 — every Scope B test killed by >= 1 mutant
-    placebos = [n for n in population if not any(n in killed[m] for m in mutants)]
+    # Rule 1 — every Scope B test killed by >= 1 mutant, in three buckets
+    unkilled = [n for n in population if not any(n in killed[m] for m in mutants)]
+    placebos = [n for n in unkilled if rule1_exclusion(n) is None]
+    donor_excluded = [n for n in unkilled if n.startswith(DONOR_ROUTED_PREFIX)]
+    no_mutant_excluded = [
+        (n, NO_MUTANT_IN_OPTION_C[n]) for n in unkilled if n in NO_MUTANT_IN_OPTION_C
+    ]
 
     # Rule 2 — three buckets
     pinned, incidental, holes = [], [], []
@@ -140,7 +194,11 @@ def main():
         "## Verdicts",
         "",
         f"- **Rule 1 — every population test is killed by >=1 mutant:** "
-        f"{'HOLDS' if not placebos else f'VIOLATED ({len(placebos)} placebo(s))'}",
+        f"{'HOLDS where actionable' if not placebos else f'VIOLATED ({len(placebos)} placebo(s))'}"
+        f" — {len(placebos)} unresolved placebo(s), "
+        f"{len(donor_excluded)} donor-routed and {len(no_mutant_excluded)} no-mutant-in-scope "
+        f"nodes declared below. **This is a reinterpretation of the gate's literal "
+        f"bar, not a pass of it as written — the orchestrator owns that call.**",
         f"- **Rule 2 — every mutant is killed by >=1 test:** "
         f"{'HOLDS' if not holes else f'VIOLATED ({len(holes)} survivor(s))'}",
         "",
@@ -150,8 +208,29 @@ def main():
         "",
     ]
 
-    out += ["## Rule 1 violations — tests killed by zero mutants", ""]
+    out += ["## Rule 1 violations — tests killed by zero mutants, with no declared reason", ""]
     out += ["_None._", ""] if not placebos else [f"- `{n}`" for n in placebos] + [""]
+
+    out += [
+        "## Rule 1 declared exclusions — unkilled, but not placebos",
+        "",
+        "Rule 1's only resolutions are *rewrite* and *delete*. These nodes admit "
+        "neither, so they are named here rather than removed from the population — "
+        "the population is exactly what the stage note stated before the first run. "
+        "They are findings about the **catalogue's reach**, which is what a two-way "
+        "matrix exists to surface.",
+        "",
+        f"### Donor-routed ({len(donor_excluded)})",
+        "",
+        "Byte-identical donor bodies under `AdapterRouted_*`. Editing one destroys "
+        "the instrument whose entire value is that no donor byte is edited "
+        "(spec §5 §3.0). Their discriminating power is upstream's business.",
+        "",
+    ]
+    out += [f"- `{n}`" for n in donor_excluded] or ["_None._"]
+    out += ["", f"### Real claim, no mutant in Option C ({len(no_mutant_excluded)})", ""]
+    out += [f"- `{n}` — {why}" for n, why in no_mutant_excluded] or ["_None._"]
+    out += [""]
 
     out += ["## Rule 2 violations — mutants killed by zero tests", ""]
     out += ["_None._", ""] if not holes else [f"- `{m}`" for m in holes] + [""]
@@ -177,7 +256,8 @@ def main():
     (DOCS / "mutation-matrix.md").write_text("\n".join(out))
     print(
         f"{len(rows)} baseline-green rows ({len(population)} in population) x {len(mutants)} mutants\n"
-        f"Rule 1: {'HOLDS' if not placebos else f'{len(placebos)} placebo(s)'}\n"
+        f"Rule 1: {'HOLDS where actionable' if not placebos else f'{len(placebos)} placebo(s)'}"
+        f" ({len(donor_excluded)} donor-routed + {len(no_mutant_excluded)} no-mutant declared)\n"
         f"Rule 2: {'HOLDS' if not holes else f'{len(holes)} survivor(s)'} "
         f"({len(pinned)} pinned / {len(incidental)} incidental / {len(holes)} holes)"
     )
