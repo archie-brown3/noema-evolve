@@ -873,5 +873,80 @@ class TestIslandMapElitesThroughWrapper(_IslandsWrapperTestCase):
         self.assertEqual(restored.num_programs, store.num_programs)
 
 
+class TestIslandConcurrencyThroughWrapper(_IslandsWrapperTestCase):
+    """Donor: test_concurrent_island_access.py:50 -- a THIRD vacuous donor,
+    found during 0188 Stage 1 triage and not listed in the §4 dossier.
+
+    The donor test contains no assertion of any kind: it prints
+    "Race condition detected" / "Successfully reproduced" and returns. It
+    passes against any implementation, including one that raises on every
+    call. What it documents is upstream's GitHub issue #246 -- concurrent
+    workers each write ``db.current_island`` before calling ``db.sample()``,
+    so one worker's island leaks into another's sample.
+
+    Reproducing that race is not a contract Noema owes. Noema's answer is
+    structural: ``IslandsStore`` has no mutable current-island state at all,
+    the target island is an ARGUMENT to ``native_select``. This test states
+    that positively and discriminatingly -- it fails if selection ever returns
+    a parent from an island other than the one the caller asked for under
+    concurrent access, which is exactly the bug #246 describes.
+    """
+
+    def test_concurrent_selection_never_crosses_island_boundaries(self):
+        import concurrent.futures
+
+        store = _store(num_islands=5)
+        for island in range(5):
+            _seed(
+                store,
+                island,
+                [(f"i{island}_p{i}", 0.1 * i + 0.05 * island) for i in range(4)],
+                start_iteration=island * 4,
+            )
+        populated = [i for i in range(5) if store.population(i)]
+        self.assertEqual(populated, list(range(5)), "fixture must populate every island")
+
+        def select(island: int):
+            selection = store.native_select(island, 2)
+            return island, selection
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+            outcomes = list(pool.map(select, [i % 5 for i in range(40)]))
+
+        self.assertEqual(len(outcomes), 40)
+        for requested, selection in outcomes:
+            members = _ids(store.population(requested))
+            self.assertEqual(selection.target_scope, requested)
+            self.assertIn(
+                selection.parent.id,
+                members,
+                f"parent {selection.parent.id} is not on requested island {requested}",
+            )
+            for inspiration in selection.inspirations:
+                self.assertIn(inspiration.id, members)
+
+    def test_selection_target_is_an_argument_not_shared_mutable_state(self):
+        """The structural reason the race above cannot occur: two selections
+        against different islands do not interfere, and nothing on the store
+        records a 'current' island between calls."""
+        store = _store(num_islands=3)
+        for island in range(3):
+            _seed(store, island, [(f"s{island}", 0.5 + 0.1 * island)],
+                  start_iteration=island)
+
+        first = store.native_select(0, 0)
+        second = store.native_select(2, 0)
+        third = store.native_select(0, 0)
+
+        self.assertEqual(
+            [first.target_scope, second.target_scope, third.target_scope], [0, 2, 0]
+        )
+        self.assertEqual(first.parent.id, third.parent.id)
+        self.assertFalse(
+            [name for name in vars(store) if "current" in name],
+            "IslandsStore must hold no current-island state (upstream issue #246)",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
