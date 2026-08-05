@@ -22,6 +22,33 @@ from openevolve.config import DatabaseConfig
 from noema.substrates.islands import IslandsStore
 
 
+def _unserved_mutation(capability: str):
+    def raiser(self, *args, **kwargs):
+        raise NotImplementedError(
+            f"missing wrapper capability: mutating ProgramDatabase.{capability} — "
+            "this is a derived read-only view rebuilt from IslandsStore queries; "
+            "the wrapper exposes no mutation path for it"
+        )
+
+    return raiser
+
+
+class _DerivedIdSet(frozenset):
+    """``db.islands[i]``. Absorbing a donor mutation on a throwaway copy would
+    surface later as a misleading ASSERTION mismatch (which the triage method
+    reads as a real-Noema-bug signal); raise at the mutation instead."""
+
+    add = discard = remove = pop = clear = update = _unserved_mutation("islands[i]")
+
+
+class _DerivedProgramMap(dict):
+    """``db.programs``. Same rule as ``_DerivedIdSet``."""
+
+    __setitem__ = __delitem__ = pop = popitem = clear = update = setdefault = (
+        _unserved_mutation("programs")
+    )
+
+
 class AdapterProgramDatabase:
     """Stands in for ``openevolve.database.ProgramDatabase`` in donor tests."""
 
@@ -67,12 +94,9 @@ class AdapterProgramDatabase:
     def islands(self):
         # Derived read-only view, endorsed verbatim by the canonical method
         # note §3 routing table: db.islands[1] -> {x.id for x in store.population(1)}.
-        # Fresh copies per access: donor reads (membership, sizes) are served;
-        # donor MUTATIONS of the returned sets act on a copy and surface as
-        # loud downstream assertion failures for the triage ledger, never as
-        # silent state divergence.
+        # Rebuilt per access; donor MUTATIONS raise immediately (see _DerivedIdSet).
         return [
-            {program.id for program in self._store.population(scope)}
+            _DerivedIdSet(program.id for program in self._store.population(scope))
             for scope in self._store.scopes
         ]
 
@@ -80,7 +104,9 @@ class AdapterProgramDatabase:
     def programs(self):
         # Same derived-view rule as `islands`: dict rebuilt from the wrapper's
         # global population on every access, read path only.
-        return {program.id: program for program in self._store.population(None)}
+        return _DerivedProgramMap(
+            (program.id, program) for program in self._store.population(None)
+        )
 
     @property
     def best_program_id(self):
@@ -117,5 +143,14 @@ class AdapterProgramDatabase:
     def __setattr__(self, name, value):
         raise NotImplementedError(
             f"missing wrapper capability: writing ProgramDatabase.{name} — "
+            "the wrapper exposes no mutation path for this attribute"
+        )
+
+    def __delattr__(self, name):
+        # Donor tests reach here via unittest.mock.patch.object teardown; without
+        # this the failure surfaces as a bare AttributeError from mock's own
+        # __exit__, hiding which capability was actually missing.
+        raise NotImplementedError(
+            f"missing wrapper capability: deleting ProgramDatabase.{name} — "
             "the wrapper exposes no mutation path for this attribute"
         )

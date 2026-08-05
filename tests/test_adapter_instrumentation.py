@@ -147,16 +147,34 @@ class TestUnservedSurfaceFailsLoudly(unittest.TestCase):
     def test_islands_and_programs_are_derived_readonly_views(self):
         # Served per the canonical note's own routing table:
         # db.islands[i] == ids of store.population(i); db.programs from
-        # population(None). Mutating the returned copies must not leak into
-        # the store.
+        # population(None). Reads work; mutations raise instead of being
+        # absorbed by the throwaway copy — an absorbed mutation resurfaces
+        # later as an ASSERTION mismatch, which the triage method reads as a
+        # real-Noema-bug signal (donor test_island_best_with_missing_program
+        # did exactly that before this was tightened).
         db = AdapterProgramDatabase(_config())
         db.add(_program("p1", 0.5), target_island=1)
         self.assertIn("p1", db.islands[1])
         self.assertEqual(set(db.programs), {"p1"})
-        db.islands[1].discard("p1")
-        db.programs.pop("p1")
+        for mutate in (
+            lambda: db.islands[1].discard("p1"),
+            lambda: db.islands[1].remove("p1"),
+            lambda: db.programs.pop("p1"),
+            lambda: db.programs.__delitem__("p1"),
+            lambda: db.programs.__setitem__("p2", _program("p2", 0.1)),
+        ):
+            with self.assertRaises(NotImplementedError):
+                mutate()
         self.assertIn("p1", db.islands[1])
-        self.assertIn("p1", db.programs)
+        self.assertEqual(set(db.programs), {"p1"})
+
+    def test_unserved_deletes_raise_instead_of_bare_attributeerror(self):
+        # mock.patch.object teardown calls delattr; a bare AttributeError there
+        # hides which donor capability was actually missing.
+        db = AdapterProgramDatabase(_config())
+        with self.assertRaises(NotImplementedError) as ctx:
+            del db.sample_from_island
+        self.assertIn("sample_from_island", str(ctx.exception))
 
     def test_metric_kwarg_raises_on_both_query_methods(self):
         db = AdapterProgramDatabase(_config())
@@ -165,6 +183,43 @@ class TestUnservedSurfaceFailsLoudly(unittest.TestCase):
             db.get_best_program(metric="accuracy")
         with self.assertRaises(NotImplementedError):
             db.get_top_programs(2, metric="accuracy")
+
+
+class TestTriageLedgerParity(unittest.TestCase):
+    """Holds the Stage 1 triage ledger to the observed reality.
+
+    Runs the whole adapter-routed donor suite and asserts the failing set is
+    EXACTLY ``DECLARED_DEVIATIONS``, each failure naming its ledgered
+    capability. This is what stops a ledger row from rotting: if Noema grows
+    one of the deviating capabilities the donor test starts passing and this
+    fires; if a donor test starts failing for a NEW reason (an assertion
+    mismatch on the servable surface -- the (a) real-Noema-bug signal) this
+    fires too.
+    """
+
+    def test_failing_donor_set_is_exactly_the_declared_deviations(self):
+        import random
+
+        import tests.test_noema_islands_adapter_fidelity_spec as spec
+
+        state = random.getstate()
+        self.addCleanup(random.setstate, state)
+        observed = spec.run_donor_suite()
+
+        self.assertEqual(
+            set(observed),
+            set(spec.DECLARED_DEVIATIONS),
+            "adapter-routed donor failures drifted from the Stage 1 triage ledger "
+            f"(newly failing: {sorted(set(observed) - set(spec.DECLARED_DEVIATIONS))}; "
+            f"no longer failing: {sorted(set(spec.DECLARED_DEVIATIONS) - set(observed))})",
+        )
+        for key, capability in spec.DECLARED_DEVIATIONS.items():
+            self.assertIn(
+                capability,
+                observed[key],
+                f"{key} no longer fails on {capability!r} -- reclassify it in the "
+                "Stage 1 triage ledger",
+            )
 
 
 if __name__ == "__main__":
