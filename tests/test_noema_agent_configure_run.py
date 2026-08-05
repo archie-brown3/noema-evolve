@@ -147,6 +147,33 @@ class TestDerivedFileSuffixReachesSession(unittest.TestCase):
             loaded = load_noema_and_agent(self._write_config(root))
             self.assertEqual(loaded.noema.file_suffix, ".cc")
 
+    def test_cpp_example_derives_language_when_yaml_omits_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "initial_program.cpp").write_text(
+                "#include <iostream>\nint main() { return 0; }\n"
+            )
+            (root / "evaluator.py").write_text(
+                "def evaluate(p):\n    return {'combined_score': 1.0}\n"
+            )
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.language, "cpp")
+
+    def test_explicit_yaml_language_is_not_overwritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "initial_program.cpp").write_text(
+                "#include <iostream>\nint main() { return 0; }\n"
+            )
+            (root / "evaluator.py").write_text(
+                "def evaluate(p):\n    return {'combined_score': 1.0}\n"
+            )
+            (root / "config.yaml").write_text(
+                "language: c++\nprompt:\n  use_template_stochasticity: false\n"
+            )
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.language, "c++")
+
 
 if __name__ == "__main__":
     unittest.main()

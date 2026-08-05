@@ -114,6 +114,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     # file_suffix unless the YAML already names a non-default one.
     if agent_config.noema.file_suffix == ".py":
         agent_config.noema.file_suffix = paths.file_suffix
+    # Same rule for language, derived from the seed programme's content
+    # (controller.py's extract_code_language) unless the YAML overrides it.
+    if agent_config.noema.language == "python":
+        agent_config.noema.language = paths.language
 
     output_dir = args.output_dir or (cwd / "noema_agent_output")
 

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import yaml
+from openevolve.utils.code_utils import extract_code_language  # type: ignore[import-untyped]
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,7 @@ class ExamplePaths:
     initial_program: Path
     evaluator: Path
     file_suffix: str = ".py"
+    language: str = "python"
     config_candidates: tuple[Path, ...] = ()
     preferred_config: Optional[Path] = None
     use_skeleton: bool = False
@@ -118,6 +120,7 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
         initial_program=initial_program,
         evaluator=evaluator,
         file_suffix=initial_program.suffix,
+        language=extract_code_language(initial_program.read_text()),
         config_candidates=tuple(candidates),
         preferred_config=preferred,
         use_skeleton=len(candidates) == 0,
