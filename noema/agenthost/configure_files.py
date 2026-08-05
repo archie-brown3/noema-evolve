@@ -109,10 +109,14 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
         # A clean load is not evidence of a config: _normalise_openevolve_yaml
         # drops every key it does not recognise, so an unrelated mapping loads
         # fine and would be adopted as the run config *and* rewritten in place
-        # (task 0201). Adopt an unconventionally named file only on a positive
-        # tell that it really is one.
-        if _has_noema_config_tell(_load_yaml_mapping(sole)):
-            preferred = sole
+        # (task 0201). Adopt an unconventionally named file only when it both
+        # carries a positive tell that it is one and actually loads.
+        try:
+            if _has_noema_config_tell(_load_yaml_mapping(sole)):
+                load_noema_and_agent(sole)
+                preferred = sole
+        except Exception:
+            pass  # not a loadable Noema/OpenEvolve config; do not adopt it
 
     new_config_path = (root / "config.yaml").resolve()
     return ExamplePaths(

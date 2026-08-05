@@ -80,6 +80,17 @@ class TestDiscoverExample(unittest.TestCase):
             self.assertEqual(names, {"noema.yaml", "config_phase_1.yaml"})
             self.assertEqual(found.preferred_config, (cwd / "noema.yaml").resolve())
 
+    def test_sole_unrelated_yaml_is_not_silently_selected_as_preferred(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            _write_minimal_example(cwd, configs=None)
+            (cwd / "docker-compose.yaml").write_text(
+                "\n".join(["version: '3'", "services:", "  db:", "    image: postgres", ""])
+            )
+            found = discover_example(cwd)
+            self.assertIn((cwd / "docker-compose.yaml").resolve(), found.config_candidates)
+            self.assertIsNone(found.preferred_config)
+
     def test_sole_unrelated_yaml_sharing_a_key_with_openevolve_is_not_preferred(self):
         # task 0201: 'log_level' alone makes looks_like_openevolve_yaml true, so
         # the normaliser swallows any mapping and the load-succeeds signal stops
