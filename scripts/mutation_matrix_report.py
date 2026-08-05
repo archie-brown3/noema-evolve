@@ -27,6 +27,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RUNS = ROOT / "artifacts" / "mutation" / "runs.jsonl"
+RUNS_GZ = ROOT / "artifacts" / "mutation" / "runs-3.jsonl.gz"
 DOCS = ROOT / "docs" / "fidelity"
 
 # --- Scope B: the declared population (stage note, "Matrix test population") ---
@@ -112,15 +113,22 @@ def in_population(nodeid):
     return nodeid.startswith(POPULATION_PREFIXES)
 
 
-def load(path):
+import gzip
+
+def load(path_or_handle):
     """-> {mutant: {nodeid: passed_bool}}, failing if ANY report for the node failed.
 
-    subTest and setup/teardown emit several reports per nodeid; last-write-wins
-    would silently hide a failure, so fold with AND.
+    Accept either a pathlib.Path (opened in text mode) or an already-open text
+    file-like handle (e.g., gzip.open(..., "rt")). Folding uses logical AND so
+    any failing report marks the node as failed.
     """
     outcomes = collections.defaultdict(dict)
-    with path.open() as handle:
-        for line in handle:
+    if isinstance(path_or_handle, pathlib.Path):
+        fh = path_or_handle.open()
+    else:
+        fh = path_or_handle
+    with fh:
+        for line in fh:
             row = json.loads(line)
             passed = row["outcome"] == "passed"
             key, node = row["mutant"], row["nodeid"]
@@ -129,9 +137,15 @@ def load(path):
 
 
 def main():
-    if not RUNS.exists():
-        sys.exit(f"no raw runs at {RUNS} — run scripts/mutation_matrix.sh first")
-    outcomes = load(RUNS)
+    if RUNS.exists():
+        print(f"using raw runs {RUNS}")
+        outcomes = load(RUNS)
+    elif RUNS_GZ.exists():
+        print(f"using compressed runs {RUNS_GZ}")
+        fh = gzip.open(RUNS_GZ, mode="rt", encoding="utf-8")
+        outcomes = load(fh)
+    else:
+        sys.exit(f"no raw runs at {RUNS} or compressed {RUNS_GZ} — run scripts/mutation_matrix.sh first")
     if "none" not in outcomes:
         sys.exit("no baseline run (NOEMA_MUTANT=none) in the raw log — matrix is unscoreable")
 
