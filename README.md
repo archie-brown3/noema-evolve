@@ -137,19 +137,19 @@ Benchmark inputs used to compare coordination arms live under `examples/`.
 <table>
   <tr>
     <td align="center" width="220">
-      <a href="examples/circle_packing"><img src="examples/circle_packing/best_packing.png" width="220" /></a><br />
+      <a href="examples/circle_packing"><img src="docs/assets/examples/circle_packing.png" width="220" /></a><br />
       <a href="examples/circle_packing"><b>Circle Packing</b></a><br />
       <sub>Pack 26 circles in a unit square to maximize the sum of radii.</sub>
     </td>
     <td width="24"></td>
     <td align="center" width="220">
-      <a href="examples/morpion_solitaire"><img src="examples/morpion_solitaire/board_midgame.png" width="220" /></a><br />
+      <a href="examples/morpion_solitaire"><img src="docs/assets/examples/morpion_solitaire.png" width="220" /></a><br />
       <a href="examples/morpion_solitaire"><b>Morpion Solitaire</b></a><br />
       <sub>Grow the longest legal line-drawing sequence on a cross-shaped grid.</sub>
     </td>
     <td width="24"></td>
     <td align="center" width="220">
-      <a href="examples/bin_packing"><img src="examples/bin_packing/packing_result.png" width="220" /></a><br />
+      <a href="examples/bin_packing"><img src="docs/assets/examples/bin_packing.png" width="220" /></a><br />
       <a href="examples/bin_packing"><b>Bin Packing</b></a><br />
       <sub>Pack weighted items into a minimal number of fixed-capacity bins.</sub>
     </td>
