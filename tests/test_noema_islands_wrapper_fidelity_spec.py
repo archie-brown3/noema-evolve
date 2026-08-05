@@ -36,8 +36,22 @@ MAP-Elites eviction is real and load-bearing
 Pinned-as-observed inconsistency (not endorsed)
     ``population()``, ``native_select()`` and ``island_fitnesses()`` apply
     ``% num_islands``; ``top_programs()`` does not and propagates upstream's
-    ``IndexError``. Donor tests pin both sides, so both are translated here. This
+    ``IndexError``. The wrap side is pinned here
+    (``test_scope_beyond_island_count_wraps_around``); the ``IndexError`` side is
+    pinned by the adapter-routed donor
+    ``AdapterRouted_test_island_tracking_TestIslandTracking::
+    test_invalid_island_index_handling`` since the Stage 6 reduction. This
     asymmetry is recorded as current behavior, not as an intended contract.
+
+Reduced at 0188 Stage 6
+    Fourteen hand-translations were deleted here. Each was kept only if it
+    failed one of the two reduction conditions: (a) its donor counterpart runs
+    green through the strict adapter AND itself kills at least one matrix
+    mutant, and (b) it is not the sole population killer of any mutant in the
+    run-2 matrix. A test whose only surviving cover would have been a donor that
+    kills nothing was NOT deleted -- redundancy with a placebo is not
+    redundancy. The per-deletion ledger is in the Stage 6 stage note; the
+    authority for (b) is ``docs/fidelity/mutation-matrix.csv``.
 """
 
 from __future__ import annotations
@@ -249,46 +263,6 @@ class TestIslandPlacementThroughWrapper(_IslandsWrapperTestCase):
         self.assertIn("child_0", _ids(store.population(2)))
         self.assertNotIn("child_0", _ids(store.population(0)))
 
-    def test_child_placed_in_target_island_when_specified(self):
-        """donor: child_placement.py:49"""
-        store = _store()
-        store.add(_program("parent_1", 0.5), iteration=0, target_scope=0)
-
-        child = _program("child_1", 0.6, parent_id="parent_1")
-        store.add(child, iteration=1, target_scope=2)
-
-        self.assertEqual(child.metadata.get("island"), 2)
-        self.assertIn("child_1", _ids(store.population(2)))
-        self.assertNotIn("child_1", _ids(store.population(0)))
-
-    def test_child_goes_to_target_island_not_the_fallback_parents_island(self):
-        """donor: child_placement.py:114 (issue #391) -- parent is sourced from a
-        populated island, but the child must still land on the requested one."""
-        store = _store()
-        store.add(_program("seed_0", 0.5), iteration=0, target_scope=0)
-
-        selection = store.native_select(1, num_inspirations=0)
-        self.assertEqual(selection.source_scope, 0)
-        self.assertEqual(selection.target_scope, 1)
-
-        child = _program("child_t1", 0.6, parent_id=selection.parent.id)
-        store.add(child, iteration=1, target_scope=selection.target_scope)
-
-        self.assertIn("child_t1", _ids(store.population(1)))
-        self.assertEqual(child.metadata.get("island"), 1)
-
-    def test_explicit_target_island_overrides_parent_inheritance(self):
-        """donor: child_placement.py:151"""
-        store = _store()
-        store.add(_program("seed_2", 0.5), iteration=0, target_scope=0)
-
-        selection = store.native_select(2, num_inspirations=0)
-        child = _program("child_t2", 0.6, parent_id=selection.parent.id)
-        store.add(child, iteration=1, target_scope=2)
-
-        self.assertIn("child_t2", _ids(store.population(2)))
-        self.assertNotIn("child_t2", _ids(store.population(0)))
-
     def test_with_target_island_child_goes_to_target(self):
         """donor: child_placement.py:293 (near-duplicate of :151, kept for
         one-for-one donor traceability)."""
@@ -302,51 +276,6 @@ class TestIslandPlacementThroughWrapper(_IslandsWrapperTestCase):
         self.assertEqual(child.metadata.get("island"), 2)
         self.assertIn("child_t3", _ids(store.population(2)))
 
-    def test_round_robin_target_scope_populates_every_island(self):
-        """donor: child_placement.py:189 -- driven by the wrapper's own
-        target_scope() round-robin rather than a hand-written island counter."""
-        store = _store()
-        store.add(_program("origin", 0.5), iteration=0, target_scope=0)
-
-        for iteration in range(1, 10):
-            scope = store.target_scope(iteration)
-            selection = store.native_select(scope, num_inspirations=0)
-            child = _program(f"rr_{iteration}", 0.5 + iteration * 0.01,
-                             parent_id=selection.parent.id)
-            store.add(child, iteration=iteration, target_scope=scope)
-
-        for region in store.regions():
-            self.assertGreaterEqual(
-                region.size, 1, f"{region.label} should have been populated"
-            )
-
-    def test_explicit_migration_target_overrides_parent_island(self):
-        """donor: parent_consistency.py:132"""
-        store = _store()
-        store.add(_program("pc_parent", 0.5), iteration=0, target_scope=0)
-        self.assertIn("pc_parent", _ids(store.population(0)))
-
-        migrant = _program("pc_migrant", 0.7, parent_id="pc_parent")
-        store.add(migrant, iteration=1, target_scope=2)
-
-        self.assertIn("pc_migrant", _ids(store.population(2)))
-        self.assertNotIn("pc_migrant", _ids(store.population(0)))
-        self.assertEqual(migrant.metadata.get("island"), 2)
-        self.assertEqual(store.get("pc_parent").metadata.get("island"), 0)
-
-    def test_programs_are_assigned_to_their_requested_islands(self):
-        """donor: migration.py:47"""
-        store = _store()
-        store.add(_program("t1", 0.5), iteration=0, target_scope=0)
-        store.add(_program("t2", 0.7), iteration=1, target_scope=1)
-        store.add(_program("t3", 0.3), iteration=2, target_scope=2)
-
-        self.assertIn("t1", _ids(store.population(0)))
-        self.assertIn("t2", _ids(store.population(1)))
-        self.assertIn("t3", _ids(store.population(2)))
-        for program_id, expected in (("t1", 0), ("t2", 1), ("t3", 2)):
-            self.assertEqual(store.get(program_id).metadata.get("island"), expected)
-
 
 class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
     """Donor: test_island_tracking.py 1/2/3/4/5/6/8/12.
@@ -356,23 +285,6 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
     island_best_programs uses. top_programs ranks by metric average and would
     agree only by coincidence on these fixtures.
     """
-
-    def test_every_island_starts_with_no_best(self):
-        """donor: tracking.py:31"""
-        store = _store()
-
-        self.assertEqual(list(store.per_scope_bests()), [0.0, 0.0, 0.0])
-        for scope in range(3):
-            self.assertEqual(list(store.top_programs(1, scope=scope)), [])
-
-    def test_first_program_added_becomes_that_islands_best(self):
-        """donor: tracking.py:38"""
-        store = _store()
-        store.add(_program("first", 0.5), iteration=0, target_scope=0)
-
-        self.assertEqual(store.per_scope_bests()[0], 0.5)
-        self.assertEqual(store.per_scope_bests()[1], 0.0)
-        self.assertEqual(store.per_scope_bests()[2], 0.0)
 
     def test_better_program_raises_the_island_best(self):
         """donor: tracking.py:50
@@ -400,18 +312,6 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
 
         self.assertEqual(store.per_scope_bests()[0], 0.8)
         self.assertEqual(store.per_scope_bests()[1], 0.95)
-
-    def test_island_bests_are_tracked_independently(self):
-        """donor: tracking.py:76"""
-        store = _store()
-        store.add(_program("i0", 0.9), iteration=0, target_scope=0)
-        store.add(_program("i1", 0.7), iteration=1, target_scope=1)
-        store.add(_program("i2", 0.5), iteration=2, target_scope=2)
-
-        self.assertEqual(list(store.per_scope_bests()), [0.9, 0.7, 0.5])
-        self.assertEqual(
-            [region.best_fitness for region in store.regions()], [0.9, 0.7, 0.5]
-        )
 
     def test_program_added_to_an_empty_island_becomes_its_best(self):
         """donor: tracking.py:92 -- upstream builds the migrant by hand, so this
@@ -465,36 +365,6 @@ class TestIslandBestTrackingThroughWrapper(_IslandsWrapperTestCase):
 
 class TestIslandTopProgramsThroughWrapper(_IslandsWrapperTestCase):
     """Donor: test_island_tracking.py 7/13/14."""
-
-    def test_top_programs_are_scoped_to_the_requested_island(self):
-        """donor: tracking.py:118"""
-        store = _store()
-        island0 = _seed(store, 0, [("prog1", 0.9), ("prog2", 0.7), ("prog3", 0.5)])
-        island1 = _seed(store, 1, [("prog4", 0.8), ("prog5", 0.6)],
-                        start_iteration=3)
-        # Precondition: MAP-Elites must not have emptied either island, or the
-        # loops and set-intersections below would pass vacuously.
-        self.assertTrue(island0)
-        self.assertTrue(island1)
-
-        for program in store.top_programs(2, scope=0):
-            self.assertIn(program.id, island0)
-        for program in store.top_programs(2, scope=1):
-            self.assertIn(program.id, island1)
-        # No cross-island leakage in either direction.
-        self.assertFalse(_ids(store.top_programs(5, scope=0)) & island1)
-        self.assertFalse(_ids(store.top_programs(5, scope=1)) & island0)
-
-    def test_out_of_range_scope_raises_indexerror(self):
-        """donor: tracking.py:254.
-
-        Pinned as observed: top_programs does NOT apply `% num_islands`, unlike
-        population()/native_select()/island_fitnesses(). See module docstring.
-        """
-        store = _store()
-
-        with self.assertRaises(IndexError):
-            store.top_programs(5, scope=10)
 
     def test_empty_island_yields_no_top_programs(self):
         """donor: tracking.py:260"""
@@ -609,21 +479,6 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
             len(set(drawn)), 1, "exploration should not collapse onto one parent"
         )
 
-    def test_weighted_mode_favors_higher_fitness_than_the_island_mean(self):
-        """donor: ratios.py:186"""
-        store = _store()
-        _seed(store, 0, [(f"w_{i}", 0.5 + i * 0.02) for i in range(20)])
-        store.config.exploration_ratio = 0.0
-        store.config.exploitation_ratio = 0.0
-
-        island = list(store.population(0))
-        baseline = sum(p.metrics["combined_score"] for p in island) / len(island)
-        sampled = [store.native_select(0, num_inspirations=0).parent
-                   for _ in range(200)]
-        sampled_mean = sum(p.metrics["combined_score"] for p in sampled) / len(sampled)
-
-        self.assertGreaterEqual(sampled_mean, baseline)
-
     def test_empty_island_selection_still_returns_a_parent(self):
         """donor: ratios.py:223"""
         store = _store()
@@ -637,19 +492,6 @@ class TestIslandSelectionThroughWrapper(_IslandsWrapperTestCase):
         # that never left island 1 (0188 Stage 5 matrix, Rule 1).
         self.assertEqual(selection.source_scope, 0)
         self.assertEqual(selection.target_scope, 1)
-
-    def test_empty_island_fallback_reports_the_real_source_scope(self):
-        """donor: child_placement.py:104 -- the Selection pair is what lets the
-        caller place the child on the requested island while knowing the parent
-        actually came from elsewhere."""
-        store = _store()
-        _seed(store, 0, [("fb0", 0.5), ("fb1", 0.6)])
-
-        selection = store.native_select(1, num_inspirations=5)
-
-        self.assertEqual(selection.source_scope, 0)
-        self.assertEqual(selection.target_scope, 1)
-        self.assertEqual(selection.parent.metadata.get("island"), 0)
 
     def test_single_program_island_returns_it_with_no_inspirations(self):
         """donor: ratios.py:267"""
@@ -891,14 +733,6 @@ class TestIslandMapElitesThroughWrapper(_IslandsWrapperTestCase):
         self.assertIsNotNone(
             store.get("weak"), "eviction removes from the island, not from programs"
         )
-
-    def test_global_best_program_spans_islands(self):
-        """donor: map_elites.py:140"""
-        store = _store()
-        store.add(_program("low", 0.3), iteration=0, target_scope=0)
-        store.add(_program("high", 0.95), iteration=1, target_scope=1)
-
-        self.assertEqual(store.best_program().id, "high")
 
     def test_no_migrant_suffix_ids_are_ever_generated(self):
         """donor: map_elites.py:156"""

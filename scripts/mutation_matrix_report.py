@@ -81,10 +81,10 @@ NO_MUTANT_IN_OPTION_C = {
         "no Option C mutant makes the sampler non-deterministic; "
         "make_prompt_sampler.allow_stochasticity drops the GUARD, which "
         "test_stochasticity_rejected already pins",
-    "tests/test_noema_islands_wrapper_fidelity_spec.py::TestIslandTopProgramsThroughWrapper::"
-    "test_out_of_range_scope_raises_indexerror":
-        "pinned-as-observed behaviour; killed by spec §7a's fix-shaped mutant "
-        "islands.top_programs.wrap_scope, which Option C does not include",
+    # test_out_of_range_scope_raises_indexerror was deleted by the Stage 6
+    # reduction: it killed nothing, and the behaviour it claimed is covered by
+    # the green adapter-routed donor test_invalid_island_index_handling. Its
+    # exclusion entry goes with it — the no-mutant class is 7 → 6.
     "tests/test_noema_islands_fidelity_spec.py::IslandsStockFidelitySpec::"
     "test_stock_has_no_numpy_or_program_metadata_side_effects":
         "an absence claim (no numpy/metadata side effects); every Option C mutant "
