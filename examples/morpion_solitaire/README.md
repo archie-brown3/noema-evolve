@@ -62,8 +62,7 @@ BUILD_SHARED_LIB=ON cmake ../open_spiel -DCMAKE_BUILD_TYPE=Release \
 make -j"$(nproc)" open_spiel
 ```
 
-`.openspiel-reference/` is a vendored, gitignored copy of the OpenSpiel
-source — it's not part of the example itself.
+`.openspiel-reference/` is a vendored copy of the OpenSpiel source — it's not part of the example itself; ensure the directory is added to the repository's root `.gitignore` when present.
 
 ## Scoring
 

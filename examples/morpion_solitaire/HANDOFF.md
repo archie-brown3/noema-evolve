@@ -3,7 +3,7 @@
 ## Branch
 `feature/morpion-solitaire-example`, based on `7bd9676` on top of
 `codex/adr-noema-console-logging-openevolve`. Pre-existing uncommitted
-changes on that branch (`.gitignore`, some example configs, several test
+changes on that branch (`.gitignore`, `pyproject.toml`, some example configs, several test
 files) are carried over untouched — do not revert or clean them, they are
 unrelated in-progress work, not artifacts of this task.
 
@@ -78,9 +78,9 @@ already operates in production.
 ## What's already done this session
 - Branch `feature/morpion-solitaire-example` created and checked out.
 - `examples/morpion_solitaire/.openspiel-reference/` — shallow clone of
-  `google-deepmind/open_spiel` (reference source, read-only, gitignored via
-  `.openspiel-reference/` entry added to root `.gitignore`). Use this to
-  look up exact source, don't re-clone.
+  `google-deepmind/open_spiel` (reference source, read-only). This is a
+  vendored copy; ensure the directory is added to the repository's root
+  `.gitignore` if present. Use this to look up exact source, don't re-clone.
 - Read and fully understood `morpion_solitaire.h`/`.cc` (board layout, 460
   possible lines, action encoding scheme, legality rule, apply/terminal
   logic) — see "Game facts" below, no need to re-derive.
