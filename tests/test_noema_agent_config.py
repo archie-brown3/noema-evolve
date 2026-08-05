@@ -221,6 +221,9 @@ class TestAgentConfig(unittest.TestCase):
                         "    kind: opencode",
                         "  coordination_cli:",
                         "    kind: opencode",
+                        "    binary: /custom/claude-wrapper",
+                        "    extra_args: ['--flag']",
+                        "    timeout_s: 1800",
                         "",
                     ]
                 )
@@ -246,6 +249,12 @@ class TestAgentConfig(unittest.TestCase):
         self.assertEqual(config.mutation_cli.kind, "claude")
         self.assertEqual(config.coordination_cli.kind, "claude")
         self.assertEqual(config.coordination_cli.model, "m1")
+        # The kind/model override propagates (documented shared behaviour),
+        # but coordination's own YAML-specific transport settings must not
+        # be clobbered by mutation_cli's (unset) values for those fields.
+        self.assertEqual(config.coordination_cli.binary, "/custom/claude-wrapper")
+        self.assertEqual(config.coordination_cli.extra_args, ["--flag"])
+        self.assertEqual(config.coordination_cli.timeout_s, 1800)
 
     def test_cli_bootstrap_flag_deep_clones_mutation_cli(self):
         args = parse_entry_args(
