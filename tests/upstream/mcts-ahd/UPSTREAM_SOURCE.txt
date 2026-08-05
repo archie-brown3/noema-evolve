@@ -1,8 +1,0 @@
-url: https://github.com/zz1358m/MCTS-AHD-master
-commit: ee9c4f424503c65a5fd2b899e6620ce86079fedb
-license: MIT License
-tests_found: yes
-searched: test dirs (tests,test,testing,__tests__); maxdepth-3 test_*.py
-search_dirs: problems/tsp_constructive/test 
-search_files: problems/bpp_offline_aco/eval_black_box_test.py problems/car_mountain/test.py problems/cvrp_aco/eval_black_box_test.py problems/mkp_aco/eval_black_box_test.py problems/tsp_aco/eval_black_box_test.py 
-paths_copied: problems/tsp_constructive/test/,problems/bpp_offline_aco/eval_black_box_test.py,problems/car_mountain/test.py,problems/cvrp_aco/eval_black_box_test.py,problems/mkp_aco/eval_black_box_test.py,problems/tsp_aco/eval_black_box_test.py

@@ -1,9 +1,0 @@
-url: https://github.com/FeiLiu36/EoH
-commit: 36d10d49e9b80777fa544ac4e457b43ac6c2f9d0
-license: MIT License
-tests_found: none
-searched: test dirs (tests,test,testing,__tests__); maxdepth-3 test_*.py *_test.py test*.py
-search_dirs: (none)
-search_files: examples/bp_online/testingdata/*.pkl (benchmark data, not unit tests; not copied)
-paths_copied: none
-notes: requested pin 36d10d4 -> 36d10d49e9b80777fa544ac4e457b43ac6c2f9d0

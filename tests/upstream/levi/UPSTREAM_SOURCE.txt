@@ -1,8 +1,0 @@
-url: https://github.com/ttanv/levi
-commit: 341bd17d78c85441502d1d20663755d7748e9902
-license: MIT License
-tests_found: yes
-searched: test dirs (tests,test,testing,__tests__); maxdepth-3 test_*.py
-search_dirs: tests 
-search_files: tests/test_alphaevolve.py tests/test_cli_clients.py tests/test_client.py tests/test_component_selector.py tests/test_config_models.py tests/test_core.py tests/test_demos.py tests/test_ifbench_problem.py tests/test_integration.py tests/test_methods_helpers.py tests/test_pipeline_consumer.py tests/test_pipeline_flow_control.py tests/test_pipeline_state.py tests/test_pool.py tests/test_prompt_builder.py tests/test_prompt_bundle.py tests/test_prompt_bundle_adapter.py tests/test_prompt_opt.py tests/test_proxy_benchmark.py tests/test_pupa_problem.py 
-paths_copied: tests/

@@ -1,9 +1,0 @@
-url: https://github.com/baidu-baige/LoongFlow
-commit: 945c78bc1554f8281aac40320b3599bd68d528d7
-license:                                  Apache License
-tests_found: yes
-searched: test dirs (tests,test,testing,__tests__); maxdepth-3 test_*.py
-search_dirs: tests 
-search_files:  
-paths_copied: tests/
-notes: Boltzmann also PyPI loongflow==0.0.1
