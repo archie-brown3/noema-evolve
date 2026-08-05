@@ -35,8 +35,8 @@ differs **only** in `coordination.module`.
 | ✅ `max_iterations` | Number of evolution iterations (mutations) to run. | `max_iterations: 100` — int. Default `100`. |
 | ✅ `checkpoint_interval` | Write a checkpoint every N iterations. | `checkpoint_interval: 10` — int. Default `50`. |
 | ✅ `random_seed` | Master seed. Also derives `coordination.seed` (`+1`) and `mutation_operator_seed` (`+2`). | `random_seed: 42` — int. Default `42`. |
-| ✅ `language` | Program language, passed to the prompt sampler. | `language: "python"` — str. Default `"python"`. |
-| ✅ `file_suffix` | Extension of the evolved program file, passed to the evaluator. | `file_suffix: ".py"` — str. Default `".py"`. |
+| ✅ `language` | Program language, passed to the prompt sampler. | `language: "python"` — str. Default `"python"`. Note: the `noema` agenthost configure CLI will derive this value from the discovered `initial_program` when the config still uses the default `"python"`. |
+| ✅ `file_suffix` | Extension of the evolved program file, passed to the evaluator. | `file_suffix: ".py"` — str. Default `".py"`. Note: the `noema` agenthost configure CLI will derive this value from the discovered `initial_program` (e.g. `.cpp`) when the config still uses the default `".py"`. |
 | ✅ `diff_based_evolution` | If true, the LLM emits SEARCH/REPLACE diff blocks; if false, a full rewrite. | `diff_based_evolution: true` — bool. Default `true`. |
 | ✅ `diff_pattern` | Regex used to extract diff blocks from the LLM response. | `diff_pattern: "<<<<<<< SEARCH\\n(.*?)=======\\n(.*?)>>>>>>> REPLACE"` — str. Default as shown. |
 | ✅ `max_code_length` | Reject a child program whose code exceeds this many characters. | `max_code_length: 10000` — int. Default `10000`. |
