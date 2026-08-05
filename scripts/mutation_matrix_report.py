@@ -181,9 +181,12 @@ def main():
     out = [
         "# 0188 Stage 5 — two-way mutation matrix",
         "",
-        f"- Repo commit: `{sha}` — the code state the matrix was RUN against, on branch "
-        "`cursor/0186-fidelity-inventory`. The artifact itself is committed at the child "
-        "commit that adds these files.",
+        f"- Reduced at commit `{sha}` (HEAD when this report was generated), branch "
+        "`cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the "
+        "matrix executed against — the driver runs first and the artifact is committed "
+        "afterwards. The run-against commit is recorded in the stage note; for the "
+        "final run it was `8edb181`, which differs from this one only by added docs "
+        "and artifacts, no code.",
         "- Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at "
         "`/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`",
         f"- Mutants: {len(mutants)} (Option C — wrapper stores + novelty guard + PromptSampler routing)",
