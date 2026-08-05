@@ -2,20 +2,20 @@
 
 <!-- GENERATED FILE — DO NOT EDIT BY HAND. Produced by scripts/mutation_matrix_report.py from artifacts/mutation/runs-4.jsonl.gz; regenerate instead of editing, or your change is silently reverted on the next run. This is dissertation evidence: the caveats below (Rule 1's literal-bar reinterpretation, the unchanged-population statement, the run-against-commit provenance) are load-bearing claims about what the matrix does and does not prove, not prose to be tightened. -->
 
-- Reduced at commit `d5932a3` (HEAD when this report was generated), branch `cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the matrix executed against — the driver runs first and the artifact is committed afterwards. The run-against commit is recorded in the stage note; for run 4 it was `c054345`, the commit that added the Stage 7 mutants, so the population and catalogue measured here ARE the ones that ship.
+- Reduced at commit `097e928` (HEAD when this report was generated), branch `cursor/0186-fidelity-inventory`. This is NOT necessarily the commit the matrix executed against — the driver runs first and the artifact is committed afterwards. The run-against commit is recorded in the stage note; for run 4 it was `c054345`, the commit that added the Stage 7 mutants, so the population and catalogue measured here ARE the ones that ship.
 - **Supersedes run 3** as the dissertation artifact. Stage 7's wrapper widening changed BOTH axes at once, so run 3's numbers describe neither the catalogue nor the population that ships: the catalogue grew 42 -> 71 (one mutant per new public wrapper capability), and 51 donor tests that FAILED at run 3's baseline — and were therefore absent from run 3's rows entirely — are now baseline-green and in the population.
 - Upstream pin: `openevolve` @ `80945ed` (`pyproject.toml:20`), installed at `/root/noema-evolve/.venv/lib/python3.12/site-packages/openevolve/`
 - Mutants: 69 (Option C — wrapper stores + novelty guard + PromptSampler routing)
-- Matrix collection (Scope A, Rule 2 oracle): 1026 nodes, 1024 green at baseline
-- Declared population (Scope B, Rule 1 rows): 160 baseline-green nodes
+- Matrix collection (Scope A, Rule 2 oracle): 1037 nodes, 1035 green at baseline
+- Declared population (Scope B, Rule 1 rows): 171 baseline-green nodes
 - Full per-cell record: `mutation-matrix.csv` (rows = baseline-green tests, columns = mutants, `K` = killed).
 
 ## Verdicts
 
 - **Rule 1 — every population test is killed by >=1 mutant:** HOLDS where actionable — 0 unresolved placebo(s), 69 donor-routed and 6 no-mutant-in-scope nodes declared below. **This is a reinterpretation of the gate's literal bar, not a pass of it as written — the orchestrator owns that call.**
-- **Rule 2 — every mutant is killed by >=1 test:** VIOLATED (9 survivor(s))
+- **Rule 2 — every mutant is killed by >=1 test:** HOLDS
 
-Rule 2 detail: 50 pinned (killed by a population test), 10 incidentally covered (killed only outside the population, or only by an aggregate guard), 9 coverage holes.
+Rule 2 detail: 63 pinned (killed by a population test), 6 incidentally covered (killed only outside the population, or only by an aggregate guard), 0 coverage holes.
 
 ## Rule 1 violations — tests killed by zero mutants, with no declared reason
 
@@ -110,26 +110,14 @@ Byte-identical donor bodies under `AdapterRouted_*`. Editing one destroys the in
 
 ## Rule 2 violations — mutants killed by zero tests
 
-- `database.best_program_id.recomputed`
-- `database.best_program_id.setter_noop`
-- `database.diversity_bin.zero`
-- `database.feature_bins.default_ten`
-- `database.get_artifacts.empty`
-- `database.log_island_status.noop`
-- `database.sample.island_zero`
-- `database.sample_inspirations.parent_only`
-- `database.validate_migration_results.noop`
+_None._
 
 ## Incidentally covered mutants
 
 Killed, but only outside the declared population or only by an aggregate guard (triage ledger parity, servable-surface routing, donor collection count). Not a coverage hole; not evidence of a pin either.
 
-- `database.best_program.ignore_metric` — 1 killer(s), e.g. `tests/test_adapter_instrumentation.py::TestUnservedSurfaceStillFailsLoudly::test_metric_kwarg_is_served_now_and_ranks_by_that_metric`
-- `database.current_island.setter_noop` — 1 killer(s), e.g. `tests/test_adapter_instrumentation.py::TestWidenedCapabilitiesReturnUpstreamsOwnState::test_current_island_stays_off_the_store_instance`
 - `database.feature_dimensions.empty` — 1 killer(s), e.g. `tests/test_noema_fitness_characterization.py::TestCallSiteShapes::test_stores_and_views_pass_their_feature_dimensions_through`
 - `database.fitness.no_feature_exclusion` — 1 killer(s), e.g. `tests/test_noema_fitness_characterization.py::TestCallSiteShapes::test_stores_and_views_pass_their_feature_dimensions_through`
-- `database.island_best_programs.recomputed` — 1 killer(s), e.g. `tests/test_adapter_instrumentation.py::TestWidenedCapabilitiesReturnUpstreamsOwnState::test_island_best_programs_keeps_upstreams_stale_entry`
-- `database.island_generations.copy` — 1 killer(s), e.g. `tests/test_adapter_instrumentation.py::TestWidenedCapabilitiesReturnUpstreamsOwnState::test_container_writes_are_visible_to_later_reads`
 - `islands.regions.generic_label` — 5 killer(s), e.g. `tests/test_noema_cross_substrate_portability.py::TestPESDeclaresItsTopologyAdaptation::test_faithful_planner_renders_native_labels_per_substrate`
 - `islands.snapshot.regions_always` — 1 killer(s), e.g. `tests/test_noema_region_context.py::TestIslandsStoreRegions::test_regions_ride_on_the_global_snapshot_only`
 - `islands.target_scope.off_by_one` — 2 killer(s), e.g. `tests/test_noema_controller_upstream_fidelity_spec.py::TestControllerBackedOpenEvolveIslandSelection::test_controller_iteration_sampling_uses_the_iteration_target_scope_sequence`
@@ -139,35 +127,48 @@ Killed, but only outside the declared population or only by an aggregate guard (
 
 - `database.all_fitnesses.island_zero` — 1 population killer(s)
 - `database.archive.empty` — 1 population killer(s)
-- `database.best_program.island_zero` — 3 population killer(s)
+- `database.best_program.ignore_metric` — 1 population killer(s)
+- `database.best_program.island_zero` — 4 population killer(s)
+- `database.best_program_id.recomputed` — 1 population killer(s)
+- `database.best_program_id.setter_noop` — 1 population killer(s)
 - `database.code_diversity.constant` — 1 population killer(s)
 - `database.complexity_bin.zero` — 1 population killer(s)
-- `database.current_island.zero` — 1 population killer(s)
+- `database.current_island.setter_noop` — 1 population killer(s)
+- `database.current_island.zero` — 2 population killer(s)
+- `database.diversity_bin.zero` — 1 population killer(s)
 - `database.end_generation.always_false` — 13 population killer(s)
 - `database.end_generation.bare_increment` — 2 population killer(s)
+- `database.feature_bins.default_ten` — 1 population killer(s)
 - `database.feature_coords.zeros` — 1 population killer(s)
 - `database.feature_coords_to_key.constant` — 1 population killer(s)
 - `database.get.best_fallback` — 1 population killer(s)
+- `database.get_artifacts.empty` — 1 population killer(s)
 - `database.init.no_novelty_guard` — 1 population killer(s)
+- `database.island_best_programs.recomputed` — 1 population killer(s)
 - `database.island_feature_maps.share_first` — 3 population killer(s)
 - `database.island_fitnesses.global` — 6 population killer(s)
+- `database.island_generations.copy` — 1 population killer(s)
 - `database.island_generations.setter_noop` — 2 population killer(s)
-- `database.islands.copy` — 1 population killer(s)
+- `database.islands.copy` — 2 population killer(s)
 - `database.last_iteration.off_by_one` — 2 population killer(s)
 - `database.last_migration_generation.zero` — 1 population killer(s)
 - `database.load.reset_generations` — 1 population killer(s)
+- `database.log_island_status.noop` — 1 population killer(s)
 - `database.migrate_programs.noop` — 4 population killer(s)
 - `database.next_island.no_advance` — 1 population killer(s)
 - `database.num_islands.off_by_one` — 17 population killer(s)
 - `database.num_programs.off_by_one` — 3 population killer(s)
 - `database.per_island_bests.neg_inf_default` — 2 population killer(s)
 - `database.programs.copy` — 2 population killer(s)
+- `database.sample.island_zero` — 1 population killer(s)
 - `database.sample_from_island.drop_inspirations` — 1 population killer(s)
+- `database.sample_inspirations.parent_only` — 1 population killer(s)
 - `database.save.iteration_zero` — 1 population killer(s)
 - `database.set_current_island.off_by_one` — 1 population killer(s)
 - `database.should_migrate.always_false` — 1 population killer(s)
-- `database.store_artifacts.noop` — 1 population killer(s)
+- `database.store_artifacts.noop` — 2 population killer(s)
 - `database.top_programs.ignore_metric` — 1 population killer(s)
+- `database.validate_migration_results.noop` — 1 population killer(s)
 - `islands.add.ignore_target_scope` — 19 population killer(s)
 - `islands.capabilities.overclaim` — 1 population killer(s)
 - `islands.elites.worst_first` — 1 population killer(s)
