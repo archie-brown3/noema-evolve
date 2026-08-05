@@ -50,6 +50,11 @@ DEFAULT_OPERATORS = ["e1", "e2", "m1", "m2", "m3"]
 #     determinism: pure UCB1 argmax with deterministic (menu-order) tie-break, so
 #     the arm is reproducible from the reward stream alone with no RNG draw.
 #   - numpy replaced with the stdlib so the arm has no new dependency.
+# NOT a deviation — a defect fixed in Stage 8 (task 0188), kept here so the
+# record survives: the observation range used to seed at +/-inf regardless of
+# `asymmetric`, diverging from the donor in WHICH OPERATOR FIRES whenever every
+# reward beat its baseline (13/40 selections over a seeded 40-step trace). See
+# `_initial_obs_range` and tests/test_noema_bandit_donor_trace.py.
 # =============================================================================
 
 
@@ -79,8 +84,20 @@ class AsymmetricUCB:
         self.c = float(exploration_coef)
         self.asymmetric = bool(asymmetric)
         self.adaptive_scale = bool(adaptive_scale)
-        self._obs_min = math.inf
-        self._obs_max = -math.inf
+        self._obs_min, self._obs_max = self._initial_obs_range()
+
+    def _initial_obs_range(self):
+        """Upstream's observation-range seed (prioritization.py:367-377).
+
+        Under the asymmetric clip the shifted reward's support is known a priori
+        to start at 0, so the range seeds at [0.0, 0.0] rather than at the
+        no-observations sentinel. Seeding at +/-inf instead made normalization
+        depend on ARRIVAL ORDER (the first observed reward always normalized to
+        0.0) and delayed adaptive scaling until two DISTINCT rewards had landed.
+        """
+        if self.asymmetric:
+            return 0.0, 0.0
+        return math.inf, -math.inf
 
     # -- scoring ---------------------------------------------------------------
 
@@ -130,7 +147,8 @@ class AsymmetricUCB:
             r = max(r, 0.0)
         self.sums[i] += r
         self.counts[i] += 1.0
-        if is_real:
+        # Upstream gates the range update on adaptive_scale too (prioritization.py:505-506).
+        if self.adaptive_scale and is_real:
             self._obs_min = min(self._obs_min, r)
             self._obs_max = max(self._obs_max, r)
         return r
@@ -154,8 +172,11 @@ class AsymmetricUCB:
             )
         self.sums = [float(x) for x in state["sums"]]
         self.counts = [float(x) for x in state["counts"]]
-        self._obs_min = math.inf if state.get("obs_min") is None else float(state["obs_min"])
-        self._obs_max = -math.inf if state.get("obs_max") is None else float(state["obs_max"])
+        # A null range restores to the SEED, not to the sentinel: a checkpoint
+        # written before an observation landed must resume like a fresh bandit.
+        seed_min, seed_max = self._initial_obs_range()
+        self._obs_min = seed_min if state.get("obs_min") is None else float(state["obs_min"])
+        self._obs_max = seed_max if state.get("obs_max") is None else float(state["obs_max"])
 
 
 # ============================== END BORROWED =================================
