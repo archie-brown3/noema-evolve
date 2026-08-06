@@ -60,10 +60,7 @@ _BUILTIN_DISABLED_OPENCODE_TOOLS: Dict[str, bool] = {
 
 
 def _stray_opencode_mcp_disabled_entries() -> Dict[str, Dict[str, Any]]:
-    return {
-        name: {"type": "local", "enabled": False}
-        for name in _STRAY_OPENCODE_MCP_SERVERS
-    }
+    return {name: {"type": "local", "enabled": False} for name in _STRAY_OPENCODE_MCP_SERVERS}
 
 
 def _stray_opencode_mcp_tool_disables() -> Dict[str, bool]:

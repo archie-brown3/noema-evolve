@@ -164,6 +164,7 @@ def _agent_sections(
                 kind="open" if spec.writable else "readonly",
             )
         )
+
     def path_field(field_id: str, **spec: Any) -> dict[str, Any]:
         # Path fields bypass _make_field, so drafts have to be re-applied here too.
         result: dict[str, Any] = {"id": field_id, **spec}

@@ -39,9 +39,7 @@ def build_agent_config(args: argparse.Namespace) -> AgentConfig:
         config.mutation_depth = mutation_depth
         config.coordination_depth = coordination_depth
         config.coordination_cli = (
-            copy.deepcopy(config.mutation_cli)
-            if coordination_depth == "deep"
-            else AgentCliConfig()
+            copy.deepcopy(config.mutation_cli) if coordination_depth == "deep" else AgentCliConfig()
         )
         return config
 

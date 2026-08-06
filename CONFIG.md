@@ -77,7 +77,7 @@ key plus a bundle of sub-options.
 
 | Name | Description | Usage |
 |---|---|---|
-| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `null` (OFF arm), `hifo`, `pes-custom`, `pes-faithful`, `reevo`. Default `"null"`. Unknown keys raise `ValueError` listing the registry. |
+| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `"null"` (OFF arm), `bandit`, `hifo`, `pe`, `pes-custom`, `pes-faithful`, `reevo` (the keys of `MODULE_REGISTRY` in `noema/coordination/__init__.py`). Default `"null"`. Unquoted YAML `module: null` parses as `None` and is normalised to the OFF arm. Unknown keys raise `ValueError` listing the registry. |
 | ⚠️ `coordination.module: "pes"` | **Deprecated alias** for `pes-custom` (predates the arm split; kept so existing run configs keep working). Resolves to `pes-custom` with unchanged behavior and logs a deprecation warning. | Works, but prefer `pes-custom` in new configs. |
 | ✅ `coordination.params` | Free-form dict of mechanism-specific params, handed to the module's constructor. Valid keys depend entirely on the selected module (§2.1, §2.2). | `params: {tips_per_prompt: 3}` — dict. Default `{}`. |
 | ✅ `coordination.seed` | Seed for the module's own RNG. | `seed: 43` — int or `null`. Default `null` → `random_seed + 1`. |
@@ -268,7 +268,21 @@ Formatting knobs also accepted and passed through: `system_message_changes_descr
 
 ---
 
-## 8. Worked example
+## 8. `logging.*` (`LoggingConfig`)
+
+Console and text-file logging for one run (`noema/logging.py`). `NoemaController` installs these
+handlers on the root logger when it is constructed, and removes only its own handlers again.
+
+| Name | Description | Usage |
+|---|---|---|
+| ✅ `logging.level` | Root log level for the run. | `level: "DEBUG"` — one of `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` \| `CRITICAL`. Default `"INFO"`. Case-insensitive; **any other value raises `ValueError` in `__post_init__`.** |
+| ✅ `logging.log_dir` | Directory for the run's log file. | `log_dir: "runs/a/logs"` — str or `null`. Default `null` → `<output_dir>/logs`. |
+| ✅ `logging.console` | Emit `asctime - levelname - message` lines to stderr. | `console: false` — bool. Default `true`. |
+| ✅ `logging.file` | Write `noema_<YYYYmmdd_HHMMSS>.log` into `log_dir`. | `file: false` — bool. Default `true`. |
+
+---
+
+## 9. Worked example
 
 The circle-packing example builds `NoemaConfig` **in Python**
 (`examples/circle_packing/run_noema_arm.py`) — that is the reference usage.

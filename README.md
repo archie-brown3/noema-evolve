@@ -4,6 +4,7 @@
   <p>
     <a href="#install">Install</a> ·
     <a href="#minimal-run-example">Run</a> ·
+    <a href="#agent-host-cli-noema">CLI</a> ·
     <a href="#ablation-axes">Ablation axes</a> ·
     <a href="#outputs-and-resume">Outputs</a> ·
     <a href="#guarantees-enforced-by-tests">Guarantees</a> ·
@@ -93,6 +94,37 @@ selection:
 
 Use identical config outside `coordination.module` when comparing arms.
 
+## Agent host CLI (`noema`)
+
+Installing the package also installs a `noema` console script
+(`noema.agenthost.configure:main`). It configures and optionally starts one agent
+host run in the current directory.
+
+Run it from an example directory that holds `initial_program.py` and
+`evaluator.py`; it exits with an error if either is missing.
+
+```bash
+cd examples/<example>
+noema                 # interactive configure, then run
+noema --write-only    # write config.yaml and exit
+noema --yes           # configure, then run without a confirmation step
+```
+
+On a terminal `noema` opens a Textual UI that walks the config sections and then
+streams the run in three panes: the coordination CLI's terminal, the mutation
+CLI's terminal, and the host log. Without a terminal, or with `--write-only`, it
+is non-interactive.
+
+It starts from `config.yaml` or `noema.yaml` in that directory, or from the only
+YAML file there. It rewrites that file and adds a top-level `agent:` block for the
+CLI transport settings. A directory holding several YAML files under other names
+starts from defaults instead. The interactive UI then lets you pick which file to
+write, and picking one replaces its contents with the generated config. Keep
+hand-written example configs out of that choice.
+
+Artefacts go to `./noema_agent_output` unless `--output-dir` says otherwise. Run
+`noema --help` for the current flag list.
+
 ## Ablation axes
 
 The study varies coordination **mechanisms** against population **substrates** at
@@ -132,6 +164,8 @@ compose through one capability-checked interface.
 ## Outputs and resume
 
 - Checkpoints: `output_dir/checkpoints/`
+- Run log: `output_dir/logs/noema_<timestamp>.log` (console and file logging are
+  configured by the `logging` section; see [CONFIG.md](CONFIG.md))
 - LLM call log: `output_dir/llm_calls.jsonl`
 - Attempt trace: `output_dir/attempt_trace.jsonl` (one append-only record per
   mutation attempt, including rejected attempts, complete rendered prompts and

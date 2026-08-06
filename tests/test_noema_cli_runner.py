@@ -145,7 +145,7 @@ class TestCliPtyRunner(unittest.TestCase):
                 "p = Path(os.environ['SUBMIT_MARKER'])\n"
                 "time.sleep(0.05)\n"
                 "p.parent.mkdir(parents=True, exist_ok=True)\n"
-                "p.write_text('{\"status\":\"submitted\"}')\n"
+                'p.write_text(\'{"status":"submitted"}\')\n'
                 "time.sleep(60)\n"
             )
             result = CliPtyRunner().run(

@@ -124,9 +124,7 @@ def get_memory_status(snapshot: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_best_programs(snapshot: Dict[str, Any], limit: int = 5) -> Dict[str, Any]:
     top = list((snapshot.get("population") or {}).get("top_programs") or [])
-    return _program_list(
-        [_as_catalog_entry(item) for item in top[: max(0, limit)]]
-    )
+    return _program_list([_as_catalog_entry(item) for item in top[: max(0, limit)]])
 
 
 def get_program(snapshot: Dict[str, Any], program_id: str) -> Dict[str, Any]:
