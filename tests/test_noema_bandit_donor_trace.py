@@ -81,17 +81,22 @@ def donor_class(clone_root: Optional[str] = None) -> Tuple[Optional[Any], Option
 
     ``shinka/llm/__init__.py`` imports the provider stack (anthropic, litellm),
     so the module is loaded BY PATH with the clone root on ``sys.path`` for its
-    one intra-package import.  ``rich`` is stubbed: the donor imports it at
-    module level but uses it only in ``print_summary``.
+    one intra-package import.  ``rich`` is stubbed ONLY when it is not installed:
+    the donor imports it at module level but uses it only in ``print_summary``.
+    Stubbing an installed ``rich`` would poison ``sys.modules`` for every later
+    test in the session.
     """
     root = Path(clone_root or os.environ.get("SHINKA_CLONE", DEFAULT_CLONE))
     source = root / "shinka" / "llm" / "prioritization.py"
     if not source.is_file():
         return None, f"ShinkaEvolve clone not found: {source} does not exist (pin {PINNED_COMMIT}; set SHINKA_CLONE to override)"
-    for name in ("rich", "rich.table", "rich.console", "rich.box"):
-        sys.modules.setdefault(name, types.ModuleType(name))
-    sys.modules["rich.table"].Table = object
-    sys.modules["rich.console"].Console = object
+    try:
+        import rich.box, rich.console, rich.table  # noqa: F401
+    except ImportError:
+        for name in ("rich", "rich.table", "rich.console", "rich.box"):
+            sys.modules.setdefault(name, types.ModuleType(name))
+        sys.modules["rich.table"].Table = object
+        sys.modules["rich.console"].Console = object
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
     try:
