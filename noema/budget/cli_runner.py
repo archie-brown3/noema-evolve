@@ -196,6 +196,10 @@ class CliPtyRunner:
 
         if not argv:
             raise ValueError("argv must not be empty")
+        if submit_marker_path is not None:
+            # A marker left over from a prior spawn must not be read as this
+            # session's own submission before the child has even started.
+            submit_marker_path.unlink(missing_ok=True)
         started = time.monotonic()
         submit_received = False
         master_fd, slave_fd = pty.openpty()

@@ -162,6 +162,27 @@ class TestCliPtyRunner(unittest.TestCase):
             self.assertFalse(result.timed_out)
             self.assertLess(result.wall_s, 2.0)
 
+    def test_run_unlinks_a_stale_submit_marker_before_spawn(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            marker = work / "tools" / "mutation_submitted.json"
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            marker.write_text('{"status":"stale from a previous run"}')
+
+            result = CliPtyRunner().run(
+                [sys.executable, "-c", "import time; time.sleep(0.3)"],
+                cwd=work,
+                env={},
+                timeout_s=5.0,
+                stdout_path=work / "cli_stdout.log",
+                stderr_path=work / "cli_stderr.log",
+                submit_marker_path=marker,
+            )
+
+            self.assertFalse(result.submit_received)
+            self.assertEqual(result.exit_code, 0)
+            self.assertFalse(marker.is_file())
+
 
 if __name__ == "__main__":
     unittest.main()
