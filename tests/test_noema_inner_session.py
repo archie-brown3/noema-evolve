@@ -36,7 +36,12 @@ from noema.agenthost.inner_session_mcp import (
 from noema.agenthost.mutation import CliMutationBackend, MutationRequest
 from noema.agenthost.read_tools import build_snapshot
 from noema.agenthost.submit import ADVICE_FILENAME, coordination_response
-from noema.budget.cli_runner import CliRunner, CliRunResult, build_mutation_cli_command
+from noema.budget.cli_runner import (
+    INNER_SESSION_OPENCODE_AGENT,
+    CliPtyRunner,
+    CliRunResult,
+    build_mutation_cli_command,
+)
 from noema.config import CoordinationConfig, LLMClientConfig, LLMRolesConfig, NoemaConfig
 from noema.substrates.cvt import CVTStore
 from noema.substrates.flat import FlatPopulationStore
@@ -104,7 +109,7 @@ class TestInnerSession(unittest.TestCase):
             )
             session.generation = 3
             asyncio.run(session.begin_run())
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 result = asyncio.run(
                     session.coordination.llm.generate("prompt", tag="hifo.extract_insights")
                 )
@@ -386,15 +391,20 @@ class TestInnerMcpReadTools(unittest.TestCase):
         best = get_best_programs(self.snapshot, limit=2)
         self.assertEqual(best["count"], 2)
         self.assertEqual([item["id"] for item in best["programs"]], ["c2", "c1"])
+        self.assertNotIn("code", best["programs"][0])
+        self.assertIn("fitness", best["programs"][0])
 
     def test_program_by_id_and_missing(self):
-        self.assertEqual(get_program(self.snapshot, "c1")["fitness"], 0.5)
+        loaded = get_program(self.snapshot, "c1")
+        self.assertEqual(loaded["fitness"], 0.5)
+        self.assertIn("code", loaded)
         self.assertIn("error", get_program(self.snapshot, "nope"))
 
     def test_parents_by_child_walks_the_chain(self):
         parents = get_parents_by_child(self.snapshot, "c2", limit=5)
         self.assertEqual(parents["count"], 2)
         self.assertEqual([item["id"] for item in parents["programs"]], ["c1", "initial"])
+        self.assertNotIn("code", parents["programs"][0])
 
     def test_parents_by_child_respects_limit(self):
         parents = get_parents_by_child(self.snapshot, "c2", limit=1)
@@ -417,6 +427,8 @@ class TestInnerMcpSubmit(unittest.TestCase):
             result = submit_mutation(deliverable, "def f():\n    return 2\n")
             self.assertEqual(deliverable.read_text(), "def f():\n    return 2\n")
             self.assertEqual(result["status"], "submitted")
+            marker = Path(tmp) / "tools" / "mutation_submitted.json"
+            self.assertTrue(marker.is_file())
 
     def test_submit_mutation_rejects_empty_code(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -584,7 +596,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
             return CliRunResult(exit_code=0, stdout="", stderr="", wall_s=0.0, timed_out=False)
 
         with tempfile.TemporaryDirectory() as tmp:
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 for kind in ("claude", "codex", "opencode", "agent"):
                     current_kind = kind
                     kind_tmp = Path(tmp) / kind
@@ -618,6 +630,9 @@ class TestInnerMcpAttachment(unittest.TestCase):
                     elif kind == "opencode":
                         opencode = json.loads((work / "opencode.json").read_text())
                         self.assertTrue(opencode["mcp"]["noema"]["enabled"])
+                        self.assertIn(INNER_SESSION_OPENCODE_AGENT, opencode["agent"])
+                        self.assertIn("--agent", captured["argv"])
+                        self.assertIn(INNER_SESSION_OPENCODE_AGENT, captured["argv"])
                     else:
                         self.assertTrue((work / ".cursor" / "mcp.json").is_file())
                         self.assertIn("--approve-mcps", captured["argv"])
@@ -638,7 +653,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             session = _deep_session(tmp)
             asyncio.run(session.begin_run())
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 for kind in ("claude", "codex", "opencode", "agent"):
                     work = Path(tmp) / kind / "mut"
                     backend = CliMutationBackend(kind=kind, binary=f"/usr/bin/{kind}")
@@ -669,6 +684,9 @@ class TestInnerMcpAttachment(unittest.TestCase):
                     elif kind == "opencode":
                         opencode = json.loads((work / "opencode.json").read_text())
                         self.assertTrue(opencode["mcp"]["noema"]["enabled"])
+                        self.assertIn(INNER_SESSION_OPENCODE_AGENT, opencode["agent"])
+                        self.assertIn("--agent", captured["argv"])
+                        self.assertIn(INNER_SESSION_OPENCODE_AGENT, captured["argv"])
                     else:
                         self.assertTrue((work / ".cursor" / "mcp.json").is_file())
                         self.assertIn("--approve-mcps", captured["argv"])
@@ -690,7 +708,7 @@ class TestInnerMcpAttachment(unittest.TestCase):
                 deliverable_path=work / "child.py",
                 timeout_s=5.0,
             )
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 backend.run(request)
 
             self.assertFalse((work / "tools" / MCP_CONFIG_NAME).exists())

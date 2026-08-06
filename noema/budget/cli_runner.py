@@ -12,13 +12,19 @@ deliverable read/write) stay in ``noema.agenthost.mutation``.
 
 from __future__ import annotations
 
+import errno
 import json
+import os
+import pty
+import select
 import shutil
+import signal
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 SUPPORTED_MUTATION_CLIS = ("claude", "codex", "opencode", "agent")
 
@@ -29,6 +35,60 @@ _DEFAULT_BINARIES = {
     "agent": "agent",
 }
 
+# OpenCode agent profile for deep inner-session MCP spawns (mutation + coordination).
+INNER_SESSION_OPENCODE_AGENT = "noema-inner-session"
+
+# Global ~/.config/opencode/opencode.json often enables extra MCP servers; project
+# config must explicitly disable them so mutation sessions stay Noema-only.
+_STRAY_OPENCODE_MCP_SERVERS = ("pencil", "vault", "noema-agent")
+_STRAY_OPENCODE_MCP_TOOL_GLOBS = tuple(f"{name}_*" for name in _STRAY_OPENCODE_MCP_SERVERS)
+_NOEMA_INNER_SESSION_TOOL_GLOB = "noema_*"
+
+_BUILTIN_DISABLED_OPENCODE_TOOLS: Dict[str, bool] = {
+    "bash": False,
+    "webfetch": False,
+    "grep": False,
+    "glob": False,
+    "task": False,
+    "skill": False,
+    "todowrite": False,
+    "question": False,
+    "read": False,
+    "edit": False,
+    "write": False,
+}
+
+
+def _stray_opencode_mcp_disabled_entries() -> Dict[str, Dict[str, Any]]:
+    return {
+        name: {"type": "local", "enabled": False}
+        for name in _STRAY_OPENCODE_MCP_SERVERS
+    }
+
+
+def _stray_opencode_mcp_tool_disables() -> Dict[str, bool]:
+    return {pattern: False for pattern in _STRAY_OPENCODE_MCP_TOOL_GLOBS}
+
+
+def _inner_session_opencode_agent_tools() -> Dict[str, bool]:
+    """Only Noema inner-session MCP tools plus submit; no global pencil/vault leaks."""
+    tools = dict(_BUILTIN_DISABLED_OPENCODE_TOOLS)
+    tools.update(_stray_opencode_mcp_tool_disables())
+    tools[_NOEMA_INNER_SESSION_TOOL_GLOB] = True
+    return tools
+
+
+def _inner_session_opencode_agent() -> Dict[str, Any]:
+    """Tool surface for one Noema inner session: MCP reads + deliverable write, no shell."""
+    return {
+        "description": (
+            "Noema inner session: use Noema MCP tools for population context and "
+            "the submit tool to finalize the deliverable. No shell, web fetch, or "
+            "repo search tools."
+        ),
+        "tools": _inner_session_opencode_agent_tools(),
+    }
+
 
 @dataclass(frozen=True)
 class CliRunResult:
@@ -37,6 +97,7 @@ class CliRunResult:
     stderr: str
     wall_s: float
     timed_out: bool
+    submit_received: bool = False
 
 
 class CliRunner:
@@ -90,6 +151,180 @@ class CliRunner:
         )
 
 
+PtyOutputCallback = Callable[[bytes], None]
+
+
+class CliPtyRunner:
+    """Run a coding CLI on one controlling PTY and optionally mirror its paint.
+
+    The PTY is deliberately the common spawn primitive for both run-monitor and
+    headless agency launches. A real terminal merges stdout/stderr in the order
+    the coding CLI painted them; ``stdout_path`` therefore receives that merged
+    transcript and ``stderr_path`` remains an empty compatibility file.
+    """
+
+    def __init__(self, *, on_output: Optional[PtyOutputCallback] = None) -> None:
+        self._on_output = on_output
+        self._lock = threading.Lock()
+        self._active_pid: Optional[int] = None
+
+    @property
+    def active(self) -> bool:
+        with self._lock:
+            return self._active_pid is not None
+
+    def abort(self) -> None:
+        """Best-effort stop for the currently active CLI session, if any."""
+
+        with self._lock:
+            pid = self._active_pid
+        if pid is not None:
+            self._terminate_process_group(pid, signal.SIGTERM)
+
+    def run(
+        self,
+        argv: list[str],
+        *,
+        cwd: Path,
+        env: dict[str, str],
+        timeout_s: float,
+        stdout_path: Path,
+        stderr_path: Path,
+        submit_marker_path: Optional[Path] = None,
+    ) -> CliRunResult:
+        """Execute ``argv`` on a controlling PTY and return the merged paint."""
+
+        if not argv:
+            raise ValueError("argv must not be empty")
+        started = time.monotonic()
+        submit_received = False
+        master_fd, slave_fd = pty.openpty()
+        pid = os.fork()
+        if pid == 0:  # pragma: no cover - the child immediately execs.
+            try:
+                os.setsid()
+                os.close(master_fd)
+                # Opening the slave after setsid makes it the controlling terminal.
+                slave_name = os.ttyname(slave_fd)
+                controlling_fd = os.open(slave_name, os.O_RDWR)
+                for fd in (0, 1, 2):
+                    os.dup2(controlling_fd, fd)
+                if controlling_fd > 2:
+                    os.close(controlling_fd)
+                if slave_fd > 2:
+                    os.close(slave_fd)
+                os.chdir(str(cwd))
+                os.execvpe(argv[0], argv, env)
+            except BaseException as exc:
+                os.write(2, f"noema CLI PTY exec failed: {exc}\n".encode())
+                os._exit(127)
+
+        os.close(slave_fd)
+        with self._lock:
+            self._active_pid = pid
+
+        stdout_path.parent.mkdir(parents=True, exist_ok=True)
+        stderr_path.parent.mkdir(parents=True, exist_ok=True)
+        output = bytearray()
+        timed_out = False
+        child_status: Optional[int] = None
+        eof = False
+        deadline = started + timeout_s
+        termination_started: Optional[float] = None
+        try:
+            stderr_path.write_text("")
+            with stdout_path.open("wb") as stdout_log:
+                while child_status is None or not eof:
+                    if child_status is None:
+                        waited_pid, status = os.waitpid(pid, os.WNOHANG)
+                        if waited_pid == pid:
+                            child_status = status
+
+                    now = time.monotonic()
+                    if (
+                        child_status is None
+                        and termination_started is None
+                        and submit_marker_path is not None
+                        and submit_marker_path.is_file()
+                    ):
+                        submit_received = True
+                        self._terminate_process_group(pid, signal.SIGTERM)
+                        termination_started = now
+                        deadline = now + 0.25
+                    elif child_status is None and termination_started is None and now >= deadline:
+                        timed_out = True
+                        self._terminate_process_group(pid, signal.SIGTERM)
+                        termination_started = now
+                        deadline = now + 0.25
+                    elif (
+                        child_status is None and termination_started is not None and now >= deadline
+                    ):
+                        self._terminate_process_group(pid, signal.SIGKILL)
+                        deadline = now + 0.25
+
+                    if not eof:
+                        wait_s = 0.05
+                        if child_status is None:
+                            wait_s = max(0.0, min(wait_s, deadline - time.monotonic()))
+                        readable, _, _ = select.select([master_fd], [], [], wait_s)
+                        if readable:
+                            try:
+                                chunk = os.read(master_fd, 65536)
+                            except OSError as exc:
+                                if exc.errno not in (errno.EIO, errno.EBADF):
+                                    raise
+                                chunk = b""
+                            if chunk:
+                                output.extend(chunk)
+                                stdout_log.write(chunk)
+                                stdout_log.flush()
+                                if self._on_output is not None:
+                                    try:
+                                        self._on_output(chunk)
+                                    except Exception:
+                                        # UI repaint failures must not alter the study run.
+                                        pass
+                            else:
+                                eof = True
+                    else:
+                        time.sleep(0.01)
+        finally:
+            try:
+                os.close(master_fd)
+            except OSError:
+                pass
+            with self._lock:
+                if self._active_pid == pid:
+                    self._active_pid = None
+
+        merged = output.decode(errors="replace")
+        return CliRunResult(
+            exit_code=None if timed_out else _wait_status_exit_code(child_status),
+            stdout=merged,
+            stderr="",
+            wall_s=time.monotonic() - started,
+            timed_out=timed_out,
+            submit_received=submit_received,
+        )
+
+    @staticmethod
+    def _terminate_process_group(pid: int, sig: signal.Signals) -> None:
+        try:
+            os.killpg(pid, sig)
+        except ProcessLookupError:
+            pass
+
+
+def _wait_status_exit_code(status: Optional[int]) -> Optional[int]:
+    if status is None:
+        return None
+    if os.WIFEXITED(status):
+        return os.WEXITSTATUS(status)
+    if os.WIFSIGNALED(status):
+        return -os.WTERMSIG(status)
+    return None
+
+
 def deliverable_envelope(*, deliverable: Path, parent_path: Path) -> str:
     """Host-owned write contract appended to the CLI user message (not the Noema brief)."""
     return (
@@ -97,9 +332,10 @@ def deliverable_envelope(*, deliverable: Path, parent_path: Path) -> str:
         "The host only admits the program written to this exact file path:\n"
         f"  {deliverable}\n"
         "That file is already seeded with the parent program (also saved at "
-        f"{parent_path}). Edit the deliverable in place so it contains the "
-        "complete improved program, save it, then stop. Do not put the program "
-        "only in chat output — stdout is logs, not the payload.\n"
+        f"{parent_path}). Call ``submit_mutation`` with the complete improved "
+        "program to finalize the deliverable and end this session. Do not create "
+        "other files or put the program only in chat output — stdout is logs, not "
+        "the payload.\n"
     )
 
 
@@ -195,7 +431,8 @@ def build_mutation_cli_command(
         return cmd
 
     if kind == "opencode":
-        if mcp_config_path is not None:
+        inner_session = mcp_config_path is not None
+        if inner_session:
             _write_opencode_project_config(work_dir, mcp_config_path)
         # `--file` is an array flag and will swallow following positionals unless
         # the message is protected by `--` (or placed before `--file`).
@@ -208,6 +445,8 @@ def build_mutation_cli_command(
             "--file",
             system_file,
         ]
+        if inner_session:
+            cmd.extend(["--agent", INNER_SESSION_OPENCODE_AGENT])
         if model:
             cmd.extend(["-m", model])
         cmd.extend(extra)
@@ -289,10 +528,20 @@ def _write_opencode_project_config(work_dir: Path, config_path: Path) -> Path:
         if isinstance(server.get("env"), dict):
             entry["environment"] = server["env"]
         servers[name] = entry
+    for name, entry in _stray_opencode_mcp_disabled_entries().items():
+        if name not in servers:
+            servers[name] = entry
     path = work_dir / "opencode.json"
     path.write_text(
         json.dumps(
-            {"$schema": "https://opencode.ai/config.json", "mcp": servers},
+            {
+                "$schema": "https://opencode.ai/config.json",
+                "mcp": servers,
+                "tools": _stray_opencode_mcp_tool_disables(),
+                "agent": {
+                    INNER_SESSION_OPENCODE_AGENT: _inner_session_opencode_agent(),
+                },
+            },
             indent=2,
         )
     )

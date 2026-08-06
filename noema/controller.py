@@ -41,6 +41,7 @@ from noema.evolution.evaluator import make_evaluator
 from noema.evolution.iteration_runner import IterationRunner
 from noema.evolution.operators import OperatorSpec
 from noema.evolution.prompts import make_prompt_sampler
+from noema.logging import setup_run_logging
 from noema.substrates.registry import build_substrate_runtime
 from noema.trace import AttemptTraceWriter, git_provenance, sha256_file
 
@@ -90,6 +91,8 @@ class NoemaController:
         self.config = config
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
+        self.run_logging = setup_run_logging(config.logging, output_dir)
+        self.mutation_via = "api"
         self._freeze_config(output_dir, config)
         frozen_config_path = os.path.join(output_dir, FROZEN_CONFIG_FILE)
         self.attempt_tracer = AttemptTraceWriter(
