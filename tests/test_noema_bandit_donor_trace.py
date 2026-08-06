@@ -84,7 +84,13 @@ def donor_class(clone_root: Optional[str] = None) -> Tuple[Optional[Any], Option
     one intra-package import.  ``rich`` is stubbed ONLY when it is not installed:
     the donor imports it at module level but uses it only in ``print_summary``.
     Stubbing an installed ``rich`` would poison ``sys.modules`` for every later
-    test in the session.
+    test in the session.  Both the stubs and the ``sys.path`` entry are scoped to
+    the import attempt (Greptile finding on PR #108): they are removed in a
+    ``finally`` once ``exec_module`` returns, whether it succeeds or raises, so
+    the loader never leaves global import state behind.  This is safe because
+    ``exec_module`` already binds the donor module's own references to those
+    stub objects during execution; removing the ``sys.modules`` entries
+    afterward does not affect the module the caller received.
     """
     root = Path(clone_root or os.environ.get("SHINKA_CLONE", DEFAULT_CLONE))
     source = root / "shinka" / "llm" / "prioritization.py"
@@ -92,13 +98,17 @@ def donor_class(clone_root: Optional[str] = None) -> Tuple[Optional[Any], Option
         return None, f"ShinkaEvolve clone not found: {source} does not exist (pin {PINNED_COMMIT}; set SHINKA_CLONE to override)"
     try:
         import rich.box, rich.console, rich.table  # noqa: F401
+        stubbed = []
     except ImportError:
-        for name in ("rich", "rich.table", "rich.console", "rich.box"):
-            sys.modules.setdefault(name, types.ModuleType(name))
+        stubbed = [name for name in ("rich", "rich.table", "rich.console", "rich.box") if name not in sys.modules]
+        for name in stubbed:
+            sys.modules[name] = types.ModuleType(name)
         sys.modules["rich.table"].Table = object
         sys.modules["rich.console"].Console = object
-    if str(root) not in sys.path:
-        sys.path.insert(0, str(root))
+    path_str = str(root)
+    path_added = path_str not in sys.path
+    if path_added:
+        sys.path.insert(0, path_str)
     try:
         spec = importlib.util.spec_from_file_location("shinka_prioritization", source)
         module = importlib.util.module_from_spec(spec)
@@ -106,6 +116,14 @@ def donor_class(clone_root: Optional[str] = None) -> Tuple[Optional[Any], Option
         return module.AsymmetricUCB, None
     except Exception as exc:  # missing numpy/scipy, donor moved on, ...
         return None, f"ShinkaEvolve clone at {root} could not be loaded: {exc!r}"
+    finally:
+        for name in stubbed:
+            sys.modules.pop(name, None)
+        if path_added:
+            try:
+                sys.path.remove(path_str)
+            except ValueError:
+                pass
 
 
 def require_donor(testcase: unittest.TestCase):
