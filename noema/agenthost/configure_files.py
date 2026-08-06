@@ -172,6 +172,10 @@ def _normalise_openevolve_yaml(raw: dict[str, Any]) -> dict[str, Any]:
     # Noema deliberately rejects stochastic prompt templates so the mutation
     # prompt remains identical across arms.
     prompt["use_template_stochasticity"] = False
+    # Same reason, same fail-closed rule as above: the 'Diverse Programs'
+    # section samples from the global random module. openevolve defaults it to
+    # 2, and make_prompt_sampler rejects anything above 0.
+    prompt["num_diverse_programs"] = 0
     data["prompt"] = prompt
     if "num_top_programs" not in data and "num_top_programs" in prompt:
         data["num_top_programs"] = prompt["num_top_programs"]
