@@ -17,6 +17,22 @@ def _write_minimal_example(cwd: Path, *, configs: list[str] | None = None) -> No
         (cwd / name).write_text("max_iterations: 1\nprompt:\n  use_template_stochasticity: false\n")
 
 
+# A file that has nothing to do with Noema but shares one key name with the
+# legacy OpenEvolve schema (task 0201).
+DOCKER_COMPOSE_WITH_LOG_LEVEL = "\n".join(
+    [
+        "version: '3'",
+        "log_level: INFO",
+        "services:",
+        "  nginx:",
+        "    image: nginx:latest",
+        "    ports:",
+        "      - '80:80'",
+        "",
+    ]
+)
+
+
 def _write_openevolve_yaml(path: Path) -> None:
     path.write_text(
         "\n".join(
@@ -63,6 +79,44 @@ class TestDiscoverExample(unittest.TestCase):
             names = {p.name for p in found.config_candidates}
             self.assertEqual(names, {"noema.yaml", "config_phase_1.yaml"})
             self.assertEqual(found.preferred_config, (cwd / "noema.yaml").resolve())
+
+    def test_sole_unrelated_yaml_sharing_a_key_with_openevolve_is_not_preferred(self):
+        # task 0201: 'log_level' alone makes looks_like_openevolve_yaml true, so
+        # the normaliser swallows any mapping and the load-succeeds signal stops
+        # rejecting anything. The file is still not a Noema config.
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            _write_minimal_example(cwd, configs=None)
+            (cwd / "docker-compose.yaml").write_text(DOCKER_COMPOSE_WITH_LOG_LEVEL)
+            found = discover_example(cwd)
+            self.assertIn((cwd / "docker-compose.yaml").resolve(), found.config_candidates)
+            self.assertIsNone(found.preferred_config)
+
+
+class TestConfigureRunLeavesUnrelatedYamlAlone(unittest.TestCase):
+    """task 0201: a configure run must never rewrite a file it merely found."""
+
+    def test_write_only_run_leaves_the_sole_unrelated_yaml_byte_identical(self):
+        import os
+
+        from noema.agenthost.configure import main
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            _write_minimal_example(cwd, configs=None)
+            unrelated = cwd / "docker-compose.yaml"
+            unrelated.write_text(DOCKER_COMPOSE_WITH_LOG_LEVEL)
+            before = unrelated.read_bytes()
+
+            here = os.getcwd()
+            os.chdir(cwd)
+            try:
+                self.assertEqual(main(["--write-only"]), 0)
+            finally:
+                os.chdir(here)
+
+            self.assertEqual(unrelated.read_bytes(), before)
+            self.assertTrue((cwd / "config.yaml").is_file())
 
 
 class TestDiscoverSkeleton(unittest.TestCase):
