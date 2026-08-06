@@ -7,7 +7,7 @@ import os
 import subprocess
 import time
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 ATTEMPT_OUTCOMES = frozenset(
     {
@@ -103,11 +103,13 @@ class AttemptTraceWriter:
         run_id: Optional[str] = None,
         config_sha256: Optional[str] = None,
         git_provenance: Optional[Dict[str, Any]] = None,
+        on_write: Optional[Callable[[Dict[str, Any]], None]] = None,
     ):
         self.path = path
         self.run_id = run_id or os.path.basename(os.path.abspath(os.path.dirname(path)))
         self.config_sha256 = config_sha256
         self.git_provenance = dict(git_provenance or {})
+        self._on_write = on_write
 
     def attempt_id(self, iteration: int, attempt: int) -> str:
         return f"{self.run_id}:{iteration:06d}:{attempt:02d}"
@@ -127,8 +129,15 @@ class AttemptTraceWriter:
             "git": self.git_provenance,
             **fields,
         }
+        persisted_record = _json_safe(record)
         with open(self.path, "a") as f:
-            f.write(json.dumps(_json_safe(record), sort_keys=True) + "\n")
+            f.write(json.dumps(persisted_record, sort_keys=True) + "\n")
+        if self._on_write is not None:
+            try:
+                self._on_write(dict(persisted_record))
+            except Exception:
+                # A live monitor must never make provenance persistence fail.
+                pass
 
     def write_selection(
         self,

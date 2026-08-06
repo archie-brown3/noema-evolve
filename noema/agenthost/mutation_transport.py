@@ -51,6 +51,7 @@ class AgentMutationTransport:
             raise RuntimeError("mutation_backend is required for agent-host iteration")
         if session._selection is None:
             raise RuntimeError("parent must be selected before mutation")
+        session.raise_if_aborted()
 
         prompt = {"system": system_message, "user": messages[0]["content"]}
         session._mutation_attempts = session._driver_mutation_attempts + 1
@@ -63,6 +64,7 @@ class AgentMutationTransport:
             timeout_s=self._timeout_s,
             model=model,
         )
+        session.raise_if_aborted()
         if not mutation.ok:
             raise MutationTransportFailure(mutation.error or "mutation backend failed")
         if child_code is None:

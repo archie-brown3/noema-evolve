@@ -18,6 +18,7 @@ from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
 
 from noema.coordination.bandit.module import DEFAULT_OPERATORS
 from noema.evolution.operators import OPERATOR_MENU
+from noema.logging import LoggingConfig
 
 
 def _default_prompt_config() -> PromptConfig:
@@ -204,6 +205,7 @@ class NoemaConfig:
     coordination: CoordinationConfig = field(default_factory=CoordinationConfig)
     substrate: SubstrateConfig = field(default_factory=SubstrateConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
 
     def __post_init__(self):
         if self.retry_on not in ("failure", "non_improvement"):
@@ -350,6 +352,7 @@ class NoemaConfig:
         "coordination": CoordinationConfig,
         "substrate": SubstrateConfig,
         "selection": SelectionConfig,
+        "logging": LoggingConfig,
     }
 
     @classmethod
@@ -426,9 +429,26 @@ class NoemaConfig:
             )
         return data
 
+    @staticmethod
+    def _normalise_coordination_module(data: Dict[str, Any]) -> Dict[str, Any]:
+        """YAML ``module: null`` is None; the OFF arm is the string ``\"null\"``."""
+
+        coordination = data.get("coordination")
+        if (
+            isinstance(coordination, dict)
+            and "module" in coordination
+            and coordination["module"] is None
+        ):
+            return {
+                **data,
+                "coordination": {**coordination, "module": "null"},
+            }
+        return data
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "NoemaConfig":
         data = cls._normalise_llm_section(data)
+        data = cls._normalise_coordination_module(data)
         cls._reject_unknown_keys(data)
         return dacite.from_dict(
             data_class=cls,

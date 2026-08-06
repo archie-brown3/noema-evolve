@@ -8,9 +8,10 @@ through ``IterationRunner``, which is what makes the two arms comparable.
 
 import os
 import random
+import threading
 import warnings
 from collections import deque
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from openevolve.database import Program  # type: ignore[import-untyped]
 
@@ -28,8 +29,13 @@ from noema.evolution.evaluator import make_evaluator
 from noema.evolution.iteration_runner import IterationRunner
 from noema.evolution.operators import OperatorSpec
 from noema.evolution.prompts import make_prompt_sampler
+from noema.logging import setup_run_logging
 from noema.substrates.registry import build_substrate_runtime
 from noema.trace import AttemptTraceWriter
+
+
+class AgentSessionAborted(RuntimeError):
+    """The run monitor requested that this agency session stop."""
 
 
 class AgentSession:
@@ -47,11 +53,18 @@ class AgentSession:
         task: Optional[str] = None,
         mutation_backend: Optional[MutationBackend] = None,
         mutation_timeout_s: float = 120.0,
+        attempt_trace_callback: Optional[Callable[[dict], None]] = None,
+        mutation_via: str = "cli/shallow",
+        console_suspended: bool = False,
     ):
         self.config = config
         self.task = task or config.prompt.system_message
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
+        self.run_logging = setup_run_logging(
+            config.logging, output_dir, console_suspended=console_suspended
+        )
+        self.mutation_via = mutation_via
 
         self.ledger = ledger or TokenLedger(
             total_budget_tokens=config.budget.total_tokens,
@@ -72,7 +85,9 @@ class AgentSession:
         self.stop_children = stop_children if stop_children is not None else config.max_iterations
         self.attempt_tracer = AttemptTraceWriter(
             os.path.join(output_dir, "attempt_trace.jsonl"),
+            on_write=attempt_trace_callback,
         )
+        self._abort_requested = threading.Event()
 
         self.children_accepted = 0
         self.generation = 0
@@ -135,6 +150,37 @@ class AgentSession:
         self.children_accepted += 1
         self._iteration += 1
 
+    def abort(self) -> None:
+        """Request graceful host shutdown after the active transport returns."""
+
+        self._abort_requested.set()
+        abort_backend = getattr(self.mutation_backend, "abort", None)
+        if callable(abort_backend):
+            abort_backend()
+        self._abort_deep_coordination()
+
+    @property
+    def aborted(self) -> bool:
+        return self._abort_requested.is_set()
+
+    def raise_if_aborted(self) -> None:
+        if self.aborted:
+            raise AgentSessionAborted("agency run aborted by operator")
+
+    def _abort_deep_coordination(self) -> None:
+        seen = set()
+        for llm in (
+            getattr(self.coordination, "llm", None),
+            getattr(self.coordination, "_paradigm_llm", None),
+            getattr(self.coordination, "_variant_llm", None),
+        ):
+            if id(llm) in seen:
+                continue
+            seen.add(id(llm))
+            abort = getattr(llm, "abort", None)
+            if callable(abort):
+                abort()
+
     async def begin_run(self) -> Dict[str, Any]:
         if self.store.num_programs == 0:
             metrics = await self.evaluator.evaluate_program(self.initial_program_code, "initial")
@@ -163,9 +209,11 @@ class AgentSession:
         Iteration body and generation tick come from ``IterationRunner``, so the
         agent host and the controller advance the population identically.
         """
+        self.raise_if_aborted()
         await self.begin_run()
         iteration = 0
         while self.children_accepted < self.stop_children:
+            self.raise_if_aborted()
             self._driver_mutation_attempts = 0
             accepted_before = self.children_accepted
             attempts_without_acceptance = 0
@@ -182,12 +230,14 @@ class AgentSession:
                         ) from last_transport_error
                     raise RuntimeError(message)
                 try:
+                    self.raise_if_aborted()
                     await IterationRunner.run_iteration(
                         self,
                         iteration,
                         attempt_offset=self._driver_mutation_attempts,
                     )
                 except MutationTransportFailure as exc:
+                    self.raise_if_aborted()
                     last_transport_error = exc
                     attempts_without_acceptance += 1
                     continue

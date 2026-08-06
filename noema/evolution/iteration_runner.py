@@ -29,6 +29,7 @@ from noema.evolution.boundary import enforce_immutable_boundary
 from noema.evolution.diff import apply_diff_lenient as apply_diff
 from noema.evolution.operators import OPERATOR_MENU, OperatorSpec
 from noema.evolution.prompts import build_mutation_prompt, inject_advice
+from noema.logging import format_accepted_child_line, host_logger
 
 if TYPE_CHECKING:
     from noema.agenthost.mutation_transport import MutationTransport
@@ -117,6 +118,7 @@ class IterationRunner:
 
     @staticmethod
     async def run_iteration(host, iteration: int, *, attempt_offset: int = 0) -> None:
+        iteration_started = time.perf_counter()
         island = host.substrate.target_scope(iteration)
         selection_ctx = SelectionContext(
             iteration=iteration,
@@ -351,6 +353,11 @@ class IterationRunner:
                     f"Iteration {iteration}: no valid program in LLM response "
                     f"(attempt {attempt + 1})"
                 )
+                host_logger().debug(
+                    "Iteration %s attempt %s: unparseable response; see attempt_trace.jsonl",
+                    iteration,
+                    attempt_number,
+                )
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
@@ -388,6 +395,12 @@ class IterationRunner:
                     f"Iteration {iteration}: mutation touched F_imm outside the evolve "
                     f"block (attempt {attempt + 1})"
                 )
+                host_logger().debug(
+                    "Iteration %s attempt %s: immutable-boundary violation; "
+                    "see attempt_trace.jsonl",
+                    iteration,
+                    attempt_number,
+                )
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
@@ -419,6 +432,12 @@ class IterationRunner:
                     f"(attempt {attempt + 1}, {child_length} > "
                     f"{host.config.max_code_length})"
                 )
+                host_logger().debug(
+                    "Iteration %s attempt %s: generated code exceeded max length; "
+                    "see attempt_trace.jsonl",
+                    iteration,
+                    attempt_number,
+                )
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
@@ -441,6 +460,12 @@ class IterationRunner:
                 metrics = await host.evaluator.evaluate_program(child_code, child_id)
                 artifacts = host.evaluator.get_pending_artifacts(child_id)
             except Exception as exc:
+                host_logger().debug(
+                    "Iteration %s attempt %s: evaluator exception %s; " "see attempt_trace.jsonl",
+                    iteration,
+                    attempt_number,
+                    type(exc).__name__,
+                )
                 IterationRunner._write_attempt_trace(
                     host,
                     iteration,
@@ -473,6 +498,11 @@ class IterationRunner:
                 logger.warning(
                     f"Iteration {iteration}: evaluation failed "
                     f"(attempt {attempt + 1}): {error_text[:200]}"
+                )
+                host_logger().debug(
+                    "Iteration %s attempt %s: evaluation failure; see attempt_trace.jsonl",
+                    iteration,
+                    attempt_number,
                 )
                 IterationRunner._write_attempt_trace(
                     host,
@@ -520,6 +550,12 @@ class IterationRunner:
                     logger.info(
                         f"Iteration {iteration}: valid child without improvement "
                         f"(attempt {attempt + 1}); retrying"
+                    )
+                    host_logger().debug(
+                        "Iteration %s attempt %s: non-improvement retry; "
+                        "see attempt_trace.jsonl",
+                        iteration,
+                        attempt_number,
                     )
                     IterationRunner._write_attempt_trace(
                         host,
@@ -703,6 +739,18 @@ class IterationRunner:
         )
         if artifacts and retained_program_id is not None:
             host.population_store.store_artifacts(child_id, artifacts)
+
+        host_logger().info(
+            format_accepted_child_line(
+                iteration=iteration,
+                child_id=child.id,
+                parent_id=parent.id,
+                elapsed_s=time.perf_counter() - iteration_started,
+                metrics=getattr(child, "metrics", None) or metrics,
+                parent_metrics=getattr(parent, "metrics", None),
+                via=getattr(host, "mutation_via", None),
+            )
+        )
 
         hook = getattr(host, "on_mutation_child_accepted", None)
         if hook is not None:

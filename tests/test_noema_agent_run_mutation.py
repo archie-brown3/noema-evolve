@@ -25,8 +25,8 @@ from noema.agenthost.mutation import (
     MutationResult,
     mutation_layout,
 )
-from noema.agenthost.session import AgentSession
-from noema.budget.cli_runner import CliRunner, CliRunResult
+from noema.agenthost.session import AgentSession, AgentSessionAborted
+from noema.budget.cli_runner import CliPtyRunner, CliRunResult
 from noema.budget.ledger import TokenLedger
 from noema.config import (
     BudgetConfig,
@@ -143,6 +143,29 @@ class TestRunMutationAccept(unittest.TestCase):
             reported = [c for c in coordination.calls if c[0] == "report_result"]
             self.assertEqual(len(reported), 1)
             self.assertEqual(reported[0][1], child.id)
+
+
+class TestRunAbort(unittest.TestCase):
+    def test_abort_stops_the_host_before_another_mutation_is_started(self):
+        class AbortableBackend:
+            def __init__(self):
+                self.abort_calls = 0
+
+            def abort(self):
+                self.abort_calls += 1
+
+            def run(self, _request):
+                raise AssertionError("aborted session must not call run")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            backend = AbortableBackend()
+            session, _ = make_session(tmp, mutation_backend=backend)
+            session.abort()
+
+            with self.assertRaises(AgentSessionAborted):
+                asyncio.run(session.run_agent_mode())
+
+        self.assertEqual(backend.abort_calls, 1)
 
 
 class TestRunMutationRejectAndRetry(unittest.TestCase):
@@ -342,7 +365,7 @@ class TestCliMutationBackendContract(unittest.TestCase):
                 timeout_s=5.0,
                 model="strong-model",
             )
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 result = backend.run(request)
 
         self.assertTrue(result.ok)
@@ -377,7 +400,7 @@ class TestCliMutationBackendContract(unittest.TestCase):
                 deliverable_path=work / "child.py",
                 timeout_s=5.0,
             )
-            with patch.object(CliRunner, "run", fake_run):
+            with patch.object(CliPtyRunner, "run", fake_run):
                 result = backend.run(request)
 
         self.assertTrue(result.ok)

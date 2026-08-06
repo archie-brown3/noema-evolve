@@ -25,7 +25,8 @@ See the [repository overview](../README.md) for installation, configuration, and
 ## Package map
 
 - [`agenthost/`](./agenthost/) optionally hosts the shared iteration loop through
-  nested coding CLIs.
+  nested coding CLIs, and owns the `noema` console script: the configure walk and
+  the live run monitor (see the [repository overview](../README.md#agent-host-cli-noema)).
 - [`budget/`](./budget/README.md) meters LLM calls and records token use.
 - [`coordination/`](./coordination/README.md) defines the arm interface and registry.
 - [`evolution/`](./evolution/README.md) owns the shared mutation and evaluation path.
