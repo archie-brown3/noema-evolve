@@ -14,11 +14,13 @@ WHAT THIS FILE DOES *NOT* PROVE
     coordination-block guarantees actually live -- are never called.
 
     A caveat on (2): upstream's ``Config()`` defaults
-    ``use_template_stochasticity=True`` and ``make_prompt_sampler`` raises on that
-    (a declared Noema deviation -- random phrase variation would void the
-    identical-prompts-across-arms guarantee). ``_pinned_prompt_sampler`` forces it
-    off before construction, so these donor tests no longer run under upstream's
-    default config. No assertion in this cluster depends on stochastic phrasing.
+    ``use_template_stochasticity=True`` and ``num_diverse_programs=2``, and
+    ``make_prompt_sampler`` raises on both (declared Noema deviations -- random
+    phrase variation and the global-RNG-sampled 'Diverse Programs' section would
+    each void the identical-prompts-across-arms guarantee; see task 0207 for the
+    latter). ``_pinned_prompt_sampler`` forces both off before construction, so
+    these donor tests no longer run under upstream's default config. No
+    assertion in this cluster depends on stochastic phrasing or diverse programs.
 
     THIS MUST NOT BE COUNTED AGAINST ANY TASK 0188 CHECKLIST ITEM. Prompt-stack
     fidelity is covered by ``tests/test_noema_prompts.py``.
@@ -49,8 +51,9 @@ _UNROUTED_FILES = [
 
 def _pinned_prompt_sampler(prompt_config):
     """Build the sampler via Noema's factory, with the declared stochasticity
-    deviation applied (see module docstring)."""
+    and diverse-programs deviations applied (see module docstring)."""
     prompt_config.use_template_stochasticity = False
+    prompt_config.num_diverse_programs = 0
     return make_prompt_sampler(prompt_config)
 
 

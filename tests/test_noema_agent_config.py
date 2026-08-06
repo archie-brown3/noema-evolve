@@ -204,6 +204,7 @@ class TestCreateAgentSession(unittest.TestCase):
     def test_factory_bootstraps_escalation_model_from_coordination_seat(self):
         noema = NoemaConfig(
             coordination=CoordinationConfig(module="bandit"),
+            mutation_operators=["e1", "e2", "m1", "m2", "m3"],
             llm=LLMRolesConfig(
                 coordination=LLMClientConfig(model="coord-model", api_key="fake-key"),
             ),

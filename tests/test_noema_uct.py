@@ -293,7 +293,7 @@ class TestCrossSubstratePromptIdentity(unittest.TestCase):
         islands.add(program("seed", 1.0), target_scope=0)
         tree.add(program("seed", 1.0))
         sampler = make_prompt_sampler(
-            PromptConfig(use_template_stochasticity=False)
+            PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
         )
 
         def prompt_for(store):

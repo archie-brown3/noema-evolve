@@ -14,15 +14,16 @@ from typing import Any, Dict, List, Optional, Union
 
 import dacite
 import yaml
-
 from openevolve.config import DatabaseConfig, EvaluatorConfig, PromptConfig
+
+from noema.coordination.bandit.module import DEFAULT_OPERATORS
 from noema.evolution.operators import OPERATOR_MENU
 
 
 def _default_prompt_config() -> PromptConfig:
-    # openevolve defaults stochasticity ON; noema requires it OFF (identical
-    # prompts across arms)
-    return PromptConfig(use_template_stochasticity=False)
+    # openevolve defaults stochasticity ON and num_diverse_programs=2; noema
+    # requires both OFF (identical, reproducible prompts across arms — task 0207)
+    return PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
 
 
 def _default_evaluator_config() -> EvaluatorConfig:
@@ -296,6 +297,33 @@ class NoemaConfig:
                     "prompt.programs_as_changes_description=True requires every "
                     "selected mutation operator to be parse_mode='diff' (mirrors "
                     "openevolve's own diff_based_evolution validator)"
+                )
+        # Task 0204: the bandit arm steers evolution ONLY by requesting an
+        # operator from the menu (BanditModule.sampling_request). With the menu
+        # off, iteration_runner.choose_operator silently discards every request
+        # (falls back to the legacy path) while BanditModule.report_result still
+        # credits the requested arm — fabricated UCB statistics from a run that
+        # is byte-equivalent to null. Fail closed instead of silently proceeding.
+        if self.coordination.module == "bandit":
+            if self.mutation_operators is None:
+                raise ValueError(
+                    "coordination.module='bandit' requires mutation_operators to "
+                    "be set. With the menu off, iteration_runner.choose_operator "
+                    "discards every operator the bandit requests while "
+                    "BanditModule.report_result still credits it, fabricating UCB "
+                    "statistics for mutations the arm never controlled."
+                )
+            bandit_operators = set(self.coordination.params.get("operators", DEFAULT_OPERATORS))
+            missing = sorted(bandit_operators - set(self.mutation_operators))
+            if missing:
+                raise ValueError(
+                    f"coordination.module='bandit' requests operator(s) {missing} "
+                    f"not present in mutation_operators {self.mutation_operators}. "
+                    "A request for a missing operator is silently ignored by "
+                    "iteration_runner.choose_operator yet still credited by "
+                    "BanditModule.report_result, fabricating UCB statistics. Add "
+                    "the missing operator(s) to mutation_operators or remove them "
+                    "from coordination.params['operators']."
                 )
 
     def to_dict(self) -> Dict[str, Any]:

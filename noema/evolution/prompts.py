@@ -2,7 +2,7 @@
 Prompt assembly for noema.
 
 All arms of an experiment share identical prompts except for the coordination
-block. Two rules enforce that here:
+block. Three rules enforce that here:
 
 1. Template stochasticity is forced OFF — openevolve defaults it ON, which
    randomizes prompt phrasing and voids identical-prompt guarantees.
@@ -10,6 +10,10 @@ block. Two rules enforce that here:
    AFTER openevolve's PromptSampler has built the prompt, so the shared prefix
    is byte-identical across arms and the injected block is the single
    controlled variable (trivially verifiable by diffing logged prompts).
+3. The 'Diverse Programs' section is forced OFF (num_diverse_programs=0) —
+   openevolve builds it with random.sample() on the GLOBAL random module,
+   which both voids prompt-byte reproducibility and perturbs the same global
+   stream openevolve's database sampling draws from (task 0207).
 """
 
 from typing import Any, Dict, List, Optional
@@ -34,6 +38,13 @@ def make_prompt_sampler(config: Optional[PromptConfig] = None) -> PromptSampler:
         raise ValueError(
             "noema requires prompt.use_template_stochasticity=False; "
             "random phrase variations void the identical-prompts guarantee across arms"
+        )
+    if config.num_diverse_programs > 0:
+        raise ValueError(
+            "noema requires prompt.num_diverse_programs=0; the 'Diverse Programs' "
+            "section samples via the global random module, which voids the "
+            "identical-prompts guarantee and perturbs database sampling's draws "
+            "from that same global stream"
         )
     sampler = PromptSampler(config)
     # NOEMA: register the EoH-derived operator menu's templates (task 0027).
