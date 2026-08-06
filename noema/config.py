@@ -21,9 +21,9 @@ from noema.evolution.operators import OPERATOR_MENU
 
 
 def _default_prompt_config() -> PromptConfig:
-    # openevolve defaults stochasticity ON; noema requires it OFF (identical
-    # prompts across arms)
-    return PromptConfig(use_template_stochasticity=False)
+    # openevolve defaults stochasticity ON and num_diverse_programs=2; noema
+    # requires both OFF (identical, reproducible prompts across arms — task 0207)
+    return PromptConfig(use_template_stochasticity=False, num_diverse_programs=0)
 
 
 def _default_evaluator_config() -> EvaluatorConfig:
