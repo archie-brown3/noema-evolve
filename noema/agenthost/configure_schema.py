@@ -252,6 +252,7 @@ def advanced_field_groups(
             f"llm.{role}.{item.name}"
             for role in ("mutation", "coordination")
             for item in dataclass_fields(type(getattr(config.noema.llm, role)))
+            if item.name != "api_key"
         ),
         "budget": tuple(
             f"budget.{item.name}" for item in dataclass_fields(type(config.noema.budget))

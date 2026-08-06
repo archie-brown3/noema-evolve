@@ -55,12 +55,15 @@ class AgentSession:
         mutation_timeout_s: float = 120.0,
         attempt_trace_callback: Optional[Callable[[dict], None]] = None,
         mutation_via: str = "cli/shallow",
+        console_suspended: bool = False,
     ):
         self.config = config
         self.task = task or config.prompt.system_message
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
-        self.run_logging = setup_run_logging(config.logging, output_dir)
+        self.run_logging = setup_run_logging(
+            config.logging, output_dir, console_suspended=console_suspended
+        )
         self.mutation_via = mutation_via
 
         self.ledger = ledger or TokenLedger(

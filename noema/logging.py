@@ -83,8 +83,18 @@ def console_log_formatter() -> logging.Formatter:
     return logging.Formatter(_CONSOLE_FORMAT)
 
 
-def setup_run_logging(config: LoggingConfig, output_dir: str | Path) -> RunLoggingHandle:
-    """Install one idempotent Noema console/file logging configuration."""
+def setup_run_logging(
+    config: LoggingConfig,
+    output_dir: str | Path,
+    *,
+    console_suspended: bool = False,
+) -> RunLoggingHandle:
+    """Install one idempotent Noema console/file logging configuration.
+
+    ``console_suspended`` mutes the stdio handler from the moment it is
+    installed, so a caller that already owns the screen never gets a stray
+    line painted into it.
+    """
 
     if not isinstance(config, LoggingConfig):
         raise TypeError(f"expected LoggingConfig, got {type(config)!r}")
@@ -125,13 +135,16 @@ def setup_run_logging(config: LoggingConfig, output_dir: str | Path) -> RunLoggi
         setattr(file_handler, _HANDLER_TAG, True)
         root.addHandler(file_handler)
 
-    return RunLoggingHandle(
+    handle = RunLoggingHandle(
         log_dir=log_dir if config.file else None,
         log_path=log_path,
         level=level,
         console_handler=console_handler,
         file_handler=file_handler,
     )
+    if console_suspended:
+        handle.suspend_console()
+    return handle
 
 
 def _format_number(value: Any) -> str:

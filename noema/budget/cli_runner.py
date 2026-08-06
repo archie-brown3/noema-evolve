@@ -153,6 +153,9 @@ class CliRunner:
 
 PtyOutputCallback = Callable[[bytes], None]
 
+# Seconds to keep reading the PTY after the coding CLI is reaped.
+_POST_EXIT_DRAIN_S = 3.0
+
 
 class CliPtyRunner:
     """Run a coding CLI on one controlling PTY and optionally mirror its paint.
@@ -231,6 +234,7 @@ class CliPtyRunner:
         eof = False
         deadline = started + timeout_s
         termination_started: Optional[float] = None
+        drain_deadline: Optional[float] = None
         try:
             stderr_path.write_text("")
             with stdout_path.open("wb") as stdout_log:
@@ -239,8 +243,11 @@ class CliPtyRunner:
                         waited_pid, status = os.waitpid(pid, os.WNOHANG)
                         if waited_pid == pid:
                             child_status = status
+                            drain_deadline = time.monotonic() + _POST_EXIT_DRAIN_S
 
                     now = time.monotonic()
+                    if drain_deadline is not None and now >= drain_deadline:
+                        break
                     if (
                         child_status is None
                         and termination_started is None
@@ -264,8 +271,9 @@ class CliPtyRunner:
 
                     if not eof:
                         wait_s = 0.05
-                        if child_status is None:
-                            wait_s = max(0.0, min(wait_s, deadline - time.monotonic()))
+                        limit = deadline if child_status is None else drain_deadline
+                        if limit is not None:
+                            wait_s = max(0.0, min(wait_s, limit - time.monotonic()))
                         readable, _, _ = select.select([master_fd], [], [], wait_s)
                         if readable:
                             try:
@@ -325,15 +333,25 @@ def _wait_status_exit_code(status: Optional[int]) -> Optional[int]:
     return None
 
 
-def deliverable_envelope(*, deliverable: Path, parent_path: Path) -> str:
+def deliverable_envelope(
+    *,
+    deliverable: Path,
+    parent_path: Path,
+    submit_tool: bool = True,
+) -> str:
     """Host-owned write contract appended to the CLI user message (not the Noema brief)."""
+    finalize = (
+        "Call ``submit_mutation`` with the complete improved program to finalize "
+        "the deliverable and end this session."
+        if submit_tool
+        else "Edit that file in place with the complete improved program, save it, then stop."
+    )
     return (
         "# Host mutation contract\n"
         "The host only admits the program written to this exact file path:\n"
         f"  {deliverable}\n"
         "That file is already seeded with the parent program (also saved at "
-        f"{parent_path}). Call ``submit_mutation`` with the complete improved "
-        "program to finalize the deliverable and end this session. Do not create "
+        f"{parent_path}). {finalize} Do not create "
         "other files or put the program only in chat output — stdout is logs, not "
         "the payload.\n"
     )
@@ -344,9 +362,18 @@ def build_cli_user_message(
     *,
     deliverable: Path,
     parent_path: Path,
+    submit_tool: bool = True,
 ) -> str:
     user = prompt.get("user", "")
-    return user + "\n\n" + deliverable_envelope(deliverable=deliverable, parent_path=parent_path)
+    return (
+        user
+        + "\n\n"
+        + deliverable_envelope(
+            deliverable=deliverable,
+            parent_path=parent_path,
+            submit_tool=submit_tool,
+        )
+    )
 
 
 def resolve_cli_binary(kind: str, binary: Optional[str] = None) -> str:

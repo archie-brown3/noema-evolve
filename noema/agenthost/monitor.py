@@ -364,7 +364,29 @@ class ConfigureScreen(Screen):
         self._agent_config = agent_config
         self._output_dir = output_dir
         self._walk = ConfigureWalk(sections=_agent_sections(agent_config, paths, output_dir))
+        self._field_error: Optional[str] = None
         refresh_dynamic_sections(self._walk, agent_config, paths, output_dir)
+
+    def _field_value_error(self) -> Optional[str]:
+        """Reject unparseable field text before it reaches the real config."""
+
+        try:
+            _apply_walk_to_config(self._walk, deepcopy(self._agent_config))
+        except ValueError as exc:
+            return str(exc)
+        return None
+
+    def _accept_armed_field(self) -> None:
+        self._field_error = self._field_value_error()
+        if self._field_error is not None:
+            return
+        self._walk.disarm(discard=False)
+        refresh_dynamic_sections(
+            self._walk,
+            self._agent_config,
+            self._paths,
+            self._output_dir,
+        )
 
     def compose(self) -> ComposeResult:
         yield Static(id="configure-title")
@@ -378,6 +400,10 @@ class ConfigureScreen(Screen):
         self._quit()
 
     def action_advanced_settings(self) -> None:
+        self._field_error = self._field_value_error()
+        if self._field_error is not None:
+            self._render_view()
+            return
         refresh_dynamic_sections(
             self._walk,
             self._agent_config,
@@ -402,12 +428,14 @@ class ConfigureScreen(Screen):
         changed = bool(values)
         self._walk.draft_values.update(values)
         self._walk.dirty = self._walk.dirty or changed
-        refresh_dynamic_sections(
-            self._walk,
-            self._agent_config,
-            self._paths,
-            self._output_dir,
-        )
+        self._field_error = self._field_value_error()
+        if self._field_error is None:
+            refresh_dynamic_sections(
+                self._walk,
+                self._agent_config,
+                self._paths,
+                self._output_dir,
+            )
         self._render_view()
 
     def on_key(self, event: Key) -> None:
@@ -431,17 +459,12 @@ class ConfigureScreen(Screen):
             self._walk.cycle_value(-1) if self._walk.armed else self._walk.move_section(-1)
         elif key == "enter":
             if self._walk.armed:
-                self._walk.disarm(discard=False)
-                refresh_dynamic_sections(
-                    self._walk,
-                    self._agent_config,
-                    self._paths,
-                    self._output_dir,
-                )
+                self._accept_armed_field()
             else:
                 self._walk.arm()
         elif key == "escape" and self._walk.armed:
             self._walk.disarm(discard=True)
+            self._field_error = None
         else:
             return
         self._render_view()
@@ -458,14 +481,9 @@ class ConfigureScreen(Screen):
         field = self._walk.current_field()
         if event.key == "escape":
             self._walk.disarm(discard=True)
+            self._field_error = None
         elif event.key == "enter":
-            self._walk.disarm(discard=False)
-            refresh_dynamic_sections(
-                self._walk,
-                self._agent_config,
-                self._paths,
-                self._output_dir,
-            )
+            self._accept_armed_field()
         elif event.key == "backspace":
             field["value"] = str(field.get("value") or "")[:-1]
         elif event.character and event.character.isprintable():
@@ -482,6 +500,10 @@ class ConfigureScreen(Screen):
             self.app.finish()
 
     def _write_and_maybe_run(self) -> None:
+        self._field_error = self._field_value_error()
+        if self._field_error is not None:
+            self._render_view()
+            return
         self._agent_config, self._config_path, self._output_dir = _apply_walk_to_config(
             self._walk, self._agent_config
         )
@@ -527,6 +549,8 @@ class ConfigureScreen(Screen):
             hint = "←/→ cycle  Enter accept  Esc discard"
         else:
             hint = "↑/↓ field  ←/→ section  Enter arm  w write  q quit"
+        if self._field_error is not None:
+            hint = f"{hint}  · {self._field_error}"
         self.query_one("#configure-help", Static).update(
             hint + ("  · unsaved" if self._walk.dirty else "")
         )
@@ -623,6 +647,7 @@ class MonitorScreen(Screen):
             on_coordination_session_start=lambda label: self.app.call_from_thread(
                 self._begin_coordination_session, label
             ),
+            console_suspended=True,
         )
         self._run_logging = getattr(self._session, "run_logging", None)
         if self._run_logging is not None:
@@ -718,8 +743,10 @@ class NoemaApp(App):
 
     def on_mount(self) -> None:
         if self._run_immediately:
-            save_noema_and_agent(self._configure._config_path, self._configure._agent_config)
-            self.outcome.wrote = self._configure._config_path.resolve()
+            config_path = self._configure._config_path
+            if not config_path.exists():
+                save_noema_and_agent(config_path, self._configure._agent_config)
+            self.outcome.wrote = config_path.resolve()
             self.outcome.ran = True
             self.push_screen(
                 MonitorScreen(

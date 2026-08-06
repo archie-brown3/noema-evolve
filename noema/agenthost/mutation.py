@@ -283,6 +283,7 @@ class CliMutationBackend:
                 request.prompt,
                 deliverable=deliverable,
                 parent_path=parent_path,
+                submit_tool=mcp_config is not None,
             )
             argv = build_mutation_cli_command(
                 self.kind,

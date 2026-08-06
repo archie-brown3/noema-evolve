@@ -161,6 +161,7 @@ def create_agent_session(
     on_mutation_session_start: Optional[Callable[[str], None]] = None,
     on_coordination_session_start: Optional[Callable[[str], None]] = None,
     attempt_trace_callback: Optional[Callable[[dict], None]] = None,
+    console_suspended: bool = False,
 ) -> AgentSession:
     noema = config.noema
     ledger = TokenLedger(
@@ -203,6 +204,7 @@ def create_agent_session(
         mutation_timeout_s=config.mutation_cli.timeout_s,
         attempt_trace_callback=attempt_trace_callback,
         mutation_via=f"cli/{config.mutation_depth}",
+        console_suspended=console_suspended,
     )
     if built_coordination:
         _wire_alternate_tiers(
