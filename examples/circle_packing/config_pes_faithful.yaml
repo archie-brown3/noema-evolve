@@ -70,4 +70,5 @@ evaluator:
 
 prompt:
   use_template_stochasticity: false
+  num_diverse_programs: 0
   include_artifacts: false

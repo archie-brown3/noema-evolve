@@ -279,7 +279,7 @@ Borrowed from openevolve, with **one noema-specific default change that is also 
 | ✅ `prompt.programs_as_changes_description` | Render past programs as change descriptions rather than code. **Constrains `mutation_operators` to diff-mode operators** (see §1.2). | `programs_as_changes_description: false` — bool. Default `false`. |
 | ✅ `prompt.template_dir` | Directory of custom prompt templates. | str or `null`. Default `null`. |
 | ✅ `prompt.use_meta_prompting`, `meta_prompt_weight` | openevolve meta-prompting. | Defaults `false`, `0.1`. |
-| ✅ `prompt.num_top_programs`, `num_diverse_programs` | openevolve's own prompt-context counts. **In noema the top-level `num_top_programs` / `num_previous_programs` / `num_inspirations` (§1) are what the controller passes to the sampler** — set those, not these. | ints. Defaults `3`, `2`. |
+| ✅ `prompt.num_top_programs`, `num_diverse_programs` | openevolve's own prompt-context counts. **In noema the top-level `num_top_programs` / `num_previous_programs` / `num_inspirations` (§1) are what the controller passes to the sampler** — set those, not these. **`prompt.num_diverse_programs` must be `0`; values `>0` raise `ValueError` because openevolve assembles that section with global-`random` sampling, which breaks noema's identical-prompt-across-arms guarantee.** | ints. Defaults `3`, `2` in openevolve; **noema defaults `num_diverse_programs: 0` and enforces it.** |
 
 Formatting knobs also accepted and passed through: `system_message_changes_description`,
 `initial_changes_description`, `template_variations`, `suggest_simplification_after_chars`,

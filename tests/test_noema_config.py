@@ -10,7 +10,7 @@ Item 3: the probation threshold is one shared constant (eviction == summary).
 
 import unittest
 
-from noema.config import NoemaConfig
+from noema.config import CoordinationConfig, NoemaConfig
 from noema.coordination.hifo import insight_pool
 
 
@@ -55,6 +55,32 @@ class TestConfigTypoDetection(unittest.TestCase):
         original = NoemaConfig(random_seed=11)
         restored = NoemaConfig.from_dict(original.to_dict())
         self.assertEqual(restored.to_dict(), original.to_dict())
+
+
+class TestBanditMenuGuard(unittest.TestCase):
+    """Task 0204: the bandit steers evolution solely by requesting an operator
+    from the menu (coordination/bandit/module.py sampling_request). With the
+    menu off, iteration_runner.choose_operator discards every request and
+    falls back to the legacy path, but BanditModule.report_result still
+    credits the requested arm — fabricated UCB statistics from a run that is
+    byte-equivalent to null. Fail closed at construction instead."""
+
+    def test_bandit_with_no_operator_menu_raises_at_construction(self):
+        with self.assertRaises(ValueError) as cm:
+            NoemaConfig(coordination=CoordinationConfig(module="bandit"))
+        self.assertIn("bandit", str(cm.exception))
+        self.assertIn("mutation_operators", str(cm.exception))
+
+    def test_bandit_operators_disagreeing_with_menu_raises_at_construction(self):
+        with self.assertRaises(ValueError) as cm:
+            NoemaConfig(
+                coordination=CoordinationConfig(
+                    module="bandit", params={"operators": ["x1", "x2"]}
+                ),
+                mutation_operators=["e1", "e2", "m1", "m2", "m3"],
+            )
+        self.assertIn("x1", str(cm.exception))
+        self.assertIn("x2", str(cm.exception))
 
 
 class TestProbationConstant(unittest.TestCase):
