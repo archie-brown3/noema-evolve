@@ -15,6 +15,7 @@ from textual.app import App
 from noema.agenthost.config import AgentConfig
 from noema.agenthost.configure_files import ExamplePaths
 from noema.agenthost.monitor import (
+    ConfigureScreen,
     HostLogHandler,
     MonitorScreen,
     NoemaApp,
@@ -62,6 +63,37 @@ class TestRoleTranscript(unittest.TestCase):
 class TestTextualScreens(unittest.TestCase):
     def tearDown(self):
         host_logger().setLevel(logging.NOTSET)
+
+    def test_field_value_error_reports_malformed_list_yaml_without_crashing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "initial_program.py").write_text("def f():\n    return 1\n")
+            (root / "evaluator.py").write_text(
+                "def evaluate(_):\n    return {'combined_score': 1}\n"
+            )
+            paths = ExamplePaths(
+                cwd=root,
+                initial_program=root / "initial_program.py",
+                evaluator=root / "evaluator.py",
+            )
+            agent_config = AgentConfig()
+            agent_config.noema.substrate.kind = "cvt"
+            screen = ConfigureScreen(
+                paths=paths,
+                config_path=root / "config.yaml",
+                agent_config=agent_config,
+                output_dir=root / "out",
+            )
+            field = next(
+                f
+                for f in screen._walk.sections["substrate"]
+                if f["id"] == "substrate.cvt_behavior_features"
+            )
+            field["value"] = "[unclosed"
+
+            error = screen._field_value_error()
+
+            self.assertIsNotNone(error)
 
     def test_configure_screen_preserves_section_walk_navigation(self):
         async def scenario() -> None:

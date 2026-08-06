@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pyte
+import yaml
 from pyte.screens import HistoryScreen
 from rich.text import Text
 from textual.app import App, ComposeResult
@@ -372,7 +373,7 @@ class ConfigureScreen(Screen):
 
         try:
             _apply_walk_to_config(self._walk, deepcopy(self._agent_config))
-        except ValueError as exc:
+        except (ValueError, yaml.YAMLError) as exc:
             return str(exc)
         return None
 
