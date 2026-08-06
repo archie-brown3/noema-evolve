@@ -1,0 +1,819 @@
+{
+ "MIXED_WITH_FAILURES": {
+  "arms": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3"
+  ],
+  "rewards": [
+   0.9,
+   0.9,
+   null,
+   0.4,
+   0.9,
+   0.9,
+   0.4,
+   0.9,
+   0.4,
+   0.1,
+   0.1,
+   0.4,
+   0.1,
+   null,
+   0.4,
+   0.1,
+   0.4,
+   null,
+   null,
+   0.4,
+   0.9,
+   null,
+   0.4,
+   0.9,
+   0.4,
+   0.1,
+   0.9,
+   0.9,
+   0.4,
+   null,
+   null,
+   null,
+   0.9,
+   null,
+   0.9,
+   0.4,
+   0.1,
+   0.4,
+   null,
+   0.1,
+   0.1,
+   0.1,
+   0.1,
+   0.9,
+   null,
+   null,
+   0.4,
+   0.9,
+   null,
+   0.4,
+   0.4,
+   null,
+   0.4,
+   0.1,
+   0.4,
+   0.9,
+   null,
+   0.9,
+   0.4,
+   0.1
+  ],
+  "baseline": 0.5,
+  "exploration_coef": 1.0,
+  "picks": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3",
+   "e1",
+   "e2",
+   "m3",
+   "e1",
+   "m3",
+   "m1",
+   "m2",
+   "e2",
+   "e1",
+   "m3",
+   "e2",
+   "e1",
+   "m3",
+   "m1",
+   "m2",
+   "e1",
+   "e1",
+   "m3",
+   "e2",
+   "e2",
+   "m1",
+   "m2",
+   "m2",
+   "m2",
+   "e1",
+   "e2",
+   "m2",
+   "m3",
+   "m3",
+   "m1",
+   "m1",
+   "e1",
+   "m3",
+   "e2",
+   "m2",
+   "m1",
+   "e1",
+   "m3",
+   "e2",
+   "e2",
+   "m2",
+   "m1",
+   "e1",
+   "e1",
+   "e2",
+   "m3",
+   "m2",
+   "e1",
+   "e2",
+   "m3",
+   "m1",
+   "m1",
+   "m1",
+   "m1",
+   "m2"
+  ],
+  "spread": [
+   {
+    "kind": "unseen",
+    "support": [
+     "e1",
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m2",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "tie",
+    "support": [
+     "m2",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   null
+  ],
+  "final_sums": [
+   1.6,
+   1.2,
+   1.2,
+   0.8,
+   1.2
+  ],
+  "final_counts": [
+   13.0,
+   12.0,
+   12.0,
+   11.0,
+   12.0
+  ],
+  "final_obs_min": 0.0,
+  "final_obs_max": 0.4
+ },
+ "ALL_ABOVE_BASELINE": {
+  "arms": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3"
+  ],
+  "rewards": [
+   0.9,
+   0.9,
+   0.6,
+   0.8,
+   0.9,
+   0.9,
+   0.8,
+   0.9,
+   0.8,
+   0.7,
+   0.7,
+   0.8,
+   0.7,
+   0.6,
+   0.8,
+   0.7,
+   0.8,
+   0.6,
+   0.6,
+   0.8,
+   0.9,
+   0.6,
+   0.8,
+   0.9,
+   0.8,
+   0.7,
+   0.9,
+   0.9,
+   0.8,
+   0.6,
+   0.6,
+   0.6,
+   0.9,
+   0.6,
+   0.9,
+   0.8,
+   0.7,
+   0.8,
+   0.6,
+   0.7
+  ],
+  "baseline": 0.5,
+  "exploration_coef": 1.0,
+  "picks": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3",
+   "e1",
+   "e2",
+   "m3",
+   "m2",
+   "e1",
+   "m3",
+   "m1",
+   "e2",
+   "m2",
+   "e1",
+   "m3",
+   "m1",
+   "e2",
+   "e1",
+   "m1",
+   "m2",
+   "m3",
+   "m2",
+   "e2",
+   "m1",
+   "m2",
+   "e1",
+   "e2",
+   "m1",
+   "m3",
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m1",
+   "m1",
+   "e1",
+   "e2",
+   "m3",
+   "m1"
+  ],
+  "spread": [
+   {
+    "kind": "unseen",
+    "support": [
+     "e1",
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m2",
+     "m3"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e2",
+     "m1"
+    ]
+   },
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2"
+    ]
+   },
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "m1",
+     "m2"
+    ]
+   },
+   null,
+   null,
+   null,
+   {
+    "kind": "tie",
+    "support": [
+     "e1",
+     "e2"
+    ]
+   },
+   null,
+   null,
+   null
+  ],
+  "final_sums": [
+   2.1,
+   2.2,
+   2.9,
+   1.7,
+   1.5
+  ],
+  "final_counts": [
+   8.0,
+   8.0,
+   10.0,
+   7.0,
+   7.0
+  ],
+  "final_obs_min": 0.0,
+  "final_obs_max": 0.4
+ },
+ "CONTINUOUS_ABOVE_BASELINE": {
+  "arms": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3"
+  ],
+  "rewards": [
+   0.6654,
+   0.5824,
+   0.8224,
+   0.5448,
+   0.7672,
+   0.6855,
+   0.5378,
+   0.7536,
+   0.528,
+   0.7181,
+   0.5435,
+   0.5535,
+   0.7138,
+   0.9069,
+   0.5694,
+   0.6172,
+   0.8112,
+   0.9649,
+   0.787,
+   0.7004,
+   0.9786,
+   0.5324,
+   0.9221,
+   0.649,
+   0.5792,
+   0.5665,
+   0.6581,
+   0.9017,
+   0.5967,
+   0.7892,
+   0.8167,
+   0.6888,
+   0.7729,
+   0.5401,
+   0.5386,
+   0.6089,
+   0.8366,
+   0.7152,
+   0.6608,
+   0.7911,
+   0.7275,
+   0.6539,
+   0.8913,
+   0.8455,
+   0.6272,
+   0.7857,
+   0.7621,
+   0.9301,
+   0.8601,
+   0.6482
+  ],
+  "baseline": 0.5,
+  "exploration_coef": 1.0,
+  "picks": [
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3",
+   "m1",
+   "m3",
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "e1",
+   "m3",
+   "m1",
+   "m1",
+   "e2",
+   "m3",
+   "m2",
+   "m2",
+   "e1",
+   "m2",
+   "m3",
+   "m2",
+   "m2",
+   "m1",
+   "e2",
+   "e1",
+   "m2",
+   "m3",
+   "m2",
+   "e1",
+   "m1",
+   "m2",
+   "e1",
+   "e2",
+   "m1",
+   "m2",
+   "m3",
+   "m2",
+   "e1",
+   "m3",
+   "m1",
+   "m2",
+   "e2",
+   "m2",
+   "e2",
+   "e1",
+   "m3",
+   "m3",
+   "e2"
+  ],
+  "spread": [
+   {
+    "kind": "unseen",
+    "support": [
+     "e1",
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "e2",
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m1",
+     "m2",
+     "m3"
+    ]
+   },
+   {
+    "kind": "unseen",
+    "support": [
+     "m2",
+     "m3"
+    ]
+   },
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "final_sums": [
+   1.741,
+   1.1121,
+   1.7331,
+   3.8696,
+   2.192
+  ],
+  "final_counts": [
+   9.0,
+   8.0,
+   9.0,
+   14.0,
+   10.0
+  ],
+  "final_obs_min": 0.0,
+  "final_obs_max": 0.4786
+ }
+}
