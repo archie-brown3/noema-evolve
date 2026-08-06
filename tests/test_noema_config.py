@@ -39,6 +39,11 @@ class TestConfigTypoDetection(unittest.TestCase):
         self.assertEqual(c.coordination.module, "hifo")
         self.assertEqual(c.database.num_islands, 3)
 
+    def test_yaml_null_module_coerces_to_string_null(self):
+        # PyYAML turns ``module: null`` into None; OFF arm is the string "null".
+        c = NoemaConfig.from_dict({"coordination": {"module": None}})
+        self.assertEqual(c.coordination.module, "null")
+
     def test_borrowed_openevolve_sections_stay_lenient(self):
         # openevolve's config key set is its contract, not noema's to police —
         # an unknown key there must NOT raise (matches openevolve's own from_dict).

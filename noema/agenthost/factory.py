@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import os
 import random
-from typing import Optional
+from typing import Callable, Optional
 
 from noema.agenthost.config import AgentConfig, warn_agent_config_differences
 from noema.agenthost.mutation import CliMutationBackend, MutationBackend
 from noema.agenthost.reasoning import DeepCoordinationLLM
 from noema.agenthost.session import AgentSession
+from noema.budget.cli_runner import CliPtyRunner
 from noema.budget.ledger import COORDINATION_ACCOUNT, TokenLedger
 from noema.budget.llm import build_budgeted_llm
 from noema.coordination import CoordinationModule, build_coordination_module
@@ -22,21 +23,30 @@ def _build_coordination_seat(
     *,
     tag: str,
     model: Optional[str] = None,
+    cli_runner: Optional[CliPtyRunner] = None,
+    on_session_start: Optional[Callable[[str], None]] = None,
 ):
     noema = config.noema
+    resolved_model = model or noema.llm.coordination.model
+    # Deep seats are CLI-only — never construct BudgetedLLM (OpenAI client).
+    # CLI spend → TokenLedger booking is deferred to task 0170.
+    if config.coordination_depth == "deep":
+        seat = DeepCoordinationLLM(
+            cli=config.coordination_cli,
+            output_dir=output_dir,
+            model=resolved_model,
+            tag=tag,
+            runner=cli_runner,
+            on_session_start=on_session_start,
+        )
+        return seat
     seat = build_budgeted_llm(
         noema.llm.coordination,
         ledger=ledger,
         account=COORDINATION_ACCOUNT,
         tag=tag,
-        model=model,
+        model=resolved_model,
     )
-    if config.coordination_depth == "deep":
-        return DeepCoordinationLLM(
-            seat,
-            cli=config.coordination_cli,
-            output_dir=output_dir,
-        )
     return seat
 
 
@@ -44,14 +54,23 @@ def _build_coordination(
     config: AgentConfig,
     ledger: TokenLedger,
     output_dir: str,
+    *,
+    cli_runner: Optional[CliPtyRunner] = None,
+    on_session_start: Optional[Callable[[str], None]] = None,
 ) -> CoordinationModule:
     noema = config.noema
-    coordination_llm = _build_coordination_seat(
-        config,
-        ledger,
-        output_dir,
-        tag=f"{noema.coordination.module}.coordination",
-    )
+    module_name = noema.coordination.module
+    if module_name == "null":
+        coordination_llm = None
+    else:
+        coordination_llm = _build_coordination_seat(
+            config,
+            ledger,
+            output_dir,
+            tag=f"{module_name}.coordination",
+            cli_runner=cli_runner,
+            on_session_start=on_session_start,
+        )
     params = dict(noema.coordination.params)
     params.setdefault("domain_context", noema.prompt.system_message)
     params.setdefault("escalation_model", noema.llm.coordination.model)
@@ -68,6 +87,9 @@ def _wire_alternate_tiers(
     config: AgentConfig,
     ledger: TokenLedger,
     output_dir: str,
+    *,
+    cli_runner: Optional[CliPtyRunner] = None,
+    on_session_start: Optional[Callable[[str], None]] = None,
 ) -> None:
     params = config.noema.coordination.params
     _wire_alternate_tier(
@@ -78,6 +100,8 @@ def _wire_alternate_tiers(
         ledger,
         output_dir,
         tag=f"{config.noema.coordination.module}.paradigm",
+        cli_runner=cli_runner,
+        on_session_start=on_session_start,
     )
     _wire_alternate_tier(
         coordination,
@@ -87,6 +111,8 @@ def _wire_alternate_tiers(
         ledger,
         output_dir,
         tag=f"{config.noema.coordination.module}.variant",
+        cli_runner=cli_runner,
+        on_session_start=on_session_start,
     )
 
 
@@ -99,6 +125,8 @@ def _wire_alternate_tier(
     output_dir: str,
     *,
     tag: str,
+    cli_runner: Optional[CliPtyRunner] = None,
+    on_session_start: Optional[Callable[[str], None]] = None,
 ) -> None:
     noema = config.noema
     if not model_name or model_name == noema.llm.coordination.model:
@@ -113,6 +141,8 @@ def _wire_alternate_tier(
             output_dir,
             tag=tag,
             model=model_name,
+            cli_runner=cli_runner,
+            on_session_start=on_session_start,
         )
     )
 
@@ -126,6 +156,12 @@ def create_agent_session(
     mutation_backend: Optional[MutationBackend] = None,
     coordination: Optional[CoordinationModule] = None,
     task: Optional[str] = None,
+    mutation_runner: Optional[CliPtyRunner] = None,
+    coordination_runner: Optional[CliPtyRunner] = None,
+    on_mutation_session_start: Optional[Callable[[str], None]] = None,
+    on_coordination_session_start: Optional[Callable[[str], None]] = None,
+    attempt_trace_callback: Optional[Callable[[dict], None]] = None,
+    console_suspended: bool = False,
 ) -> AgentSession:
     noema = config.noema
     ledger = TokenLedger(
@@ -139,6 +175,8 @@ def create_agent_session(
             binary=config.mutation_cli.binary,
             model=config.mutation_cli.model,
             extra_args=list(config.mutation_cli.extra_args),
+            runner=mutation_runner,
+            on_session_start=on_mutation_session_start,
         )
     warn_agent_config_differences(
         config,
@@ -146,7 +184,13 @@ def create_agent_session(
     )
     built_coordination = coordination is None
     if built_coordination:
-        coordination = _build_coordination(config, ledger, output_dir)
+        coordination = _build_coordination(
+            config,
+            ledger,
+            output_dir,
+            cli_runner=coordination_runner,
+            on_session_start=on_coordination_session_start,
+        )
     session = AgentSession(
         config=noema,
         evaluation_file=evaluation_file,
@@ -158,9 +202,19 @@ def create_agent_session(
         task=task,
         mutation_backend=mutation_backend,
         mutation_timeout_s=config.mutation_cli.timeout_s,
+        attempt_trace_callback=attempt_trace_callback,
+        mutation_via=f"cli/{config.mutation_depth}",
+        console_suspended=console_suspended,
     )
     if built_coordination:
-        _wire_alternate_tiers(session.coordination, config, ledger, output_dir)
+        _wire_alternate_tiers(
+            session.coordination,
+            config,
+            ledger,
+            output_dir,
+            cli_runner=coordination_runner,
+            on_session_start=on_coordination_session_start,
+        )
     _bind_deep_coordination(session.coordination, session)
     if config.mutation_depth == "deep" and isinstance(session.mutation_backend, CliMutationBackend):
         session.mutation_backend.bind_session(session)

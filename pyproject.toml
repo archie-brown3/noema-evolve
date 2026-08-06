@@ -26,6 +26,10 @@ dependencies = [
     # CVT-MAP-Elites substrate (task 0108): KMeans centroid init. Nearest-cell
     # lookup at runtime is pure numpy; sklearn is used only at store construction.
     "scikit-learn>=1.4",
+    # The `noema` console script drops straight into the Textual monitor on a
+    # tty, so its terminal stack cannot live behind an extra.
+    "textual>=0.60",
+    "pyte>=0.8",
 ]
 
 [project.optional-dependencies]
@@ -41,6 +45,9 @@ dev = [
     "isort>=5.10.0",
     "mypy>=0.950",
 ]
+
+[project.scripts]
+noema = "noema.agenthost.configure:main"
 
 [tool.black]
 line-length = 100

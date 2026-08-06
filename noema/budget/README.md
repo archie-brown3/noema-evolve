@@ -13,14 +13,20 @@ See the [noema package guide](../README.md) for the complete package map.
 ## Public surface
 
 [`noema.budget`](./__init__.py) exports budget types and the coding-CLI
-transport primitive:
+transport primitives:
 
 - [`TokenLedger`](./ledger.py) tracks shared and per-account token use.
 - [`CallRecord`](./ledger.py) stores the usage and provenance for one logical call.
 - [`BudgetExhausted`](./ledger.py) stops a request when no budget remains.
 - [`BudgetedLLM`](./llm.py) sends chat-completion requests and charges the ledger.
-- [`CliRunner` and `CliRunResult`](./cli_runner.py) spawn headless coding CLIs;
-  these transports do not report mutation token usage.
+- [`CliPtyRunner`](./cli_runner.py) spawns a coding CLI on one controlling
+  pseudo-terminal and optionally mirrors its paint. This is the spawn primitive
+  the agent host uses for both headless and monitored runs.
+- [`CliRunner`](./cli_runner.py) spawns a coding CLI on plain pipes.
+- [`CliRunResult`](./cli_runner.py) carries the outcome of one spawn from either
+  runner.
+
+Neither coding-CLI transport reports mutation token usage.
 
 ## Composition
 

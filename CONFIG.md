@@ -77,7 +77,7 @@ key plus a bundle of sub-options.
 
 | Name | Description | Usage |
 |---|---|---|
-| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `null` (OFF arm), `hifo`, `pes-custom`, `pes-faithful`, `reevo`. Default `"null"`. Unknown keys raise `ValueError` listing the registry. |
+| ✅ `coordination.module` | Registry key selecting the coordination mechanism (the arm). | `module: "pes-faithful"` — one of `"null"` (OFF arm), `bandit`, `hifo`, `pe`, `pes-custom`, `pes-faithful`, `reevo` (the keys of `MODULE_REGISTRY` in `noema/coordination/__init__.py`). Default `"null"`. Unquoted YAML `module: null` parses as `None` and is normalised to the OFF arm. Unknown keys raise `ValueError` listing the registry. |
 | ⚠️ `coordination.module: "pes"` | **Deprecated alias** for `pes-custom` (predates the arm split; kept so existing run configs keep working). Resolves to `pes-custom` with unchanged behavior and logs a deprecation warning. | Works, but prefer `pes-custom` in new configs. |
 | ✅ `coordination.params` | Free-form dict of mechanism-specific params, handed to the module's constructor. Valid keys depend entirely on the selected module (§2.1, §2.2). | `params: {tips_per_prompt: 3}` — dict. Default `{}`. |
 | ✅ `coordination.seed` | Seed for the module's own RNG. | `seed: 43` — int or `null`. Default `null` → `random_seed + 1`. |
@@ -176,11 +176,32 @@ One shared token pool with per-account accounting. Accounts are `"mutation"` and
 
 ---
 
-## 4. `llm.*` (`LLMClientConfig`)
+## 4. `llm.*` (`LLMRolesConfig` of two `LLMClientConfig`s)
 
-Settings for the `BudgetedLLM` clients. **noema uses a single model** for both the mutation and the
-coordination account — there is no ensemble here (unlike openevolve's `primary_model` /
-`secondary_model`, which noema does **not** read).
+Settings for the `BudgetedLLM` clients. There are **two seats**, `llm.mutation` and
+`llm.coordination`, matching the two budget accounts (§3), so a run can spend its fixed token pool
+asymmetrically. openevolve's `primary_model` / `secondary_model` ensemble is a different thing and
+noema does **not** read it.
+
+Both shapes load (`NoemaConfig._normalise_llm_section`). Flat — both seats get these settings:
+
+```yaml
+llm:
+  model: "gpt-4o-mini"
+  api_base: null
+```
+
+Per-seat — **both** seats must be named:
+
+```yaml
+llm:
+  mutation: {model: "gpt-4o-mini"}
+  coordination: {model: "gpt-4o"}
+```
+
+Naming one seat and not the other raises `ValueError` — the unnamed seat would otherwise fall back
+to the default model and invalidate the comparison. The rows below are the fields of one seat; set
+them flat, or under `llm.mutation.*` / `llm.coordination.*`.
 
 | Name | Description | Usage |
 |---|---|---|
@@ -268,17 +289,36 @@ Formatting knobs also accepted and passed through: `system_message_changes_descr
 
 ---
 
-## 8. Worked example
+## 8. `logging.*` (`LoggingConfig`)
+
+Console and text-file logging for one run (`noema/logging.py`). `NoemaController` installs these
+handlers on the root logger when it is constructed, and removes only its own handlers again.
+
+| Name | Description | Usage |
+|---|---|---|
+| ✅ `logging.level` | Root log level for the run. | `level: "DEBUG"` — one of `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` \| `CRITICAL`. Default `"INFO"`. Case-insensitive; **any other value raises `ValueError` in `__post_init__`.** |
+| ✅ `logging.log_dir` | Directory for the run's log file. | `log_dir: "runs/a/logs"` — str or `null`. Default `null` → `<output_dir>/logs`. |
+| ✅ `logging.console` | Emit `asctime - levelname - message` lines to stderr. | `console: false` — bool. Default `true`. |
+| ✅ `logging.file` | Write `noema_<YYYYmmdd_HHMMSS>.log` into `log_dir`. | `file: false` — bool. Default `true`. |
+
+---
+
+## 9. Worked example
 
 The circle-packing example builds `NoemaConfig` **in Python**
 (`examples/circle_packing/run_noema_arm.py`) — that is the reference usage.
 
-> ⚠️ The YAML files in `examples/circle_packing/` (`config_local.yaml`, `config_phase_1.yaml`, …)
-> are **openevolve** configs, not noema configs. They use `llm.primary_model` and
+> ⚠️ Most YAML files in `examples/circle_packing/` (`config_local.yaml`, `config_phase_1.yaml`,
+> `config_phase_2.yaml`, `config_openevolve_null_baseline.yaml`, and the `_anthropic` variants) are
+> **openevolve** configs, not noema configs. They use `llm.primary_model` and
 > `use_template_stochasticity: true`, which `NoemaConfig` does not read and does not permit. Do not
-> feed them to `NoemaConfig.from_yaml`.
+> feed them to `NoemaConfig.from_yaml`. The one exception is `config_pes_faithful.yaml`, which is a
+> hand-written noema config and loads directly.
 
 ```python
+llm = LLMClientConfig(model="Qwen2.5-Coder-14B", api_base="http://localhost:8090/v1",
+                      api_key="none", temperature=0.7, top_p=0.95,
+                      max_tokens=4096, timeout=300)
 config = NoemaConfig(
     max_iterations=50,
     checkpoint_interval=5,
@@ -296,10 +336,11 @@ config = NoemaConfig(
     prompt=PromptConfig(use_template_stochasticity=False, include_artifacts=False,
                         system_message=SYSTEM_MESSAGE),
     budget=BudgetConfig(total_tokens=2_000_000),
-    llm=LLMClientConfig(model="Qwen2.5-Coder-14B", api_base="http://localhost:8090/v1",
-                        api_key="none", temperature=0.7, top_p=0.95,
-                        max_tokens=4096, timeout=300),
-    coordination=CoordinationConfig(module="pes"),
+    # NoemaConfig.llm is an LLMRolesConfig of two seats (§4), one per budget
+    # account. Same settings here; give the seats separate objects, as the YAML
+    # loader does, so a later per-seat tweak can't reach both.
+    llm=LLMRolesConfig(mutation=llm, coordination=dataclasses.replace(llm)),
+    coordination=CoordinationConfig(module="pes-custom"),
 )
 ```
 
@@ -318,10 +359,10 @@ retry_cap: 2
 retry_on: "failure"
 
 coordination:
-  module: "pes"          # null | hifo | pes
+  module: "pes-custom"   # registry keys: see §2
   params:
     reflection_enabled: true
-    recent_strategies_k: 3
+    # recent_strategies_k is arm-defining and would raise here — see §2.1.
 
 budget:
   total_tokens: 2000000
@@ -357,41 +398,20 @@ Arms are compared by changing **only** `coordination.module`.
 
 ## Planned / not yet implemented
 
-🚧 **None of the keys below exist in the code today.** They are specified in the approved plan and in
-vault tasks 0066/0067, and are recorded here so the roadmap is visible — not so they can be set.
-Because unknown keys are silently dropped by `dacite`, setting one today fails *quietly*: you would
-get default behavior while believing you had configured a variant. Do not use them until this section
-is folded into the tables above.
+🚧 **None of the keys below exist in the code today.** They are recorded here so the roadmap is
+visible — not so they can be set. Because unknown keys are silently dropped by `dacite`, setting one
+today fails *quietly*: you would get default behavior while believing you had configured a variant.
+Do not use them until they are folded into the tables above.
 
-### Planned: `coordination.module` registry keys (task 0066, plan WP7)
+### Planned: `coordination.module` registry keys
 
-The registry today is exactly `null`, `hifo`, `pes`. The planned split replaces the single `pes`
-key, because the experiment's config checker requires paired runs to differ in exactly one setting —
-so variant identity must live in the **module key**, never in sub-params.
+The registry itself is documented in §2. Task 0066's arm split has since **shipped**: `pes-custom`
+and `pes-faithful` are real keys, `pes` is the deprecated alias, and the three arm-defining knobs are
+rejected in `coordination.params` (§2.1). Only one key remains unbuilt.
 
 | Name | Description | Usage |
 |---|---|---|
-| 🚧 `coordination.module: "pes-custom"` | The current `pes` behavior under an explicit name: `prompt_variant="custom"`, `executor_mode="advisory"`, recent-strategies block on, reflection-seeded retries on, `retry_on="failure"`. | Planned registry key. **Today, use `module: "pes"`.** |
-| 🚧 `coordination.module: "pes-faithful"` | The LoongFlow fidelity anchor: `prompt_variant="faithful"`, `executor_mode="directive"`, recent-strategies block off, `retry_advice` returns empty, island-status block on. Its documented run config also sets the substrate keys `retry_on: non_improvement` and `retry_cap: 2` (§1.1) — those are **run config, not module params**. | Planned registry key. Today the underlying knobs exist individually (`prompt_variant`, `executor_mode`) and can be set by hand under `coordination.params`, but the named arm does not. |
-| 🚧 `coordination.module: "pes"` (as a *deprecated alias*) | Under the planned split, `pes` survives only as a deprecated alias for `pes-custom` and will log a deprecation warning. | Today `pes` is the real, non-deprecated key and warns about nothing. |
 | 🚧 `coordination.module: "pes-faithful-lean"` | A gated backlog probe for a context-richness micro-ablation, sequenced behind other probes. | Planned registry key; **not built, and not scheduled.** |
 
 > `pes-full` is a **colloquial alias for `pes-faithful` in prose only**. It is not a config key today
 > and is explicitly specified never to become one.
-
-### Planned: params that will become *illegal* (task 0066)
-
-A behavior change worth flagging, because it inverts today's rules. These knobs are settable in
-`coordination.params` today (§2.1); once the named `pes-*` variants land, passing an **arm-defining**
-knob for a named variant will **raise `ValueError`** — silent arm drift is the failure mode being
-designed out.
-
-| Name | Description | Usage |
-|---|---|---|
-| 🚧 `coordination.params.prompt_variant` | Arm-defining. Will raise if set on a named variant. | Today: ✅ settable (`custom` \| `faithful`, default `custom`). Planned: implied by the module key; setting it raises. |
-| 🚧 `coordination.params.executor_mode` | Arm-defining. Will raise if set on a named variant. | Today: ✅ settable (`advisory` \| `directive`, default `advisory`). Planned: implied by the module key; setting it raises. |
-| 🚧 `coordination.params.recent_strategies_k` | Arm-defining. Will raise if set on a named variant. | Today: ✅ settable (int, default `3`). Planned: implied by the module key (`pes-faithful` pins it to `0`); setting it raises. |
-
-The remaining PES params in §2.1 (`max_code_chars`, `domain_context`, `reflection_enabled`,
-`max_pending_reflections_per_tick`, `reflection_slice_max_tokens`, `context_window_tokens`,
-`strategy_digest_chars`) are **not** arm-defining and are expected to stay freely settable.
