@@ -94,7 +94,14 @@ def donor_class(clone_root: Optional[str] = None) -> Tuple[Optional[Any], Option
     """
     root = Path(clone_root or os.environ.get("SHINKA_CLONE", DEFAULT_CLONE))
     source = root / "shinka" / "llm" / "prioritization.py"
-    if not source.is_file():
+    try:
+        source_exists = source.is_file()
+    except PermissionError as exc:
+        return None, (
+            f"ShinkaEvolve clone at {root} could not be accessed: {exc!r} "
+            f"(pin {PINNED_COMMIT}; set SHINKA_CLONE to override)"
+        )
+    if not source_exists:
         return None, f"ShinkaEvolve clone not found: {source} does not exist (pin {PINNED_COMMIT}; set SHINKA_CLONE to override)"
     try:
         import rich.box, rich.console, rich.table  # noqa: F401

@@ -80,5 +80,100 @@ class TestCommitAndMaybeRun(unittest.TestCase):
             self.assertEqual(Path(seen["eval"]), ev.resolve())
 
 
+class TestDerivedFileSuffixReachesSession(unittest.TestCase):
+    """`noema` in a C++ example must evolve child.cpp, not child.py."""
+
+    def _example(self, root: Path, suffix: str) -> None:
+        (root / f"initial_program{suffix}").write_text("// seed\n")
+        (root / "evaluator.py").write_text("def evaluate(p):\n    return {'combined_score': 1.0}\n")
+
+    def _write_config(self, root: Path) -> Path:
+        import os
+
+        from noema.agenthost.configure import main
+
+        cwd = os.getcwd()
+        os.chdir(root)
+        try:
+            self.assertEqual(main(["--write-only"]), 0)
+        finally:
+            os.chdir(cwd)
+        return root / "config.yaml"
+
+    def test_cpp_example_writes_and_runs_with_cpp_suffix(self):
+        import warnings
+
+        from noema.agenthost.factory import create_agent_session
+        from noema.agenthost.mutation import mutation_layout
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._example(root, ".cpp")
+            config_path = self._write_config(root)
+
+            loaded = load_noema_and_agent(config_path)
+            self.assertEqual(loaded.noema.file_suffix, ".cpp")
+
+            loaded.noema.llm.mutation.api_key = "fake-key"
+            loaded.noema.llm.coordination.api_key = "fake-key"
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                session = create_agent_session(
+                    loaded,
+                    evaluation_file=str(root / "evaluator.py"),
+                    initial_program_code="// seed\n",
+                    output_dir=str(root / "out"),
+                )
+            layout = mutation_layout(
+                session.output_dir, 0, 1, file_suffix=session.config.file_suffix
+            )
+            self.assertEqual(layout.deliverable_path.name, "child.cpp")
+            self.assertEqual(layout.parent_path.name, "parent.cpp")
+
+    def test_python_example_keeps_py_suffix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._example(root, ".py")
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.file_suffix, ".py")
+
+    def test_explicit_yaml_suffix_is_not_overwritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._example(root, ".cpp")
+            (root / "config.yaml").write_text(
+                "file_suffix: .cc\nprompt:\n  use_template_stochasticity: false\n"
+            )
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.file_suffix, ".cc")
+
+    def test_cpp_example_derives_language_when_yaml_omits_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "initial_program.cpp").write_text(
+                "#include <iostream>\nint main() { return 0; }\n"
+            )
+            (root / "evaluator.py").write_text(
+                "def evaluate(p):\n    return {'combined_score': 1.0}\n"
+            )
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.language, "cpp")
+
+    def test_explicit_yaml_language_is_not_overwritten(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "initial_program.cpp").write_text(
+                "#include <iostream>\nint main() { return 0; }\n"
+            )
+            (root / "evaluator.py").write_text(
+                "def evaluate(p):\n    return {'combined_score': 1.0}\n"
+            )
+            (root / "config.yaml").write_text(
+                "language: c++\nprompt:\n  use_template_stochasticity: false\n"
+            )
+            loaded = load_noema_and_agent(self._write_config(root))
+            self.assertEqual(loaded.noema.language, "c++")
+
+
 if __name__ == "__main__":
     unittest.main()

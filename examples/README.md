@@ -6,9 +6,9 @@ This directory contains a collection of examples demonstrating how to use OpenEv
 
 To create your own OpenEvolve example, you need three essential components:
 
-### 1. Initial Program (`initial_program.py`)
+### 1. Initial Program (`initial_program.*`)
 
-Your initial program must contain exactly **one** `EVOLVE-BLOCK`:
+Your initial program can be written in any language; it must contain exactly **one** EVOLVE-BLOCK. Mark the EVOLVE-BLOCK using your language's comment syntax (the example below shows Python):
 
 ```python
 # EVOLVE-BLOCK-START
@@ -26,7 +26,7 @@ def helper_function():
 
 **Critical Requirements:**
 - ✅ **Exactly one EVOLVE-BLOCK** (not multiple blocks)
-- ✅ Use `# EVOLVE-BLOCK-START` and `# EVOLVE-BLOCK-END` markers
+- ✅ Mark the EVOLVE-BLOCK using your language's comment markers (e.g. `#` for Python, `//` for C/C++, `--` for Lua)
 - ✅ Put only the code you want evolved inside the block
 - ✅ Helper functions and imports go outside the block
 
@@ -197,10 +197,10 @@ def evaluate(program_path: str) -> Dict:
 
 ```bash
 # Basic run
-python openevolve-run.py path/to/initial_program.py path/to/evaluator.py --config path/to/config.yaml --iterations 100
+python openevolve-run.py path/to/initial_program.<ext> path/to/evaluator.py --config path/to/config.yaml --iterations 100
 
 # Resume from checkpoint
-python openevolve-run.py path/to/initial_program.py path/to/evaluator.py \
+python openevolve-run.py path/to/initial_program.<ext> path/to/evaluator.py \
   --config path/to/config.yaml \
   --checkpoint path/to/checkpoint_directory \
   --iterations 50

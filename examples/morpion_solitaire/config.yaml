@@ -1,0 +1,59 @@
+# Morpion Solitaire (4D) — minimal config.
+#
+# Deliberately not tuned for a real evolution run (population size, model
+# choice, island count are all left at defaults); this is the smallest config
+# that makes the example runnable.
+#
+# The evolved program is C++ and is compiled by evaluator.py each evaluation,
+# so file_suffix must be .cpp.
+
+max_iterations: 10
+checkpoint_interval: 5
+random_seed: 42
+
+language: cpp
+file_suffix: .cpp
+
+# C++ mutation is more reliable as whole-function rewrites than as diffs.
+diff_based_evolution: false
+
+llm:
+  mutation:
+    api_base: http://localhost:8091/v1
+    api_key: none
+    model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+    temperature: 0.7
+    max_tokens: 4096
+    timeout: 300
+  coordination:
+    api_base: http://localhost:8091/v1
+    api_key: none
+    model: /var/tmp/models/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf
+    temperature: 0.7
+    max_tokens: 4096
+    timeout: 300
+
+prompt:
+  # noema requires identical prompts across arms.
+  use_template_stochasticity: false
+  system_message: |
+    You are an expert in single-player combinatorial search heuristics. The
+    game is Morpion Solitaire (4D variant) on a fixed 13x13 board, played
+    through Google DeepMind OpenSpiel's real engine: each move draws a line
+    through 4 points, exactly 3 of which are already filled, and no two played
+    lines may overlap in the same direction. The game ends when no legal move
+    remains; the score is the number of moves played, and the proven optimum is
+    the engine's own MaxUtility().
+
+    Improve only `score_move(state, action)` inside the EVOLVE-BLOCK: given the
+    current state and a candidate action, return a score; the highest-scoring
+    legal move is played each turn (ties go to the lowest action id). A good
+    heuristic keeps future options open rather than greedily consuming them.
+    You may construct `Line line(action)` to inspect the move's 4 points and
+    direction, and clone the state for lookahead. The driving loop outside the
+    EVOLVE-BLOCK is fixed and must not change.
+
+evaluator:
+  timeout: 300
+  parallel_evaluations: 1
+  cascade_evaluation: false

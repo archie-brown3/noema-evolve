@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import yaml
+from openevolve.utils.code_utils import extract_code_language  # type: ignore[import-untyped]
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,8 @@ class ExamplePaths:
     cwd: Path
     initial_program: Path
     evaluator: Path
+    file_suffix: str = ".py"
+    language: str = "python"
     config_candidates: tuple[Path, ...] = ()
     preferred_config: Optional[Path] = None
     use_skeleton: bool = False
@@ -60,19 +63,29 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
     """Require programme + evaluator; list loadable YAML config paths in ``cwd``."""
 
     root = Path(cwd).resolve()
-    initial_program = root / "initial_program.py"
+    # The seed programme may be in any language (upstream reads the extension
+    # off the discovered path); the evaluator is loaded as a Python module, so
+    # it stays evaluator.py.
+    seeds = sorted((p for p in root.glob("initial_program.*") if p.is_file()), key=lambda p: p.name)
+    if len(seeds) > 1:
+        raise ValueError(
+            "example directory has more than one seed programme: "
+            f"{', '.join(p.name for p in seeds)}. Keep exactly one "
+            f"initial_program.<ext> in {root}"
+        )
     evaluator = root / "evaluator.py"
     missing: list[str] = []
-    if not initial_program.is_file():
-        missing.append("initial_program.py")
+    if not seeds:
+        missing.append("initial_program.<ext>")
     if not evaluator.is_file():
         missing.append("evaluator.py")
     if missing:
         raise ValueError(
             "example directory missing required file(s): "
-            f"{', '.join(missing)}. Need initial_program.py and evaluator.py "
+            f"{', '.join(missing)}. Need initial_program.<ext> and evaluator.py "
             f"in {root}"
         )
+    initial_program = seeds[0]
 
     raw = sorted(root.glob("*.yaml"), key=lambda p: p.name)
     candidates: list[Path] = []
@@ -96,16 +109,22 @@ def discover_example(cwd: Path | str) -> ExamplePaths:
         # A clean load is not evidence of a config: _normalise_openevolve_yaml
         # drops every key it does not recognise, so an unrelated mapping loads
         # fine and would be adopted as the run config *and* rewritten in place
-        # (task 0201). Adopt an unconventionally named file only on a positive
-        # tell that it really is one.
-        if _has_noema_config_tell(_load_yaml_mapping(sole)):
-            preferred = sole
+        # (task 0201). Adopt an unconventionally named file only when it both
+        # carries a positive tell that it is one and actually loads.
+        try:
+            if _has_noema_config_tell(_load_yaml_mapping(sole)):
+                load_noema_and_agent(sole)
+                preferred = sole
+        except Exception:
+            pass  # not a loadable Noema/OpenEvolve config; do not adopt it
 
     new_config_path = (root / "config.yaml").resolve()
     return ExamplePaths(
         cwd=root,
         initial_program=initial_program,
         evaluator=evaluator,
+        file_suffix=initial_program.suffix,
+        language=extract_code_language(initial_program.read_text()),
         config_candidates=tuple(candidates),
         preferred_config=preferred,
         use_skeleton=len(candidates) == 0,
@@ -153,6 +172,10 @@ def _normalise_openevolve_yaml(raw: dict[str, Any]) -> dict[str, Any]:
     # Noema deliberately rejects stochastic prompt templates so the mutation
     # prompt remains identical across arms.
     prompt["use_template_stochasticity"] = False
+    # Same reason, same fail-closed rule as above: the 'Diverse Programs'
+    # section samples from the global random module. openevolve defaults it to
+    # 2, and make_prompt_sampler rejects anything above 0.
+    prompt["num_diverse_programs"] = 0
     data["prompt"] = prompt
     if "num_top_programs" not in data and "num_top_programs" in prompt:
         data["num_top_programs"] = prompt["num_top_programs"]
