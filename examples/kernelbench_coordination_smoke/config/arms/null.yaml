@@ -1,0 +1,4 @@
+# Arm overlay: coordination-OFF baseline. Merges onto config/base.yaml via
+# config_loader.py. This file may set NOTHING except coordination.module.
+coordination:
+  module: "null"  # quoted: bare `null` is the YAML null literal, not the string

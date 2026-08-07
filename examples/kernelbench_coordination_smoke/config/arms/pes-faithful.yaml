@@ -1,0 +1,5 @@
+# Arm overlay: PES faithful (LoongFlow math-agent, spec §2.6 — the deprecated
+# `pes` alias is never used). Merges onto config/base.yaml via
+# config_loader.py. This file may set NOTHING except coordination.module.
+coordination:
+  module: pes-faithful
