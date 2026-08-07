@@ -24,10 +24,23 @@ the instances.
 ## Instances
 
 Weibull-distributed integer item sizes (Decision #6), `shape = 3.0`, scaled and
-clipped to `[1, C]`. The scored set is 5 seeded instances of `n = 1000` items
-(`INSTANCE_SEEDS = (1, 2, 3, 4, 5)`), committed in code — no runtime downloads,
-fully deterministic. Larger `n` (5k/10k) and a held-out reporting split (e.g.
-seeds 6–10) can be added for the final numbers without changing the harness.
+clipped to `[1, C]`. The **scored set** — evaluated every search iteration — is
+5 seeded instances of `n = 1000`, `C = 100` (`INSTANCE_SEEDS = (1, 2, 3, 4, 5)`),
+committed in code, no runtime downloads, fully deterministic. Unchanged by task
+0096, so existing arm results at this size stay comparable.
+
+The **held-out set** (task 0096) covers Decision #6's full matrix — `n ∈
+{1000, 5000, 10000}`, `C ∈ {100, 500}` — on a disjoint seed range
+(`HELD_OUT_SEEDS = (6, 7, 8, 9, 10)`), via `run_bin_packing_held_out()` in
+`initial_program.py`. It is **not** run by the per-iteration evaluator — call
+it directly for final-reporting numbers comparable to published FunSearch/EoH
+results at scale, using whatever `priority` heuristic evolution produced.
+`online_pack` is capacity-indexed (buckets bins by remaining capacity instead
+of scanning every open bin), so the largest held-out instance (`n=10000`)
+evaluates in well under a second, comfortably inside the evaluator's 60s
+timeout — verified byte-identical in outcome to the original flat-list scan
+across 150 randomized trials plus a forced-tie stress case (see
+`tests/test_bin_packing_example.py::TestOnlinePackCapacityIndex`).
 
 ## Scoring
 

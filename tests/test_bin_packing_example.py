@@ -104,6 +104,110 @@ class TestBinPackingHasHeadroom(unittest.TestCase):
         )
 
 
+class TestOnlinePackCapacityIndex(unittest.TestCase):
+    """task 0096: online_pack's capacity-indexed rewrite must be byte-identical
+    in outcome to the original O(n*bins) flat-list scan it replaced — including
+    tie-breaking among equal-capacity bins, the case a naive rewrite would most
+    plausibly get wrong."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.ip = _load("bp_init", "initial_program.py")
+
+    @staticmethod
+    def _naive_online_pack(items, capacity, priority_fn):
+        """The pre-0096 implementation, kept here only as an equivalence
+        oracle — not the shipped algorithm."""
+        import numpy as np
+
+        remaining = []
+        for item in items:
+            fit_idx = [i for i, r in enumerate(remaining) if r >= item]
+            if fit_idx:
+                scores = priority_fn(item, np.array([remaining[i] for i in fit_idx], dtype=float))
+                chosen = fit_idx[int(np.argmax(scores))]
+                remaining[chosen] -= item
+            else:
+                remaining.append(capacity - item)
+        return len(remaining)
+
+    def test_matches_naive_scan_across_sizes_and_heuristics_including_ties(self):
+        import numpy as np
+
+        def worst_fit(item, bins):
+            return bins - item
+
+        def forced_tie(item, bins):
+            # Every candidate scores identically -> argmax always picks the
+            # first (lowest creation-index) bin. Stresses tie-break order
+            # exactly where a bucket-order rewrite could silently diverge.
+            return np.zeros_like(bins)
+
+        mismatches = []
+        for trial in range(50):
+            rng = np.random.RandomState(trial)
+            n = int(rng.choice([50, 500, 2000]))
+            cap = int(rng.choice([20, 100, 500]))
+            items = self.ip.generate_instance(trial, n_items=n, capacity=cap)
+            for fn in (self.ip.priority, worst_fit, forced_tie):
+                naive = self._naive_online_pack(items, cap, fn)
+                fast = self.ip.online_pack(items, cap, fn)
+                if naive != fast:
+                    mismatches.append((trial, n, cap, fn.__name__, naive, fast))
+        self.assertEqual(mismatches, [], f"capacity-index diverged from naive scan: {mismatches}")
+
+    def test_scored_set_instances_unchanged_by_the_generate_instance_refactor(self):
+        # generate_instance gained optional n_items/capacity params; the
+        # default call (used by run_bin_packing, the search-loop entry point)
+        # must still produce byte-identical instances to before.
+        for seed in self.ip.INSTANCE_SEEDS:
+            explicit = self.ip.generate_instance(
+                seed, n_items=self.ip.N_ITEMS, capacity=self.ip.BIN_CAPACITY
+            )
+            default = self.ip.generate_instance(seed)
+            self.assertEqual(explicit, default)
+
+
+class TestHeldOutInstanceSet(unittest.TestCase):
+    """task 0096: Decision #6 specifies n in {1000,5000,10000}, capacity in
+    {100,500} — only n=1000/C=100 was committed, and no held-out split
+    existed. This covers the gap without touching the scored (in-loop) set."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.ip = _load("bp_init2", "initial_program.py")
+
+    def test_covers_decision_6_matrix(self):
+        expected = {(n, c) for n in (1000, 5000, 10000) for c in (100, 500)}
+        self.assertEqual(set(self.ip.HELD_OUT_CONFIGS), expected)
+
+    def test_held_out_seeds_disjoint_from_scored_seeds(self):
+        self.assertEqual(set(self.ip.HELD_OUT_SEEDS) & set(self.ip.INSTANCE_SEEDS), set())
+
+    def test_held_out_run_produces_valid_results_at_every_config(self):
+        results = self.ip.run_bin_packing_held_out()
+        self.assertEqual(set(results.keys()), set(self.ip.HELD_OUT_CONFIGS))
+        for (n_items, capacity), config_results in results.items():
+            self.assertEqual(len(config_results), len(self.ip.HELD_OUT_SEEDS))
+            for bins_used, lower_bound in config_results:
+                self.assertGreater(lower_bound, 0)
+                self.assertGreaterEqual(bins_used, lower_bound)
+
+    def test_largest_instance_evaluates_well_within_the_evaluator_timeout(self):
+        # The ticket's explicit ask: verify n=10000 doesn't approach the
+        # evaluator's 60s timeout. online_pack's capacity-index makes this
+        # comfortable even at the largest committed size (measured ~0.1-0.2s
+        # per instance vs ~1-1.3s pre-0096 -- both fine, but the margin now
+        # holds for future, larger held-out configs too).
+        import time
+
+        items = self.ip.generate_instance(6, n_items=10000, capacity=500)
+        start = time.time()
+        self.ip.online_pack(items, 500, self.ip.priority)
+        elapsed = time.time() - start
+        self.assertLess(elapsed, 10.0, f"n=10000 took {elapsed:.2f}s -- investigate before trusting the 60s margin")
+
+
 class TestBinPackingRunsInTheController(unittest.TestCase):
     """0036 done-when 1: the noema loop completes on the real benchmark and
     writes a run dir — end to end, evaluating through the subprocess harness."""
